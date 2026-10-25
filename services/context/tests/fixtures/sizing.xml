@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<aircraft name="UAV-1">
+  <wing>
+    <span unit="mm">1200</span>
+    <chord>180 mm</chord>
+  </wing>
+</aircraft>
