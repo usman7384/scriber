@@ -11,7 +11,7 @@ from partwright_agent.llm import LLM, Message
 from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
-from partwright_geometry import Artifact, BuildError
+from partwright_geometry import Artifact, BuildError, Finding
 from partwright_ir import Design, ParamError, Provenance, apply_params, json_schema, normalize, validate
 
 REPAIR_TEMPERATURE = 0.5
@@ -140,9 +140,14 @@ def _evaluate(
         hint = " The operation is impossible with the given sketch or dimensions; rethink that feature." if e.kind == "kernel" else ""
         return [f"CAD kernel error ({e.kind}){where}: {_short(e)}.{hint}"], design, None, []
     checks = check(reqs, artifact)
-    problems = [f"{f.rule_id} {f.part}: {f.message}" for f in artifact.findings if f.severity == "error"]
+    problems = [_finding_text(f) for f in artifact.findings if f.severity == "error"]
     problems += [f"requirement not met: {c.requirement.description} (actual: {c.actual})" for c in checks if not c.passed]
     return problems, design, artifact, checks
+
+
+def _finding_text(f: Finding) -> str:
+    fix = f" Fix: {f.suggestion}." if f.suggestion else ""
+    return f"{f.rule_id} {f.part}: {f.message}.{fix}"
 
 
 def _requirements_step(reqs: list[Requirement], clock: "_Clock") -> Step:

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from partwright_agent import FakeLLM, generate, refine
-from partwright_geometry import Artifact, BuildError, HoleInfo, PartMetrics
+from partwright_geometry import Artifact, BuildError, Finding, HoleInfo, PartMetrics
 from partwright_ir import Design
 
 REQS = json.dumps(
@@ -106,3 +106,18 @@ def test_refine_with_parameter_update_keeps_everything_else(tmp_path: Path) -> N
     assert steps[-1].kind == "done" and result and result.design
     assert result.design.param_values() == {"length": 90, "hole_d": 6.6}
     assert result.design.parts == original.parts
+
+
+def test_finding_suggestion_reaches_the_repair_prompt(tmp_path: Path) -> None:
+    class EdgeGeometry(FakeGeometry):
+        def build(self, d: Design, out_dir: Path) -> Artifact:
+            art = super().build(d, out_dir)
+            if len(self.built) > 1:
+                return art
+            bad = Finding(rule_id="hole-edge", severity="error", message="hole too close", part="p", suggestion="move it to >= 15 mm")
+            return art.model_copy(update={"findings": [bad]})
+
+    llm = FakeLLM([REQS, design(), design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, EdgeGeometry(), tmp_path))
+    assert "Fix: move it to >= 15 mm." in llm.calls[-1][-1].content
+    assert steps[-1].kind == "done"
