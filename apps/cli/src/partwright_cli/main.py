@@ -1,0 +1,91 @@
+import argparse
+import sys
+from collections.abc import Iterator
+from pathlib import Path
+
+from partwright_agent import Result, Step, generate, refine
+from partwright_cli import store
+from partwright_cli.config import Config, llm_for, load
+from partwright_geometry import BuildError, LocalGeometry
+from partwright_ir import ParamError, apply_params, label
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
+    config = load(args.config)
+    geometry = LocalGeometry(timeout_s=config.geometry.timeout_s)
+    try:
+        return int(args.run(args, config, geometry))
+    finally:
+        geometry.close()
+
+
+def _generate(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    model_dir = args.out or config.output_dir / store.slug(args.prompt)
+    version = store.next_version(model_dir)
+    steps = generate(args.prompt, llm_for(config, args.model), geometry, version, config.agent.max_repairs, config.agent.seed)
+    return _run(steps, version)
+
+
+def _refine(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    design = store.latest_design(args.model_dir)
+    version = store.next_version(args.model_dir)
+    steps = refine(design, args.instruction, llm_for(config, args.model), geometry, version, config.agent.max_repairs, config.agent.seed)
+    return _run(steps, version)
+
+
+def _params(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    design = store.latest_design(args.model_dir)
+    if not args.set:
+        for p in design.params:
+            print(f"{label(p.name):<32} {p.value:>10g} {p.unit:<4} {p.provenance.source}")
+        return 0
+    try:
+        updates = {k: float(v) for k, v in (s.split("=", 1) for s in args.set)}
+        edited = apply_params(design, updates)
+        version = store.next_version(args.model_dir)
+        artifact = geometry.build(edited, version)
+    except (ParamError, BuildError, ValueError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    store.save(version, [], Result(design=edited, artifact=artifact, checks=[], attempts=1, repairs=0))
+    print(f"{version}: rebuilt in {artifact.elapsed_ms} ms, {'valid' if artifact.ok else 'INVALID'}")
+    return 0 if artifact.ok else 1
+
+
+def _run(steps: Iterator[Step], version: Path) -> int:
+    seen: list[Step] = []
+    for step in steps:
+        seen.append(step)
+        print(f"[{step.elapsed_ms / 1000:6.1f}s] {step.kind:<12} #{step.attempt} {step.message}", flush=True)
+    final = seen[-1].result
+    store.save(version, seen, final)
+    if final and final.ok:
+        print(f"saved {version}")
+        return 0
+    print(f"generation did not pass all checks; see {version / 'steps.json'}", file=sys.stderr)
+    return 1
+
+
+def _parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="partwright")
+    p.add_argument("--config", type=Path, default=Path("config.yaml"))
+    p.add_argument("--model", help="Ollama model tag; defaults to llm.default in config")
+    sub = p.add_subparsers(required=True)
+    g = sub.add_parser("generate", help="design a part from a description")
+    g.add_argument("prompt")
+    g.add_argument("--out", type=Path)
+    g.set_defaults(run=_generate)
+    r = sub.add_parser("refine", help="change an existing model in natural language")
+    r.add_argument("model_dir", type=Path)
+    r.add_argument("instruction")
+    r.set_defaults(run=_refine)
+    pa = sub.add_parser("params", help="list or set parameters and rebuild")
+    pa.add_argument("model_dir", type=Path)
+    pa.add_argument("--set", nargs="*", metavar="NAME=VALUE")
+    pa.set_defaults(run=_params)
+    return p
+
+
+if __name__ == "__main__":
+    sys.exit(main())
