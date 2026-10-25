@@ -12,3 +12,4 @@ data/
 *.safetensors
 out/
 evals/results/*/*/
+.claude/worktrees/
