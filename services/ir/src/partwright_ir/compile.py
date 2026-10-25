@@ -56,7 +56,12 @@ def _hole(part, plane, points, d, depth, cbd, cbdepth):
     length = 4 * part.bounding_box().diagonal if through else depth
     align = (Align.CENTER, Align.CENTER, Align.CENTER if through else Align.MAX)
     before = part.volume
+    box = part.bounding_box()
     for x, y in points:
+        c, n = plane.from_local_coords((x, y)), plane.z_dir
+        for lo, hi, ci, ni in zip((box.min.X, box.min.Y, box.min.Z), (box.max.X, box.max.Y, box.max.Z), (c.X, c.Y, c.Z), (n.X, n.Y, n.Z)):
+            if abs(ni) < 0.5 and not lo + d / 2 - 1e-6 <= ci <= hi - d / 2 + 1e-6:
+                raise ValueError(f"hole at ({x:g}, {y:g}) is closer than its radius to the part edge; move it inside the outline")
         at = plane * Pos(x, y)
         part -= at * Cylinder(d / 2, length, align=align)
         if cbd is not None:

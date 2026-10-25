@@ -37,9 +37,9 @@ def load_cases(path: Path) -> list[Case]:
     return [Case.model_validate(c) for c in yaml.safe_load(path.read_text(encoding="utf-8"))]
 
 
-def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path) -> CaseResult:
+def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path, plan_first: bool = True) -> CaseResult:
     start = time.monotonic()
-    steps = list(generate(case.prompt, llm, geometry, out_dir / case.id))
+    steps = list(generate(case.prompt, llm, geometry, out_dir / case.id, plan_first=plan_first))
     final = steps[-1]
     r = final.result
     artifact = r.artifact if r else None
@@ -86,10 +86,11 @@ def main() -> None:
     p.add_argument("--models", nargs="+", required=True)
     p.add_argument("--out", type=Path, default=Path("evals/results"))
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
+    p.add_argument("--no-plan", action="store_true", help="skip the planning step (ablation)")
     args = p.parse_args()
     cases = load_cases(args.cases)
     stamp = time.strftime("%Y%m%d-%H%M%S")
-    run_dir = args.out / f"{args.cases.stem}-{stamp}"
+    run_dir = args.out / f"{args.cases.stem}-{stamp}{'-noplan' if args.no_plan else ''}"
     results: list[CaseResult] = []
     config = load(args.config)
     geometry = LocalGeometry(timeout_s=config.geometry.timeout_s)
@@ -97,7 +98,7 @@ def main() -> None:
         for model in args.models:
             llm = llm_for(config, model)
             for case in cases:
-                result = run_case(case, llm, geometry, run_dir / model.replace(":", "_"))
+                result = run_case(case, llm, geometry, run_dir / model.replace(":", "_"), not args.no_plan)
                 results.append(result)
                 print(json.dumps(result.model_dump()), flush=True)
     finally:

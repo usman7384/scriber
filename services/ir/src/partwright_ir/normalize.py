@@ -15,9 +15,7 @@ def normalize(design: Design) -> Design:
     for part in data["parts"]:
         for node in [*part["sketches"], *part["features"]]:
             _substitute(node, unused, None)
-    linked = Design.model_validate(data)
-    still_used = used_params(linked)
-    return linked.model_copy(update={"params": [p for p in linked.params if p.name in still_used]})
+    return Design.model_validate(data)
 
 
 def _substitute(node: Any, unused: list[Param], field: str | None) -> Any:

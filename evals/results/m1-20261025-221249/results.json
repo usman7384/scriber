@@ -1,0 +1,153 @@
+[
+  {
+    "id": "m1-bracket",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": false,
+    "checks_passed": 3,
+    "checks_total": 4,
+    "failed_checks": [
+      "4x M6 clearance: 0 matching holes; all hole diameters []"
+    ],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 137.8,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "dp2-flanged-adapter",
+    "model": "qwen3.5:4b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 117.4,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "dp5-hollow-cylinder",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": true,
+    "checks_passed": 3,
+    "checks_total": 3,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 61.4,
+    "final_step": "Hollow cylinder: 2/2 requirement checks passed, 3 repairs"
+  },
+  {
+    "id": "dp7-angled-bracket",
+    "model": "qwen3.5:4b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 1,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 150.7,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "dp21-l-bracket",
+    "model": "qwen3.5:4b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 3,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 132.5,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "in2-ten-hole-plate",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "failed_checks": [],
+    "attempts": 2,
+    "repairs": 1,
+    "seconds": 80.1,
+    "final_step": "Perforated plate: 6/6 requirement checks passed, 1 repairs"
+  },
+  {
+    "id": "dp3-dn50-flange",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": false,
+    "checks_passed": 1,
+    "checks_total": 3,
+    "failed_checks": [
+      "4 bolt holes 18: 0 matching holes; all hole diameters [60.3]",
+      "PCD 125 across: hole centre distances []"
+    ],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 130.6,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "wp-open-box",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": false,
+    "checks_passed": 2,
+    "checks_total": 3,
+    "failed_checks": [
+      "height 40: bounding box 100.00 x 60.00 x 2.00 mm"
+    ],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 82.2,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "dp6-2020-t-plate",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": false,
+    "checks_passed": 2,
+    "checks_total": 3,
+    "failed_checks": [
+      "five M5 clearance: 0 matching holes; all hole diameters [4.2, 4.2, 4.2]"
+    ],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 106.8,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "nema17-plate",
+    "model": "qwen3.5:4b",
+    "built": true,
+    "valid": true,
+    "agent_ok": true,
+    "checks_passed": 4,
+    "checks_total": 5,
+    "failed_checks": [
+      "centre hole 22: 0 matching holes; all hole diameters [3.4, 3.4, 3.4, 3.4]"
+    ],
+    "attempts": 2,
+    "repairs": 1,
+    "seconds": 80.0,
+    "final_step": "NEMA 17 Motor Mounting Plate: 5/5 requirement checks passed, 1 repairs"
+  }
+]

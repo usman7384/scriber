@@ -124,8 +124,17 @@ def test_timeout_kills_worker_and_next_build_recovers(tmp_path: Path) -> None:
 
 def test_hole_that_misses_the_part_names_the_feature(geometry: LocalGeometry, tmp_path: Path) -> None:
     features = BRACKET["parts"][0]["features"]
-    missing = {**features[1], "at": {"kind": "points", "points": [[500, 500]]}}
+    missing = {**features[1], "plane": {"offset": 0}, "depth": 3}
     with pytest.raises(BuildError) as e:
         geometry.build(variant(BRACKET, features=[features[0], missing]), tmp_path)
     assert e.value.feature == "holes"
     assert "removed no material" in str(e.value)
+
+
+def test_hole_on_the_edge_is_rejected(geometry: LocalGeometry, tmp_path: Path) -> None:
+    features = BRACKET["parts"][0]["features"]
+    edge = {**features[1], "at": {"kind": "points", "points": [[0, 30]]}}
+    with pytest.raises(BuildError) as e:
+        geometry.build(variant(BRACKET, features=[features[0], edge]), tmp_path)
+    assert e.value.feature == "holes"
+    assert "closer than its radius to the part edge" in str(e.value)
