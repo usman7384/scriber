@@ -27,11 +27,17 @@ class GeometryConfig(BaseModel):
     timeout_s: float = 120
 
 
+class EmbeddingsConfig(BaseModel):
+    model: str
+
+
 class Config(BaseModel):
     llm: LLMConfig
+    embeddings: EmbeddingsConfig
     agent: AgentConfig
     geometry: GeometryConfig
     output_dir: Path
+    data_dir: Path
 
 
 def load(path: Path) -> Config:

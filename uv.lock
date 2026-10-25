@@ -871,6 +871,7 @@ version = "0.1.0"
 source = { editable = "services/agent" }
 dependencies = [
     { name = "ollama" },
+    { name = "partwright-context" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
 ]
@@ -878,6 +879,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ollama", specifier = "==0.6.3" },
+    { name = "partwright-context", editable = "services/context" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
 ]
@@ -888,6 +890,7 @@ version = "0.1.0"
 source = { editable = "apps/cli" }
 dependencies = [
     { name = "partwright-agent" },
+    { name = "partwright-context" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
     { name = "pyyaml" },
@@ -896,6 +899,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "partwright-agent", editable = "services/agent" },
+    { name = "partwright-context", editable = "services/context" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
     { name = "pyyaml" },

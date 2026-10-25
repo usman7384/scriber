@@ -1,6 +1,7 @@
 import json
 import time
 from collections.abc import Callable, Iterator
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
@@ -8,18 +9,20 @@ from pydantic import BaseModel, ValidationError
 
 from partwright_agent.grounding import grounded
 from partwright_agent.llm import LLM, Message
+from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements
 from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_geometry import Artifact, BuildError, Finding
-from partwright_ir import Design, ParamError, Provenance, apply_params, json_schema, normalize, validate
+from partwright_ir import Design, ParamError, Process, Provenance, RuleSet, apply_params, json_schema, normalize, validate
 
 REPAIR_TEMPERATURE = 0.5
 StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
+Build = Callable[[Design, Path], Artifact]
 
 
 class Geometry(Protocol):
-    def build(self, design: Design, out_dir: Path) -> Artifact: ...
+    def build(self, design: Design, out_dir: Path, rules: RuleSet = ..., process: Process = "any") -> Artifact: ...
 
 
 class Result(BaseModel):
@@ -28,6 +31,7 @@ class Result(BaseModel):
     checks: list[CheckResult]
     attempts: int
     repairs: int
+    used: list[str] = []
 
     @property
     def ok(self) -> bool:
@@ -52,17 +56,37 @@ class RefineAnswer(BaseModel):
     design: Design | None
 
 
-def generate(prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0) -> Iterator[Step]:
+def generate(
+    prompt: str,
+    llm: LLM,
+    geometry: Geometry,
+    out_dir: Path,
+    max_repairs: int = 3,
+    seed: int = 0,
+    context: Grounding | None = None,
+) -> Iterator[Step]:
     clock = _Clock()
-    reqs = extract_requirements(prompt, llm, seed)
+    reqs = extract_requirements(prompt, llm, seed) + (fact_requirements(context.pack.facts) if context else [])
     yield _requirements_step(reqs, clock)
-    reference = reference_data(prompt)
-    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference)]
-    yield from _attempts(messages, json_schema(), Design.model_validate_json, reqs, llm, geometry, out_dir, max_repairs, seed, clock)
+    project = context_block(context) if context else ""
+    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project)]
+
+    def decode(raw: str) -> Design:
+        design = Design.model_validate_json(raw)
+        return cite(design, context.pack) if context else design
+
+    yield from _attempts(_run(llm, geometry, context, out_dir, max_repairs, seed, clock), messages, json_schema(), decode, reqs)
 
 
 def refine(
-    design: Design, instruction: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0
+    design: Design,
+    instruction: str,
+    llm: LLM,
+    geometry: Geometry,
+    out_dir: Path,
+    max_repairs: int = 3,
+    seed: int = 0,
+    context: Grounding | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(instruction, llm, seed)
@@ -75,7 +99,8 @@ def refine(
         )
 
     messages = [Message(role="user", content=refine_message(design.model_dump_json(), instruction))]
-    yield from _attempts(messages, RefineAnswer.model_json_schema(), decode, reqs, llm, geometry, out_dir, max_repairs, seed, clock)
+    run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
+    yield from _attempts(run, messages, RefineAnswer.model_json_schema(), decode, reqs)
 
 
 def extract_requirements(text: str, llm: LLM, seed: int = 0) -> list[Requirement]:
@@ -88,41 +113,56 @@ def extract_requirements(text: str, llm: LLM, seed: int = 0) -> list[Requirement
     return grounded(reqs, text)
 
 
+@dataclass(frozen=True)
+class _Run:
+    llm: LLM
+    build: Build
+    out_dir: Path
+    max_repairs: int
+    seed: int
+    clock: "_Clock"
+    used: list[str]
+
+
+def _run(llm: LLM, geometry: Geometry, context: Grounding | None, out_dir: Path, max_repairs: int, seed: int, clock: "_Clock") -> _Run:
+    if context is None:
+        return _Run(llm, geometry.build, out_dir, max_repairs, seed, clock, [])
+    rules, process = context.rules.for_process(context.process), context.process
+
+    def build(design: Design, attempt_dir: Path) -> Artifact:
+        return geometry.build(design, attempt_dir, rules, process)
+
+    return _Run(llm, build, out_dir, max_repairs, seed, clock, context.used_ids())
+
+
 def _attempts(
-    messages: list[Message],
-    schema: dict[str, Any],
-    decode: Callable[[str], Design],
-    reqs: list[Requirement],
-    llm: LLM,
-    geometry: Geometry,
-    out_dir: Path,
-    max_repairs: int,
-    seed: int,
-    clock: "_Clock",
+    run: _Run, messages: list[Message], schema: dict[str, Any], decode: Callable[[str], Design], reqs: list[Requirement]
 ) -> Iterator[Step]:
     last: Result | None = None
     previous = ""
-    for attempt in range(1, max_repairs + 2):
-        raw = llm.chat(messages, schema, seed + attempt - 1, 0.0 if attempt == 1 else REPAIR_TEMPERATURE)
+    for attempt in range(1, run.max_repairs + 2):
+        raw = run.llm.chat(messages, schema, run.seed + attempt - 1, 0.0 if attempt == 1 else REPAIR_TEMPERATURE)
         messages = [*messages, Message(role="assistant", content=raw)]
-        yield Step(kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars", attempt=attempt, elapsed_ms=clock())
-        attempt_dir = out_dir / f"attempt_{attempt}"
+        yield Step(
+            kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars", attempt=attempt, elapsed_ms=run.clock()
+        )
+        attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = _evaluate(raw, decode, reqs, geometry, attempt_dir)
-        last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1)
+        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir)
+        last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
         if not problems:
-            yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=clock(), result=last)
+            yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
             return
-        yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=clock())
+        yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
         messages = [*messages, Message(role="user", content=repair_message(problems, unchanged=raw == previous))]
         previous = raw
     assert last is not None
-    yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=clock(), result=last)
+    yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=run.clock(), result=last)
 
 
 def _evaluate(
-    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], geometry: Geometry, out_dir: Path
+    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:
         design = normalize(decode(raw))
@@ -134,7 +174,7 @@ def _evaluate(
     if errors:
         return [str(e) for e in errors[:8]], design, None, []
     try:
-        artifact = geometry.build(design, out_dir)
+        artifact = build(design, out_dir)
     except BuildError as e:
         where = f" in feature {e.feature!r}" if e.feature else ""
         hint = " The operation is impossible with the given sketch or dimensions; rethink that feature." if e.kind == "kernel" else ""
