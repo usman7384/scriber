@@ -37,15 +37,35 @@ Unsloth figures: [Qwen3.5 fine-tune guide](https://unsloth.ai/docs/models/qwen3.
 # WSL2: uv venv -p 3.12; uv pip install "unsloth==2026.10.8"   (pulls torch+CUDA, trl, peft, bitsandbytes)
 from unsloth import FastLanguageModel
 from trl import SFTTrainer, SFTConfig
-model, tok = FastLanguageModel.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct",  # or local HF cache path
-                                               max_seq_length=2048, load_in_4bit=False)
-model = FastLanguageModel.get_peft_model(model, r=16, lora_alpha=16, lora_dropout=0,
-        target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"],
-        use_gradient_checkpointing="unsloth")
-trainer = SFTTrainer(model=model, processing_class=tok, train_dataset=ds,   # chat-format JSONL
-        args=SFTConfig(per_device_train_batch_size=1, gradient_accumulation_steps=8,
-                       learning_rate=2e-4, num_train_epochs=1, bf16=True, logging_steps=10,
-                       assistant_only_loss=True, output_dir="runs/ir-1.5b"))
+
+model, tok = FastLanguageModel.from_pretrained(
+    "Qwen/Qwen2.5-Coder-1.5B-Instruct",  # or local HF cache path
+    max_seq_length=2048,
+    load_in_4bit=False,
+)
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    lora_alpha=16,
+    lora_dropout=0,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+    use_gradient_checkpointing="unsloth",
+)
+trainer = SFTTrainer(
+    model=model,
+    processing_class=tok,
+    train_dataset=ds,  # chat-format JSONL
+    args=SFTConfig(
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=8,
+        learning_rate=2e-4,
+        num_train_epochs=1,
+        bf16=True,
+        logging_steps=10,
+        assistant_only_loss=True,
+        output_dir="runs/ir-1.5b",
+    ),
+)
 trainer.train()
 model.save_pretrained_gguf("out/ir-1.5b", tok, quantization_method="q4_k_m")  # builds llama.cpp (needs cmake, build-essential)
 ```

@@ -11,6 +11,7 @@ services/context/   ingestion, extraction (facts, rules), project DB (chunks, FT
 services/agent/     LLM interface + adapters, generate/refine/edit/critique loop, vision path
 apps/api/           FastAPI, jobs, projects/files/models/versions, REST + SSE, tokens, webhooks
 apps/web/           Vite + React + TS + react-three-fiber
+apps/cli/           `partwright generate | refine | params`; reads config.yaml
 training/           procedural dataset generators, LoRA pipeline, GGUF export
 evals/              benchmark specs + fixtures, harness, scorecard, parity demo suite
 config.yaml         models, runtime, paths, limits

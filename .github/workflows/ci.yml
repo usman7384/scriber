@@ -1,0 +1,28 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.13"
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy services apps evals
+      - run: uv run lint-imports
+      - run: uv run pytest -m "not llm"
+  llm-integration:
+    runs-on: ubuntu-24.04
+    needs: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.13"
+      - run: curl -fsSL https://ollama.com/install.sh | sh
+      - run: ollama pull qwen3.5:0.8b-q8_0
+      - run: uv sync --locked
+      - run: uv run pytest -m llm

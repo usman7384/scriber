@@ -28,3 +28,9 @@ Jobs: in-process asyncio dispatcher with a SQLite job table and warm subprocess 
 
 ## D-009 Business and proprietary rows are scoped, not dropped (2026-10-25)
 Checklist rows that are business features (quotas, community), proprietary formats (CATIA/NX/SolidWorks/Creo, Onshape) or the reference's own stated vision (supplier catalogs, differentiable workflow) are built in the smallest form that passes their acceptance test (e.g. STEP AP242 for proprietary CAD, mock-tested Onshape adapter) and any gap is listed in `docs/PARITY_REPORT.md`.
+
+## D-010 M1 agent loop shape (2026-10-25)
+One schema-constrained call emits the whole `Design`; staged emission (params → sketches → features) is added only if the M1 eval shows the single call failing on structure. A separate small call extracts checkable requirements (extent, hole count/diameter, hole spacing, wall) from the request; the loop checks the built model against them and against B-rep validity, and every failure is fed back as a repair message. Refinement answers either parameter updates or a full new design, so a pure parameter change cannot drift the rest of the model.
+
+## D-011 Holes are recognised from the B-rep, not trusted from the IR (2026-10-25)
+Spec checks read holes from the built solid: concave cylindrical faces grouped by axis and radius whose angular span adds up to 360°. This catches holes that miss the part, are blind by accident, or were never cut, and does not count slot ends or internal fillets.

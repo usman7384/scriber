@@ -1,0 +1,16 @@
+llm:
+  host: http://127.0.0.1:11434
+  default: qwen3.5:4b
+  ci: qwen3.5:0.8b-q8_0
+  models:
+    qwen3.5:4b: {num_ctx: 16384, think: false}
+    qwen3.5:0.8b-q8_0: {num_ctx: 8192, think: false}
+    qwen2.5-coder:7b-instruct-q4_K_M: {num_ctx: 8192}
+embeddings:
+  model: qwen3-embedding:0.6b
+agent:
+  max_repairs: 3
+  seed: 0
+geometry:
+  timeout_s: 120
+output_dir: out

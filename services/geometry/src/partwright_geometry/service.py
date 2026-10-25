@@ -1,0 +1,96 @@
+import json
+import queue
+import re
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+from typing import IO, Any
+
+from partwright_geometry.checks import validity_findings
+from partwright_geometry.models import Artifact, BuildError, PartMetrics
+from partwright_ir import Design, compile_design, design_hash
+
+FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
+
+
+class LocalGeometry:
+    def __init__(self, timeout_s: float = 120.0) -> None:
+        self.timeout_s = timeout_s
+        self._proc: subprocess.Popen[str] | None = None
+        self._lines: queue.Queue[str | None] = queue.Queue()
+
+    def build(self, design: Design, out_dir: Path) -> Artifact:
+        start = time.monotonic()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        source = compile_design(design)
+        (out_dir / "model.py").write_text(source, encoding="utf-8")
+        (out_dir / "design.json").write_text(design.model_dump_json(indent=2), encoding="utf-8")
+        reply = self._call({"source": source, "out_dir": str(out_dir), "title": design.title})
+        if not reply["ok"]:
+            raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
+        parts = [PartMetrics.model_validate(p) for p in reply["parts"]]
+        files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
+        return Artifact(
+            design_hash=design_hash(design),
+            files=files,
+            parts=parts,
+            findings=validity_findings(parts),
+            elapsed_ms=int((time.monotonic() - start) * 1000),
+        )
+
+    def close(self) -> None:
+        if self._proc:
+            self._proc.kill()
+            self._proc.wait()
+            self._proc = None
+
+    def _call(self, request: dict[str, Any]) -> dict[str, Any]:
+        proc = self._worker()
+        assert proc.stdin
+        proc.stdin.write(json.dumps(request) + "\n")
+        proc.stdin.flush()
+        try:
+            line = self._lines.get(timeout=self.timeout_s)
+        except queue.Empty:
+            self.close()
+            raise BuildError("timeout", f"geometry build exceeded {self.timeout_s:g} s") from None
+        if line is None:
+            self.close()
+            raise BuildError("crash", "geometry kernel process exited unexpectedly")
+        result: dict[str, Any] = json.loads(line)
+        return result
+
+    def _worker(self) -> subprocess.Popen[str]:
+        if self._proc and self._proc.poll() is None:
+            return self._proc
+        self._lines = queue.Queue()
+        self._proc = subprocess.Popen(
+            [sys.executable, "-m", "partwright_geometry.worker"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+        )
+        assert self._proc.stdout
+        threading.Thread(target=_pump, args=(self._proc.stdout, self._lines), daemon=True).start()
+        return self._proc
+
+
+def failing_feature(source: str, lines: list[int]) -> str | None:
+    rows = source.splitlines()
+    for line in reversed(lines):
+        for row in reversed(rows[:line]):
+            if row.startswith("def "):
+                break
+            if match := FEATURE_COMMENT.match(row):
+                return match.group(1)
+    return None
+
+
+def _pump(stream: IO[str], lines: "queue.Queue[str | None]") -> None:
+    for line in stream:
+        if line.startswith("{"):
+            lines.put(line)
+    lines.put(None)

@@ -1,0 +1,84 @@
+- id: m1-bracket
+  rows: [IN-1]
+  prompt: mounting bracket, 4x M6 holes, 80x60 plate, 5 mm thick
+  checks:
+    - {kind: extent, description: length 80, value: 80}
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: 4x M6 clearance, count: 4, diameter_min: 6.4, diameter_max: 7.0}
+
+- id: dp2-flanged-adapter
+  rows: [DP-2]
+  prompt: Flanged adapter, 60 mm tall overall, a round tube on a rectangular base flange with four 8.5 mm bolt holes spaced 85 mm in X and 60 mm in Y.
+  checks:
+    - {kind: extent, description: height 60, value: 60}
+    - {kind: holes, description: 4 bolt holes 8.5, count: 4, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_spacing, description: spacing X 85, value: 85, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_spacing, description: spacing Y 60, value: 60, diameter_min: 8.4, diameter_max: 8.6}
+
+- id: dp5-hollow-cylinder
+  rows: [DP-5, IN-1]
+  prompt: Hollow cylinder, 50mm height, 2mm wall thickness
+  checks:
+    - {kind: extent, description: height 50, value: 50}
+    - {kind: wall, description: wall 2, value: 2, tolerance: 0.05}
+    - {kind: holes, description: one bore, count: 1}
+
+- id: dp7-angled-bracket
+  rows: [DP-7]
+  prompt: Design a metal bracket with angled support and screw holes
+  checks:
+    - {kind: holes, description: has screw holes}
+
+- id: dp21-l-bracket
+  rows: [DP-21]
+  prompt: L-bracket made from 4 mm aluminium plate, 120 mm long and 40 mm wide, with two 6 mm holes in each leg and a 2 mm fillet on the outer corners.
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: holes, description: four 6 mm holes, count: 4, diameter_min: 5.9, diameter_max: 6.1}
+
+- id: in2-ten-hole-plate
+  rows: [IN-2]
+  prompt: Plate 200 x 120 x 5 mm with ten 6.6 mm holes in two rows of five, 40 mm pitch along each row, rows 60 mm apart, pattern centred on the plate.
+  checks:
+    - {kind: extent, description: length 200, value: 200}
+    - {kind: extent, description: width 120, value: 120}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: ten 6.6 holes, count: 10, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: pitch 40, value: 40}
+    - {kind: hole_spacing, description: row distance 60, value: 60}
+
+- id: dp3-dn50-flange
+  rows: [DP-3]
+  prompt: DN50 PN16 flat flange to EN 1092-1, 18 mm thick, with the standard bolt holes and a 60.3 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 165, value: 165, tolerance: 0.5}
+    - {kind: holes, description: 4 bolt holes 18, count: 4, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: PCD 125 across, value: 125, tolerance: 0.5, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: wp-open-box
+  rows: [DP-20]
+  prompt: Open-top electronics box, outside 100 x 60 x 40 mm, 2 mm walls and floor.
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: extent, description: height 40, value: 40}
+
+- id: dp6-2020-t-plate
+  rows: [DP-6]
+  prompt: T-shaped joining plate for 2020 aluminium extrusion, 4 mm thick, with five M5 holes on the 20 mm slot centres.
+  checks:
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: five M5 clearance, count: 5, diameter_min: 5.3, diameter_max: 5.8}
+    - {kind: hole_spacing, description: 20 mm pitch, value: 20, tolerance: 0.2}
+
+- id: nema17-plate
+  rows: [IN-1]
+  prompt: NEMA 17 motor mounting plate, 60 x 60 x 5 mm, 22 mm centre hole, four M3 holes on a 31 mm square.
+  checks:
+    - {kind: extent, description: 60 square, value: 60}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: four M3, count: 4, diameter_min: 3.2, diameter_max: 3.6}
+    - {kind: hole_spacing, description: 31 mm square, value: 31, diameter_min: 3.2, diameter_max: 3.6}
+    - {kind: holes, description: centre hole 22, count: 1, diameter_min: 21.9, diameter_max: 22.1}

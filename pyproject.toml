@@ -1,0 +1,70 @@
+[project]
+name = "partwright"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "partwright-cli", "partwright-evals"]
+
+[tool.uv.workspace]
+members = ["services/ir", "services/geometry", "services/agent", "apps/cli", "evals"]
+
+[tool.uv.sources]
+partwright-ir = { workspace = true }
+partwright-geometry = { workspace = true }
+partwright-agent = { workspace = true }
+partwright-cli = { workspace = true }
+partwright-evals = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest", "ruff", "mypy", "import-linter", "trimesh", "types-pyyaml"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "PT", "N"]
+ignore = ["PT018"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/prompts.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["partwright_ir", "partwright_geometry", "partwright_agent", "partwright_cli", "partwright_evals"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+mypy_path = ["services/ir/src", "services/geometry/src", "services/agent/src", "apps/cli/src", "evals/src"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["services", "apps", "evals"]
+addopts = "--import-mode=importlib"
+markers = ["llm: needs a running Ollama with the CI model"]
+
+[tool.importlinter]
+root_packages = ["partwright_ir", "partwright_geometry", "partwright_agent", "partwright_cli", "partwright_evals"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Service layering"
+type = "layers"
+layers = ["partwright_evals", "partwright_cli", "partwright_agent", "partwright_geometry", "partwright_ir"]
+
+[[tool.importlinter.contracts]]
+name = "Kernel stays inside geometry"
+type = "forbidden"
+source_modules = ["partwright_ir", "partwright_agent", "partwright_cli", "partwright_evals"]
+forbidden_modules = ["build123d", "OCP"]
+
+[[tool.importlinter.contracts]]
+name = "Model runtime stays behind the agent's LLM interface"
+type = "forbidden"
+source_modules = ["partwright_ir", "partwright_geometry"]
+forbidden_modules = ["ollama"]
