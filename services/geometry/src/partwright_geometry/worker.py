@@ -9,6 +9,7 @@ from typing import Any
 from build123d import Compound, Shape, export_gltf, export_step, export_stl
 
 from partwright_geometry.dfm import dfm_findings
+from partwright_geometry.imports import describe, step_parts
 from partwright_geometry.metrics import part_metrics
 from partwright_ir import RuleSet
 
@@ -55,6 +56,8 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any
 
 OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "build": build,
+    "describe": lambda r: {"descriptor": describe(Path(r["path"])).model_dump()},
+    "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
 }
 
 

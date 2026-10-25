@@ -10,8 +10,8 @@ from typing import IO, Any
 
 from partwright_geometry.checks import validity_findings
 from partwright_geometry.mass import with_mass
-from partwright_geometry.models import Artifact, BuildError, Finding, PartMetrics
-from partwright_ir import Design, Process, RuleSet, compile_design, design_hash
+from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, BuildError, Finding, PartMetrics
+from partwright_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
 NO_RULES = RuleSet()
@@ -44,11 +44,25 @@ class LocalGeometry:
             elapsed_ms=int((time.monotonic() - start) * 1000),
         )
 
+    def describe(self, path: Path) -> ShapeDescriptor:
+        return ShapeDescriptor.model_validate(self._read("describe", path, STEP_SUFFIXES | MESH_SUFFIXES)["descriptor"])
+
+    def import_step(self, path: Path) -> list[PartMetrics]:
+        return [PartMetrics.model_validate(p) for p in self._read("import_step", path, STEP_SUFFIXES)["parts"]]
+
     def close(self) -> None:
         if self._proc:
             self._proc.kill()
             self._proc.wait()
             self._proc = None
+
+    def _read(self, op: str, path: Path, suffixes: frozenset[str]) -> dict[str, Any]:
+        if path.suffix.lower() not in suffixes:
+            raise ValueError(f"{path.name}: expected one of {', '.join(sorted(suffixes))}")
+        reply = self._call({"op": op, "path": str(path)})
+        if not reply["ok"]:
+            raise BuildError("kernel", f"{path.name}: {reply['error']}")
+        return reply
 
     def _call(self, request: dict[str, Any]) -> dict[str, Any]:
         proc = self._worker()
