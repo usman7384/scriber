@@ -34,3 +34,6 @@ One schema-constrained call emits the whole `Design`; staged emission (params â†
 
 ## D-011 Holes are recognised from the B-rep, not trusted from the IR (2026-10-25)
 Spec checks read holes from the built solid: concave cylindrical faces grouped by axis and radius whose angular span adds up to 360Â°. This catches holes that miss the part, are blind by accident, or were never cut, and does not count slot ends or internal fillets.
+
+## D-012 Default model confirmed: qwen3.5:4b (2026-10-25)
+M1 eval: 4B fully passes 4/10 cases vs 3/10 for the 7B coder, with 21 vs 27 repairs and 145 s vs 172 s median; both pass 22/35 checks. The 4B stays default; the 7B stays configurable.
