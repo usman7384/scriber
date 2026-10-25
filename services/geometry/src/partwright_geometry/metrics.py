@@ -3,7 +3,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
-from build123d import GeomType, Shape, Vector
+from build123d import CenterOf, GeomType, Shape, Vector
 from OCP.BRepAdaptor import BRepAdaptor_Surface
 from OCP.BRepTools import BRepTools
 
@@ -34,6 +34,7 @@ def part_metrics(part_id: str, shape: Shape[Any]) -> PartMetrics:
         faces=len(shape.faces()),
         valid=shape.is_valid,
         holes=holes(shape),
+        center_of_mass=_t(shape.center(CenterOf.MASS)),
     )
 
 
