@@ -37,3 +37,6 @@ Spec checks read holes from the built solid: concave cylindrical faces grouped b
 
 ## D-012 Default model confirmed: qwen3.5:4b (2026-10-25)
 M1 eval: 4B fully passes 4/10 cases vs 3/10 for the 7B coder, with 21 vs 27 repairs and 145 s vs 172 s median; both pass 22/35 checks. The 4B stays default; the 7B stays configurable.
+
+## D-013 No planning step; keep standards data, normalisation and strict hole checks (2026-10-25)
+Ablation on the M1 set with `qwen3.5:4b`: a free-text planning call before IR emission scored 1/10 cases fully correct (8/35 checks); the same build without it scored 6/10 (24/35 checks, median 84 s), up from the M1 baseline of 4/10 (22/35, 145 s). The plan step was deleted. Kept: EN 1092-1 / NEMA / extrusion reference data, linking literals to unused parameters (unused ones stay errors), unused-sketch errors, holes that miss or break the edge failing with the feature named. Results in `evals/results/m1-20261025-223518` (with plan) and `m1-20261025-225624-noplan`.

@@ -8,14 +8,14 @@ from pydantic import BaseModel, ValidationError
 
 from partwright_agent.grounding import grounded
 from partwright_agent.llm import LLM, Message
-from partwright_agent.prompts import design_messages, plan_messages, refine_message, repair_message, requirement_messages
+from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_geometry import Artifact, BuildError
 from partwright_ir import Design, ParamError, Provenance, apply_params, json_schema, normalize, validate
 
 REPAIR_TEMPERATURE = 0.5
-StepKind = Literal["requirements", "plan", "emit", "validate", "build", "check", "repair", "done", "failed"]
+StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
 
 
 class Geometry(Protocol):
@@ -52,18 +52,12 @@ class RefineAnswer(BaseModel):
     design: Design | None
 
 
-def generate(
-    prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0, plan_first: bool = True
-) -> Iterator[Step]:
+def generate(prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(prompt, llm, seed)
     yield _requirements_step(reqs, clock)
     reference = reference_data(prompt)
-    plan = ""
-    if plan_first:
-        plan = llm.chat([Message(role=r, content=c) for r, c in plan_messages(prompt, reference)], None, seed)
-        yield Step(kind="plan", message=plan.strip(), attempt=0, elapsed_ms=clock())
-    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference, plan.strip())]
+    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference)]
     yield from _attempts(messages, json_schema(), Design.model_validate_json, reqs, llm, geometry, out_dir, max_repairs, seed, clock)
 
 
