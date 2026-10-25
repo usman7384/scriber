@@ -3,14 +3,15 @@ name = "partwright"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "partwright-cli", "partwright-evals"]
+dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "partwright-cli", "partwright-evals"]
 
 [tool.uv.workspace]
-members = ["services/ir", "services/geometry", "services/agent", "apps/cli", "evals"]
+members = ["services/ir", "services/geometry", "services/context", "services/agent", "apps/cli", "evals"]
 
 [tool.uv.sources]
 partwright-ir = { workspace = true }
 partwright-geometry = { workspace = true }
+partwright-context = { workspace = true }
 partwright-agent = { workspace = true }
 partwright-cli = { workspace = true }
 partwright-evals = { workspace = true }
@@ -30,18 +31,18 @@ ignore = ["PT018"]
 "**/prompts.py" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["partwright_ir", "partwright_geometry", "partwright_agent", "partwright_cli", "partwright_evals"]
+known-first-party = ["partwright_ir", "partwright_geometry", "partwright_context", "partwright_agent", "partwright_cli", "partwright_evals"]
 
 [tool.mypy]
 strict = true
 python_version = "3.12"
 plugins = ["pydantic.mypy"]
-mypy_path = ["services/ir/src", "services/geometry/src", "services/agent/src", "apps/cli/src", "evals/src"]
+mypy_path = ["services/ir/src", "services/geometry/src", "services/context/src", "services/agent/src", "apps/cli/src", "evals/src"]
 explicit_package_bases = true
 exclude = ["evals/results/", "out/"]
 
 [[tool.mypy.overrides]]
-module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*"]
+module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*", "pypdfium2.*", "openpyxl.*", "networkx.*", "sqlite_vec.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -50,13 +51,13 @@ addopts = "--import-mode=importlib"
 markers = ["llm: needs a running Ollama with the CI model"]
 
 [tool.importlinter]
-root_packages = ["partwright_ir", "partwright_geometry", "partwright_agent", "partwright_cli", "partwright_evals"]
+root_packages = ["partwright_ir", "partwright_geometry", "partwright_context", "partwright_agent", "partwright_cli", "partwright_evals"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "Service layering"
 type = "layers"
-layers = ["partwright_evals", "partwright_cli", "partwright_agent", "partwright_geometry", "partwright_ir"]
+layers = ["partwright_evals", "partwright_cli", "partwright_agent", "partwright_geometry | partwright_context", "partwright_ir"]
 
 [[tool.importlinter.contracts]]
 name = "Kernel stays inside geometry"
@@ -69,3 +70,9 @@ name = "Model runtime stays behind the agent's LLM interface"
 type = "forbidden"
 source_modules = ["partwright_ir", "partwright_geometry"]
 forbidden_modules = ["ollama"]
+
+[[tool.importlinter.contracts]]
+name = "Context sees neither geometry, the agent nor the kernel"
+type = "forbidden"
+source_modules = ["partwright_context"]
+forbidden_modules = ["partwright_geometry", "partwright_agent", "build123d", "OCP"]

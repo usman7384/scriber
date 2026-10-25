@@ -1,0 +1,5 @@
+enclosure:
+  wall: 2.5 mm
+  bosses:
+    count: 4
+    thread: M3
