@@ -127,12 +127,10 @@ def test_finding_suggestion_reaches_the_repair_prompt(tmp_path: Path) -> None:
     assert steps[-1].kind == "done"
 
 
-def test_identical_answer_drops_unused_params(tmp_path: Path) -> None:
-    stuck = json.loads(design())
-    stuck["params"].append({"name": "min_wall", "value": 3, "unit": "mm"})
-    llm = FakeLLM([REQS, json.dumps(stuck), json.dumps(stuck)])
-    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
-    assert "params.min_wall: defined but not used" in steps[2].message
+def test_unused_params_are_dropped_before_validation(tmp_path: Path) -> None:
+    extra = json.loads(design())
+    extra["params"].append({"name": "min_wall", "value": 3, "unit": "mm"})
+    steps = list(generate("bracket 80 x 60, 4x M6", FakeLLM([REQS, json.dumps(extra)]), FakeGeometry(), tmp_path))
     result = steps[-1].result
     assert steps[-1].kind == "done" and result and result.design
     assert [p.name for p in result.design.params] == ["length", "hole_d"]

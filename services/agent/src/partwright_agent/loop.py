@@ -161,7 +161,7 @@ def _attempts(
         attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir, stuck=raw == previous)
+        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir)
         last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
         if not problems:
             yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
@@ -175,12 +175,10 @@ def _attempts(
 
 
 def _evaluate(
-    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path, stuck: bool = False
+    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:
-        design = normalize(decode(raw))
-        if stuck:
-            design = drop_unused_params(design)
+        design = drop_unused_params(normalize(decode(raw)))
     except ValidationError as e:
         return [f"{'.'.join(map(str, err['loc']))}: {err['msg']}" for err in e.errors()[:8]], None, None, []
     except ParamError as e:
@@ -197,7 +195,7 @@ def _evaluate(
     checks = check(reqs, artifact)
     problems = [_finding_text(f) for f in artifact.findings if f.severity == "error"]
     problems += [f"requirement not met: {c.requirement.description} (actual: {c.actual})" for c in checks if not c.passed]
-    return problems, design, artifact, checks
+    return list(dict.fromkeys(problems)), design, artifact, checks
 
 
 def _finding_text(f: Finding) -> str:

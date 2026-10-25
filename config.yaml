@@ -9,7 +9,7 @@ llm:
 embeddings:
   model: qwen3-embedding:0.6b
 agent:
-  max_repairs: 3
+  max_repairs: 5
   seed: 0
 geometry:
   timeout_s: 120
