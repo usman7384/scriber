@@ -3,7 +3,9 @@ from pathlib import Path
 
 from partwright_agent import FakeLLM, generate, refine
 from partwright_geometry import Artifact, BuildError, Finding, HoleInfo, PartMetrics
-from partwright_ir import Design
+from partwright_ir import Design, Process, RuleSet
+
+NO_RULES = RuleSet()
 
 REQS = json.dumps(
     {
@@ -46,9 +48,11 @@ class FakeGeometry:
     def __init__(self, fail_first: bool = False) -> None:
         self.fail_first = fail_first
         self.built: list[Design] = []
+        self.rules: list[RuleSet] = []
 
-    def build(self, d: Design, out_dir: Path) -> Artifact:
+    def build(self, d: Design, out_dir: Path, rules: RuleSet = NO_RULES, process: Process = "any") -> Artifact:
         self.built.append(d)
+        self.rules.append(rules)
         if self.fail_first and len(self.built) == 1:
             raise BuildError("kernel", "Standard_Failure: BRep_API: command not done")
         v = d.param_values()
@@ -110,8 +114,8 @@ def test_refine_with_parameter_update_keeps_everything_else(tmp_path: Path) -> N
 
 def test_finding_suggestion_reaches_the_repair_prompt(tmp_path: Path) -> None:
     class EdgeGeometry(FakeGeometry):
-        def build(self, d: Design, out_dir: Path) -> Artifact:
-            art = super().build(d, out_dir)
+        def build(self, d: Design, out_dir: Path, rules: RuleSet = NO_RULES, process: Process = "any") -> Artifact:
+            art = super().build(d, out_dir, rules, process)
             if len(self.built) > 1:
                 return art
             bad = Finding(rule_id="hole-edge", severity="error", message="hole too close", part="p", suggestion="move it to >= 15 mm")

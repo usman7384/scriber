@@ -14,3 +14,4 @@ agent:
 geometry:
   timeout_s: 120
 output_dir: out
+data_dir: data

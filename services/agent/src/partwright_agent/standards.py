@@ -61,3 +61,17 @@ def _extrusions(text: str) -> list[str]:
             f"slot opening {slot} mm, fastened with {screw} T-nuts."
         )
     return out
+
+
+# ISO 273 fine to coarse clearance range by thread
+ISO273_RANGE = {
+    "M2": (2.2, 2.6),
+    "M2.5": (2.7, 3.1),
+    "M3": (3.2, 3.6),
+    "M4": (4.3, 4.8),
+    "M5": (5.3, 5.8),
+    "M6": (6.4, 7.0),
+    "M8": (8.4, 10.0),
+    "M10": (10.5, 12.0),
+    "M12": (13.0, 14.5),
+}
