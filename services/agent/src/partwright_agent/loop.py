@@ -14,7 +14,18 @@ from partwright_agent.prompts import design_messages, refine_message, repair_mes
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_geometry import Artifact, BuildError, Finding
-from partwright_ir import Design, ParamError, Process, Provenance, RuleSet, apply_params, json_schema, normalize, validate
+from partwright_ir import (
+    Design,
+    ParamError,
+    Process,
+    Provenance,
+    RuleSet,
+    apply_params,
+    drop_unused_params,
+    json_schema,
+    normalize,
+    validate,
+)
 
 REPAIR_TEMPERATURE = 0.5
 StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
@@ -149,7 +160,7 @@ def _attempts(
         attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir)
+        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir, stuck=raw == previous)
         last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
         if not problems:
             yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
@@ -162,10 +173,12 @@ def _attempts(
 
 
 def _evaluate(
-    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path
+    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path, stuck: bool = False
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:
         design = normalize(decode(raw))
+        if stuck:
+            design = drop_unused_params(design)
     except ValidationError as e:
         return [f"{'.'.join(map(str, err['loc']))}: {err['msg']}" for err in e.errors()[:8]], None, None, []
     except ParamError as e:

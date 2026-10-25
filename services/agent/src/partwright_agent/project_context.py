@@ -22,7 +22,9 @@ class Grounding(BaseModel):
 
 
 def context_block(g: Grounding) -> str:
-    facts = [*g.pack.conventions, *(f for f in g.pack.facts if f not in g.pack.conventions)][:MAX_FACTS]
+    rule_lines = {r.source.ref for r in g.rules.rules if r.source.ref}
+    candidates = [*g.pack.conventions, *(f for f in g.pack.facts if f not in g.pack.conventions)]
+    facts = [f for f in candidates if f.source.ref not in rule_lines][:MAX_FACTS]
     lines = [
         "Project data. When a parameter comes from one of these facts, set its provenance to "
         '{"source": "document", "ref": "<fact id>", "quote": "<the fact text>"}.'
