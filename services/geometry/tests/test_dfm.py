@@ -93,7 +93,7 @@ def test_check_passes_or_fails(
 def test_hole_near_edge_recommends_moving_it(geometry: LocalGeometry, tmp_path: Path) -> None:
     _, (f,) = dfm(geometry, plate(20), [EDGE], "any", tmp_path)
     assert f.required == pytest.approx(15) and f.part == "p"
-    assert f.suggestion and f.suggestion.startswith("move the hole centre to ≥ 15 mm from the edge")
+    assert f.suggestion and f.suggestion.startswith("keep hole centres x between -15 and 15 and y between -5 and 5")
     assert f.location and f.location.point == pytest.approx((20, 0, 2.5))
     assert "10 mm" in f.message and "15 mm" in f.message
 
