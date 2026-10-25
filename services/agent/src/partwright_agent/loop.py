@@ -28,6 +28,7 @@ from partwright_ir import (
 )
 
 REPAIR_TEMPERATURE = 0.5
+STUCK_TEMPERATURE = 0.9
 StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
 Build = Callable[[Design, Path], Artifact]
 
@@ -150,10 +151,10 @@ def _attempts(
     run: _Run, messages: list[Message], schema: dict[str, Any], decode: Callable[[str], Design], reqs: list[Requirement]
 ) -> Iterator[Step]:
     last: Result | None = None
-    previous = ""
+    previous, stuck, prompt = "", False, messages
     for attempt in range(1, run.max_repairs + 2):
-        raw = run.llm.chat(messages, schema, run.seed + attempt - 1, 0.0 if attempt == 1 else REPAIR_TEMPERATURE)
-        messages = [*messages, Message(role="assistant", content=raw)]
+        temperature = 0.0 if attempt == 1 else STUCK_TEMPERATURE if stuck else REPAIR_TEMPERATURE
+        raw = run.llm.chat(prompt, schema, run.seed + attempt - 1, temperature)
         yield Step(
             kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars", attempt=attempt, elapsed_ms=run.clock()
         )
@@ -166,7 +167,8 @@ def _attempts(
             yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
             return
         yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
-        messages = [*messages, Message(role="user", content=repair_message(problems, unchanged=raw == previous))]
+        stuck = raw == previous
+        prompt = [*messages, Message(role="user", content=repair_message(raw, problems, unchanged=stuck))]
         previous = raw
     assert last is not None
     yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=run.clock(), result=last)
