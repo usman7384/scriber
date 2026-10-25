@@ -773,12 +773,14 @@ source = { editable = "services/geometry" }
 dependencies = [
     { name = "build123d" },
     { name = "partwright-ir" },
+    { name = "trimesh" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "build123d", specifier = "==0.13.0" },
     { name = "partwright-ir", editable = "services/ir" },
+    { name = "trimesh", specifier = "==5.2.0" },
 ]
 
 [[package]]

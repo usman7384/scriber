@@ -9,10 +9,12 @@ from pathlib import Path
 from typing import IO, Any
 
 from partwright_geometry.checks import validity_findings
-from partwright_geometry.models import Artifact, BuildError, PartMetrics
-from partwright_ir import Design, compile_design, design_hash
+from partwright_geometry.mass import with_mass
+from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, BuildError, Finding, PartMetrics
+from partwright_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
+NO_RULES = RuleSet()
 
 
 class LocalGeometry:
@@ -21,30 +23,46 @@ class LocalGeometry:
         self._proc: subprocess.Popen[str] | None = None
         self._lines: queue.Queue[str | None] = queue.Queue()
 
-    def build(self, design: Design, out_dir: Path) -> Artifact:
+    def build(self, design: Design, out_dir: Path, rules: RuleSet = NO_RULES, process: Process = "any") -> Artifact:
         start = time.monotonic()
         out_dir.mkdir(parents=True, exist_ok=True)
         source = compile_design(design)
         (out_dir / "model.py").write_text(source, encoding="utf-8")
         (out_dir / "design.json").write_text(design.model_dump_json(indent=2), encoding="utf-8")
-        reply = self._call({"source": source, "out_dir": str(out_dir), "title": design.title})
+        rules_json = rules.for_process(process).model_dump(mode="json")
+        reply = self._call({"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json})
         if not reply["ok"]:
             raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
-        parts = [PartMetrics.model_validate(p) for p in reply["parts"]]
+        materials = {p.id: p.material for p in design.parts}
+        parts = [with_mass(m, materials[m.id]) for m in map(PartMetrics.model_validate, reply["parts"])]
         files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
         return Artifact(
             design_hash=design_hash(design),
             files=files,
             parts=parts,
-            findings=validity_findings(parts),
+            findings=validity_findings(parts) + [Finding.model_validate(f) for f in reply["findings"]],
             elapsed_ms=int((time.monotonic() - start) * 1000),
         )
+
+    def describe(self, path: Path) -> ShapeDescriptor:
+        return ShapeDescriptor.model_validate(self._read("describe", path, STEP_SUFFIXES | MESH_SUFFIXES)["descriptor"])
+
+    def import_step(self, path: Path) -> list[PartMetrics]:
+        return [PartMetrics.model_validate(p) for p in self._read("import_step", path, STEP_SUFFIXES)["parts"]]
 
     def close(self) -> None:
         if self._proc:
             self._proc.kill()
             self._proc.wait()
             self._proc = None
+
+    def _read(self, op: str, path: Path, suffixes: frozenset[str]) -> dict[str, Any]:
+        if path.suffix.lower() not in suffixes:
+            raise ValueError(f"{path.name}: expected one of {', '.join(sorted(suffixes))}")
+        reply = self._call({"op": op, "path": str(path)})
+        if not reply["ok"]:
+            raise BuildError("kernel", f"{path.name}: {reply['error']}")
+        return reply
 
     def _call(self, request: dict[str, Any]) -> dict[str, Any]:
         proc = self._worker()

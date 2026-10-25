@@ -1,4 +1,3 @@
-from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -61,13 +60,6 @@ def variant(base: dict[str, Any], **part: Any) -> Design:
     return Design.model_validate({**base, "parts": [{**base["parts"][0], **part}]})
 
 
-@pytest.fixture(scope="module")
-def geometry() -> Iterator[LocalGeometry]:
-    g = LocalGeometry(timeout_s=120)
-    yield g
-    g.close()
-
-
 def test_bracket_builds_valid_solid_with_holes(geometry: LocalGeometry, tmp_path: Path) -> None:
     art = geometry.build(Design.model_validate(BRACKET), tmp_path)
     assert art.ok, art.findings
@@ -110,16 +102,16 @@ def test_kernel_failure_raises_build_error(geometry: LocalGeometry, tmp_path: Pa
     assert e.value.kind == "kernel"
 
 
-def test_timeout_kills_worker_and_next_build_recovers(tmp_path: Path) -> None:
-    g = LocalGeometry(timeout_s=30)
+def test_timeout_kills_worker_and_next_build_recovers(geometry: LocalGeometry, tmp_path: Path) -> None:
+    assert geometry.build(Design.model_validate(TUBE), tmp_path).ok
+    geometry.timeout_s = 2
     try:
         with pytest.raises(BuildError) as e:
-            g._call({"source": "from build123d import *\nwhile True: pass", "out_dir": str(tmp_path), "title": "x"})
+            geometry._call({"op": "build", "rules": {}, "source": "while True: pass", "out_dir": str(tmp_path), "title": "x"})
         assert e.value.kind == "timeout"
-        g.timeout_s = 120
-        assert g.build(Design.model_validate(TUBE), tmp_path).ok
     finally:
-        g.close()
+        geometry.timeout_s = 120
+    assert geometry.build(Design.model_validate(TUBE), tmp_path).ok
 
 
 def test_hole_that_misses_the_part_names_the_feature(geometry: LocalGeometry, tmp_path: Path) -> None:

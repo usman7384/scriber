@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict
 
 Vec = tuple[float, float, float]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
+STEP_SUFFIXES = frozenset({".step", ".stp"})
+MESH_SUFFIXES = frozenset({".stl", ".obj"})
 
 
 class Frozen(BaseModel):
@@ -28,6 +30,13 @@ class PartMetrics(Frozen):
     faces: int
     valid: bool
     holes: list[HoleInfo]
+    center_of_mass: Vec | None = None
+    mass_g: float | None = None
+
+
+class Location(Frozen):
+    point: Vec
+    face: str
 
 
 class Finding(Frozen):
@@ -35,6 +44,11 @@ class Finding(Frozen):
     severity: Literal["error", "warning"]
     message: str
     part: str | None = None
+    binding: Literal["static", "dynamic"] = "static"
+    measured: float | None = None
+    required: float | None = None
+    location: Location | None = None
+    suggestion: str | None = None
 
 
 class Artifact(Frozen):
