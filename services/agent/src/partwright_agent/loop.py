@@ -52,13 +52,17 @@ class RefineAnswer(BaseModel):
     design: Design | None
 
 
-def generate(prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0) -> Iterator[Step]:
+def generate(
+    prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repairs: int = 3, seed: int = 0, plan_first: bool = True
+) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(prompt, llm, seed)
     yield _requirements_step(reqs, clock)
     reference = reference_data(prompt)
-    plan = llm.chat([Message(role=r, content=c) for r, c in plan_messages(prompt, reference)], None, seed)
-    yield Step(kind="plan", message=plan.strip(), attempt=0, elapsed_ms=clock())
+    plan = ""
+    if plan_first:
+        plan = llm.chat([Message(role=r, content=c) for r, c in plan_messages(prompt, reference)], None, seed)
+        yield Step(kind="plan", message=plan.strip(), attempt=0, elapsed_ms=clock())
     messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference, plan.strip())]
     yield from _attempts(messages, json_schema(), Design.model_validate_json, reqs, llm, geometry, out_dir, max_repairs, seed, clock)
 

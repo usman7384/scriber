@@ -32,10 +32,12 @@ def test_literals_matching_unused_params_are_linked() -> None:
     assert validate(d) == []
 
 
-def test_unit_mismatch_is_not_linked_and_leftovers_are_dropped() -> None:
+def test_unit_mismatch_is_not_linked_and_unused_params_stay_visible() -> None:
     d = normalize(plate([{"name": "wall", "value": 2, "unit": "mm"}], 3.4))
     assert d.parts[0].features[1].model_dump()["at"]["count_x"] == 2
-    assert [p.name for p in d.params] == ["size"]
+    assert [str(e) for e in validate(d)] == [
+        "params.wall: defined but not used; reference it in feature expressions instead of a literal number"
+    ]
 
 
 def test_design_without_unused_params_is_unchanged() -> None:
