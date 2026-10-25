@@ -37,3 +37,11 @@ def test_unused_parameter_is_reported(bracket: Design) -> None:
     data["params"].append({"name": "orphan", "value": 3, "unit": "mm"})
     errors = [str(e) for e in validate(Design.model_validate(data))]
     assert errors == ["params.orphan: defined but not used; reference it in feature expressions instead of a literal number"]
+
+
+def test_unused_sketch_is_reported(bracket: Design) -> None:
+    data = bracket.model_dump()
+    data["parts"][0]["sketches"].append({"id": "hole_circles", "entities": [{"kind": "circle", "diameter": 6}]})
+    errors = [str(e) for e in validate(Design.model_validate(data))]
+    assert len(errors) == 1
+    assert errors[0].startswith("parts[0].sketches.hole_circles: is not used")

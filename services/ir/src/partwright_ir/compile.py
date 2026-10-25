@@ -55,11 +55,22 @@ def _hole(part, plane, points, d, depth, cbd, cbdepth):
     through = depth is None
     length = 4 * part.bounding_box().diagonal if through else depth
     align = (Align.CENTER, Align.CENTER, Align.CENTER if through else Align.MAX)
+    before = part.volume
     for x, y in points:
         at = plane * Pos(x, y)
         part -= at * Cylinder(d / 2, length, align=align)
         if cbd is not None:
             part -= at * Cylinder(cbd / 2, cbdepth, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    if part.volume >= before - 1e-9:
+        raise ValueError("hole removed no material: the centres or the plane offset miss the part, or a blind hole points away from it")
+    return part
+
+
+def _cut(part, tool):
+    before = part.volume
+    part -= tool
+    if part.volume >= before - 1e-9:
+        raise ValueError("cut removed no material: the sketch misses the part or the extrude points away from it")
     return part
 
 
@@ -147,7 +158,7 @@ def _feature_body(f: Feature, sketches: dict[str, Sketch]) -> list[str]:
 
 def _combine(solid: str, mode: str) -> list[str]:
     if mode == "cut":
-        return [f"    part -= {solid}"]
+        return [f"    part = _cut(part, {solid})"]
     return [f"    s = {solid}", "    part = s if part is None else part + s"]
 
 

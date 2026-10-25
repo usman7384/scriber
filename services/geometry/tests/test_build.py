@@ -120,3 +120,12 @@ def test_timeout_kills_worker_and_next_build_recovers(tmp_path: Path) -> None:
         assert g.build(Design.model_validate(TUBE), tmp_path).ok
     finally:
         g.close()
+
+
+def test_hole_that_misses_the_part_names_the_feature(geometry: LocalGeometry, tmp_path: Path) -> None:
+    features = BRACKET["parts"][0]["features"]
+    missing = {**features[1], "at": {"kind": "points", "points": [[500, 500]]}}
+    with pytest.raises(BuildError) as e:
+        geometry.build(variant(BRACKET, features=[features[0], missing]), tmp_path)
+    assert e.value.feature == "holes"
+    assert "removed no material" in str(e.value)

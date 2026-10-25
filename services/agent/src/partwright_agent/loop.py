@@ -8,13 +8,14 @@ from pydantic import BaseModel, ValidationError
 
 from partwright_agent.grounding import grounded
 from partwright_agent.llm import LLM, Message
-from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
+from partwright_agent.prompts import design_messages, plan_messages, refine_message, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
+from partwright_agent.standards import reference_data
 from partwright_geometry import Artifact, BuildError
-from partwright_ir import Design, ParamError, Provenance, apply_params, json_schema, validate
+from partwright_ir import Design, ParamError, Provenance, apply_params, json_schema, normalize, validate
 
 REPAIR_TEMPERATURE = 0.5
-StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
+StepKind = Literal["requirements", "plan", "emit", "validate", "build", "check", "repair", "done", "failed"]
 
 
 class Geometry(Protocol):
@@ -55,7 +56,10 @@ def generate(prompt: str, llm: LLM, geometry: Geometry, out_dir: Path, max_repai
     clock = _Clock()
     reqs = extract_requirements(prompt, llm, seed)
     yield _requirements_step(reqs, clock)
-    messages = [Message(role=r, content=c) for r, c in design_messages(prompt)]
+    reference = reference_data(prompt)
+    plan = llm.chat([Message(role=r, content=c) for r, c in plan_messages(prompt, reference)], None, seed)
+    yield Step(kind="plan", message=plan.strip(), attempt=0, elapsed_ms=clock())
+    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference, plan.strip())]
     yield from _attempts(messages, json_schema(), Design.model_validate_json, reqs, llm, geometry, out_dir, max_repairs, seed, clock)
 
 
@@ -123,7 +127,7 @@ def _evaluate(
     raw: str, decode: Callable[[str], Design], reqs: list[Requirement], geometry: Geometry, out_dir: Path
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:
-        design = decode(raw)
+        design = normalize(decode(raw))
     except ValidationError as e:
         return [f"{'.'.join(map(str, err['loc']))}: {err['msg']}" for err in e.errors()[:8]], None, None, []
     except ParamError as e:

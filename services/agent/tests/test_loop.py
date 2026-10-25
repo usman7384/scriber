@@ -5,6 +5,7 @@ from partwright_agent import FakeLLM, generate, refine
 from partwright_geometry import Artifact, BuildError, HoleInfo, PartMetrics
 from partwright_ir import Design
 
+PLAN = "1. plate 80 x 60 x 5"
 REQS = json.dumps(
     {
         "requirements": [
@@ -68,30 +69,30 @@ class FakeGeometry:
 
 
 def test_invalid_ir_is_repaired(tmp_path: Path) -> None:
-    llm = FakeLLM([REQS, design(hole_param="bolt_d"), design()])
+    llm = FakeLLM([REQS, PLAN, design(hole_param="bolt_d"), design()])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
-    assert [s.kind for s in steps] == ["requirements", "emit", "check", "repair", "done"]
-    assert "unknown parameter 'bolt_d'" in steps[2].message
+    assert [s.kind for s in steps] == ["requirements", "plan", "emit", "check", "repair", "done"]
+    assert "unknown parameter 'bolt_d'" in steps[3].message
     assert "unknown parameter 'bolt_d'" in llm.calls[-1][-1].content
     result = steps[-1].result
     assert result and result.ok and result.repairs == 1
 
 
 def test_unmet_requirement_triggers_repair(tmp_path: Path) -> None:
-    llm = FakeLLM([REQS, design(length=70), design()])
+    llm = FakeLLM([REQS, PLAN, design(length=70), design()])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
-    assert "requirement not met: plate 80 mm" in steps[2].message
+    assert "requirement not met: plate 80 mm" in steps[3].message
     assert steps[-1].kind == "done"
 
 
 def test_kernel_error_triggers_repair(tmp_path: Path) -> None:
-    steps = list(generate("bracket 80 x 60, 4x M6", FakeLLM([REQS, design(), design()]), FakeGeometry(fail_first=True), tmp_path))
-    assert "CAD kernel error (kernel)" in steps[2].message
+    steps = list(generate("bracket 80 x 60, 4x M6", FakeLLM([REQS, PLAN, design(), design()]), FakeGeometry(fail_first=True), tmp_path))
+    assert "CAD kernel error (kernel)" in steps[3].message
     assert steps[-1].kind == "done"
 
 
 def test_gives_up_after_max_repairs(tmp_path: Path) -> None:
-    llm = FakeLLM([REQS, "not json", "not json", "not json"])
+    llm = FakeLLM([REQS, PLAN, "not json", "not json", "not json"])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, max_repairs=2))
     assert steps[-1].kind == "failed"
     assert steps[-1].result and steps[-1].result.attempts == 3
