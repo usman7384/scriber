@@ -40,3 +40,13 @@ M1 eval: 4B fully passes 4/10 cases vs 3/10 for the 7B coder, with 21 vs 27 repa
 
 ## D-013 No planning step; keep standards data, normalisation and strict hole checks (2026-10-25)
 Ablation on the M1 set with `qwen3.5:4b`: a free-text planning call before IR emission scored 1/10 cases fully correct (8/35 checks); the same build without it scored 6/10 (24/35 checks, median 84 s), up from the M1 baseline of 4/10 (22/35, 145 s). The plan step was deleted. Kept: EN 1092-1 / NEMA / extrusion reference data, linking literals to unused parameters (unused ones stay errors), unused-sketch errors, holes that miss or break the edge failing with the feature named. Results in `evals/results/m1-20261025-223518` (with plan) and `m1-20261025-225624-noplan`.
+
+## D-014 Grounding: facts become checks, citations by fact id (2026-10-25)
+Retrieved facts are listed in the prompt with their ids; the model cites a fact by putting its id in a parameter's provenance, and the agent swaps in the fact's document provenance (ref + quote). Checkable facts (hole callouts, toleranced bores, size chains) become requirement checks, so the spec is enforced by geometry, not trusted from the model. Project rules reach the geometry service per process. The agent depends on `partwright_context` only for its data types; retrieval and recording happen at the edge (CLI, later the API).
+
+## D-015 Unused parameters are dropped; repairs are fresh prompts (2026-10-25)
+Failing on unused parameters made the 4B churn (it adds parameters for rule limits); requirement checks already catch a forgotten dimension, so unused parameters are removed before validation. Repairs re-send the original prompt plus a user message quoting the previous design and its problems, because the 4B repeated its last assistant turn verbatim in a growing chat even at temperature 0.5 (sampling itself was verified to vary). An exact repeat raises the temperature to 0.9.
+
+## D-016 Rules have no scope yet (2026-10-25)
+"Hole-to-edge ≥ k x D" applies to every hole, including large bores where it cannot hold (a centred Ø40 bore on an 80 mm plate). The M2 demo spec was changed to a Ø20 bore. A `scope` on `Rule` (e.g. fastener holes up to a diameter) is an IR change planned with the M3 API work.
+
