@@ -1,3 +1,5 @@
+import re
+
 from pydantic import BaseModel, ConfigDict
 
 from partwright_agent.requirements import Requirement
@@ -59,7 +61,9 @@ def _cited(p: Param, facts: dict[str, Fact]) -> Param:
 def _requirement(f: Fact) -> Requirement | None:
     label = f"{f.text} [{f.id}]"
     if f.kind == "holes" and isinstance(f.value, float):
-        lo, hi = ISO273_RANGE.get(f.name.upper(), (f.value - 0.1, f.value + 0.1))
+        thread = f"M{f.value:g}"
+        is_thread = re.search(rf"\b{re.escape(thread)}\b", f.text) is not None
+        lo, hi = ISO273_RANGE[thread] if is_thread and thread in ISO273_RANGE else (f.value - 0.1, f.value + 0.1)
         return Requirement(kind="holes", description=label, count=f.count, diameter_min=lo, diameter_max=hi)
     if f.kind == "tolerance" and isinstance(f.value, float) and f.tol and f.unit == "mm":
         lo, hi = f.value + f.tol[0], f.value + f.tol[1]
