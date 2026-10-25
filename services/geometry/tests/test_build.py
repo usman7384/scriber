@@ -130,3 +130,10 @@ def test_hole_on_the_edge_is_rejected(geometry: LocalGeometry, tmp_path: Path) -
         geometry.build(variant(BRACKET, features=[features[0], edge]), tmp_path)
     assert e.value.feature == "holes"
     assert "closer than its radius to the part edge" in str(e.value)
+
+
+def test_vertical_fillet_skips_hole_seams(geometry: LocalGeometry, tmp_path: Path) -> None:
+    features = BRACKET["parts"][0]["features"]
+    art = geometry.build(variant(BRACKET, features=[*features[:2], {**features[2], "radius": 3}]), tmp_path)
+    assert art.ok
+    assert len(art.parts[0].holes) == 4

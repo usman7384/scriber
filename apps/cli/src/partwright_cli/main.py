@@ -1,4 +1,5 @@
 import argparse
+import io
 import sys
 from collections.abc import Iterator
 from pathlib import Path
@@ -13,6 +14,9 @@ from partwright_ir import ParamError, Process, apply_params, label
 
 
 def main(argv: list[str] | None = None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     args = _parser().parse_args(argv)
     config = load(args.config)
     geometry = LocalGeometry(timeout_s=config.geometry.timeout_s)

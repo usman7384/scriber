@@ -85,7 +85,9 @@ def _edges(part, which):
     if which in ("top", "bottom"):
         faces = part.faces().sort_by(Axis.Z)
         return (faces[-1] if which == "top" else faces[0]).edges()
-    return part.edges().filter_by({"parallel_x": Axis.X, "parallel_y": Axis.Y, "parallel_z": Axis.Z}[which])
+    curved = {e for f in part.faces() if f.geom_type != GeomType.PLANE for e in f.edges()}
+    axis = {"parallel_x": Axis.X, "parallel_y": Axis.Y, "parallel_z": Axis.Z}[which]
+    return [e for e in part.edges().filter_by(axis) if e not in curved]
 
 
 def _shell(part, open_face, t):

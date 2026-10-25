@@ -33,7 +33,7 @@ def context_block(g: Grounding) -> str:
     if g.pack.conventions:
         lines.append("Team conventions: apply them even when the request does not mention them.")
     if g.rules.rules:
-        lines.append("Design rules the part must satisfy:")
+        lines.append("Design rules the part must satisfy. They are checked automatically, so do not add parameters for them:")
         lines += [f"- [{r.id}] {r.text or r.kind}" for r in g.rules.rules]
     prior = _prior(g.pack)
     if prior:
@@ -69,7 +69,8 @@ def _requirement(f: Fact) -> Requirement | None:
         return Requirement(kind="holes", description=label, count=f.count, diameter_min=lo, diameter_max=hi)
     if f.kind == "tolerance" and isinstance(f.value, float) and f.tol and f.unit == "mm":
         lo, hi = f.value + f.tol[0], f.value + f.tol[1]
-        if f.name == "diameter" and any(w in f.text.lower() for w in ("bore", "hole")):
+        is_diameter = "diameter" in f.name or any(c in f.text for c in "Ø⌀")
+        if is_diameter and any(w in f.text.lower() for w in ("bore", "hole")):
             return Requirement(kind="holes", description=label, diameter_min=lo, diameter_max=hi)
         return Requirement(kind="extent", description=label, value=f.value, tolerance=max(abs(f.tol[0]), f.tol[1]))
     if f.kind == "parameter" and f.name.endswith(("size_x", "size_y", "size_z")) and isinstance(f.value, float):

@@ -30,7 +30,7 @@ def fact(fid: str, kind: str, name: str, value: float, **extra: object) -> Fact:
 
 
 HOLES = fact("d1:1.3.0", "holes", "req_2_mounting", 6.0, count=4, text="REQ-2 Mounting: 4 x M6 through holes")
-BORE = fact("d1:1.4.0", "tolerance", "diameter", 82.0, tol=(-0.2, 0.2), text="Ø82 ±0.2 mm bore")
+BORE = fact("d1:1.4.0", "tolerance", "req_3_sensor_bore", 82.0, tol=(-0.2, 0.2), text="Ø82 ±0.2 mm bore")
 LENGTH = fact("d1:1.5.0", "parameter", "plate_size_x", 80.0)
 EDGE = Rule(id="min_hole_edge_ratio", kind="min_hole_edge_ratio", value=1.5, unit="", text="hole-to-edge at least 1.5 x D")
 
