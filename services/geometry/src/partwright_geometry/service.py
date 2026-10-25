@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import IO, Any
 
 from partwright_geometry.checks import validity_findings
+from partwright_geometry.mass import with_mass
 from partwright_geometry.models import Artifact, BuildError, Finding, PartMetrics
 from partwright_ir import Design, Process, RuleSet, compile_design, design_hash
 
@@ -32,7 +33,8 @@ class LocalGeometry:
         reply = self._call({"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json})
         if not reply["ok"]:
             raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
-        parts = [PartMetrics.model_validate(p) for p in reply["parts"]]
+        materials = {p.id: p.material for p in design.parts}
+        parts = [with_mass(m, materials[m.id]) for m in map(PartMetrics.model_validate, reply["parts"])]
         files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
         return Artifact(
             design_hash=design_hash(design),

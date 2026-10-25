@@ -28,6 +28,8 @@ class PartMetrics(Frozen):
     faces: int
     valid: bool
     holes: list[HoleInfo]
+    center_of_mass: Vec | None = None
+    mass_g: float | None = None
 
 
 class Location(Frozen):
