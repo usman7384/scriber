@@ -4,6 +4,7 @@ from partwright_ir.expr import ExprError, evaluate
 from partwright_ir.model import Design, Param, Provenance
 from partwright_ir.normalize import normalize
 from partwright_ir.params import ParamError, apply_params, label
+from partwright_ir.rules import Process, Rule, RuleKind, RuleSet, ShapeDescriptor
 from partwright_ir.schema import design_hash, json_schema
 from partwright_ir.validate import IrError, validate
 
@@ -14,7 +15,12 @@ __all__ = [
     "IrError",
     "Param",
     "ParamError",
+    "Process",
     "Provenance",
+    "Rule",
+    "RuleKind",
+    "RuleSet",
+    "ShapeDescriptor",
     "apply_params",
     "compile_design",
     "design_hash",
