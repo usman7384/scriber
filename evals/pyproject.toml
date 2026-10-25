@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Benchmark specs, harness and scorecard"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "partwright-cli", "pyyaml"]
+dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "partwright-cli", "pyyaml"]
 
 [project.scripts]
 partwright-evals = "partwright_evals.run:main"
+partwright-grounded = "partwright_evals.grounded:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
@@ -16,5 +17,6 @@ build-backend = "uv_build"
 [tool.uv.sources]
 partwright-ir = { workspace = true }
 partwright-geometry = { workspace = true }
+partwright-context = { workspace = true }
 partwright-agent = { workspace = true }
 partwright-cli = { workspace = true }

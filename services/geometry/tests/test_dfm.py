@@ -108,3 +108,12 @@ def test_sharp_corner_suggests_fillet_at_the_corner(geometry: LocalGeometry, tmp
     corners = sorted((round(f.location.point[0]), round(f.location.point[1])) for f in findings if f.location)
     assert corners == [(-15, -10), (-15, 10), (15, -10), (15, 10)]
     assert all("parallel_z" in (f.suggestion or "") for f in findings)
+
+
+def test_hole_edge_rule_skips_large_bores(geometry: LocalGeometry, tmp_path: Path) -> None:
+    bore = part(
+        [{"id": "s", "entities": [{"kind": "rect", "width": 60, "height": 40}]}],
+        [_extrude("s", 5), {"kind": "hole", "id": "b", "name": "Bore", "at": {"kind": "points", "points": [[0, 0]]}, "diameter": 20}],
+    )
+    ok, findings = dfm(geometry, bore, [EDGE], "any", tmp_path)
+    assert ok and findings == []
