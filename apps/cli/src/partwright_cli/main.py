@@ -6,6 +6,7 @@ from pathlib import Path
 from partwright_agent import Result, Step, generate, refine
 from partwright_cli import store
 from partwright_cli.config import Config, llm_for, load
+from partwright_cli.view import serve
 from partwright_geometry import BuildError, LocalGeometry
 from partwright_ir import ParamError, apply_params, label
 
@@ -53,6 +54,11 @@ def _params(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -
     return 0 if artifact.ok else 1
 
 
+def _view(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    serve(args.root or config.output_dir, args.port, not args.no_browser)
+    return 0
+
+
 def _run(steps: Iterator[Step], version: Path) -> int:
     seen: list[Step] = []
     for step in steps:
@@ -84,6 +90,11 @@ def _parser() -> argparse.ArgumentParser:
     pa.add_argument("model_dir", type=Path)
     pa.add_argument("--set", nargs="*", metavar="NAME=VALUE")
     pa.set_defaults(run=_params)
+    v = sub.add_parser("view", help="open a 3D viewer for the models in the output folder")
+    v.add_argument("root", type=Path, nargs="?", help="folder of model folders; defaults to output_dir in config")
+    v.add_argument("--port", type=int, default=8765)
+    v.add_argument("--no-browser", action="store_true")
+    v.set_defaults(run=_view)
     return p
 
 
