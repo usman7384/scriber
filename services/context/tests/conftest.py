@@ -1,10 +1,11 @@
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import docx
 import openpyxl
 import pytest
 
+from partwright_context import HashEmbedder, LocalContext
 from partwright_ir import ShapeDescriptor
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -12,6 +13,10 @@ HOLES = [(f"H{i + 1}", 20 + 40 * (i % 5), 15 if i < 5 else 105, 6.6) for i in ra
 BRACKET = ShapeDescriptor(
     bbox_sorted=(5, 60, 80), volume=22000, area=11000, hole_diameters=[6.6] * 4, face_kinds={"plane": 6, "cylinder": 4}
 )
+
+
+def describe(path: Path) -> ShapeDescriptor:
+    return BRACKET
 
 
 @pytest.fixture
@@ -22,6 +27,12 @@ def fixtures() -> Path:
 @pytest.fixture
 def shape() -> ShapeDescriptor:
     return BRACKET
+
+
+@pytest.fixture
+def ctx(tmp_path: Path) -> Iterator[LocalContext]:
+    with LocalContext(tmp_path / "data", HashEmbedder(), describe=describe) as context:
+        yield context
 
 
 @pytest.fixture
