@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict
 
 Vec = tuple[float, float, float]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
+STEP_SUFFIXES = frozenset({".step", ".stp"})
+MESH_SUFFIXES = frozenset({".stl", ".obj"})
 
 
 class Frozen(BaseModel):
