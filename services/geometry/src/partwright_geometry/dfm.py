@@ -29,8 +29,9 @@ def hole_edge(shape: Shape[Any], part: PartMetrics, rule: Rule) -> list[Finding]
         dist, need = probes.edge_distance(shape, h), rule.value * h.diameter
         if dist is None or dist >= need - TOL:
             continue
-        msg = f"Ø{_n(h.diameter)} hole centre is {_n(dist)} mm from the outer edge; needs ≥ {_n(need)} mm ({_n(rule.value)} times Ø)"
-        fix = f"move the hole centre to ≥ {_n(need)} mm from the edge, or reduce Ø to ≤ {_n(dist / rule.value)} mm"
+        at = ", ".join(_n(c) for c in h.center)
+        msg = f"Ø{_n(h.diameter)} hole at ({at}) is {_n(dist)} mm from the outer edge; needs ≥ {_n(need)} mm ({_n(rule.value)} times Ø)"
+        fix = f"keep hole centres {_inside(part, h.axis, need)}, or reduce Ø to ≤ {_n(dist / rule.value)} mm"
         out.append(_finding(rule, part, msg, fix, dist, need, h.center, f"Ø{_n(h.diameter)} hole"))
     return out
 
@@ -109,6 +110,15 @@ def _finding(rule: Rule, part: PartMetrics, msg: str, fix: str, measured: float,
         location=Location(point=point, face=face),
         suggestion=fix,
     )
+
+
+def _inside(part: PartMetrics, axis: Vec, margin: float) -> str:
+    bounds = [
+        f"{name} between {_n(lo + margin)} and {_n(lo + size - margin)}"
+        for name, lo, size, a in zip("xyz", part.bbox_min, part.bbox_size, axis, strict=True)
+        if abs(a) < 0.5
+    ]
+    return " and ".join(bounds)
 
 
 def _n(v: float) -> str:

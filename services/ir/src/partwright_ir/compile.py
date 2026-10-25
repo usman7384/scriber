@@ -58,10 +58,7 @@ def _hole(part, plane, points, d, depth, cbd, cbdepth):
     before = part.volume
     box = part.bounding_box()
     for x, y in points:
-        c, n = plane.from_local_coords((x, y)), plane.z_dir
-        for lo, hi, ci, ni in zip((box.min.X, box.min.Y, box.min.Z), (box.max.X, box.max.Y, box.max.Z), (c.X, c.Y, c.Z), (n.X, n.Y, n.Z)):
-            if abs(ni) < 0.5 and not lo + d / 2 - 1e-6 <= ci <= hi - d / 2 + 1e-6:
-                raise ValueError(f"hole at ({x:g}, {y:g}) is closer than its radius to the part edge; move it inside the outline")
+        _inside_outline(box, plane.from_local_coords((x, y)), plane.z_dir, d / 2, (x, y))
         at = plane * Pos(x, y)
         part -= at * Cylinder(d / 2, length, align=align)
         if cbd is not None:
@@ -69,6 +66,13 @@ def _hole(part, plane, points, d, depth, cbd, cbdepth):
     if part.volume >= before - 1e-9:
         raise ValueError("hole removed no material: the centres or the plane offset miss the part, or a blind hole points away from it")
     return part
+
+
+def _inside_outline(box, c, n, r, at):
+    for name, lo, hi, ci, ni in zip("XYZ", box.min, box.max, (c.X, c.Y, c.Z), (n.X, n.Y, n.Z)):
+        if abs(ni) < 0.5 and not lo + r - 1e-6 <= ci <= hi - r + 1e-6:
+            where = f"its centre {name} must be between {lo + r:g} and {hi - r:g}"
+            raise ValueError(f"hole at ({at[0]:g}, {at[1]:g}) lies outside the part: {where}")
 
 
 def _cut(part, tool):
