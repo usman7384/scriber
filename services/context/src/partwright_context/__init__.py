@@ -4,7 +4,7 @@ from partwright_context.graph import derived_from, to_networkx
 from partwright_context.models import Chunk, ContextPack, Document, Fact, GraphEdge, GraphNode, GraphView, KbStats, PartRef, ProposedFact
 from partwright_context.proposals import Propose
 from partwright_context.protocol import Context
-from partwright_context.readers import Describe
+from partwright_context.readers import Describe, document_text
 from partwright_context.service import LocalContext
 
 __all__ = [
@@ -27,5 +27,6 @@ __all__ = [
     "Propose",
     "ProposedFact",
     "derived_from",
+    "document_text",
     "to_networkx",
 ]

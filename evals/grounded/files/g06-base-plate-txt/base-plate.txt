@@ -1,0 +1,4 @@
+REQ-1 Base plate 150 x 100 x 10 mm
+REQ-2 Corner holes: 4 x Ø11 for M10
+REQ-3 Hole centres 15 mm from each edge
+REQ-4 Material S355

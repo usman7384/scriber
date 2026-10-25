@@ -947,6 +947,7 @@ source = { editable = "evals" }
 dependencies = [
     { name = "partwright-agent" },
     { name = "partwright-cli" },
+    { name = "partwright-context" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
     { name = "pyyaml" },
@@ -956,6 +957,7 @@ dependencies = [
 requires-dist = [
     { name = "partwright-agent", editable = "services/agent" },
     { name = "partwright-cli", editable = "apps/cli" },
+    { name = "partwright-context", editable = "services/context" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
     { name = "pyyaml" },

@@ -1,0 +1,189 @@
+- id: g01-sensor-plate
+  rows: [IN-12, IN-13, VM-5, CX-7]
+  request: Sensor mounting plate per the project requirements
+  process: milling_3axis
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: thickness 6, value: 6}
+    - {kind: holes, description: 4x M6 clearance, count: 4, diameter_min: 6.4, diameter_max: 7.0}
+    - {kind: holes, description: bore 20 +-0.1, count: 1, diameter_min: 19.9, diameter_max: 20.1}
+  facts:
+    - {kind: parameter, value: 120}
+    - {kind: parameter, value: 80}
+    - {kind: parameter, value: 6}
+    - {kind: holes, value: 6, count: 4}
+    - {kind: tolerance, value: 20}
+    - {kind: material, value: Al 6082}
+  rules:
+    - {kind: min_hole_edge_ratio, value: 2}
+    - {kind: min_wall_thickness, value: 3}
+
+- id: g02-nema23-docx
+  rows: [IN-2, CX-9]
+  request: Motor mounting plate as specified
+  process: any
+  checks:
+    - {kind: extent, description: 80 square, value: 80}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: 4x M5 clearance, count: 4, diameter_min: 5.3, diameter_max: 5.8}
+    - {kind: hole_spacing, description: 47.14 square, value: 47.14, diameter_min: 5.3, diameter_max: 5.8}
+    - {kind: holes, description: pilot bore 38.1 +0.05/0, count: 1, diameter_min: 38.1, diameter_max: 38.15}
+  facts:
+    - {kind: parameter, value: 80}
+    - {kind: parameter, value: 80}
+    - {kind: parameter, value: 8}
+    - {kind: tolerance, value: 38.1}
+    - {kind: holes, value: 5, count: 4}
+    - {kind: parameter, value: 47.14}
+    - {kind: material, value: Al 6061}
+  rules: []
+
+- id: g03-hole-table-xlsx
+  rows: [IN-3]
+  request: Drilled plate per the drawing note and the hole table
+  process: any
+  checks:
+    - {kind: extent, description: length 200, value: 200}
+    - {kind: extent, description: width 120, value: 120}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: ten 6.6 holes, count: 10, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: 40 pitch, value: 40, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: rows 90 apart, value: 90, diameter_min: 6.5, diameter_max: 6.7}
+  facts:
+    - {kind: parameter, value: 200}
+    - {kind: parameter, value: 120}
+    - {kind: parameter, value: 5}
+    - {kind: hole, value: 6.6, at: [20, 15]}
+    - {kind: hole, value: 6.6, at: [60, 15]}
+    - {kind: hole, value: 6.6, at: [100, 15]}
+    - {kind: hole, value: 6.6, at: [140, 15]}
+    - {kind: hole, value: 6.6, at: [180, 15]}
+    - {kind: hole, value: 6.6, at: [20, 105]}
+    - {kind: hole, value: 6.6, at: [60, 105]}
+    - {kind: hole, value: 6.6, at: [100, 105]}
+    - {kind: hole, value: 6.6, at: [140, 105]}
+    - {kind: hole, value: 6.6, at: [180, 105]}
+  rules: []
+
+- id: g04-enclosure-yaml
+  rows: [CX-8, IN-2]
+  request: Electronics enclosure per enclosure.yaml
+  process: any
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: height 40, value: 40}
+  facts:
+    - {kind: parameter, value: 120}
+    - {kind: parameter, value: 80}
+    - {kind: parameter, value: 40}
+    - {kind: parameter, value: 2.5}
+  rules:
+    - {kind: min_wall_thickness, value: 2}
+
+- id: g05-flange-pdf
+  rows: [IN-12, DP-15]
+  request: Pipe flange per the attached specification
+  process: any
+  checks:
+    - {kind: extent, description: OD 140, value: 140, tolerance: 0.2}
+    - {kind: extent, description: thickness 12, value: 12}
+    - {kind: holes, description: six 9 mm bolt holes, count: 6, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: PCD 110 across, value: 110, tolerance: 0.2, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: holes, description: bore 60 +-0.1, count: 1, diameter_min: 59.9, diameter_max: 60.1}
+  facts:
+    - {kind: parameter, value: 140}
+    - {kind: parameter, value: 12}
+    - {kind: holes, value: 9, count: 6}
+    - {kind: parameter, value: 110}
+    - {kind: tolerance, value: 60}
+    - {kind: standard, value: EN 1092-1}
+  rules:
+    - {kind: min_hole_edge_ratio, value: 1.5}
+
+- id: g06-base-plate-txt
+  rows: [IN-12, CX-11]
+  request: Base plate per the requirements list
+  process: any
+  checks:
+    - {kind: extent, description: length 150, value: 150}
+    - {kind: extent, description: width 100, value: 100}
+    - {kind: extent, description: thickness 10, value: 10}
+    - {kind: holes, description: four 11 mm holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: 120 apart in X, value: 120, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: 70 apart in Y, value: 70, diameter_min: 10.9, diameter_max: 11.1}
+  facts:
+    - {kind: parameter, value: 150}
+    - {kind: parameter, value: 100}
+    - {kind: parameter, value: 10}
+    - {kind: holes, value: 11, count: 4}
+    - {kind: parameter, value: 15}
+    - {kind: material, value: S355}
+  rules: []
+
+- id: g07-spacer-csv
+  rows: [IN-3]
+  request: Turned spacer per spacer.csv
+  process: any
+  checks:
+    - {kind: extent, description: OD 30, value: 30}
+    - {kind: extent, description: length 20, value: 20}
+    - {kind: holes, description: bore 12.5, count: 1, diameter_min: 12.4, diameter_max: 12.6}
+  facts:
+    - {kind: parameter, value: 30}
+    - {kind: parameter, value: 12.5}
+    - {kind: parameter, value: 20}
+  rules: []
+
+- id: g08-milled-pocket
+  rows: [VM-1, VM-2, IN-13]
+  request: Machined cover plate per the spec
+  process: milling_3axis
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: extent, description: thickness 10, value: 10}
+  facts:
+    - {kind: parameter, value: 100}
+    - {kind: parameter, value: 60}
+    - {kind: parameter, value: 10}
+    - {kind: parameter, value: 60}
+    - {kind: parameter, value: 30}
+    - {kind: parameter, value: 4}
+    - {kind: material, value: Al 6082}
+  rules:
+    - {kind: min_internal_corner_radius, value: 3}
+
+- id: g09-previous-step
+  rows: [IN-9]
+  request: New plate as described, based on the previous plate
+  process: any
+  checks:
+    - {kind: extent, description: length 150, value: 150}
+    - {kind: extent, description: width 70 kept, value: 70}
+    - {kind: extent, description: thickness 6 kept, value: 6}
+    - {kind: holes, description: four 6.6 holes kept, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+  facts:
+    - {kind: parameter, value: 150}
+  rules: []
+
+- id: g10-fdm-bracket
+  rows: [VM-3, IN-13]
+  request: 3D-printed mounting plate per the spec
+  process: fdm
+  checks:
+    - {kind: extent, description: length 70, value: 70}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: two M4 clearance, count: 2, diameter_min: 4.3, diameter_max: 4.8}
+    - {kind: hole_spacing, description: 50 apart, value: 50, diameter_min: 4.3, diameter_max: 4.8}
+  facts:
+    - {kind: parameter, value: 70}
+    - {kind: parameter, value: 40}
+    - {kind: parameter, value: 4}
+    - {kind: holes, value: 4, count: 2}
+    - {kind: parameter, value: 50}
+  rules:
+    - {kind: max_overhang_angle, value: 45}
+    - {kind: min_hole_edge_ratio, value: 2}

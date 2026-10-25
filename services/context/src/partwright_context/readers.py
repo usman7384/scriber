@@ -63,3 +63,7 @@ def cad_summary(name: str, kind: str, shape: ShapeDescriptor) -> str:
     size = " x ".join(f"{v:g}" for v in shape.bbox_sorted)
     holes = ", ".join(f"Ø{d:g}" for d in sorted(set(shape.hole_diameters)))
     return f"{name} {kind.upper()} part: bounding box {size} mm, volume {shape.volume:g} mm3, holes {holes or 'none'}"
+
+
+def document_text(path: Path, describe: Describe | None = None) -> str:
+    return "\n".join(line.text for line in read(path, kind_of(path), describe).lines)

@@ -8,6 +8,8 @@ from partwright_geometry.models import Finding, Location, PartMetrics, Vec
 from partwright_ir import Rule, RuleKind, RuleSet
 
 TOL = 1e-6
+# hole-to-edge rules target fastener holes; until rules carry a scope (D-016) bores above M12 clearance are skipped
+FASTENER_HOLE_MAX = 14.0
 Check = Callable[[Shape[Any], PartMetrics, Rule], list[Finding]]
 
 
@@ -25,7 +27,7 @@ def _check(shape: Shape[Any], part: PartMetrics, rule: Rule) -> list[Finding]:
 
 def hole_edge(shape: Shape[Any], part: PartMetrics, rule: Rule) -> list[Finding]:
     out = []
-    for h in part.holes:
+    for h in (h for h in part.holes if h.diameter <= FASTENER_HOLE_MAX):
         dist, need = probes.edge_distance(shape, h), rule.value * h.diameter
         if dist is None or dist >= need - TOL:
             continue
