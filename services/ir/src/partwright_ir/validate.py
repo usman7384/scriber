@@ -1,9 +1,11 @@
+import math
 from collections.abc import Iterator
 
 from pydantic import BaseModel
 
 from partwright_ir.expr import ExprError, evaluate, names
 from partwright_ir.model import Design, Expr, Extrude, Feature, Hole, Part, Provenance, Revolve
+from partwright_ir.placement import hole_centres
 
 NON_EXPR_FIELDS = {"id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "open_face", "base"}
 POSITIVE_FIELDS = {"width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"}
@@ -19,7 +21,23 @@ class IrError(BaseModel):
 
 def validate(design: Design) -> list[IrError]:
     part_errors = [e for i, p in enumerate(design.parts) for e in _part_errors(design, p, f"parts[{i}]")]
-    return [*_param_errors(design), *part_errors, *_unused_params(design)]
+    errors = [*_param_errors(design), *part_errors, *_unused_params(design)]
+    if errors:
+        return errors
+    return [e for i, p in enumerate(design.parts) for e in _overlapping_holes(design, p, f"parts[{i}]")]
+
+
+def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
+    values = design.param_values()
+    holes = [
+        (f.id, f.plane.base, c, evaluate(f.diameter, values)) for f in part.features if isinstance(f, Hole) for c in hole_centres(f, values)
+    ]
+    for i, (a, base_a, ca, da) in enumerate(holes):
+        for b, base_b, cb, db in holes[i + 1 :]:
+            if base_a == base_b and math.dist(ca, cb) < (da + db) / 2 - 1e-6:
+                where = f"{a!r} at ({ca[0]:g}, {ca[1]:g}) and {b!r} at ({cb[0]:g}, {cb[1]:g})"
+                yield IrError(path=f"{path}.features.{a}", message=f"holes {where} overlap; spread the hole centres apart")
+                return
 
 
 def _param_errors(design: Design) -> Iterator[IrError]:
