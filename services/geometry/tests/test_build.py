@@ -129,7 +129,7 @@ def test_hole_on_the_edge_is_rejected(geometry: LocalGeometry, tmp_path: Path) -
     with pytest.raises(BuildError) as e:
         geometry.build(variant(BRACKET, features=[features[0], edge]), tmp_path)
     assert e.value.feature == "holes"
-    assert "lies outside the part: its centre Y must be between -26.7 and 26.7" in str(e.value)
+    assert "lies outside the part: its centre Y must be between -26.7 and 26.7 (the hole drills along Z)" in str(e.value)
 
 
 def test_vertical_fillet_skips_hole_seams(geometry: LocalGeometry, tmp_path: Path) -> None:

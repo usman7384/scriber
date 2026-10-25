@@ -69,10 +69,16 @@ def _hole(part, plane, points, d, depth, cbd, cbdepth):
 
 
 def _inside_outline(box, c, n, r, at):
+    drill = "XYZ"[max(range(3), key=lambda i: abs((n.X, n.Y, n.Z)[i]))]
     for name, lo, hi, ci, ni in zip("XYZ", box.min, box.max, (c.X, c.Y, c.Z), (n.X, n.Y, n.Z)):
-        if abs(ni) < 0.5 and not lo + r - 1e-6 <= ci <= hi - r + 1e-6:
-            where = f"its centre {name} must be between {lo + r:g} and {hi - r:g}"
-            raise ValueError(f"hole at ({at[0]:g}, {at[1]:g}) lies outside the part: {where}")
+        if abs(ni) >= 0.5 or lo + r - 1e-6 <= ci <= hi - r + 1e-6:
+            continue
+        if hi - lo < 2 * r:
+            where = f"the part is only {hi - lo:g} mm along {name}, less than the hole diameter"
+            where += f"; this hole drills along {drill}, so its plane is probably wrong"
+        else:
+            where = f"its centre {name} must be between {lo + r:g} and {hi - r:g} (the hole drills along {drill})"
+        raise ValueError(f"hole at ({at[0]:g}, {at[1]:g}) lies outside the part: {where}")
 
 
 def _cut(part, tool):
