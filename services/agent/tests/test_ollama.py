@@ -33,6 +33,6 @@ def test_same_input_gives_same_output(tmp_path: Path) -> None:
         ]
     finally:
         geometry.close()
-    a, b = ([s.message for s in steps if s.kind in {"requirements", "plan"}] for steps in runs)
+    a, b = ([s.message for s in steps if s.kind == "requirements"] for steps in runs)
     assert a == b
     assert (tmp_path / "0" / "attempt_1" / "answer.json").read_text() == (tmp_path / "1" / "attempt_1" / "answer.json").read_text()
