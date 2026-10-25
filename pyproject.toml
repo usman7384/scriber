@@ -38,6 +38,7 @@ python_version = "3.12"
 plugins = ["pydantic.mypy"]
 mypy_path = ["services/ir/src", "services/geometry/src", "services/agent/src", "apps/cli/src", "evals/src"]
 explicit_package_bases = true
+exclude = ["evals/results/", "out/"]
 
 [[tool.mypy.overrides]]
 module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*"]

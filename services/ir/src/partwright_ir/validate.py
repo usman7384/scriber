@@ -32,8 +32,12 @@ def _param_errors(design: Design) -> Iterator[IrError]:
             yield IrError(path=f"params.{p.name}", message=f"value {p.value} outside [{p.min}, {p.max}]")
 
 
+def used_params(design: Design) -> set[str]:
+    return {n for part in design.parts for node in [*part.sketches, *part.features] for n in _names(node)}
+
+
 def _unused_params(design: Design) -> Iterator[IrError]:
-    used = {n for part in design.parts for node in [*part.sketches, *part.features] for n in _names(node)}
+    used = used_params(design)
     for p in design.params:
         if p.name not in used:
             yield IrError(
@@ -79,6 +83,11 @@ def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
         yield IrError(path=f"{path}.features[0]", message="first feature must be an additive extrude or revolve")
     for f in part.features:
         yield from _feature_errors(f, sketch_ids, values, f"{path}.features.{f.id}")
+    used = {f.sketch for f in part.features if isinstance(f, Extrude | Revolve)}
+    for sid in sketch_ids:
+        if sid not in used:
+            msg = "is not used by any extrude or revolve; holes must be hole features, so delete it or use it"
+            yield IrError(path=f"{path}.sketches.{sid}", message=msg)
 
 
 def _feature_errors(f: Feature, sketch_ids: list[str], values: dict[str, float], path: str) -> Iterator[IrError]:

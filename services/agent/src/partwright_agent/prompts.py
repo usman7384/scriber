@@ -1,4 +1,5 @@
 import json
+from collections.abc import Sequence
 from typing import Any
 
 DESIGN_RULES = """You are a mechanical design engineer. You write parametric CAD models as JSON in the Partwright IR.
@@ -232,9 +233,31 @@ REQUIREMENT_EXAMPLE = (
 )
 
 
-def design_messages(request: str) -> list[tuple[str, str]]:
+PLAN_RULES = """You plan a parametric CAD model before it is written as JSON. Write a short numbered plan, at most 12 lines, no JSON.
+First list the parameters as name = value unit, using the request's numbers and the reference data; derive the rest.
+Then list each feature in order: type, sketch plane and offset, shape with exact sizes and centre coordinates in mm, extrude distance or hole depth.
+Plates and flanges are rects or circles on XY extruded by their thickness. A tube or boss on a base is a circle on XY at offset = base thickness, extruded up to the overall height; a bore is a hole feature.
+L, T and U profiles are polygons on XZ extruded symmetric by the width. Turned parts are half-sections on XZ revolved about Y.
+Every hole is a hole feature with explicit centre coordinates, through all unless the request asks for a blind hole. Open boxes are an extruded block followed by a shell.
+Check every number against the request before you finish."""
+
+
+def plan_messages(request: str, reference: Sequence[str]) -> list[tuple[str, str]]:
+    return [("system", PLAN_RULES), ("user", _with_reference(request, reference))]
+
+
+def design_messages(request: str, reference: Sequence[str] = (), plan: str = "") -> list[tuple[str, str]]:
     shots = [m for req, design in EXAMPLES for m in (("user", req), ("assistant", json.dumps(design)))]
-    return [("system", DESIGN_RULES), *shots, ("user", request)]
+    task = _with_reference(request, reference)
+    if plan:
+        task += f"\n\nEngineering plan:\n{plan}\n\nWrite the design JSON that follows this plan."
+    return [("system", DESIGN_RULES), *shots, ("user", task)]
+
+
+def _with_reference(request: str, reference: Sequence[str]) -> str:
+    if not reference:
+        return request
+    return request + "\n\nReference data:\n" + "\n".join(f"- {r}" for r in reference)
 
 
 def requirement_messages(request: str) -> list[tuple[str, str]]:
