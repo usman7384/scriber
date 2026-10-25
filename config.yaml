@@ -13,5 +13,9 @@ agent:
   seed: 0
 geometry:
   timeout_s: 120
+api:
+  host: 127.0.0.1
+  port: 8000
+  auth: none
 output_dir: out
 data_dir: data
