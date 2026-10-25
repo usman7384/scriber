@@ -5,10 +5,14 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import get_args
 
+import uvicorn
+
 from partwright_agent import Result, Step, generate, refine
+from partwright_api import SerialGeometry, Settings, create_app
 from partwright_cli import project, store
 from partwright_cli.config import Config, llm_for, load
 from partwright_cli.view import serve
+from partwright_context import LocalContext, OllamaEmbedder
 from partwright_geometry import BuildError, LocalGeometry
 from partwright_ir import ParamError, Process, apply_params, label
 
@@ -87,6 +91,25 @@ def _params(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -
     return 0 if artifact.ok else 1
 
 
+def _serve(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    serial = SerialGeometry(geometry)
+    api = config.api
+    settings = Settings(
+        data_dir=config.data_dir,
+        auth=api.auth,
+        max_repairs=config.agent.max_repairs,
+        seed=config.agent.seed,
+        ollama_host=config.llm.host,
+        public_url=f"http://{api.host}:{api.port}",
+    )
+    embedder = OllamaEmbedder(config.embeddings.model, host=config.llm.host)
+    with LocalContext(config.data_dir / "context", embedder, describe=serial.describe) as ctx:
+        app = create_app(settings, llm_for(config, args.model), serial, ctx)
+        print(f"serving the API at http://{api.host}:{api.port}/ (docs at /docs, auth: {api.auth})", flush=True)
+        uvicorn.run(app, host=api.host, port=api.port, access_log=False)
+    return 0
+
+
 def _view(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
     serve(args.root or config.output_dir, args.port, not args.no_browser)
     return 0
@@ -133,6 +156,8 @@ def _parser() -> argparse.ArgumentParser:
     pa.add_argument("model_dir", type=Path)
     pa.add_argument("--set", nargs="*", metavar="NAME=VALUE")
     pa.set_defaults(run=_params)
+    s = sub.add_parser("serve", help="run the HTTP API (host, port and auth from the api section of config)")
+    s.set_defaults(run=_serve)
     v = sub.add_parser("view", help="open a 3D viewer for the models in the output folder")
     v.add_argument("root", type=Path, nargs="?", help="folder of model folders; defaults to output_dir in config")
     v.add_argument("--port", type=int, default=8765)
