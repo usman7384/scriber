@@ -107,7 +107,7 @@ def test_timeout_kills_worker_and_next_build_recovers(geometry: LocalGeometry, t
     geometry.timeout_s = 2
     try:
         with pytest.raises(BuildError) as e:
-            geometry._call({"source": "while True: pass", "out_dir": str(tmp_path), "title": "x"})
+            geometry._call({"op": "build", "rules": {}, "source": "while True: pass", "out_dir": str(tmp_path), "title": "x"})
         assert e.value.kind == "timeout"
     finally:
         geometry.timeout_s = 120
