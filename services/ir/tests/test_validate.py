@@ -45,3 +45,14 @@ def test_unused_sketch_is_reported(bracket: Design) -> None:
     errors = [str(e) for e in validate(Design.model_validate(data))]
     assert len(errors) == 1
     assert errors[0].startswith("parts[0].sketches.hole_circles: is not used")
+
+
+def test_overlapping_holes_are_reported(bracket: Design) -> None:
+    data = bracket.model_dump()
+    data["parts"][0]["features"].append(
+        {"kind": "hole", "id": "bore", "name": "Bore", "at": {"kind": "points", "points": [[25, 15]]}, "diameter": 20}
+    )
+    errors = [str(e) for e in validate(Design.model_validate(data))]
+    assert len(errors) == 1
+    assert "overlap" in errors[0]
+    assert "'mount_holes' at (30, 20)" in errors[0]
