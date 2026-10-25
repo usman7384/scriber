@@ -11,6 +11,7 @@ from build123d import Compound, Shape, export_gltf, export_step, export_stl
 from partwright_geometry.dfm import dfm_findings
 from partwright_geometry.imports import describe, step_parts
 from partwright_geometry.metrics import part_metrics
+from partwright_geometry.thumbnail import render_thumbnail
 from partwright_ir import RuleSet
 
 ALLOWED_IMPORTS = {"math", "build123d"}
@@ -58,6 +59,7 @@ OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "build": build,
     "describe": lambda r: {"descriptor": describe(Path(r["path"])).model_dump()},
     "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
+    "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"]))},
 }
 
 
