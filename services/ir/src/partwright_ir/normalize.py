@@ -38,3 +38,8 @@ def _unit(field: str | None) -> str:
     if field in ANGLE_FIELDS:
         return "deg"
     return "mm"
+
+
+def drop_unused_params(design: Design) -> Design:
+    used = used_params(design)
+    return design.model_copy(update={"params": [p for p in design.params if p.name in used]})
