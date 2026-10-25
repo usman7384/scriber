@@ -50,6 +50,12 @@ class LocalGeometry:
     def import_step(self, path: Path) -> list[PartMetrics]:
         return [PartMetrics.model_validate(p) for p in self._read("import_step", path, STEP_SUFFIXES)["parts"]]
 
+    def thumbnail(self, glb: Path, png: Path, size: int = 256) -> Path:
+        reply = self._call({"op": "thumbnail", "path": str(glb), "png": str(png), "size": size})
+        if not reply["ok"]:
+            raise BuildError("kernel", f"thumbnail of {glb.name}: {reply['error']}")
+        return png
+
     def close(self) -> None:
         if self._proc:
             self._proc.kill()

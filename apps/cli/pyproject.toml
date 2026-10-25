@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Command-line interface"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "pyyaml"]
+dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "partwright-api", "pyyaml", "uvicorn==0.54.0"]
 
 [project.scripts]
 partwright = "partwright_cli.main:main"
@@ -18,3 +18,4 @@ partwright-ir = { workspace = true }
 partwright-geometry = { workspace = true }
 partwright-context = { workspace = true }
 partwright-agent = { workspace = true }
+partwright-api = { workspace = true }

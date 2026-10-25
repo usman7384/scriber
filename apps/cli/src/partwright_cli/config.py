@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel
@@ -31,11 +32,18 @@ class EmbeddingsConfig(BaseModel):
     model: str
 
 
+class ApiConfig(BaseModel):
+    host: str = "127.0.0.1"
+    port: int = 8000
+    auth: Literal["none", "tokens"] = "none"
+
+
 class Config(BaseModel):
     llm: LLMConfig
     embeddings: EmbeddingsConfig
     agent: AgentConfig
     geometry: GeometryConfig
+    api: ApiConfig = ApiConfig()
     output_dir: Path
     data_dir: Path
 
