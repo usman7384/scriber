@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import IO, Any
 
 from partwright_geometry.checks import validity_findings
-from partwright_geometry.models import Artifact, BuildError, PartMetrics
-from partwright_ir import Design, compile_design, design_hash
+from partwright_geometry.models import Artifact, BuildError, Finding, PartMetrics
+from partwright_ir import Design, Process, RuleSet, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
+NO_RULES = RuleSet()
 
 
 class LocalGeometry:
@@ -21,13 +22,14 @@ class LocalGeometry:
         self._proc: subprocess.Popen[str] | None = None
         self._lines: queue.Queue[str | None] = queue.Queue()
 
-    def build(self, design: Design, out_dir: Path) -> Artifact:
+    def build(self, design: Design, out_dir: Path, rules: RuleSet = NO_RULES, process: Process = "any") -> Artifact:
         start = time.monotonic()
         out_dir.mkdir(parents=True, exist_ok=True)
         source = compile_design(design)
         (out_dir / "model.py").write_text(source, encoding="utf-8")
         (out_dir / "design.json").write_text(design.model_dump_json(indent=2), encoding="utf-8")
-        reply = self._call({"source": source, "out_dir": str(out_dir), "title": design.title})
+        rules_json = rules.for_process(process).model_dump(mode="json")
+        reply = self._call({"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json})
         if not reply["ok"]:
             raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
         parts = [PartMetrics.model_validate(p) for p in reply["parts"]]
@@ -36,7 +38,7 @@ class LocalGeometry:
             design_hash=design_hash(design),
             files=files,
             parts=parts,
-            findings=validity_findings(parts),
+            findings=validity_findings(parts) + [Finding.model_validate(f) for f in reply["findings"]],
             elapsed_ms=int((time.monotonic() - start) * 1000),
         )
 

@@ -30,11 +30,21 @@ class PartMetrics(Frozen):
     holes: list[HoleInfo]
 
 
+class Location(Frozen):
+    point: Vec
+    face: str
+
+
 class Finding(Frozen):
     rule_id: str
     severity: Literal["error", "warning"]
     message: str
     part: str | None = None
+    binding: Literal["static", "dynamic"] = "static"
+    measured: float | None = None
+    required: float | None = None
+    location: Location | None = None
+    suggestion: str | None = None
 
 
 class Artifact(Frozen):

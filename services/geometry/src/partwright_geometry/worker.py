@@ -2,12 +2,15 @@ import builtins
 import json
 import sys
 import traceback
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from build123d import Compound, Shape, export_gltf, export_step, export_stl
 
+from partwright_geometry.dfm import dfm_findings
 from partwright_geometry.metrics import part_metrics
+from partwright_ir import RuleSet
 
 ALLOWED_IMPORTS = {"math", "build123d"}
 BLOCKED_BUILTINS = {"open", "eval", "exec", "compile", "input", "breakpoint", "__import__"}
@@ -20,12 +23,16 @@ def main() -> None:
 
 def handle(request: dict[str, Any]) -> dict[str, Any]:
     try:
-        return {"ok": True, **run(request["source"], Path(request["out_dir"]), request["title"])}
+        return {"ok": True, **OPS[request["op"]](request)}
     except Exception as e:
         return {"ok": False, "error": f"{type(e).__name__}: {e}", "lines": _user_lines(e)}
 
 
-def run(source: str, out_dir: Path, title: str) -> dict[str, Any]:
+def build(request: dict[str, Any]) -> dict[str, Any]:
+    return run(request["source"], Path(request["out_dir"]), request["title"], RuleSet.model_validate(request["rules"]))
+
+
+def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any]:
     namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
     exec(compile(source, "model.py", "exec"), namespace)
     parts: dict[str, Shape[Any]] = namespace["build"]()
@@ -38,10 +45,17 @@ def run(source: str, out_dir: Path, title: str) -> dict[str, Any]:
     export_step(model, files["step"])
     export_stl(model, files["stl"])
     export_gltf(model, str(files["glb"]), binary=True)
+    metrics = {pid: part_metrics(pid, s) for pid, s in parts.items()}
     return {
         "files": {k: str(v) for k, v in files.items()},
-        "parts": [part_metrics(pid, s).model_dump() for pid, s in parts.items()],
+        "parts": [m.model_dump() for m in metrics.values()],
+        "findings": [f.model_dump() for pid, s in parts.items() for f in dfm_findings(s, metrics[pid], rules)],
     }
+
+
+OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
+    "build": build,
+}
 
 
 def _sandbox_builtins() -> dict[str, Any]:
