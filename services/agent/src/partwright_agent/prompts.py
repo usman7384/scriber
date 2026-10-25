@@ -250,12 +250,13 @@ def requirement_messages(request: str) -> list[tuple[str, str]]:
     return [("system", REQUIREMENT_RULES), ("user", example), ("assistant", json.dumps(answer)), ("user", request)]
 
 
-def repair_message(problems: list[str], unchanged: bool) -> str:
+def repair_message(previous: str, problems: list[str], unchanged: bool) -> str:
     listed = "\n".join(f"- {p}" for p in problems)
-    again = (
-        "Your last answer was identical to the one before it. You must change the parts that cause these problems.\n" if unchanged else ""
+    again = "This design was already returned once with the same problems; change the parts that cause them.\n" if unchanged else ""
+    return (
+        f"A first attempt at this design:\n{previous}\n\n{again}It has these problems:\n{listed}\n"
+        "Write the complete corrected design as JSON. Keep everything that was right."
     )
-    return f"{again}The design has problems:\n{listed}\nReturn the complete corrected design as JSON. Keep everything that was right."
 
 
 def refine_message(design_json: str, instruction: str) -> str:
