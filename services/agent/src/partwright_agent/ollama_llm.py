@@ -7,9 +7,16 @@ from partwright_agent.llm import Message
 
 class OllamaLLM:
     def __init__(
-        self, model: str, host: str = "http://127.0.0.1:11434", num_ctx: int = 16384, think: bool | None = None, max_tokens: int = 6144
+        self,
+        model: str,
+        host: str = "http://127.0.0.1:11434",
+        num_ctx: int = 16384,
+        think: bool | None = None,
+        max_tokens: int = 6144,
+        few_shot: bool = True,
     ) -> None:
         self.name = model
+        self.few_shot = few_shot
         self.num_ctx = num_ctx
         self.think = think
         self.max_tokens = max_tokens

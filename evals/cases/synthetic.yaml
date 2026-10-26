@@ -1,0 +1,1743 @@
+# Held-out synthetic cases from partwright-dataset (generator seeds disjoint from training). Regenerate, do not edit.
+- id: s0-plate-000
+  rows:
+  - FT-1
+  prompt: '# Round cover plate
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Round cover plate, 150 mm diameter, 5 mm thick
+
+
+    ## 2. Holes and ports
+
+    - 3 M12 clearance holes equally spaced on a 95 mm bolt circle
+
+    - a 46 mm centre bore through the plate
+
+
+    ## 3. Finish
+
+    - 1 mm chamfer on the top edges
+
+
+    ## 4. Manufacturing
+
+    - Material: aluminium 7075
+
+    - Made by 3-axis CNC milling
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `plate_diameter`, `thickness`, `bolt_count`, `bolt_circle_diameter`,
+    `bore_diameter`, `edge_chamfer`.'
+  checks:
+  - kind: extent
+    description: diameter 150
+    value: 150.0
+  - kind: extent
+    description: thickness 5
+    value: 5.0
+  - kind: holes
+    description: 3 M12 clearance holes
+    count: 3
+    diameter_min: 13.0
+    diameter_max: 14.5
+  - kind: holes
+    description: 46 mm bore
+    count: 1
+    diameter_min: 45.9
+    diameter_max: 46.1
+  params:
+  - plate_diameter
+  - thickness
+  - bolt_count
+  - bolt_circle_diameter
+  - bore_diameter
+  - edge_chamfer
+- id: s0-block-001
+  rows:
+  - FT-1
+  prompt: '# Manifold block
+
+
+    Create a clean parametric feature tree for a single solid part. All dimensions
+    are in millimetres.
+
+
+    ## 1. Overall dimensions
+
+    - Manifold block 135 x 105 x 45 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+
+    ## 2. Holes and ports
+
+    - 4 M8 clearance mounting holes through the block, one near each corner, 9.5 mm
+    from the edges
+
+    - a 8 mm port 13 mm deep in the front face, centred, 35 mm above the bottom
+
+
+    ## 3. Manufacturing
+
+    - Material: stainless steel 304
+
+    - Made by 3-axis CNC milling
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `length`, `width`, `height`, `mount_margin`, `front_port_diameter`,
+    `front_port_depth`, `front_port_height`.'
+  checks:
+  - kind: holes
+    description: 4 M8 mounting holes
+    count: 4
+    diameter_min: 8.4
+    diameter_max: 10.0
+  - kind: hole_spacing
+    description: spacing 116
+    value: 116.0
+  - kind: holes
+    description: 8 mm front port
+    count: 1
+    diameter_min: 7.9
+    diameter_max: 8.1
+  - kind: extent
+    description: length 135
+    value: 135.0
+  - kind: extent
+    description: width 105
+    value: 105.0
+  - kind: extent
+    description: height 45
+    value: 45.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 2
+  params:
+  - length
+  - width
+  - height
+  - mount_margin
+  - front_port_diameter
+  - front_port_depth
+  - front_port_height
+- id: s0-turned-002
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Spacer sleeve, 46 mm outside diameter, 35.8 mm bore, 57 mm long.
+
+    REQ-02: 1 mm chamfer on the edges of the top end.
+
+    REQ-03: Material: steel S235.
+
+    REQ-04: Made by CNC turning.'
+  checks:
+  - kind: extent
+    description: diameter 46
+    value: 46.0
+  - kind: extent
+    description: length 57
+    value: 57.0
+  - kind: holes
+    description: 35.8 mm bore
+    count: 1
+    diameter_min: 35.699999999999996
+    diameter_max: 35.9
+  - kind: wall
+    description: wall 5.1
+    value: 5.100000000000001
+  params: []
+- id: s0-bracket-003
+  rows:
+  - FT-1
+  prompt: '# Corner bracket
+
+
+    Create a clean parametric feature tree for a single solid part. All dimensions
+    are in millimetres.
+
+
+    ## 1. Overall dimensions
+
+    - Corner bracket bent from 7 mm thick plate, legs 110 mm and 30 mm, 40 mm wide
+
+
+    ## 2. Features
+
+    - R6.5 inside bend
+
+
+    ## 3. Holes and ports
+
+    - one M10 clearance hole in the middle of each leg
+
+
+    ## 4. Manufacturing
+
+    - Material: aluminium 6061-T6
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `base_leg`, `upright_leg`, `width`, `thickness`,
+    `bend_radius`.'
+  checks:
+  - kind: extent
+    description: base leg 110
+    value: 110.0
+  - kind: extent
+    description: upright leg 30
+    value: 30.0
+  - kind: extent
+    description: width 40
+    value: 40.0
+  - kind: holes
+    description: 2 M10 holes
+    count: 2
+    diameter_min: 10.5
+    diameter_max: 12.0
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  params:
+  - base_leg
+  - upright_leg
+  - width
+  - thickness
+  - bend_radius
+- id: s0-plate-004
+  rows:
+  - FT-1
+  prompt: Mounting plate 90 x 65 mm, 5 mm thick, R6 corners on the outline, two M6
+    clearance holes in a row along the length, 59 mm pitch, centred, 0.5 mm chamfer
+    on the top edges, Made by 3-axis CNC milling.
+  checks:
+  - kind: extent
+    description: length 90
+    value: 90.0
+  - kind: extent
+    description: width 65
+    value: 65.0
+  - kind: extent
+    description: thickness 5
+    value: 5.0
+  - kind: holes
+    description: 2 M6 clearance holes
+    count: 2
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: 59 mm pitch
+    value: 59.0
+  params: []
+- id: s0-turned-005
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Flanged bushing, 58 mm outside diameter, 52.4 mm bore, 41 mm long.
+
+    REQ-02: a 100 mm flange 8 mm thick at the bottom end.
+
+    REQ-03: six M5 clearance holes through the flange on a 79 mm bolt circle.
+
+    REQ-04: 0.5 mm chamfer on the edges of the top end.
+
+    REQ-05: Material: POM.
+
+    REQ-06: Made by CNC turning.'
+  checks:
+  - kind: holes
+    description: 6 M5 flange holes
+    count: 6
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: bolt circle 79
+    value: 79.0
+  - kind: extent
+    description: diameter 100
+    value: 100.0
+  - kind: extent
+    description: length 41
+    value: 41.0
+  - kind: holes
+    description: 52.4 mm bore
+    count: 1
+    diameter_min: 52.3
+    diameter_max: 52.5
+  params: []
+- id: s0-bracket-006
+  rows:
+  - FT-1
+  prompt: L bracket bent from 3 mm thick plate, legs 100 mm and 75 mm, 75 mm wide,
+    two M10 clearance holes in each leg, 40 mm apart, Made by 3-axis CNC milling.
+  checks:
+  - kind: extent
+    description: base leg 100
+    value: 100.0
+  - kind: extent
+    description: upright leg 75
+    value: 75.0
+  - kind: extent
+    description: width 75
+    value: 75.0
+  - kind: holes
+    description: 4 M10 holes
+    count: 4
+    diameter_min: 10.5
+    diameter_max: 12.0
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  - kind: hole_spacing
+    description: 40 mm apart
+    value: 40.0
+  params: []
+- id: s0-plate-007
+  rows:
+  - FT-1
+  prompt: 'Mounting plate 200 x 110 mm, 6 mm thick, R6 corners on the outline, four
+    M6 clearance holes in a row along the length, 34 mm pitch, centred, 1 mm chamfer
+    on the top edges, Material: steel S235.'
+  checks:
+  - kind: extent
+    description: length 200
+    value: 200.0
+  - kind: extent
+    description: width 110
+    value: 110.0
+  - kind: extent
+    description: thickness 6
+    value: 6.0
+  - kind: holes
+    description: 4 M6 clearance holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: 34 mm pitch
+    value: 34.0
+  params: []
+- id: s0-block-008
+  rows:
+  - FT-1
+  prompt: '# Valve block
+
+
+    Create a clean parametric feature tree for a single solid part. All dimensions
+    are in millimetres.
+
+
+    ## 1. Overall dimensions
+
+    - Valve block 55 x 40 x 65 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+
+    ## 2. Holes and ports
+
+    - 4 M5 counterbored mounting holes through the block, one near each corner, 8.25
+    mm from the edges
+
+    - an M6 tapped port 58 mm deep in the centre of the top face
+
+    - an M8 tapped hole 10 mm deep in the centre of the right face
+
+
+    ## 3. Finish
+
+    - R2 on the four vertical edges
+
+
+    ## 4. Manufacturing
+
+    - Material: stainless steel 304
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `length`, `width`, `height`, `mount_margin`, `port_depth`,
+    `side_port_depth`, `corner_radius`.'
+  checks:
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: holes
+    description: 4 M5 mounting holes
+    count: 4
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: spacing 38.5
+    value: 38.5
+  - kind: holes
+    description: M6 tap drill
+    count: 1
+    diameter_min: 4.9
+    diameter_max: 5.1
+  - kind: min_holes
+    description: M8 side tap drill
+    count: 1
+    diameter_min: 6.65
+    diameter_max: 6.85
+  - kind: extent
+    description: length 55
+    value: 55.0
+  - kind: extent
+    description: width 40
+    value: 40.0
+  - kind: extent
+    description: height 65
+    value: 65.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 2
+  params:
+  - length
+  - width
+  - height
+  - mount_margin
+  - port_depth
+  - side_port_depth
+  - corner_radius
+- id: s0-turned-009
+  rows:
+  - FT-1
+  prompt: '# Stepped pin
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Stepped pin: a 42 mm diameter section 20 mm long
+
+
+    ## 2. Features
+
+    - then a 21 mm diameter, 37 mm long end on the same axis
+
+
+    ## 3. Holes and ports
+
+    - a 9.5 mm centre hole 12 mm deep in the small end
+
+
+    ## 4. Finish
+
+    - 0.5 mm chamfer on the edges of the top end
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `major_diameter`, `major_length`, `minor_diameter`,
+    `minor_length`, `centre_hole_diameter`, `centre_hole_depth`, `edge_chamfer`.'
+  checks:
+  - kind: extent
+    description: diameter 42
+    value: 42.0
+  - kind: extent
+    description: length 57
+    value: 57.0
+  - kind: holes
+    description: 9.5 mm centre hole
+    count: 1
+    diameter_min: 9.4
+    diameter_max: 9.6
+  params:
+  - major_diameter
+  - major_length
+  - minor_diameter
+  - minor_length
+  - centre_hole_diameter
+  - centre_hole_depth
+  - edge_chamfer
+- id: s0-bracket-010
+  rows:
+  - FT-1
+  prompt: 'Channel bracket, 95 mm wide outside, 20 mm high, 145 mm long, 8 mm walls
+    and base, 4 M5 clearance holes along the centre line of the base, 24.5 mm pitch,
+    Material: aluminium 6061-T6, Made by 3-axis CNC milling.'
+  checks:
+  - kind: extent
+    description: width 95
+    value: 95.0
+  - kind: extent
+    description: height 20
+    value: 20.0
+  - kind: extent
+    description: length 145
+    value: 145.0
+  - kind: hole_spacing
+    description: 24.5 mm pitch
+    value: 24.5
+  - kind: holes
+    description: 4 M5 base holes
+    count: 4
+    diameter_min: 5.3
+    diameter_max: 5.8
+  params: []
+- id: s0-plate-011
+  rows:
+  - FT-1
+  prompt: '# Mounting plate
+
+
+    Create a clean parametric feature tree for a single solid part. All dimensions
+    are in millimetres.
+
+
+    ## 1. Overall dimensions
+
+    - Mounting plate 90 x 60 mm, 12 mm thick
+
+
+    ## 2. Features
+
+    - a central rectangular pocket 47 x 22 mm, 6 mm deep, in the top face
+
+    - R2 inside corners on the pocket
+
+
+    ## 3. Holes and ports
+
+    - 4 M5 clearance holes, one in each corner, 11 mm from the edges
+
+
+    ## 4. Manufacturing
+
+    - Material: stainless steel 304
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `plate_length`, `plate_width`, `thickness`, `hole_margin`,
+    `pocket_length`, `pocket_width`, `pocket_depth`, `pocket_corner_radius`.'
+  checks:
+  - kind: extent
+    description: length 90
+    value: 90.0
+  - kind: extent
+    description: width 60
+    value: 60.0
+  - kind: extent
+    description: thickness 12
+    value: 12.0
+  - kind: holes
+    description: 4 M5 clearance holes
+    count: 4
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: spacing 68
+    value: 68.0
+  params:
+  - plate_length
+  - plate_width
+  - thickness
+  - hole_margin
+  - pocket_length
+  - pocket_width
+  - pocket_depth
+  - pocket_corner_radius
+- id: s0-block-012
+  rows:
+  - FT-1
+  prompt: 'Design this part:
+
+    - Manifold block 140 x 90 x 35 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+    - 4 M5 counterbored mounting holes through the block, one near each corner, 10.25
+    mm from the edges
+
+    - an M16 tapped port 29 mm deep in the centre of the top face
+
+    - a 8 mm passage from the front face that meets the port 10 mm below the top
+
+    - a rectangular relief pocket 36 x 21 mm, 8 mm deep, centred on the left face
+
+    - 1 mm chamfer on the top edges of the block
+
+    - Material: aluminium 6061-T6
+
+    - Made by 3-axis CNC milling'
+  checks:
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: holes
+    description: 4 M5 mounting holes
+    count: 4
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: spacing 119.5
+    value: 119.5
+  - kind: holes
+    description: M16 tap drill
+    count: 1
+    diameter_min: 13.9
+    diameter_max: 14.1
+  - kind: crossing_holes
+    description: passage meets the port
+    count: 1
+  - kind: extent
+    description: length 140
+    value: 140.0
+  - kind: extent
+    description: width 90
+    value: 90.0
+  - kind: extent
+    description: height 35
+    value: 35.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 2
+  params: []
+- id: s0-turned-013
+  rows:
+  - FT-1
+  prompt: 'Please model the following part.
+
+    - Tube spacer, 18 mm outside diameter, 10.4 mm bore, 30 mm long
+
+    - an outside groove 2 mm wide and 2 mm deep, starting 12 mm from the bottom
+
+    - 0.5 mm chamfer on the edges of the top end
+
+    - Material: aluminium 7075'
+  checks:
+  - kind: extent
+    description: diameter 18
+    value: 18.0
+  - kind: extent
+    description: length 30
+    value: 30.0
+  - kind: holes
+    description: 10.4 mm bore
+    count: 1
+    diameter_min: 10.3
+    diameter_max: 10.5
+  - kind: wall
+    description: wall 3.8
+    value: 3.8
+  params: []
+- id: s0-bracket-014
+  rows:
+  - FT-1
+  prompt: '# U channel
+
+
+    Model one continuous parametric solid. Units are millimetres, Z is up and -Y is
+    the front.
+
+
+    ## 1. Overall dimensions
+
+    - U channel, 85 mm wide outside, 75 mm high, 105 mm long, 9 mm walls and base
+
+
+    ## 2. Holes and ports
+
+    - two M4 clearance holes along the centre line of the base, 68 mm pitch
+
+
+    ## 3. Parameters
+
+    Expose these named parameters: `outer_width`, `wall_height`, `length`, `thickness`,
+    `base_hole_count`, `base_hole_pitch`.'
+  checks:
+  - kind: extent
+    description: width 85
+    value: 85.0
+  - kind: extent
+    description: height 75
+    value: 75.0
+  - kind: extent
+    description: length 105
+    value: 105.0
+  - kind: hole_spacing
+    description: 68 mm pitch
+    value: 68.0
+  - kind: holes
+    description: 2 M4 base holes
+    count: 2
+    diameter_min: 4.3
+    diameter_max: 4.8
+  params:
+  - outer_width
+  - wall_height
+  - length
+  - thickness
+  - base_hole_count
+  - base_hole_pitch
+- id: s0-plate-015
+  rows:
+  - FT-1
+  prompt: '# Cover plate
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Cover plate 80 x 40 mm, 13 mm thick
+
+
+    ## 2. Holes and ports
+
+    - four M6 counterbored holes in a row along the length, 20 mm pitch, centred
+
+
+    ## 3. Manufacturing
+
+    - Material: aluminium 6061-T6
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `plate_length`, `plate_width`, `thickness`, `hole_count`,
+    `hole_pitch`.'
+  checks:
+  - kind: extent
+    description: length 80
+    value: 80.0
+  - kind: extent
+    description: width 40
+    value: 40.0
+  - kind: extent
+    description: thickness 13
+    value: 13.0
+  - kind: holes
+    description: 4 M6 clearance holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: hole_spacing
+    description: 20 mm pitch
+    value: 20.0
+  params:
+  - plate_length
+  - plate_width
+  - thickness
+  - hole_count
+  - hole_pitch
+- id: s0-block-016
+  rows:
+  - FT-1
+  prompt: 'Part request:
+
+    - Bearing block 130 x 75 x 35 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+    - 4 M6 counterbored mounting holes through the block, one near each corner, 13
+    mm from the edges
+
+    - a round boss 22 mm diameter, 8 mm high, centred on the top face
+
+    - a 9 mm bore 11 mm deep in the end of the boss
+
+    - Material: stainless steel 304
+
+    - Made by 3-axis CNC milling'
+  checks:
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: holes
+    description: 4 M6 mounting holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: spacing 104
+    value: 104.0
+  - kind: holes
+    description: 9 mm bore
+    count: 1
+    diameter_min: 8.9
+    diameter_max: 9.1
+  - kind: extent
+    description: length 130
+    value: 130.0
+  - kind: extent
+    description: width 75
+    value: 75.0
+  - kind: extent
+    description: height 43
+    value: 43.0
+  params: []
+- id: s0-turned-017
+  rows:
+  - FT-1
+  prompt: 'Bushing, 56 mm outside diameter, 48.8 mm bore, 68 mm long, Material: brass
+    CW614N, Made by CNC turning.'
+  checks:
+  - kind: extent
+    description: diameter 56
+    value: 56.0
+  - kind: extent
+    description: length 68
+    value: 68.0
+  - kind: holes
+    description: 48.8 mm bore
+    count: 1
+    diameter_min: 48.699999999999996
+    diameter_max: 48.9
+  - kind: wall
+    description: wall 3.6
+    value: 3.6000000000000014
+  params: []
+- id: s0-bracket-018
+  rows:
+  - FT-1
+  prompt: Angle bracket bent from 5 mm thick plate, legs 35 mm and 50 mm, 95 mm wide,
+    one M10 clearance hole in the middle of each leg.
+  checks:
+  - kind: extent
+    description: base leg 35
+    value: 35.0
+  - kind: extent
+    description: upright leg 50
+    value: 50.0
+  - kind: extent
+    description: width 95
+    value: 95.0
+  - kind: holes
+    description: 2 M10 holes
+    count: 2
+    diameter_min: 10.5
+    diameter_max: 12.0
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  params: []
+- id: s0-plate-019
+  rows:
+  - FT-1
+  prompt: Round cover plate, 115 mm diameter, 5 mm thick, 8 M5 clearance holes equally
+    spaced on a 82.5 mm bolt circle, a 50 mm centre bore through the plate, Made by
+    3-axis CNC milling.
+  checks:
+  - kind: extent
+    description: diameter 115
+    value: 115.0
+  - kind: extent
+    description: thickness 5
+    value: 5.0
+  - kind: holes
+    description: 8 M5 clearance holes
+    count: 8
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: bolt circle 82.5
+    value: 82.5
+  - kind: holes
+    description: 50 mm bore
+    count: 1
+    diameter_min: 49.9
+    diameter_max: 50.1
+  params: []
+- id: s0-block-020
+  rows:
+  - FT-1
+  prompt: 'Part request:
+
+    - Clamp block 90 x 45 x 75 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+    - four M6 clearance mounting holes through the block, one near each corner, 8
+    mm from the edges
+
+    - an M10 tapped port 57 mm deep in the centre of the top face
+
+    - a 8 mm passage from the front face that meets the port 42 mm below the top
+
+    - an M5 tapped hole 20 mm deep in the centre of the right face
+
+    - R2 on the four vertical edges
+
+    - Material: aluminium 6061-T6'
+  checks:
+  - kind: holes
+    description: 4 M6 mounting holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: spacing 74
+    value: 74.0
+  - kind: holes
+    description: M10 tap drill
+    count: 1
+    diameter_min: 8.4
+    diameter_max: 8.6
+  - kind: crossing_holes
+    description: passage meets the port
+    count: 1
+  - kind: min_holes
+    description: M5 side tap drill
+    count: 1
+    diameter_min: 4.1000000000000005
+    diameter_max: 4.3
+  - kind: extent
+    description: length 90
+    value: 90.0
+  - kind: extent
+    description: width 45
+    value: 45.0
+  - kind: extent
+    description: height 75
+    value: 75.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 3
+  params: []
+- id: s0-turned-021
+  rows:
+  - FT-1
+  prompt: '# Bushing
+
+
+    Model one continuous parametric solid. Units are millimetres, Z is up and -Y is
+    the front.
+
+
+    ## 1. Overall dimensions
+
+    - Bushing, 20 mm outside diameter, 8 mm bore, 28 mm long
+
+
+    ## 2. Features
+
+    - an outside groove 4.5 mm wide and 1.5 mm deep, starting 17.2 mm from the bottom
+
+
+    ## 3. Finish
+
+    - 1 mm chamfer on the edges of the top end
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `outer_diameter`, `bore_diameter`, `length`, `groove_width`,
+    `groove_depth`, `groove_position`, `edge_chamfer`.'
+  checks:
+  - kind: extent
+    description: diameter 20
+    value: 20.0
+  - kind: extent
+    description: length 28
+    value: 28.0
+  - kind: holes
+    description: 8 mm bore
+    count: 1
+    diameter_min: 7.9
+    diameter_max: 8.1
+  - kind: wall
+    description: wall 6
+    value: 6.0
+  params:
+  - outer_diameter
+  - bore_diameter
+  - length
+  - groove_width
+  - groove_depth
+  - groove_position
+  - edge_chamfer
+- id: s0-bracket-022
+  rows:
+  - FT-1
+  prompt: U channel, 45 mm wide outside, 80 mm high, 45 mm long, 4 mm walls and base,
+    one M8 clearance hole in the centre of the base, a 8 mm cross hole through both
+    walls, centred along the length, 72 mm above the bottom.
+  checks:
+  - kind: extent
+    description: width 45
+    value: 45.0
+  - kind: extent
+    description: height 80
+    value: 80.0
+  - kind: extent
+    description: length 45
+    value: 45.0
+  - kind: holes
+    description: 1 M8 base holes
+    count: 1
+    diameter_min: 8.4
+    diameter_max: 10.0
+  - kind: min_holes
+    description: 8 mm cross hole
+    count: 1
+    diameter_min: 7.9
+    diameter_max: 8.1
+  params: []
+- id: s0-plate-023
+  rows:
+  - FT-1
+  prompt: '# Flange plate
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Flange plate, 115 mm diameter, 16 mm thick
+
+
+    ## 2. Holes and ports
+
+    - three M8 counterbored holes equally spaced on a 92.5 mm bolt circle
+
+
+    ## 3. Manufacturing
+
+    - Made by 3-axis CNC milling
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `plate_diameter`, `thickness`, `bolt_count`, `bolt_circle_diameter`.'
+  checks:
+  - kind: extent
+    description: diameter 115
+    value: 115.0
+  - kind: extent
+    description: thickness 16
+    value: 16.0
+  - kind: holes
+    description: 3 M8 clearance holes
+    count: 3
+    diameter_min: 8.4
+    diameter_max: 10.0
+  - kind: counterbores
+    description: 3 counterbores
+    count: 3
+  params:
+  - plate_diameter
+  - thickness
+  - bolt_count
+  - bolt_circle_diameter
+- id: s0-block-024
+  rows:
+  - FT-1
+  prompt: '# Sensor block
+
+
+    Model one continuous parametric solid. Units are millimetres, Z is up and -Y is
+    the front.
+
+
+    ## 1. Overall dimensions
+
+    - Sensor block 120 x 85 x 25 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+
+    ## 2. Features
+
+    - a round boss 44 mm diameter, 5 mm high, centred on the top face
+
+
+    ## 3. Holes and ports
+
+    - 4 M4 counterbored mounting holes through the block, one near each corner, 7
+    mm from the edges
+
+
+    ## 4. Finish
+
+    - R2 on the four vertical edges
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `length`, `width`, `height`, `mount_margin`, `boss_diameter`,
+    `boss_height`, `corner_radius`.'
+  checks:
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: holes
+    description: 4 M4 mounting holes
+    count: 4
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_spacing
+    description: spacing 106
+    value: 106.0
+  - kind: extent
+    description: length 120
+    value: 120.0
+  - kind: extent
+    description: width 85
+    value: 85.0
+  - kind: extent
+    description: height 30
+    value: 30.0
+  params:
+  - length
+  - width
+  - height
+  - mount_margin
+  - boss_diameter
+  - boss_height
+  - corner_radius
+- id: s0-turned-025
+  rows:
+  - FT-1
+  prompt: '# Flanged bushing
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Flanged bushing, 80 mm outside diameter, 45 mm bore, 86 mm long
+
+
+    ## 2. Features
+
+    - a 94 mm flange 9 mm thick at the bottom end
+
+
+    ## 3. Finish
+
+    - 1 mm chamfer on the edges of the top end
+
+
+    ## 4. Manufacturing
+
+    - Material: steel S235
+
+    - Made by CNC turning
+
+
+    ## 5. Parameters
+
+    Expose these named parameters: `outer_diameter`, `bore_diameter`, `length`, `flange_diameter`,
+    `flange_thickness`, `edge_chamfer`.'
+  checks:
+  - kind: extent
+    description: diameter 94
+    value: 94.0
+  - kind: extent
+    description: length 86
+    value: 86.0
+  - kind: holes
+    description: 45 mm bore
+    count: 1
+    diameter_min: 44.9
+    diameter_max: 45.1
+  params:
+  - outer_diameter
+  - bore_diameter
+  - length
+  - flange_diameter
+  - flange_thickness
+  - edge_chamfer
+- id: s0-bracket-026
+  rows:
+  - FT-1
+  prompt: '# Angle bracket
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - Angle bracket bent from 3 mm thick plate, legs 75 mm and 55 mm, 20 mm wide
+
+
+    ## 2. Holes and ports
+
+    - one M10 clearance hole in the middle of each leg
+
+
+    ## 3. Parameters
+
+    Expose these named parameters: `base_leg`, `upright_leg`, `width`, `thickness`.'
+  checks:
+  - kind: extent
+    description: base leg 75
+    value: 75.0
+  - kind: extent
+    description: upright leg 55
+    value: 55.0
+  - kind: extent
+    description: width 20
+    value: 20.0
+  - kind: holes
+    description: 2 M10 holes
+    count: 2
+    diameter_min: 10.5
+    diameter_max: 12.0
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  params:
+  - base_leg
+  - upright_leg
+  - width
+  - thickness
+- id: s0-plate-027
+  rows:
+  - FT-1
+  prompt: '# Mounting plate
+
+
+    Model one continuous parametric solid. Units are millimetres, Z is up and -Y is
+    the front.
+
+
+    ## 1. Overall dimensions
+
+    - Mounting plate 195 x 40 mm, 11 mm thick
+
+    - R4 corners on the outline
+
+
+    ## 2. Holes and ports
+
+    - 6 M3 counterbored holes in a row along the length, 15 mm pitch, centred
+
+
+    ## 3. Manufacturing
+
+    - Material: aluminium 6061-T6
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `plate_length`, `plate_width`, `thickness`, `corner_radius`,
+    `hole_count`, `hole_pitch`.'
+  checks:
+  - kind: extent
+    description: length 195
+    value: 195.0
+  - kind: extent
+    description: width 40
+    value: 40.0
+  - kind: extent
+    description: thickness 11
+    value: 11.0
+  - kind: holes
+    description: 6 M3 clearance holes
+    count: 6
+    diameter_min: 3.2
+    diameter_max: 3.6
+  - kind: counterbores
+    description: 6 counterbores
+    count: 6
+  - kind: hole_spacing
+    description: 15 mm pitch
+    value: 15.0
+  params:
+  - plate_length
+  - plate_width
+  - thickness
+  - corner_radius
+  - hole_count
+  - hole_pitch
+- id: s0-block-028
+  rows:
+  - FT-1
+  prompt: '# Bearing block
+
+
+    Model one continuous parametric solid. Units are millimetres, Z is up and -Y is
+    the front.
+
+
+    ## 1. Overall dimensions
+
+    - Bearing block 130 x 120 x 40 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+
+    ## 2. Features
+
+    - a round boss 34 mm diameter, 6 mm high, centred on the top face
+
+    - a rectangular relief pocket 66 x 29 mm, 8 mm deep, centred on the left face
+
+
+    ## 3. Holes and ports
+
+    - 4 M6 counterbored mounting holes through the block, one near each corner, 12
+    mm from the edges
+
+
+    ## 4. Finish
+
+    - 1 mm chamfer on the top edges of the block
+
+
+    ## 5. Manufacturing
+
+    - Made by 3-axis CNC milling
+
+
+    ## 6. Parameters
+
+    Expose these named parameters: `length`, `width`, `height`, `mount_margin`, `boss_diameter`,
+    `boss_height`, `pocket_width`, `pocket_height`, `pocket_depth`, `edge_chamfer`.'
+  checks:
+  - kind: counterbores
+    description: 4 counterbores
+    count: 4
+  - kind: holes
+    description: 4 M6 mounting holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: spacing 106
+    value: 106.0
+  - kind: extent
+    description: length 130
+    value: 130.0
+  - kind: extent
+    description: width 120
+    value: 120.0
+  - kind: extent
+    description: height 46
+    value: 46.0
+  params:
+  - length
+  - width
+  - height
+  - mount_margin
+  - boss_diameter
+  - boss_height
+  - pocket_width
+  - pocket_height
+  - pocket_depth
+  - edge_chamfer
+- id: s0-turned-029
+  rows:
+  - FT-1
+  prompt: '# Flanged bushing
+
+
+    Create a clean parametric feature tree for a single solid part. All dimensions
+    are in millimetres.
+
+
+    ## 1. Overall dimensions
+
+    - Flanged bushing, 70 mm outside diameter, 24 mm bore, 51 mm long
+
+
+    ## 2. Features
+
+    - a 106 mm flange 3 mm thick at the bottom end
+
+
+    ## 3. Holes and ports
+
+    - 6 M4 clearance holes through the flange on a 88 mm bolt circle
+
+
+    ## 4. Finish
+
+    - 0.5 mm chamfer on the edges of the top end
+
+
+    ## 5. Manufacturing
+
+    - Material: brass CW614N
+
+    - Made by CNC turning
+
+
+    ## 6. Parameters
+
+    Expose these named parameters: `outer_diameter`, `bore_diameter`, `length`, `flange_diameter`,
+    `flange_thickness`, `bolt_count`, `bolt_circle_diameter`, `edge_chamfer`.'
+  checks:
+  - kind: holes
+    description: 6 M4 flange holes
+    count: 6
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_spacing
+    description: bolt circle 88
+    value: 88.0
+  - kind: extent
+    description: diameter 106
+    value: 106.0
+  - kind: extent
+    description: length 51
+    value: 51.0
+  - kind: holes
+    description: 24 mm bore
+    count: 1
+    diameter_min: 23.9
+    diameter_max: 24.1
+  params:
+  - outer_diameter
+  - bore_diameter
+  - length
+  - flange_diameter
+  - flange_thickness
+  - bolt_count
+  - bolt_circle_diameter
+  - edge_chamfer
+- id: s0-bracket-030
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Angle bracket bent from 7 mm thick plate, legs 110 mm and 105 mm, 80 mm
+    wide.
+
+    REQ-02: one M4 clearance hole in the middle of each leg.
+
+    REQ-03: Made by 3-axis CNC milling.'
+  checks:
+  - kind: extent
+    description: base leg 110
+    value: 110.0
+  - kind: extent
+    description: upright leg 105
+    value: 105.0
+  - kind: extent
+    description: width 80
+    value: 80.0
+  - kind: holes
+    description: 2 M4 holes
+    count: 2
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  params: []
+- id: s0-plate-031
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Round cover plate, 105 mm diameter, 15 mm thick.
+
+    REQ-02: 8 M4 clearance holes equally spaced on a 82.5 mm bolt circle.
+
+    REQ-03: Made by 3-axis CNC milling.'
+  checks:
+  - kind: extent
+    description: diameter 105
+    value: 105.0
+  - kind: extent
+    description: thickness 15
+    value: 15.0
+  - kind: holes
+    description: 8 M4 clearance holes
+    count: 8
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_spacing
+    description: bolt circle 82.5
+    value: 82.5
+  params: []
+- id: s0-block-032
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Clamp block 50 x 50 x 25 mm (X x Y x Z), origin at the centre of the bottom
+    face.
+
+    REQ-02: four M6 clearance mounting holes through the block, one near each corner,
+    9 mm from the edges.
+
+    REQ-03: an M10 tapped port 13 mm deep in the centre of the top face.
+
+    REQ-04: a 6 mm passage from the front face that meets the port 7 mm below the
+    top.
+
+    REQ-05: 1.5 mm chamfer on the top edges of the block.'
+  checks:
+  - kind: holes
+    description: 4 M6 mounting holes
+    count: 4
+    diameter_min: 6.4
+    diameter_max: 7.0
+  - kind: hole_spacing
+    description: spacing 32
+    value: 32.0
+  - kind: holes
+    description: M10 tap drill
+    count: 1
+    diameter_min: 8.4
+    diameter_max: 8.6
+  - kind: crossing_holes
+    description: passage meets the port
+    count: 1
+  - kind: extent
+    description: length 50
+    value: 50.0
+  - kind: extent
+    description: width 50
+    value: 50.0
+  - kind: extent
+    description: height 25
+    value: 25.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 2
+  params: []
+- id: s0-turned-033
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Bushing, 36 mm outside diameter, 21.8 mm bore, 46 mm long.
+
+    REQ-02: an outside groove 4.5 mm wide and 1 mm deep, starting 19.4 mm from the
+    bottom.
+
+    REQ-03: 0.5 mm chamfer on the edges of the top end.
+
+    REQ-04: Material: brass CW614N.
+
+    REQ-05: Made by CNC turning.'
+  checks:
+  - kind: extent
+    description: diameter 36
+    value: 36.0
+  - kind: extent
+    description: length 46
+    value: 46.0
+  - kind: holes
+    description: 21.8 mm bore
+    count: 1
+    diameter_min: 21.7
+    diameter_max: 21.900000000000002
+  - kind: wall
+    description: wall 7.1
+    value: 7.1
+  params: []
+- id: s0-bracket-034
+  rows:
+  - FT-1
+  prompt: 'Corner bracket bent from 2 mm thick plate, legs 50 mm and 40 mm, 80 mm
+    wide, 2 M4 clearance holes in each leg, 54 mm apart, Material: stainless steel
+    304, Made by 3-axis CNC milling.'
+  checks:
+  - kind: extent
+    description: base leg 50
+    value: 50.0
+  - kind: extent
+    description: upright leg 40
+    value: 40.0
+  - kind: extent
+    description: width 80
+    value: 80.0
+  - kind: holes
+    description: 4 M4 holes
+    count: 4
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  - kind: hole_spacing
+    description: 54 mm apart
+    value: 54.0
+  params: []
+- id: s0-plate-035
+  rows:
+  - FT-1
+  prompt: Round cover plate, 130 mm diameter, 10 mm thick, five M8 countersunk holes
+    equally spaced on a 105 mm bolt circle.
+  checks:
+  - kind: extent
+    description: diameter 130
+    value: 130.0
+  - kind: extent
+    description: thickness 10
+    value: 10.0
+  - kind: holes
+    description: 5 M8 clearance holes
+    count: 5
+    diameter_min: 8.4
+    diameter_max: 10.0
+  params: []
+- id: s0-block-036
+  rows:
+  - FT-1
+  prompt: 'I need a CAD model of this part:
+
+    - Manifold block 105 x 105 x 45 mm (X x Y x Z), origin at the centre of the bottom
+    face
+
+    - 4 M5 clearance mounting holes through the block, one near each corner, 8.25
+    mm from the edges
+
+    - a round boss 34 mm diameter, 11 mm high, centred on the top face
+
+    - a 7 mm bore 29 mm deep in the end of the boss
+
+    - a 8 mm port 21 mm deep in the front face, centred, 35 mm above the bottom
+
+    - R2 on the four vertical edges'
+  checks:
+  - kind: holes
+    description: 4 M5 mounting holes
+    count: 4
+    diameter_min: 5.3
+    diameter_max: 5.8
+  - kind: hole_spacing
+    description: spacing 88.5
+    value: 88.5
+  - kind: holes
+    description: 7 mm bore
+    count: 1
+    diameter_min: 6.9
+    diameter_max: 7.1
+  - kind: holes
+    description: 8 mm front port
+    count: 1
+    diameter_min: 7.9
+    diameter_max: 8.1
+  - kind: extent
+    description: length 105
+    value: 105.0
+  - kind: extent
+    description: width 105
+    value: 105.0
+  - kind: extent
+    description: height 56
+    value: 56.0
+  - kind: hole_axes
+    description: holes along several axes
+    count: 2
+  params: []
+- id: s0-turned-037
+  rows:
+  - FT-1
+  prompt: 'Stepped shaft: a 46 mm diameter section 21 mm long, then a 37 mm diameter,
+    48 mm long end on the same axis, Material: POM, Made by CNC turning.'
+  checks:
+  - kind: extent
+    description: diameter 46
+    value: 46.0
+  - kind: extent
+    description: length 69
+    value: 69.0
+  params: []
+- id: s0-bracket-038
+  rows:
+  - FT-1
+  prompt: '# L bracket
+
+
+    Act as a mechanical design engineer and produce a single watertight, fully parametric
+    solid. Units: mm.
+
+
+    ## 1. Overall dimensions
+
+    - L bracket bent from 3 mm thick plate, legs 75 mm and 30 mm, 95 mm wide
+
+
+    ## 2. Holes and ports
+
+    - 2 M4 clearance holes in each leg, 43 mm apart
+
+
+    ## 3. Manufacturing
+
+    - Material: brass CW614N
+
+
+    ## 4. Parameters
+
+    Expose these named parameters: `base_leg`, `upright_leg`, `width`, `thickness`,
+    `hole_spacing`.'
+  checks:
+  - kind: extent
+    description: base leg 75
+    value: 75.0
+  - kind: extent
+    description: upright leg 30
+    value: 30.0
+  - kind: extent
+    description: width 95
+    value: 95.0
+  - kind: holes
+    description: 4 M4 holes
+    count: 4
+    diameter_min: 4.3
+    diameter_max: 4.8
+  - kind: hole_axes
+    description: holes in both legs
+    count: 2
+  - kind: hole_spacing
+    description: 43 mm apart
+    value: 43.0
+  params:
+  - base_leg
+  - upright_leg
+  - width
+  - thickness
+  - hole_spacing
+- id: s0-plate-039
+  rows:
+  - FT-1
+  prompt: 'Requirements:
+
+    REQ-01: Cover plate 120 x 80 mm, 8 mm thick.
+
+    REQ-02: 4 M10 clearance holes, one in each corner, 19 mm from the edges.
+
+    REQ-03: a central rectangular pocket 29 x 10 mm, 3.5 mm deep, in the top face.
+
+    REQ-04: Material: aluminium 7075.'
+  checks:
+  - kind: extent
+    description: length 120
+    value: 120.0
+  - kind: extent
+    description: width 80
+    value: 80.0
+  - kind: extent
+    description: thickness 8
+    value: 8.0
+  - kind: holes
+    description: 4 M10 clearance holes
+    count: 4
+    diameter_min: 10.5
+    diameter_max: 12.0
+  - kind: hole_spacing
+    description: spacing 82
+    value: 82.0
+  params: []

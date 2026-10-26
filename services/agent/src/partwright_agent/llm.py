@@ -12,5 +12,6 @@ class Message(BaseModel):
 
 class LLM(Protocol):
     name: str
+    few_shot: bool
 
     def chat(self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0) -> str: ...

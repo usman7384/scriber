@@ -11,6 +11,7 @@ class ModelOptions(BaseModel):
     num_ctx: int = 8192
     think: bool | None = None
     max_tokens: int = 6144
+    few_shot: bool = True
 
 
 class LLMConfig(BaseModel):
@@ -56,4 +57,6 @@ def load(path: Path) -> Config:
 def llm_for(config: Config, model: str | None) -> OllamaLLM:
     name = model or config.llm.default
     options = config.llm.models.get(name, ModelOptions())
-    return OllamaLLM(name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens)
+    return OllamaLLM(
+        name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens, few_shot=options.few_shot
+    )

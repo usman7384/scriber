@@ -81,7 +81,7 @@ def generate(
     reqs = extract_requirements(prompt, llm, seed) + (fact_requirements(context.pack.facts) if context else [])
     yield _requirements_step(reqs, clock)
     project = context_block(context) if context else ""
-    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project)]
+    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, llm.few_shot)]
 
     def decode(raw: str) -> Design:
         design = Design.model_validate_json(raw)
@@ -161,7 +161,7 @@ def _attempts(
         attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = _evaluate(raw, decode, reqs, run.build, attempt_dir)
+        problems, design, artifact, checks = evaluate(raw, decode, reqs, run.build, attempt_dir)
         last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
         if not problems:
             yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
@@ -174,7 +174,7 @@ def _attempts(
     yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=run.clock(), result=last)
 
 
-def _evaluate(
+def evaluate(
     raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:

@@ -11,7 +11,7 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run mypy services apps evals
+      - run: uv run mypy services apps evals training/src training/tests
       - run: uv run lint-imports
       - run: uv run pytest -m "not llm"
   llm-integration:

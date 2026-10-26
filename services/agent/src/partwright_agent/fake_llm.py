@@ -6,6 +6,7 @@ from partwright_agent.llm import Message
 class FakeLLM:
     def __init__(self, responses: list[str]) -> None:
         self.name = "fake"
+        self.few_shot = True
         self.responses = list(responses)
         self.calls: list[list[Message]] = []
 
