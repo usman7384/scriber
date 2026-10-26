@@ -50,3 +50,9 @@ Failing on unused parameters made the 4B churn (it adds parameters for rule limi
 ## D-016 Rules have no scope yet (2026-10-25)
 "Hole-to-edge ≥ k x D" applies to every hole, including large bores where it cannot hold (a centred Ø40 bore on an 80 mm plate). The M2 demo spec was changed to a Ø20 bore. A `scope` on `Rule` (e.g. fastener holes up to a diameter) is an IR change planned with the M3 API work.
 
+## D-017 IR v2 P0 (2026-10-26)
+Implemented as proposed in `docs/IR_V2.md`: plane references (base, datum, or a face of an earlier feature), selectors, path sketches, extrude extents with intersect and taper, revolve axis offset, semantic holes and patterns, part process. Face planes keep the base-plane coordinates of their axis and an outward offset, so the model learns one coordinate convention; cuts on a face go into the material and adds go outward automatically. Feature tools are kept by id so faces can be referenced and patterns can replay them. Regions are resolved by geometric match with the tool body. v1 designs upgrade on load (the upgrade is idempotent and always applied), and every v1 fixture rebuilds unchanged.
+
+## D-018 Fasteners as designations (2026-10-26)
+`fastener` takes `M<d>` or `M<d>x<pitch>` for M2–M30. Clearance follows ISO 273 by fit, tap drill is nominal minus pitch (ISO 261 coarse pitch by default), counterbore seats follow DIN 974-1 style head-plus-clearance, countersinks follow the ISO 10642 head diameter (2.24 d). The model wrote fine-pitch hydraulic port threads (M18x1.5, M30x1.5) as soon as v2 allowed them; a closed `M\d+` pattern rejected realistic designs, so the field is validated by parsing rather than by schema pattern.
+

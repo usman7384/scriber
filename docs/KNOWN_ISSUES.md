@@ -10,4 +10,8 @@
 - A grounded generation took 6 attempts and 113 s in the M2 demo; the 4B needs many repairs for multi-feature layouts.
 - DFM checks are approximations (sampled wall thickness, build/tool direction fixed at +Z); see `docs/agents/geometry.md`.
 - PDF text extraction keeps the cp1252 Ø as an unknown character in some fact texts; values are unaffected.
+- IR v2: face references need a flat face perpendicular to an axis; sloped faces need a datum. Selector regions are matched geometrically with the feature's tool body, which can be ambiguous where coplanar faces merge.
+- IR v2: patterns replay extrude, revolve and hole tools only; mirror is about base planes through the origin.
+- Counterbore seats above M12 and countersinks above M20 are derived from head-diameter rules, not tabulated values.
+- The API process started before IR v2 keeps the v1 compiler until it is restarted.
 
