@@ -196,9 +196,12 @@ def _pattern_errors(p: Pattern, seen: dict[str, Feature], sketches: dict[str, Sk
 
 def _revolve_errors(f: Revolve, sketch: Sketch, values: dict[str, float], path: str) -> Iterator[IrError]:
     axis = 0 if f.axis == "Y" else 1
-    offset = evaluate(f.axis_offset, values)
-    for e in sketch.entities:
-        lo, hi = _span(e, axis, values)
+    try:
+        offset = evaluate(f.axis_offset, values)
+        spans = [_span(e, axis, values) for e in sketch.entities]
+    except ExprError:
+        return  # the bad expression is reported where it is written
+    for lo, hi in spans:
         if lo < offset - 1e-6 and hi > offset + 1e-6:
             fix = "draw half the section on one side of it, or extrude a circle for a plain cylinder or boss"
             yield IrError(path=path, message=f"the sketch {sketch.id!r} crosses the revolve axis; {fix}")
