@@ -1,6 +1,6 @@
 import random
 
-from partwright_training.fasteners import clearance, head
+from partwright_training.fasteners import clearance, edge, head
 from partwright_training.spec import Draft, Spec, count_word, finish, hole, num, pick
 
 
@@ -38,14 +38,14 @@ def _angle(rng: random.Random) -> Spec:
         d.say("Features", f"R{num(r)} inside bend")
         edges = {"of": "body", "parallel": "y", "convexity": "concave"}
         d.features.append({"kind": "fillet", "id": "bend", "name": "Inside bend", "edges": edges, "radius": "bend_radius"})
-    sizes = [s for s in ("M4", "M5", "M6", "M8", "M10") if head(s) + 6 <= min(a, b) - t and head(s) + 4 <= w]
+    sizes = [s for s in ("M4", "M5", "M6", "M8", "M10") if max(head(s) + 6, 2 * edge(s)) <= min(a, b) - t and 2 * edge(s) <= w]
     if not sizes:
         return d.spec()
     size = rng.choice(sizes)
-    pair = w >= 2 * head(size) + 16 and rng.random() < 0.5
+    pair = w >= 2 * head(size) + 16 and w >= 2 * edge(size) + head(size) + 6 and rng.random() < 0.5
     ys: list[float | str] = [0]
     if pair:
-        s = pick(rng, head(size) + 6, w - head(size) - 6)
+        s = pick(rng, head(size) + 6, min(w - head(size) - 6, w - 2 * edge(size)))
         d.param("hole_spacing", s, "mm", "spacing of the two holes in each leg", f"{num(s)} mm apart")
         ys = ["-hole_spacing / 2", "hole_spacing / 2"]
     n = len(ys)
@@ -90,11 +90,11 @@ def _channel(rng: random.Random) -> Spec:
     d.need("extent", f"width {num(a)}", value=a)
     d.need("extent", f"height {num(h)}", value=h)
     d.need("extent", f"length {num(w)}", value=w)
-    sizes = [s for s in ("M4", "M5", "M6", "M8") if head(s) + 6 <= a - 2 * t]
+    sizes = [s for s in ("M4", "M5", "M6", "M8") if head(s) + 6 <= a - 2 * t and 2 * edge(s) <= a]
     if sizes:
         size, n = rng.choice(sizes), rng.randint(1, 4)
-        pitch = pick(rng, head(size) + 6, max(head(size) + 6, (w - 2 * head(size)) / max(n - 1, 1)), 5)
-        if pitch * (n - 1) > w - 2 * head(size):
+        pitch = pick(rng, head(size) + 6, max(head(size) + 6, (w - 2 * max(head(size), edge(size))) / max(n - 1, 1)), 5)
+        if pitch * (n - 1) > w - 2 * max(head(size), edge(size)):
             n = 1
         word = count_word(rng, n) if n > 1 else "one"
         if n > 1:
@@ -121,14 +121,14 @@ def _channel(rng: random.Random) -> Spec:
             d.need("hole_spacing", f"{num(pitch)} mm pitch", value=pitch)
         lo, hi = clearance(size)
         d.need("holes", f"{n} {size} base holes", count=n, diameter_min=lo, diameter_max=hi)
-    pin = pick(rng, 4, min(16, (h - t) / 2), 1)
+    pin = pick(rng, 4, min(16, (h - t) / 4), 1)
     if rng.random() < 0.6 and d.free(pin, pin):
         d.param("pin_diameter", pin, "mm", "cross hole through both walls", f"{num(pin)} mm cross hole")
         d.say(
             "Holes and ports",
-            f"a {num(pin)} mm cross hole through both walls, centred along the length, {num(h - pin)} mm above the bottom",
+            f"a {num(pin)} mm cross hole through both walls, centred along the length, {num(h - 2 * pin)} mm above the bottom",
         )
-        d.param("pin_height", h - pin, "mm", "cross hole centre above the bottom", f"{num(h - pin)} mm above the bottom")
+        d.param("pin_height", h - 2 * pin, "mm", "cross hole centre above the bottom", f"{num(h - 2 * pin)} mm above the bottom")
         d.features.append(hole("pin_hole", "Cross hole", "body.right", [(0, "pin_height")], diameter="pin_diameter"))
         d.need("min_holes", f"{num(pin)} mm cross hole", count=1, diameter_min=pin - 0.1, diameter_max=pin + 0.1)
     finish(d, rng, "milling_3axis")

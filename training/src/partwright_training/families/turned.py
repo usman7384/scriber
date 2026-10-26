@@ -1,6 +1,6 @@
 import random
 
-from partwright_training.fasteners import clearance, head
+from partwright_training.fasteners import clearance, edge, head
 from partwright_training.spec import Draft, Spec, count_word, finish, hole, num, pick
 
 Point = tuple[float | str, float | str]
@@ -58,7 +58,9 @@ def _bushing(rng: random.Random) -> Spec:
 
 
 def _flange_holes(d: Draft, rng: random.Random, od: float, fd: float) -> None:
-    sizes = [s for s in ("M3", "M4", "M5", "M6", "M8") if head(s) + 4 <= (fd - od) / 2 and d.free(*clearance(s))]
+    sizes = [
+        s for s in ("M3", "M4", "M5", "M6", "M8") if head(s) + 4 <= (fd - od) / 2 and edge(s) <= (fd - od) / 4 and d.free(*clearance(s))
+    ]
     if not sizes or rng.random() < 0.3:
         return
     size, n = rng.choice(sizes), rng.choice((3, 4, 6))

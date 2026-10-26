@@ -109,7 +109,17 @@ def no_hole_size(d: Design, rng: random.Random) -> Design | None:
     return d
 
 
+def edge_too_close(d: Design, rng: random.Random) -> Design | None:
+    margins = [p for p in d["params"] if p["name"].endswith("margin")]
+    if not margins:
+        return None
+    p = rng.choice(margins)
+    p["value"] = round(p["value"] * rng.choice((0.4, 0.5, 0.6)), 1)
+    return d
+
+
 MUTATIONS: dict[str, Mutation] = {
+    "edge_too_close": edge_too_close,
     "drop_hole_plane": drop_hole_plane,
     "pattern_before_source": pattern_before_source,
     "bad_face": bad_face,
@@ -124,7 +134,7 @@ MUTATIONS: dict[str, Mutation] = {
 
 
 # failure modes from the replayed challenge runs (docs/agents/ir-v2.md) are tried first half the time
-FAILURES_SEEN = ("revolve_boss", "pattern_before_source", "port_outside", "word_in_number")
+FAILURES_SEEN = ("revolve_boss", "pattern_before_source", "port_outside", "word_in_number", "edge_too_close")
 
 
 def mutate(design: Design, rng: random.Random) -> tuple[str, str] | None:
@@ -133,7 +143,7 @@ def mutate(design: Design, rng: random.Random) -> tuple[str, str] | None:
         return "truncated", text[: rng.randint(len(text) // 4, len(text) * 3 // 4)]
     order = rng.sample(list(MUTATIONS), len(MUTATIONS))
     if rng.random() < 0.5:
-        order = [*FAILURES_SEEN, *order]
+        order = [*rng.sample(FAILURES_SEEN, len(FAILURES_SEEN)), *order]
     for name in order:
         broken = MUTATIONS[name](copy.deepcopy(design), rng)
         if broken is not None:

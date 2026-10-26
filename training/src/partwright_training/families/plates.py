@@ -2,7 +2,7 @@ import math
 import random
 from typing import Any
 
-from partwright_training.fasteners import clearance, counterbore_depth, head, nominal
+from partwright_training.fasteners import clearance, counterbore_depth, edge, head, nominal
 from partwright_training.spec import Draft, Spec, circle_sketch, count_word, finish, hole, num, pick, rect_sketch
 
 HOLE_TYPES = ("simple", "counterbore", "countersink")
@@ -33,6 +33,8 @@ def _rect_plate(rng: random.Random) -> Spec:
     d.need("extent", f"thickness {num(thick)}", value=thick)
     size_m = rng.choice([s for s in ("M3", "M4", "M5", "M6", "M8", "M10") if head(s) < width / 3])
     kind = _hole_type(rng, size_m, thick)
+    if 2 * edge(size_m, kind) > width - 10:
+        kind = "simple"
     if rng.random() < 0.5:
         _corner_holes(d, rng, size_m, kind, length, width, thick)
     else:
@@ -67,7 +69,7 @@ def _need_holes(d: Draft, size: str, kind: str, n: int) -> None:
 
 
 def _corner_holes(d: Draft, rng: random.Random, size: str, kind: str, length: float, width: float, thick: float) -> None:
-    margin = pick(rng, max(6, math.ceil(head(size) / 2 + 3)), max(8, min(20, width / 4)))
+    margin = pick(rng, max(6, math.ceil(head(size) / 2 + 3), edge(size, kind)), max(8, min(20, width / 4)))
     word = count_word(rng, 4)
     d.param("hole_margin", margin, "mm", "hole centres from the plate edges", f"{num(margin)} mm from the edges")
     d.say("Holes and ports", f"{word} {size} {_kind_words(kind)} holes, one in each corner, {num(margin)} mm from the edges")
@@ -88,7 +90,7 @@ def _corner_holes(d: Draft, rng: random.Random, size: str, kind: str, length: fl
 
 def _hole_row(d: Draft, rng: random.Random, size: str, kind: str, length: float, width: float) -> None:
     n = rng.randint(2, 6)
-    room = length - 2 * max(8, head(size))
+    room = length - 2 * max(8, head(size), edge(size, kind))
     pitch = pick(rng, max(10, head(size) + 4), max(12, room / (n - 1)), 5 if room / (n - 1) > 20 else 1)
     if pitch * (n - 1) > room:
         n = 2
@@ -165,7 +167,7 @@ def _round_plate(rng: random.Random) -> Spec:
     size = rng.choice([s for s in ("M4", "M5", "M6", "M8", "M10", "M12") if head(s) < dia / 5])
     kind = _hole_type(rng, size, thick)
     n = rng.choice((3, 4, 5, 6, 8))
-    bcd = pick(rng, max(dia * 0.5, head(size) * 3), dia - head(size) - 8, 5 if dia > 100 else 1)
+    bcd = pick(rng, max(dia * 0.5, head(size) * 3), min(dia - head(size) - 8, dia - 2 * edge(size, kind)), 5 if dia > 100 else 1)
     word = count_word(rng, n)
     d.param("bolt_count", n, "", "number of bolt holes", f"{word} {size}")
     d.param("bolt_circle_diameter", bcd, "mm", "bolt circle diameter", f"{num(bcd)} mm bolt circle")

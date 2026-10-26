@@ -1,7 +1,7 @@
 import random
 from dataclasses import dataclass
 
-from partwright_training.fasteners import clearance, counterbore_depth, head, tap_drill, thread
+from partwright_training.fasteners import clearance, counterbore_depth, edge, head, tap_drill, thread
 from partwright_training.spec import Draft, Spec, circle_sketch, count_word, finish, hole, num, pick, rect_sketch
 
 
@@ -12,6 +12,7 @@ class _Block:
     height: float
     margin: float
     mount: str
+    kind: str
 
 
 def block(rng: random.Random) -> Spec:
@@ -26,7 +27,10 @@ def block(rng: random.Random) -> Spec:
     d.sketches.append(rect_sketch("outline", "length", "width"))
     d.features.append({"kind": "extrude", "id": "block", "name": "Block", "sketch": "outline", "distance": "height"})
     mount = rng.choice([s for s in ("M4", "M5", "M6", "M8") if head(s) < width / 4])
-    b = _Block(length, width, height, pick(rng, max(7, head(mount) / 2 + 3), max(8, min(15, width / 5))), mount)
+    cb_ok = height >= counterbore_depth(mount) + 8 and edge(mount, "counterbore") <= width / 4
+    kind = "counterbore" if cb_ok and rng.random() < 0.7 else "simple"
+    margin = pick(rng, max(7, head(mount) / 2 + 3, edge(mount, kind)), max(8, min(15, width / 5)))
+    b = _Block(length, width, height, margin, mount, kind)
     axes: set[str] = set()
     _mounts(d, rng, b, axes)
     top = rng.choice(("port", "port", "boss", "boss", "none"))
@@ -79,7 +83,7 @@ def _top_port(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None:
     if not passages or rng.random() < 0.3:
         return
     passage = rng.choice(passages)
-    drop = pick(rng, passage / 2 + 4, depth - passage / 2 - 3)
+    drop = pick(rng, max(passage / 2 + 4, 1.5 * passage), depth - passage / 2 - 3)
     if drop > depth - passage / 2 - 3:
         return
     d.param("passage_diameter", passage, "mm", "cross passage diameter", f"{num(passage)} mm passage")
@@ -119,7 +123,7 @@ def _front_port(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None
     if "y" in axes or not d.free(dia, dia):
         return
     depth = pick(rng, 8, b.width / 2 - 10)
-    z = pick(rng, dia / 2 + 6, b.height - dia / 2 - 6)
+    z = pick(rng, max(dia / 2 + 6, 1.5 * dia), b.height - max(dia / 2 + 6, 1.5 * dia))
     d.param("front_port_diameter", dia, "mm", "front port diameter", f"{num(dia)} mm port")
     d.param("front_port_depth", depth, "mm", "front port depth", f"{num(depth)} mm deep")
     d.param("front_port_height", z, "mm", "front port centre above the bottom", f"{num(z)} mm above the bottom")
@@ -135,7 +139,8 @@ def _front_port(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None
 
 def _side_port(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None:
     size = rng.choice(("M5", "M6", "M8"))
-    if head(size) > b.height / 2 or not d.free(tap_drill(size), tap_drill(size)):
+    clear = b.width / 2 - b.margin - (head(b.mount) + 2 if b.kind == "counterbore" else clearance(b.mount)[1]) / 2
+    if head(size) > b.height / 2 or clear < tap_drill(size) / 2 + 2 or not d.free(tap_drill(size), tap_drill(size)):
         return
     depth = pick(rng, 8, min(25, b.length / 2 - b.margin - 6))
     d.param("side_port_depth", depth, "mm", "side port depth", f"{num(depth)} mm deep")
@@ -177,7 +182,7 @@ def _side_pocket(d: Draft, rng: random.Random, b: _Block) -> None:
 
 
 def _mounts(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None:
-    kind = "counterbore" if b.height >= counterbore_depth(b.mount) + 8 and rng.random() < 0.7 else "simple"
+    kind = b.kind
     words = "counterbored" if kind == "counterbore" else "clearance"
     word = count_word(rng, 4)
     d.param("mount_margin", b.margin, "mm", "mounting hole centres from the edges", f"{num(b.margin)} mm from the edges")
