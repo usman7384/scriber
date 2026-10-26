@@ -12,13 +12,15 @@ export function ProjectPage() {
   const projectId = useParams().projectId ?? "";
   const project = useResource(`project:${projectId}`, () => api.project(projectId));
   const models = useResource(`models:${projectId}`, () => api.models(projectId));
-  const [jobId, setJobId] = useState<string>();
+  const active = useResource(`active-jobs:${projectId}`, () => api.activeJobs(projectId));
+  const [started, setStarted] = useState<string>();
+  const jobId = started ?? active.data?.[0]?.id;
 
   if (!project.data) return <Pending error={project.error} />;
   return (
     <section className="stack">
       <ProjectNav project={project.data} />
-      <PromptPanel projectId={projectId} onJob={(job) => setJobId(job.id)} />
+      <PromptPanel projectId={projectId} onJob={(job) => setStarted(job.id)} />
       {jobId && (
         <JobTimeline key={jobId} jobId={jobId} onEnd={models.reload}>
           {(job) =>

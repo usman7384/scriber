@@ -58,3 +58,13 @@ def test_running_jobs_become_interrupted_on_restart(make_api: MakeApi) -> None:
 def test_unknown_job_is_404(api: Api) -> None:
     assert api.client.get("/jobs/nope").status_code == 404
     assert api.client.get("/jobs/nope/events").status_code == 404
+
+
+def test_project_jobs_list_newest_first_and_filter_active(make_api: MakeApi) -> None:
+    api = make_api()
+    project = api.project()
+    done = api.generate(project, REQS, plate())
+    queued = jobs_db.create(api.deps.engine, "generate", project, None)
+    every = [j["id"] for j in api.ok(api.client.get(f"/projects/{project}/jobs"))]
+    assert every == [queued.id, done["id"]]
+    assert [j["id"] for j in api.ok(api.client.get(f"/projects/{project}/jobs?active=true"))] == [queued.id]

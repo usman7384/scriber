@@ -31,3 +31,16 @@ it("lists models newest first with thumbnail and title", () => {
   expect(links[0]).toHaveAttribute("href", "/m/b");
   expect(links[0]?.querySelector("img")).toHaveAttribute("src", "/thumbs/b.png");
 });
+
+it("says when a model has no version yet", () => {
+  render(
+    <MemoryRouter>
+      <ModelGallery
+        models={[
+          { ...model("a", "Pending part", "2026-10-26T08:00:00Z"), latest_version: null, versions: 0 },
+        ]}
+      />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(/no version yet/)).toBeInTheDocument();
+});

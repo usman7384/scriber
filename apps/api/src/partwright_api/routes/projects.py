@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from partwright_api import repo, views
+from partwright_api import jobs_db, repo, views
 from partwright_api.auth import require_token
 from partwright_api.deps import DepsDep
 from partwright_api.routes.common import need_ollama, need_project, start_generate
@@ -35,6 +35,12 @@ async def generate(project_id: str, body: GenerateIn, d: DepsDep) -> Job:
 def list_models(project_id: str, d: DepsDep) -> list[Model]:
     need_project(d, project_id)
     return [views.model(row, repo.versions(d.engine, row["id"])) for row in repo.model_rows(d.engine, project_id)]
+
+
+@router.get("/projects/{project_id}/jobs")
+def list_jobs(project_id: str, d: DepsDep, active: bool = False) -> list[Job]:
+    need_project(d, project_id)
+    return jobs_db.for_project(d.engine, project_id, active)
 
 
 @router.post("/batch", status_code=202)
