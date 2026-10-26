@@ -1,0 +1,505 @@
+[
+  {
+    "id": "g01-sensor-plate",
+    "facts": {
+      "tp": 6,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [
+          "min_hole_edge_ratio: \u00d86.6 hole at (-52.5, 0, 3) is 7.5 mm from the outer edge; needs \u2265 13.2 mm (2 times \u00d8)",
+          "min_hole_edge_ratio: \u00d86.6 hole at (52.5, 0, 3) is 7.5 mm from the outer edge; needs \u2265 13.2 mm (2 times \u00d8)"
+        ],
+        "rule_warnings": 0,
+        "params": 7,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 6.483
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 26.156
+      }
+    ]
+  },
+  {
+    "id": "g02-nema23-docx",
+    "facts": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 17.546
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 5,
+        "failed_checks": [
+          "47.14 square: hole centre distances [51.0, 71.0, 87.42]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 5.016
+      }
+    ]
+  },
+  {
+    "id": "g03-hole-table-xlsx",
+    "facts": {
+      "tp": 13,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 6,
+        "failed_checks": [
+          "ten 6.6 holes: 4 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6]",
+          "40 pitch: hole centre distances [90.0, 170.0, 192.35]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 3.735
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 6,
+        "failed_checks": [
+          "ten 6.6 holes: 4 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6]",
+          "40 pitch: hole centre distances [100.2, 180.2, 206.18]",
+          "rows 90 apart: hole centre distances [100.2, 180.2, 206.18]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 4,
+        "cited_correct": 3,
+        "attempts": 2,
+        "seconds": 9.75
+      }
+    ]
+  },
+  {
+    "id": "g04-enclosure-yaml",
+    "facts": {
+      "tp": 4,
+      "fp": 2,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 3.358
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 1,
+        "cited_correct": 1,
+        "attempts": 1,
+        "seconds": 3.968
+      }
+    ]
+  },
+  {
+    "id": "g05-flange-pdf",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 5,
+        "failed_checks": [
+          "six 9 mm bolt holes: 0 matching holes; all hole diameters [11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 60.0]",
+          "PCD 110 across: hole centre distances []"
+        ],
+        "rule_errors": [
+          "min_hole_edge_ratio: \u00d811 hole at (-55, 0, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-27.5, -47.63, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-27.5, 47.63, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (27.5, -47.63, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (27.5, 47.63, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (55, 0, 6) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)"
+        ],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 5.562
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 5,
+        "failed_checks": [
+          "six 9 mm bolt holes: 0 matching holes; all hole diameters [11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 60.0]",
+          "PCD 110 across: hole centre distances []"
+        ],
+        "rule_errors": [
+          "min_hole_edge_ratio: \u00d811 hole at (-55, 0, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-27.5, -47.63, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-27.5, 47.63, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (27.5, -47.63, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (27.5, 47.63, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (55, 0, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)"
+        ],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 6,
+        "cited_correct": 4,
+        "attempts": 4,
+        "seconds": 28.109
+      }
+    ]
+  },
+  {
+    "id": "g06-base-plate-txt",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 6,
+        "failed_checks": [
+          "120 apart in X: hole centre distances [15.0, 30.0, 45.0]",
+          "70 apart in Y: hole centre distances [15.0, 30.0, 45.0]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 5.046
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 6,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [
+          "min_hole_edge_ratio: \u00d811 hole at (-60, -35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-60, 35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (60, -35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (60, 35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)"
+        ],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 3,
+        "attempts": 4,
+        "seconds": 23.5
+      }
+    ]
+  },
+  {
+    "id": "g07-spacer-csv",
+    "facts": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": null,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 10.422
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 0,
+        "checks_total": 3,
+        "failed_checks": [
+          "OD 30: bounding box 10.00 x 45.00 x 28.00 mm",
+          "length 20: bounding box 10.00 x 45.00 x 28.00 mm",
+          "bore 12.5: 0 matching holes; all hole diameters [4.5]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 4.093
+      }
+    ]
+  },
+  {
+    "id": "g08-milled-pocket",
+    "facts": {
+      "tp": 7,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm"
+        ],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 4.703
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm",
+          "min_internal_corner_radius@milling_3axis: internal corner radius 0 mm along the tool axis Z; a 3-axis end mill needs \u2265 3 mm"
+        ],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 6,
+        "cited_correct": 6,
+        "attempts": 4,
+        "seconds": 27.265
+      }
+    ]
+  },
+  {
+    "id": "g09-previous-step",
+    "facts": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 4,
+        "failed_checks": [
+          "thickness 6 kept: bounding box 150.00 x 70.00 x 2.00 mm",
+          "four 6.6 holes kept: 0 matching holes; all hole diameters []"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 2.781
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 4,
+        "failed_checks": [
+          "thickness 6 kept: bounding box 150.00 x 70.00 x 10.00 mm",
+          "four 6.6 holes kept: 0 matching holes; all hole diameters []"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 3,
+        "cited_correct": 1,
+        "attempts": 1,
+        "seconds": 3.406
+      }
+    ]
+  },
+  {
+    "id": "g10-fdm-bracket",
+    "facts": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 1
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 5,
+        "failed_checks": [
+          "two M4 clearance: 0 matching holes; all hole diameters [8.0, 8.0]",
+          "50 apart: hole centre distances []"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 2,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 16.187
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 10.717
+      }
+    ]
+  }
+]

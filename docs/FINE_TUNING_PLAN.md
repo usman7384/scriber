@@ -1,6 +1,6 @@
 # Fine-tuning plan: teaching a Qwen model our IR
 
-Status: proposed. Inputs: `docs/research/fine-tuning.md`, `docs/agents/ir-v2.md`, the replayed challenge failures, and the Unsloth Qwen3.5 guide (checked 2026-10-26).
+Status: stopped after S1 by the stop rule (2026-10-26): the tuned 0.8B did not beat the prompted 4B on M1. Results: `docs/agents/training.md`. The original plan follows.
 
 ## Why fine-tune
 

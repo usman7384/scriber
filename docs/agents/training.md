@@ -71,3 +71,17 @@ What it shows:
 
 - The IR v2, compiler, kernel and checks can express and verify the challenge manifold; the remaining gap is entirely model capability.
 - Two failures came from our requirement extraction, not the model: "plate thickness 4" extracted as an overall extent for an L-bracket (the bounding box of an L is legs x width, so it can never be 4), and a "wall 2" requirement on an open box, which the wall check can only measure through holes. Both cost the local models repairs too; they are agent bugs to fix.
+
+## S1 and the stop rule
+
+S1 data (`partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b`): 4898 verified samples, 2821 generate / 1429 repair / 648 requirement; 1110 local paraphrases (terse, chatty, engineer, messy) that passed the number and meaning checks, 345 vague requests, 760 document-grounded requests, open boxes added. Same recipe as S0b, 608 steps, 2 h 12 min, mean loss 0.027. Served as `partwright-ir:0.8b-s1`.
+
+| Gate | tuned 0.8B S1 | tuned 0.8B S0b | qwen3.5:4b (prompted, after the key-order fix) |
+|---|---|---|---|
+| M1 (`m1-20261026-212853`, 4B: `m1-20261026-150432`) | 3/10, 10/35 checks, 6/10 built, median 16 s | 0/10, 3/35 | **4/10, 15/35**, median 68 s |
+| Grounded, grounded mode (`grounded-20261026-213112`, 4B: `grounded-20261026-213513`) | 1/10, **24/45**, 8/10 built, 18/25 citations correct, median 11 s | not run | 1/10, 14/45, 5/10 built, 10/15 correct, median 98 s |
+| Grounded, prompt mode | 2/10, **30/45**, 9/10 built | not run | 2/10, 12/45, 3/10 built |
+
+Stop rule (`docs/FINE_TUNING_PLAN.md`): S1 had to beat the prompted 4B on M1 and on the grounded set. It does not beat it on M1 (3/10 and 10/35 against 4/10 and 15/35), so **the 0.8B route stops here**, as the rule says. On the grounded set it ties on fully passing cases, passes more checks, builds more parts and is about nine times faster; that is recorded, not a reason to bend the rule.
+
+The 4B's grounded score fell from 3/10, 23/45 (`grounded-20261026-035401`) to 1/10, 14/45 since the key-order and request-override changes. That needs a look before the next 4B work: the request-override logic, the reordered worked examples, or run-to-run variance.
