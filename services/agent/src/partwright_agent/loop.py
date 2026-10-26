@@ -1,6 +1,6 @@
 import json
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Protocol
@@ -9,10 +9,11 @@ from pydantic import BaseModel, ValidationError
 
 from partwright_agent.grounding import grounded
 from partwright_agent.llm import LLM, Message
-from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements
+from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
 from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
+from partwright_context import Fact
 from partwright_geometry import Artifact, BuildError, Finding
 from partwright_ir import (
     Design,
@@ -78,9 +79,12 @@ def generate(
     context: Grounding | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
-    reqs = extract_requirements(prompt, llm, seed) + (fact_requirements(context.pack.facts) if context else [])
-    yield _requirements_step(reqs, clock)
-    project = context_block(context) if context else ""
+    stated = extract_requirements(prompt, llm, seed)
+    facts = context.pack.facts if context else []
+    dropped = overridden(stated, facts)
+    reqs = stated + fact_requirements([f for f in facts if f not in dropped])
+    yield _requirements_step(reqs, clock, dropped)
+    project = context_block(context, dropped) if context else ""
     messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, llm.few_shot)]
 
     def decode(raw: str) -> Design:
@@ -203,8 +207,11 @@ def _finding_text(f: Finding) -> str:
     return f"{f.rule_id} {f.part}: {f.message}.{fix}"
 
 
-def _requirements_step(reqs: list[Requirement], clock: "_Clock") -> Step:
-    return Step(kind="requirements", message="; ".join(r.description for r in reqs) or "none found", attempt=0, elapsed_ms=clock())
+def _requirements_step(reqs: list[Requirement], clock: "_Clock", dropped: Sequence[Fact] = ()) -> Step:
+    message = "; ".join(r.description for r in reqs) or "none found"
+    if dropped:
+        message += "; the request overrides the project documents on: " + "; ".join(f"{f.text} [{f.id}]" for f in dropped)
+    return Step(kind="requirements", message=message, attempt=0, elapsed_ms=clock())
 
 
 def _summary(r: Result) -> str:

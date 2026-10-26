@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 
 from partwright_agent import FakeLLM, Grounding, generate
-from partwright_agent.project_context import fact_requirements
+from partwright_agent.project_context import fact_requirements, overridden
+from partwright_agent.requirements import Requirement
 from partwright_context import ContextPack, Fact
 from partwright_geometry import Artifact, HoleInfo, PartMetrics
 from partwright_ir import Design, Process, Provenance, Rule, RuleSet
@@ -103,3 +104,25 @@ def test_generation_sees_facts_cites_them_and_passes_rules(tmp_path: Path) -> No
     assert steps[-1].kind == "done" and result and result.design
     assert result.design.params[1].provenance == SOURCE
     assert HOLES.id in result.used and "min_hole_edge_ratio" in result.used
+
+
+M5_HOLES = Requirement(kind="holes", description="4 M5", count=4, diameter_min=5.3, diameter_max=5.8)
+
+
+def test_request_values_override_conflicting_facts_of_the_same_kind() -> None:
+    stated = [Requirement(kind="extent", description="length 100", value=100), M5_HOLES]
+    assert overridden(stated, [HOLES, BORE, LENGTH]) == [HOLES, LENGTH]
+
+
+def test_facts_that_agree_or_add_something_new_are_kept() -> None:
+    assert overridden([Requirement(kind="extent", description="length 80", value=80)], [HOLES, BORE, LENGTH]) == []
+    assert overridden([], [HOLES, BORE, LENGTH]) == []
+
+
+def test_overridden_facts_leave_the_checks_and_the_prompt(tmp_path: Path) -> None:
+    stated = {"requirements": [M5_HOLES.model_dump()]}
+    llm = FakeLLM([json.dumps(stated), json.dumps(design())])
+    steps = list(generate("plate with four M5 holes", llm, FakeGeometry(), tmp_path, max_repairs=0, context=grounding()))
+    assert "the request overrides the project documents on: REQ-2 Mounting: 4 x M6 through holes" in steps[0].message
+    assert f"[{HOLES.id}]" not in llm.calls[1][-1].content
+    assert f"[{BORE.id}]" in llm.calls[1][-1].content
