@@ -1,0 +1,176 @@
+# Must-pass challenge prompts, submitted by the user through the web UI on 2026-10-26.
+# Prompts are copied verbatim from data/api.sqlite. Checks are what the geometry can verify today;
+# every case must also build one valid solid. See docs/PLAN.md (challenge gate).
+
+- id: c01-manifold-challenge
+  rows: [GE-1, GE-4, VM-1, VM-6, PR-1]
+  prompt: |
+    # CAD Generation Challenge: Parametric Hydraulic Manifold Block
+
+    Act as an expert mechanical design engineer. Generate a single, fully parametric 3D CAD solid representing a complex hydraulic manifold block used in industrial machinery.
+
+    The output must be one continuous solid body, not an assembly. All ports, grooves, cavities, mounting holes, and external features must be modeled as actual geometry. Prioritize dimensional accuracy, mechanical plausibility, manufacturing feasibility, and a clean parametric feature tree.
+
+    ## 1. Overall Dimensions
+
+    - Maximum bounding box: 120 × 90 × 75 mm
+    - Base coordinate system: origin at the center of the bottom face
+    - Main block orientation: longest dimension along X, width along Y, height along Z
+    - Material: Aluminum 6061-T6
+    - Manufacturing process: CNC milling and drilling
+    - Target: one watertight, manifold solid with positive volume
+    - Units: millimeters
+
+    Keep the part within the specified bounding box.
+
+    ## 2. Main External Geometry
+
+    Create a rectangular manifold body with the following modifications:
+
+    - Main block dimensions: 110 × 80 × 65 mm.
+    - Two stepped terraces on the top surface, with different heights and widths.
+    - A raised cylindrical boss of 30 mm diameter and 8 mm height, positioned off-center.
+    - Two smaller cylindrical bosses of 16 mm diameter and 6 mm height.
+    - Four external mounting ears extending from the lower corners, each with a through-hole.
+    - Deep rectangular relief pockets on two opposing side faces.
+    - A recessed rectangular panel on the front face with rounded internal corners.
+    - Six external reinforcing ribs distributed across the side walls, with varying lengths and heights.
+    - A chamfered perimeter around the bottom face.
+    - Fillets at selected external edges, using multiple radii between 1 and 5 mm.
+
+    The external geometry must look like a purpose-designed industrial component rather than a basic box with randomly added features.
+
+    ## 3. Complex Hole and Port Geometry
+
+    Create a network of functional-looking hydraulic ports and intersecting passages:
+
+    ### Top face
+    - Three threaded-port representations of different nominal diameters.
+    - One large counterbored port with two concentric stepped diameters.
+    - Two smaller blind holes arranged symmetrically around the main port.
+    - A shallow circular sealing groove around the primary port.
+    - A recessed identification area with engraved port labels.
+
+    ### Front face
+    - Two horizontal ports at different heights.
+    - Each port includes a counterbore, a smaller bore, and a conical drill-point termination where appropriate.
+    - Add a shallow circular groove around one port to represent a sealing interface.
+
+    ### Side faces
+    - Two cross-drilled ports on the left face.
+    - One larger port on the right face.
+    - Internal drilled passages connecting selected ports through the block.
+
+    ### Internal passages
+    - Create intersecting cylindrical bores along X, Y, and Z.
+    - Include at least one stepped passage with multiple diameters.
+    - Model drill-point terminations where the drilling process would naturally produce them.
+    - Ensure that selected passages intersect intentionally and that no unintended openings break through the external walls.
+    - Where necessary, account for realistic tool access and drill lengths.
+
+    Do not create a second solid inside the block. All passages must be subtractive features of the same main solid.
+
+    ## 4. Mounting and Fastening Features
+
+    - Four through-holes in the mounting ears.
+    - Two counterbored mounting holes on the top surface.
+    - One elongated slot on a side face.
+    - Two blind threaded-hole representations on the bottom.
+    - Circular locating recesses on two mounting surfaces.
+    - Maintain adequate material around holes and between neighboring cavities.
+
+    Thread geometry may be simplified to nominal tap-drill bores with documented thread specifications if true helical threads are not supported.
+
+    ## 5. Parametric Design Requirements
+
+    Create named parameters for:
+
+    - `block_length`
+    - `block_width`
+    - `block_height`
+    - `boss_diameter`
+    - `boss_height`
+    - `port_diameter_primary`
+    - `port_diameter_secondary`
+    - `port_spacing`
+    - `mounting_hole_diameter`
+    - `mounting_hole_offset`
+    - `passage_diameter`
+    - `sealing_groove_width`
+    - `sealing_groove_depth`
+    - `wall_thickness`
+    - `edge_fillet_radius`
+    - `edge_chamfer_size`
+
+    Use sketches, dimensional constraints, datum planes, pockets, pads, patterns, and fillets to construct an editable feature tree.
+
+    Drive repeated features through patterns and shared parameters wherever possible. Avoid hard-coding dependent dimensions independently.
+
+    The part should remain valid after reasonable changes to the main block dimensions and port spacing.
+
+    ## 6. Manufacturing Constraints
+
+    - Maintain a nominal minimum wall thickness of 3 mm wherever practical.
+    - Ensure all drilled passages are reachable using plausible drilling directions.
+    - Avoid unnecessarily deep, narrow pockets that cannot be machined with conventional tools.
+    - Prevent drill passages from breaking through unintended exterior surfaces.
+    - Keep mounting holes clear of intersecting passages.
+    - Apply chamfers to accessible hole entrances where appropriate.
+    - Ensure sealing grooves have consistent width and depth.
+    - Avoid zero-thickness geometry and coincident faces that create invalid solids.
+    - Do not apply fillets so aggressively that they destroy critical mounting or sealing surfaces.
+
+    Document any geometry that would require a specialized tool, angled drilling, or a different manufacturing operation.
+
+    ## 7. Construction and Validation
+
+    Build the part as one native CAD body using an ordered sequence of editable features.
+
+    After construction:
+
+    1. Recompute the entire feature tree.
+    2. Confirm that the final body contains exactly one solid.
+    3. Verify that the solid is valid and has positive volume.
+    4. Check that the bounding box respects the specified limits.
+    5. Confirm the intended number and positions of all holes and bosses.
+    6. Verify that the internal passages intersect where intended.
+    7. Check minimum wall thickness around major ports and passages.
+    8. Detect unintended openings, self-intersections, and invalid faces.
+    9. Change the main block length by 5% and recompute to test parametric robustness.
+    10. Report any failed or unverified checks honestly.
+
+    ## 8. Deliverables
+
+    Produce:
+
+    - Native editable CAD file.
+    - STEP file containing the single solid.
+    - Isometric rendering of the finished part.
+    - Front, top, side, and bottom orthographic views.
+    - A dimensioned drawing containing the critical interfaces.
+    - A concise feature-tree summary.
+    - A validation report containing actual geometric check results.
+
+    Do not substitute a mesh for the native parametric model unless the CAD environment cannot produce native geometry. If a requirement cannot be implemented, explain the limitation and provide the closest valid alternative.
+
+    **Final acceptance criterion:** The result must be a single, complex, mechanically plausible solid with genuine internal and external geometry, a stable parametric feature history, and verifiable geometric validity. It must not be an assembly, a collection of disconnected solids, or merely a visually convincing shape.
+  checks:
+    - {kind: max_extent, description: X within 120, value: 120, axis: x}
+    - {kind: max_extent, description: Y within 90, value: 90, axis: y}
+    - {kind: max_extent, description: Z within 75, value: 75, axis: z}
+    - {kind: min_holes, description: at least 12 holes and ports, count: 12}
+    - {kind: counterbores, description: at least 3 counterbored ports or holes, count: 3}
+    - {kind: crossing_holes, description: intersecting internal passages, count: 1}
+    - {kind: hole_axes, description: ports along all three axes, count: 3}
+  params: [block_length, block_width, block_height, boss_diameter, boss_height, port_diameter_primary, port_diameter_secondary, port_spacing, mounting_hole_diameter, mounting_hole_offset, passage_diameter, sealing_groove_width, sealing_groove_depth, wall_thickness, edge_fillet_radius, edge_chamfer_size]
+  robust: [block_length, port_spacing]
+
+- id: c02-manifold-short
+  rows: [GE-1, VM-6]
+  prompt: |
+    Generate a single-piece hydraulic manifold block with complex stepped surfaces, cylindrical bosses, mounting ears, threaded ports, counterbores, and intersecting internal channels. Ensure it is a fully parametric, manufacturable solid with a clean feature tree and no separate components.
+  checks:
+    - {kind: min_holes, description: ports and mounting holes, count: 4}
+    - {kind: counterbores, description: at least one counterbore, count: 1}
+    - {kind: crossing_holes, description: intersecting internal channels, count: 1}
+    - {kind: hole_axes, description: ports on at least two axes, count: 2}

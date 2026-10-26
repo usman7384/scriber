@@ -134,6 +134,7 @@ Reference-compatible aliases under `/api/v1`: `generate`, `modify`, `edit`, `dow
 | M2b grounded eval | 10 cases with spec files (PDF, DOCX, XLSX, YAML, CSV, TXT), rules documents and past STEP parts, each with labelled facts and rules; scored for extraction precision/recall, retrieval fact recall, and generation run prompt-only (spec pasted as text) vs grounded (files in a project) on the same checks, rule compliance and citation correctness; scorecard committed |
 | M3 web + API | viewer, param panel with live regen, chat refine, timeline, versions, context browser, API tokens, SSE progress, OpenAPI docs |
 | M4 assemblies + vision + mesh | joints and exploded view, sketch/photo/drawing → model, STL → parametric, FCStd feature tree verified headless, sizing XML → aircraft |
+| Challenge gate (M4/M5) | `evals/cases/challenge.yaml` (user-submitted manifold prompts, verbatim) must pass: one valid solid, every geometric check, every named parameter, and the 5 % robustness rebuilds. Failing today; it is a required exit criterion for M5 and is reported on every scorecard until it passes |
 | M5 parity | every row green with a scripted demo; ≥50 eval specs; fine-tune toy run; `PARITY_REPORT.md`; demo script + GIF |
 
 ## Row assignment
