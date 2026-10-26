@@ -4,21 +4,27 @@ from collections.abc import Iterator
 from pydantic import BaseModel
 
 from partwright_ir.expr import ExprError, evaluate, names
-from partwright_ir.fasteners import TABLE, hole_size
+from partwright_ir.fasteners import hole_size, parse
 from partwright_ir.model import (
     FACE_NAMES,
+    Circle,
     Design,
+    Entity,
     Expr,
     Extrude,
     Feature,
     Hole,
     Part,
+    Path,
     Pattern,
     PlaneRef,
+    Polygon,
     Provenance,
+    Rect,
     Revolve,
     Selector,
     Sketch,
+    Slot,
 )
 from partwright_ir.placement import hole_centres
 
@@ -30,7 +36,7 @@ NON_EXPR_FIELDS = {
     *("rotate_about", "process", "features", "mirror_plane", "material"),
 }
 POSITIVE_FIELDS = {
-    *("width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y", "distance2"),
+    *("width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"),
     *("cb_diameter", "cb_depth", "cs_diameter", "cs_angle", "depth"),
 }
 PATTERNABLE = (Extrude, Revolve, Hole)
@@ -114,11 +120,13 @@ def _feature_errors(
                 yield from _ref_errors(sketch.plane, datums, seen, path)
             if isinstance(f, Extrude):
                 yield from _extent_errors(f, bool(seen), path)
+            elif sketch is not None:
+                yield from _revolve_errors(f, sketch, values, path)
         case Hole():
             yield from _ref_errors(f.plane, datums, seen, path)
             yield from _hole_errors(f, path)
         case Pattern():
-            yield from _pattern_errors(f, seen, path)
+            yield from _pattern_errors(f, seen, sketches, path)
         case _:
             selectors = [f.edges] if hasattr(f, "edges") else list(getattr(f, "open", []))
             yield from (e for s in selectors for e in _selector_errors(s, seen, path))
@@ -144,6 +152,8 @@ def _extent_errors(f: Extrude, has_part: bool, path: str) -> Iterator[IrError]:
         yield IrError(path=path, message=f"extent {f.extent!r} needs a distance")
     if f.extent == "two_sided" and f.distance2 is None:
         yield IrError(path=path, message="extent 'two_sided' needs distance2 for the second side")
+    if f.extent == "two_sided" and f.distance2 is not None and not isinstance(f.distance2, str) and f.distance2 <= 0:
+        yield IrError(path=path, message="distance2 must be > 0")
     if f.extent == "through_all" and f.mode == "add":
         yield IrError(path=path, message="extent 'through_all' only makes sense for cut or intersect")
     if f.extent == "up_to_next" and not has_part:
@@ -153,8 +163,8 @@ def _extent_errors(f: Extrude, has_part: bool, path: str) -> Iterator[IrError]:
 def _hole_errors(h: Hole, path: str) -> Iterator[IrError]:
     if h.fastener is None and h.diameter is None:
         yield IrError(path=path, message="give the hole a fastener (e.g. 'M6') or a diameter")
-    if h.fastener is not None and h.fastener not in TABLE:
-        yield IrError(path=path, message=f"unknown fastener {h.fastener!r}; known: {', '.join(TABLE)}")
+    if h.fastener is not None and parse(h.fastener) is None:
+        yield IrError(path=path, message=f"unknown fastener {h.fastener!r}; use M2 to M30, optionally with a pitch such as M18x1.5")
     if h.type == "tapped" and h.fastener is None:
         yield IrError(path=path, message="a tapped hole needs a fastener such as 'M6'")
     if h.type == "counterbore" and h.fastener is None and (h.cb_diameter is None or h.cb_depth is None):
@@ -169,17 +179,50 @@ def _hole_errors(h: Hole, path: str) -> Iterator[IrError]:
         yield IrError(path=path, message="a drill point only applies to a blind hole with a depth")
 
 
-def _pattern_errors(p: Pattern, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+def _pattern_errors(p: Pattern, seen: dict[str, Feature], sketches: dict[str, Sketch], path: str) -> Iterator[IrError]:
+    usable = [fid for fid, f in seen.items() if isinstance(f, PATTERNABLE)]
     for fid in p.features:
         source = seen.get(fid)
         if source is None:
-            yield IrError(path=path, message=f"pattern source {fid!r} is not an earlier feature")
+            what = "a sketch; list the feature that uses it" if fid in sketches else "not an earlier feature"
+            yield IrError(path=path, message=f"pattern source {fid!r} is {what}; patternable features so far: {usable}")
         elif not isinstance(source, PATTERNABLE):
             yield IrError(
                 path=path, message=f"pattern source {fid!r} is a {source.kind}; only extrudes, revolves and holes can be patterned"
             )
     if p.type == "linear" and p.spacing is None:
         yield IrError(path=path, message="a linear pattern needs a spacing")
+
+
+def _revolve_errors(f: Revolve, sketch: Sketch, values: dict[str, float], path: str) -> Iterator[IrError]:
+    axis = 0 if f.axis == "Y" else 1
+    offset = evaluate(f.axis_offset, values)
+    for e in sketch.entities:
+        lo, hi = _span(e, axis, values)
+        if lo < offset - 1e-6 and hi > offset + 1e-6:
+            fix = "draw half the section on one side of it, or extrude a circle for a plain cylinder or boss"
+            yield IrError(path=path, message=f"the sketch {sketch.id!r} crosses the revolve axis; {fix}")
+            return
+
+
+def _span(e: Entity, axis: int, values: dict[str, float]) -> tuple[float, float]:
+    match e:
+        case Circle() | Rect() | Slot():
+            c = evaluate(e.center[axis], values)
+            return c - _half(e, axis, values), c + _half(e, axis, values)
+        case Polygon():
+            xs = [evaluate(p[axis], values) for p in e.points]
+        case Path():
+            xs = [evaluate(e.start[axis], values), *(evaluate(s.to[axis], values) for s in e.segments)]
+    return min(xs), max(xs)
+
+
+def _half(e: Circle | Rect | Slot, axis: int, values: dict[str, float]) -> float:
+    if isinstance(e, Circle):
+        return evaluate(e.diameter, values) / 2
+    if isinstance(e, Rect):
+        return evaluate(e.width if axis == 0 else e.height, values) / 2
+    return evaluate(e.length, values) / 2
 
 
 def _selector_errors(s: Selector, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
