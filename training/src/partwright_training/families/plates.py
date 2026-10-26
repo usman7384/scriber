@@ -13,7 +13,21 @@ def plate(rng: random.Random) -> Spec:
 
 
 def _rect_plate(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("Mounting plate", "Base plate", "Adapter plate", "Cover plate")), "plate")
+    d = Draft(
+        rng.choice(
+            (
+                "Mounting plate",
+                "Base plate",
+                "Adapter plate",
+                "Cover plate",
+                "Mounting bracket",
+                "Motor mount",
+                "Sensor holder",
+                "Bracket plate",
+            )
+        ),
+        "plate",
+    )
     length, thick = pick(rng, 60, 200, 5), pick(rng, 4, 15)
     width = pick(rng, 40, min(length, 150), 5)
     size = f"{num(length)} x {num(width)} mm"
@@ -155,7 +169,7 @@ def _finish_top(d: Draft, rng: random.Random, thick: float) -> None:
 
 
 def _round_plate(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("Round cover plate", "Flange plate", "Round mounting plate")), "plate")
+    d = Draft(rng.choice(("Round cover plate", "Flange plate", "Round mounting plate", "Flange", "End cap", "Disc")), "plate")
     dia, thick = pick(rng, 60, 200, 5), pick(rng, 4, 16)
     d.param("plate_diameter", dia, "mm", "outer diameter", f"{num(dia)} mm diameter")
     d.param("thickness", thick, "mm", "plate thickness", f"{num(thick)} mm thick")

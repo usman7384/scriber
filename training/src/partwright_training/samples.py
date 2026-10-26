@@ -34,22 +34,29 @@ def target(spec: Spec) -> str:
     return answer_json(spec.design)
 
 
-def _task(prompt: Prompt, context: Grounding | None) -> tuple[tuple[str, str], ...]:
-    return tuple(design_messages(prompt.text, project=context_block(context) if context else "", few_shot=False))
+@dataclass(frozen=True)
+class Task:
+    prompt: Prompt
+    context: Grounding | None
+    design: Design
+
+    def messages(self) -> tuple[tuple[str, str], ...]:
+        project = context_block(self.context) if self.context else ""
+        return tuple(design_messages(self.prompt.text, project=project, few_shot=False))
+
+    def answer(self) -> str:
+        return answer_json(self.design)
+
+    def detail(self) -> str:
+        return "" if self.context is None else "context+facts" if self.context.pack.facts else "context"
 
 
-def _detail(context: Grounding | None) -> str:
-    return "" if context is None else "context+facts" if context.pack.facts else "context"
+def generate_sample(spec: Spec, task: Task) -> Sample:
+    return Sample("generate", spec.family, task.prompt.style, task.detail(), (*task.messages(), ("assistant", task.answer())))
 
 
-def generate_sample(spec: Spec, prompt: Prompt, context: Grounding | None) -> Sample:
-    return Sample("generate", spec.family, prompt.style, _detail(context), (*_task(prompt, context), ("assistant", target(spec))))
-
-
-def repair_sample(
-    spec: Spec, prompt: Prompt, context: Grounding | None, geometry: LocalGeometry, out_dir: Path, rng: random.Random, tries: int = 4
-) -> Sample | None:
-    good = json.loads(target(spec))
+def repair_sample(spec: Spec, task: Task, geometry: LocalGeometry, out_dir: Path, rng: random.Random, tries: int = 4) -> Sample | None:
+    good = json.loads(task.answer())
     for attempt in range(tries):
         mutated = mutate(good, rng)
         if mutated is None:
@@ -59,14 +66,14 @@ def repair_sample(
         problems, _, _, _ = evaluate(raw, Design.model_validate_json, list(spec.checks), build, out_dir / f"repair_{attempt}")
         if problems:
             repair = repair_message(raw, problems, unchanged=False)
-            messages = (*_task(prompt, context), ("user", repair), ("assistant", target(spec)))
-            return Sample("repair", spec.family, prompt.style, name, messages)
+            messages = (*task.messages(), ("user", repair), ("assistant", task.answer()))
+            return Sample("repair", spec.family, task.prompt.style, name, messages)
     return None
 
 
 def requirement_sample(spec: Spec, prompt: Prompt) -> Sample | None:
     stated = [r for r in spec.checks if r.kind in STATED_KINDS and _stated(r, prompt.text)]
-    if not stated:
+    if not stated and prompt.style not in ("vague", "documented"):
         return None
     answer = {"requirements": [r.model_dump(mode="json", exclude_defaults=True) for r in stated]}
     messages = (*requirement_messages(prompt.text), ("assistant", json.dumps(answer, separators=(",", ":"))))

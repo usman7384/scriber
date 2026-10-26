@@ -12,7 +12,12 @@ def turned(rng: random.Random) -> Spec:
 
 def _bushing(rng: random.Random) -> Spec:
     flanged, grooved = rng.random() < 0.5, rng.random() < 0.3
-    d = Draft("Flanged bushing" if flanged else rng.choice(("Spacer sleeve", "Bushing", "Tube spacer")), "turned")
+    d = Draft(
+        rng.choice(("Flanged bushing", "Flanged sleeve", "Adapter"))
+        if flanged
+        else rng.choice(("Spacer sleeve", "Bushing", "Tube spacer", "Collar", "Sleeve")),
+        "turned",
+    )
     od = pick(rng, 16, 80, 2)
     bore = pick(rng, max(4, od * 0.3), od - 6, 1)
     length = pick(rng, 8, 100, 1)
@@ -80,7 +85,7 @@ def _flange_holes(d: Draft, rng: random.Random, od: float, fd: float) -> None:
 
 
 def _shaft(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("Stepped shaft", "Stepped pin", "Shaft")), "turned")
+    d = Draft(rng.choice(("Stepped shaft", "Stepped pin", "Shaft", "Axle", "Pin")), "turned")
     d1 = pick(rng, 12, 60, 2)
     d2 = pick(rng, 6, d1 - 4, 1)
     l1, l2 = pick(rng, 10, 80), pick(rng, 8, 60)

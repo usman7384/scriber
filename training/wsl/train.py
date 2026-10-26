@@ -29,6 +29,7 @@ def main() -> None:
     p.add_argument("--batch", type=int, default=2)
     p.add_argument("--accum", type=int, default=4)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--max-steps", type=int, default=-1)
     args = p.parse_args()
 
     model, processor = FastLanguageModel.from_pretrained(args.model, max_seq_length=args.max_seq, load_in_4bit=False, load_in_16bit=True)
@@ -61,6 +62,7 @@ def main() -> None:
             per_device_train_batch_size=args.batch,
             gradient_accumulation_steps=args.accum,
             num_train_epochs=args.epochs,
+            max_steps=args.max_steps,
             learning_rate=args.lr,
             lr_scheduler_type="cosine",
             warmup_ratio=0.03,
