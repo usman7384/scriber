@@ -12,6 +12,7 @@ members = [
     "partwright-evals",
     "partwright-geometry",
     "partwright-ir",
+    "partwright-training",
 ]
 
 [[package]]
@@ -900,6 +901,7 @@ dependencies = [
     { name = "partwright-evals" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
+    { name = "partwright-training" },
 ]
 
 [package.dev-dependencies]
@@ -921,6 +923,7 @@ requires-dist = [
     { name = "partwright-evals", editable = "evals" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
+    { name = "partwright-training", editable = "training" },
 ]
 
 [package.metadata.requires-dev]
@@ -1101,6 +1104,25 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "pydantic" }]
+
+[[package]]
+name = "partwright-training"
+version = "0.1.0"
+source = { editable = "training" }
+dependencies = [
+    { name = "partwright-agent" },
+    { name = "partwright-geometry" },
+    { name = "partwright-ir" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "partwright-agent", editable = "services/agent" },
+    { name = "partwright-geometry", editable = "services/geometry" },
+    { name = "partwright-ir", editable = "services/ir" },
+    { name = "pyyaml" },
+]
 
 [[package]]
 name = "pathspec"

@@ -244,8 +244,8 @@ REQUIREMENT_EXAMPLE = (
 )
 
 
-def design_messages(request: str, reference: Sequence[str] = (), project: str = "") -> list[tuple[str, str]]:
-    shots = [m for req, design in EXAMPLES for m in (("user", req), ("assistant", json.dumps(design)))]
+def design_messages(request: str, reference: Sequence[str] = (), project: str = "", few_shot: bool = True) -> list[tuple[str, str]]:
+    shots = [m for req, design in EXAMPLES for m in (("user", req), ("assistant", json.dumps(design)))] if few_shot else []
     task = _with_reference(request, reference) + (f"\n\n{project}" if project else "")
     return [("system", DESIGN_RULES), *shots, ("user", task)]
 
