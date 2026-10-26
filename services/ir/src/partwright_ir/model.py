@@ -164,7 +164,7 @@ class Hole(FeatureBase):
     plane: PlaneRef
     at: Placement
     type: Literal["simple", "counterbore", "countersink", "tapped"] = "simple"
-    fastener: str | None = Field(default=None, pattern=r"^M\d+(\.\d)?$")
+    fastener: str | None = Field(default=None, description="metric screw or thread, e.g. M6 or M18x1.5")
     fit: Literal["close", "normal", "loose"] = "normal"
     diameter: Expr | None = None
     depth: Expr | None = None

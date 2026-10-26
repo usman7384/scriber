@@ -1,22 +1,31 @@
+import re
 from dataclasses import dataclass
 
 from partwright_ir.expr import evaluate
 from partwright_ir.model import Hole
 
-# ISO 273 clearance (close, normal, loose), ISO 261 tap drill, DIN 974-1 counterbore for ISO 4762 (diameter, depth),
-# ISO 10642 countersunk head diameter
-TABLE: dict[str, tuple[tuple[float, float, float], float, tuple[float, float], float]] = {
-    "M2": ((2.2, 2.4, 2.6), 1.6, (4.4, 2.3), 4.4),
-    "M2.5": ((2.7, 2.9, 3.1), 2.05, (5.5, 2.8), 5.5),
-    "M3": ((3.2, 3.4, 3.6), 2.5, (6.5, 3.4), 6.72),
-    "M4": ((4.3, 4.5, 4.8), 3.3, (8.0, 4.4), 8.96),
-    "M5": ((5.3, 5.5, 5.8), 4.2, (10.0, 5.4), 11.2),
-    "M6": ((6.4, 6.6, 7.0), 5.0, (11.0, 6.4), 13.44),
-    "M8": ((8.4, 9.0, 10.0), 6.8, (15.0, 8.6), 17.92),
-    "M10": ((10.5, 11.0, 12.0), 8.5, (18.0, 10.6), 22.4),
-    "M12": ((13.0, 13.5, 14.5), 10.2, (20.0, 12.6), 26.88),
+# nominal -> ISO 273 clearance (close, normal, loose), ISO 261 coarse pitch, ISO 4762 head diameter
+TABLE: dict[int | float, tuple[tuple[float, float, float], float, float]] = {
+    2: ((2.2, 2.4, 2.6), 0.4, 3.8),
+    2.5: ((2.7, 2.9, 3.1), 0.45, 4.5),
+    3: ((3.2, 3.4, 3.6), 0.5, 5.5),
+    4: ((4.3, 4.5, 4.8), 0.7, 7.0),
+    5: ((5.3, 5.5, 5.8), 0.8, 8.5),
+    6: ((6.4, 6.6, 7.0), 1.0, 10.0),
+    8: ((8.4, 9.0, 10.0), 1.25, 13.0),
+    10: ((10.5, 11.0, 12.0), 1.5, 16.0),
+    12: ((13.0, 13.5, 14.5), 1.75, 18.0),
+    14: ((15.0, 15.5, 16.5), 2.0, 21.0),
+    16: ((17.0, 17.5, 18.5), 2.0, 24.0),
+    18: ((19.0, 20.0, 21.0), 2.5, 27.0),
+    20: ((21.0, 22.0, 24.0), 2.5, 30.0),
+    22: ((23.0, 24.0, 26.0), 2.5, 33.0),
+    24: ((25.0, 26.0, 28.0), 3.0, 36.0),
+    27: ((28.0, 30.0, 32.0), 3.0, 40.0),
+    30: ((31.0, 33.0, 35.0), 3.5, 45.0),
 }
 FITS = ("close", "normal", "loose")
+DESIGNATION = re.compile(r"^M(\d+(?:\.\d+)?)(?:x(\d+(?:\.\d+)?))?$")
 
 
 @dataclass(frozen=True)
@@ -27,22 +36,37 @@ class HoleSize:
     cs_diameter: float | None
 
 
+def parse(fastener: str) -> tuple[int | float, float] | None:
+    m = DESIGNATION.match(fastener)
+    if m is None:
+        return None
+    nominal = float(m[1])
+    key = int(nominal) if nominal.is_integer() else nominal
+    if key not in TABLE:
+        return None
+    return key, float(m[2]) if m[2] else TABLE[key][1]
+
+
 def hole_size(hole: Hole, values: dict[str, float]) -> HoleSize:
     def v(e: float | str | None) -> float | None:
         return None if e is None else evaluate(e, values)
 
-    row = TABLE.get(hole.fastener) if hole.fastener else None
+    spec = parse(hole.fastener) if hole.fastener else None
     if hole.diameter is not None:
         diameter = evaluate(hole.diameter, values)
-    elif row is None:
-        raise ValueError(f"hole {hole.id!r} needs a diameter or a known fastener ({', '.join(TABLE)})")
+    elif spec is None:
+        raise ValueError(f"hole {hole.id!r} needs a diameter or a known fastener such as 'M6' or 'M18x1.5'")
     else:
-        diameter = row[1] if hole.type == "tapped" else row[0][FITS.index(hole.fit)]
-    cb = (v(hole.cb_diameter), v(hole.cb_depth))
-    if hole.type == "counterbore" and row is not None:
-        cb = (cb[0] or row[2][0], cb[1] or row[2][1])
+        nominal, pitch = spec
+        diameter = round(nominal - pitch, 2) if hole.type == "tapped" else TABLE[nominal][0][FITS.index(hole.fit)]
+    head = TABLE[spec[0]][2] if spec else None
+    cb_diameter, cb_depth = v(hole.cb_diameter), v(hole.cb_depth)
+    if hole.type == "counterbore" and spec is not None and head is not None:
+        # DIN 974-1 style seat for ISO 4762: head diameter plus running clearance, head height plus a little
+        cb_diameter = cb_diameter or head + (1.0 if spec[0] <= 6 else 2.0)
+        cb_depth = cb_depth or float(spec[0]) + 0.4
     cs = v(hole.cs_diameter)
-    if hole.type == "countersink" and cs is None and row is not None:
-        cs = row[3]
+    if hole.type == "countersink" and cs is None and spec is not None:
+        cs = round(2.24 * spec[0], 2)  # ISO 10642 head diameter
     keep_cb = hole.type == "counterbore"
-    return HoleSize(diameter, cb[0] if keep_cb else None, cb[1] if keep_cb else None, cs if hole.type == "countersink" else None)
+    return HoleSize(diameter, cb_diameter if keep_cb else None, cb_depth if keep_cb else None, cs if hole.type == "countersink" else None)
