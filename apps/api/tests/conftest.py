@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+import httpx2
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -88,7 +89,7 @@ class Api:
         raise TimeoutError(f"job {job_id} did not finish")
 
     @staticmethod
-    def ok(response: httpx.Response) -> Any:
+    def ok(response: httpx2.Response) -> Any:  # Starlette's TestClient uses httpx2 when it is installed
         assert response.is_success, response.text
         return response.json()
 

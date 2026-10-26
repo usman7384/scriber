@@ -1,3 +1,4 @@
+from partwright_agent.anthropic_llm import AnthropicLLM
 from partwright_agent.fake_llm import FakeLLM
 from partwright_agent.llm import LLM, Message
 from partwright_agent.loop import Result, Step, dump_steps, evaluate, extract_requirements, generate, refine
@@ -8,6 +9,7 @@ from partwright_agent.requirements import CheckResult, Requirement, check, overa
 
 __all__ = [
     "LLM",
+    "AnthropicLLM",
     "CheckResult",
     "FakeLLM",
     "Grounding",

@@ -4,7 +4,8 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel
 
-from partwright_agent import OllamaLLM
+from partwright_agent import LLM, AnthropicLLM, OllamaLLM
+from partwright_agent.anthropic_llm import Effort
 
 
 class ModelOptions(BaseModel):
@@ -12,6 +13,8 @@ class ModelOptions(BaseModel):
     think: bool | None = None
     max_tokens: int = 6144
     few_shot: bool = True
+    provider: Literal["ollama", "anthropic"] = "ollama"
+    effort: Effort | None = None
 
 
 class LLMConfig(BaseModel):
@@ -54,9 +57,11 @@ def load(path: Path) -> Config:
     return Config.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
-def llm_for(config: Config, model: str | None) -> OllamaLLM:
+def llm_for(config: Config, model: str | None) -> LLM:
     name = model or config.llm.default
     options = config.llm.models.get(name, ModelOptions())
+    if options.provider == "anthropic":
+        return AnthropicLLM(name, effort=options.effort, few_shot=options.few_shot)
     return OllamaLLM(
         name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens, few_shot=options.few_shot
     )

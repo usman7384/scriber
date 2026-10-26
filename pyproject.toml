@@ -71,7 +71,7 @@ forbidden_modules = ["build123d", "OCP"]
 name = "Model runtime stays behind the agent's LLM interface"
 type = "forbidden"
 source_modules = ["partwright_ir", "partwright_geometry"]
-forbidden_modules = ["ollama"]
+forbidden_modules = ["ollama", "anthropic"]
 
 [[tool.importlinter.contracts]]
 name = "Context sees neither geometry, the agent nor the kernel"
