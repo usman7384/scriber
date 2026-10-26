@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import structlog
+from pydantic import JsonValue
 from sqlalchemy import Engine
 from structlog.contextvars import bound_contextvars
 
@@ -37,8 +38,8 @@ class Jobs:
         if interrupted := jobs_db.interrupt(engine):
             log.warning("jobs_interrupted", count=interrupted)
 
-    def submit(self, kind: JobKind, project_id: str, model_id: str | None, work: Work) -> Job:
-        job = jobs_db.create(self._engine, kind, project_id, model_id)
+    def submit(self, kind: JobKind, project_id: str, model_id: str | None, work: Work, request: dict[str, JsonValue] | None = None) -> Job:
+        job = jobs_db.create(self._engine, kind, project_id, model_id, request)
         task = asyncio.get_running_loop().create_task(self._run(job.id, kind, work))
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)

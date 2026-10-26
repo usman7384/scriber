@@ -1,8 +1,13 @@
 import json
+import sqlite3
+from pathlib import Path
 from typing import Any
+
+from sqlalchemy import inspect
 
 from apps.api.tests.conftest import PROMPT, REQS, Api, MakeApi, plate
 from partwright_api import jobs_db
+from partwright_api.db import open_engine
 
 
 def sse(lines: list[str]) -> list[tuple[str, str, dict[str, Any]]]:
@@ -68,3 +73,21 @@ def test_project_jobs_list_newest_first_and_filter_active(make_api: MakeApi) -> 
     every = [j["id"] for j in api.ok(api.client.get(f"/projects/{project}/jobs"))]
     assert every == [queued.id, done["id"]]
     assert [j["id"] for j in api.ok(api.client.get(f"/projects/{project}/jobs?active=true"))] == [queued.id]
+
+
+def test_job_keeps_its_full_request(api: Api) -> None:
+    project = api.project()
+    job = api.generate(project, REQS, plate(), prompt="a plate, " + "x" * 300)
+    assert job["request"]["prompt"] == "a plate, " + "x" * 300
+    assert api.ok(api.client.get(f"/jobs/{job['id']}"))["request"]["prompt"].endswith("x" * 300)
+
+
+def test_old_database_gains_the_request_column(tmp_path: Path) -> None:
+    path = tmp_path / "old.sqlite"
+    with sqlite3.connect(path) as c:
+        c.execute(
+            "create table jobs (id text primary key, kind text not null, status text not null, project_id text not null, model_id text, "
+            "version integer, error text, created text not null, started text, finished text)"
+        )
+    names = {col["name"] for col in inspect(open_engine(path)).get_columns("jobs")}
+    assert "request" in names

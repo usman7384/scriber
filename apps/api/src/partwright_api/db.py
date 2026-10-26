@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, Column, Engine, Integer, MetaData, String, Table, create_engine, event
+from sqlalchemy import JSON, Boolean, Column, Engine, Integer, MetaData, String, Table, create_engine, event, inspect, text
 
 metadata = MetaData()
 
@@ -48,6 +48,7 @@ jobs = Table(
     Column("created", String, nullable=False),
     Column("started", String),
     Column("finished", String),
+    Column("request", JSON),
 )
 job_steps = Table(
     "job_steps",
@@ -88,7 +89,18 @@ def open_engine(path: Path) -> Engine:
     engine = create_engine(f"sqlite:///{path}")
     event.listen(engine, "connect", _wal)
     metadata.create_all(engine)
+    _add_missing_columns(engine)
     return engine
+
+
+def _add_missing_columns(engine: Engine) -> None:
+    existing = {t: {c["name"] for c in inspect(engine).get_columns(t)} for t in metadata.tables}
+    with engine.begin() as c:
+        for table in metadata.sorted_tables:
+            for column in table.columns:
+                if column.name not in existing[table.name]:
+                    kind = column.type.compile(engine.dialect)
+                    c.execute(text(f"alter table {table.name} add column {column.name} {kind}"))
 
 
 def _wal(dbapi_connection: Any, _record: Any) -> None:
