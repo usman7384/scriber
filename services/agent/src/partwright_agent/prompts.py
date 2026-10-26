@@ -256,6 +256,13 @@ def _with_reference(request: str, reference: Sequence[str]) -> str:
     return request + "\n\nReference data:\n" + "\n".join(f"- {r}" for r in reference)
 
 
+PARAMS_FIRST = "\n\nFirst give only the title and the complete parameter list for this part, as JSON."
+
+
+def use_params(draft: str) -> str:
+    return f"\n\nUse exactly these parameters, adding only derived ones you need:\n{draft}\n\nWrite the complete design JSON."
+
+
 def requirement_messages(request: str) -> list[tuple[str, str]]:
     example, answer = REQUIREMENT_EXAMPLE
     return [("system", REQUIREMENT_RULES), ("user", example), ("assistant", json.dumps(answer)), ("user", request)]

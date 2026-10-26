@@ -10,12 +10,13 @@ from pydantic import BaseModel, ValidationError
 from partwright_agent.grounding import grounded
 from partwright_agent.llm import LLM, Message
 from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements
-from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
+from partwright_agent.prompts import PARAMS_FIRST, design_messages, refine_message, repair_message, requirement_messages, use_params
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_geometry import Artifact, BuildError, Finding
 from partwright_ir import (
     Design,
+    Param,
     ParamError,
     Process,
     Provenance,
@@ -29,7 +30,7 @@ from partwright_ir import (
 
 REPAIR_TEMPERATURE = 0.5
 STUCK_TEMPERATURE = 0.9
-StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
+StepKind = Literal["requirements", "params", "emit", "validate", "build", "check", "repair", "done", "failed"]
 Build = Callable[[Design, Path], Artifact]
 
 
@@ -58,6 +59,11 @@ class Step(BaseModel):
     result: Result | None = None
 
 
+class ParamsDraft(BaseModel):
+    title: str
+    params: list[Param]
+
+
 class ParamUpdate(BaseModel):
     name: str
     value: float
@@ -76,12 +82,19 @@ def generate(
     max_repairs: int = 3,
     seed: int = 0,
     context: Grounding | None = None,
+    staged: bool = False,
 ) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(prompt, llm, seed) + (fact_requirements(context.pack.facts) if context else [])
     yield _requirements_step(reqs, clock)
     project = context_block(context) if context else ""
     messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project)]
+    if staged:
+        draft = llm.chat(
+            [*messages[:-1], Message(role="user", content=messages[-1].content + PARAMS_FIRST)], ParamsDraft.model_json_schema(), seed
+        )
+        yield Step(kind="params", message=f"parameters drafted, {len(draft)} chars", attempt=0, elapsed_ms=clock())
+        messages = [*messages[:-1], Message(role="user", content=messages[-1].content + use_params(draft))]
 
     def decode(raw: str) -> Design:
         design = Design.model_validate_json(raw)
