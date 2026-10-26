@@ -203,7 +203,10 @@ def _revolve_errors(f: Revolve, sketch: Sketch, values: dict[str, float], path: 
         return  # the bad expression is reported where it is written
     for lo, hi in spans:
         if lo < offset - 1e-6 and hi > offset + 1e-6:
-            fix = "draw half the section on one side of it, or extrude a circle for a plain cylinder or boss"
+            fix = (
+                "draw half the section on one side of it; for a plain cylinder or boss use "
+                f'{{"kind": "extrude", "id": "{f.id}", "name": "{f.name}", "sketch": "{sketch.id}", "distance": <height>}} instead'
+            )
             yield IrError(path=path, message=f"the sketch {sketch.id!r} crosses the revolve axis; {fix}")
             return
 

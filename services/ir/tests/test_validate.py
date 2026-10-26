@@ -156,3 +156,13 @@ def test_bad_expression_in_a_revolved_sketch_is_reported_not_raised() -> None:
     feats = [{"kind": "revolve", "id": "r", "name": "R", "sketch": "s", "axis": "Y"}]
     d = Design.model_validate({"title": "x", "params": [], "parts": [{"id": "p", "name": "P", "sketches": [section], "features": feats}]})
     assert any("unknown function" in str(e) for e in validate(d))
+
+
+def test_untabulated_sizes_interpolate() -> None:
+    from partwright_ir.fasteners import parse, row
+
+    assert parse("M25x1.5") == (25.0, 1.5)
+    clearance, pitch, _ = row(25)
+    assert 26.0 < clearance[1] < 30.0
+    assert pitch == 3.0
+    assert parse("M40") is None
