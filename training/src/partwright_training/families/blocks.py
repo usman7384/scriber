@@ -16,7 +16,10 @@ class _Block:
 
 
 def block(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("Valve block", "Manifold block", "Sensor block", "Bearing block", "Clamp block")), "block")
+    d = Draft(
+        rng.choice(("Valve block", "Manifold block", "Sensor block", "Bearing block", "Clamp block", "Housing", "Mount block", "Body")),
+        "block",
+    )
     length = pick(rng, 50, 160, 5)
     width, height = pick(rng, 40, min(length, 120), 5), pick(rng, 25, 80, 5)
     size = f"{num(length)} x {num(width)} x {num(height)} mm"

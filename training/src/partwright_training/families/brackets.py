@@ -15,7 +15,7 @@ def _profile(d: Draft, points: list[tuple[float | str, float | str]], width: str
 
 
 def _angle(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("Angle bracket", "L bracket", "Corner bracket")), "bracket")
+    d = Draft(rng.choice(("Angle bracket", "L bracket", "Corner bracket", "Mounting bracket", "Support bracket", "Angle")), "bracket")
     t = pick(rng, 2, 10)
     a, b = pick(rng, 30, 120, 5), pick(rng, 25, 120, 5)
     w = pick(rng, 20, 100, 5)
@@ -67,7 +67,7 @@ def _angle(rng: random.Random) -> Spec:
 
 
 def _channel(rng: random.Random) -> Spec:
-    d = Draft(rng.choice(("U channel", "Channel bracket", "Clevis bracket")), "bracket")
+    d = Draft(rng.choice(("U channel", "Channel bracket", "Clevis bracket", "U bracket", "Clevis")), "bracket")
     t = pick(rng, 3, 10)
     a, h, w = pick(rng, 30, 120, 5), pick(rng, 20, 80, 5), pick(rng, 30, 150, 5)
     d.param("outer_width", a, "mm", "outside width across the walls", f"{num(a)} mm wide outside")
