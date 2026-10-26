@@ -5,7 +5,7 @@ from partwright_ir.expr import evaluate
 from partwright_ir.model import Hole
 
 # nominal -> ISO 273 clearance (close, normal, loose), ISO 261 coarse pitch, ISO 4762 head diameter
-TABLE: dict[int | float, tuple[tuple[float, float, float], float, float]] = {
+TABLE: dict[float, tuple[tuple[float, float, float], float, float]] = {
     2: ((2.2, 2.4, 2.6), 0.4, 3.8),
     2.5: ((2.7, 2.9, 3.1), 0.45, 4.5),
     3: ((3.2, 3.4, 3.6), 0.5, 5.5),
@@ -36,15 +36,23 @@ class HoleSize:
     cs_diameter: float | None
 
 
-def parse(fastener: str) -> tuple[int | float, float] | None:
+def parse(fastener: str) -> tuple[float, float] | None:
     m = DESIGNATION.match(fastener)
-    if m is None:
+    if m is None or not 2 <= float(m[1]) <= 30:
         return None
     nominal = float(m[1])
-    key = int(nominal) if nominal.is_integer() else nominal
-    if key not in TABLE:
-        return None
-    return key, float(m[2]) if m[2] else TABLE[key][1]
+    return nominal, float(m[2]) if m[2] else row(nominal)[1]
+
+
+def row(nominal: float) -> tuple[tuple[float, float, float], float, float]:
+    if nominal in TABLE:
+        return TABLE[nominal]
+    lo = max(k for k in TABLE if k < nominal)
+    hi = min(k for k in TABLE if k > nominal)
+    t = (nominal - lo) / (hi - lo)
+    (a, pitch, head_a), (b, _, head_b) = TABLE[lo], TABLE[hi]
+    clearance = tuple(round(x + t * (y - x), 1) for x, y in zip(a, b, strict=True))
+    return (clearance[0], clearance[1], clearance[2]), pitch, round(head_a + t * (head_b - head_a), 1)
 
 
 def hole_size(hole: Hole, values: dict[str, float]) -> HoleSize:
@@ -58,8 +66,8 @@ def hole_size(hole: Hole, values: dict[str, float]) -> HoleSize:
         raise ValueError(f"hole {hole.id!r} needs a diameter or a known fastener such as 'M6' or 'M18x1.5'")
     else:
         nominal, pitch = spec
-        diameter = round(nominal - pitch, 2) if hole.type == "tapped" else TABLE[nominal][0][FITS.index(hole.fit)]
-    head = TABLE[spec[0]][2] if spec else None
+        diameter = round(nominal - pitch, 2) if hole.type == "tapped" else row(nominal)[0][FITS.index(hole.fit)]
+    head = row(spec[0])[2] if spec else None
     cb_diameter, cb_depth = v(hole.cb_diameter), v(hole.cb_depth)
     if hole.type == "counterbore" and spec is not None and head is not None:
         # DIN 974-1 style seat for ISO 4762: head diameter plus running clearance, head height plus a little
