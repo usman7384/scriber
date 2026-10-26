@@ -149,3 +149,10 @@ def test_revolve_across_its_axis_and_sketch_as_pattern_source_are_explained() ->
     assert "crosses the revolve axis" in errors
     assert "'s' is a sketch; list the feature that uses it" in errors
     assert "['block', 'boss']" in errors
+
+
+def test_bad_expression_in_a_revolved_sketch_is_reported_not_raised() -> None:
+    section = {"id": "s", "entities": [{"kind": "polygon", "points": [[1, 0], ["pi()", 0], [2, 5]]}]}
+    feats = [{"kind": "revolve", "id": "r", "name": "R", "sketch": "s", "axis": "Y"}]
+    d = Design.model_validate({"title": "x", "params": [], "parts": [{"id": "p", "name": "P", "sketches": [section], "features": feats}]})
+    assert any("unknown function" in str(e) for e in validate(d))
