@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
+from ollama import ResponseError
 
 from partwright_agent import OllamaLLM, generate
 from partwright_geometry import LocalGeometry
@@ -36,3 +37,24 @@ def test_same_input_gives_same_output(tmp_path: Path) -> None:
     a, b = ([s.message for s in steps if s.kind == "requirements"] for steps in runs)
     assert a == b
     assert (tmp_path / "0" / "attempt_1" / "answer.json").read_text() == (tmp_path / "1" / "attempt_1" / "answer.json").read_text()
+
+
+def test_a_looping_answer_aborted_by_ollama_counts_as_cut_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm = OllamaLLM("any")
+
+    def abort(**_: object) -> object:
+        raise ResponseError("prediction aborted, token repeat limit reached", 500)
+
+    monkeypatch.setattr(llm._client, "chat", abort)
+    assert llm.chat([], None) == ""
+
+
+def test_other_ollama_errors_still_raise(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm = OllamaLLM("any")
+
+    def missing(**_: object) -> object:
+        raise ResponseError("model not found", 404)
+
+    monkeypatch.setattr(llm._client, "chat", missing)
+    with pytest.raises(ResponseError):
+        llm.chat([], None)
