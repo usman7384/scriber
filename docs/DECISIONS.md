@@ -62,3 +62,12 @@ A/B on IR v2 with qwen3.5:4b, same code: drafting parameters first and then the 
 ## D-020 IR v2 kept although the M1 gate regressed (2026-10-26)
 v2 is required for completeness (faces, datums, semantic holes) and improves the grounded set (3/10, 23/45 checks vs 2/10, 15/45), but the M1 set fell from 21/35 to 16/35 checks and generation is about twice as slow. v1 cannot express the challenge parts at all, so reverting is not an option; recovering the M1 score on v2 is the next task, before further IR growth. Results: `docs/agents/ir-v2.md`.
 
+
+## D-021 Fine-tuning stays local (2026-10-26)
+Training runs on the laptop only (RTX 3060 6 GB, WSL2, Unsloth bf16 LoRA), so the model we tune is Qwen3.5-0.8B; the 4B needs about 10 GB. Data comes only from our generators, kernel and local models. Ollama on Windows cannot import Qwen3.5 safetensors (it needs its MLX runtime), so the merged model is converted with llama.cpp's `convert_hf_to_gguf.py` (release b11898, pinned) to q8_0 and imported as a GGUF with the base model's renderer, parser and sampling parameters. Plan: `docs/FINE_TUNING_PLAN.md`; runs: `docs/agents/training.md`.
+
+## D-022 Answers are written required-keys-first (2026-10-26)
+Ollama's schema grammar emits all required keys of an object before any optional one. Our worked examples and the first training targets wrote some optional keys early (a sketch's `plane` before `entities`, a part's `material` and `process` before `sketches`), and under constrained decoding the model can never produce them there: profiles and turned parts silently fell back to the XY plane. A tuned 0.8B scored 24 of 27 held-out cases on the first try without the grammar and 16/40 with it. `answer_json` now writes every design we show or train on in grammar order; all earlier eval numbers with the examples were measured under this bug.
+
+## D-023 The request overrides conflicting project facts (2026-10-26)
+A request in a project whose documents say otherwise ("100 x 60 x 5" against a spec sheet's 120 x 80 x 6) produced both sets of numbers as hard checks, so no answer could pass. When the request states an extent or a counted hole group that differs from a fact of the same kind, the fact's check is dropped, the fact is left out of the prompt, and the requirements step names what was overridden. Facts the request does not contradict (a bore it does not mention) still apply. Design rules are unchanged: a request that breaks a rule (holes 8 mm from the edge where 1.5 x D needs 8.25) still fails the rule.
