@@ -56,3 +56,9 @@ Implemented as proposed in `docs/IR_V2.md`: plane references (base, datum, or a 
 ## D-018 Fasteners as designations (2026-10-26)
 `fastener` takes `M<d>` or `M<d>x<pitch>` for M2–M30. Clearance follows ISO 273 by fit, tap drill is nominal minus pitch (ISO 261 coarse pitch by default), counterbore seats follow DIN 974-1 style head-plus-clearance, countersinks follow the ISO 10642 head diameter (2.24 d). The model wrote fine-pitch hydraulic port threads (M18x1.5, M30x1.5) as soon as v2 allowed them; a closed `M\d+` pattern rejected realistic designs, so the field is validated by parsing rather than by schema pattern.
 
+## D-019 Single-call emission stays; staged emission deleted (2026-10-26)
+A/B on IR v2 with qwen3.5:4b, same code: drafting parameters first and then the design scored 2/10 fully correct and 9/35 checks on the M1 set against 4/10 and 16/35 for one call, and was slower on the challenge set. As with the planning step (D-013), a constrained first answer that the second must follow passes its mistakes along. The switch and its prompt were removed.
+
+## D-020 IR v2 kept although the M1 gate regressed (2026-10-26)
+v2 is required for completeness (faces, datums, semantic holes) and improves the grounded set (3/10, 23/45 checks vs 2/10, 15/45), but the M1 set fell from 21/35 to 16/35 checks and generation is about twice as slow. v1 cannot express the challenge parts at all, so reverting is not an option; recovering the M1 score on v2 is the next task, before further IR growth. Results: `docs/agents/ir-v2.md`.
+
