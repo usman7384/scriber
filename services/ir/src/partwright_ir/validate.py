@@ -4,12 +4,36 @@ from collections.abc import Iterator
 from pydantic import BaseModel
 
 from partwright_ir.expr import ExprError, evaluate, names
-from partwright_ir.model import Design, Expr, Extrude, Feature, Hole, Part, Provenance, Revolve
+from partwright_ir.fasteners import TABLE, hole_size
+from partwright_ir.model import (
+    FACE_NAMES,
+    Design,
+    Expr,
+    Extrude,
+    Feature,
+    Hole,
+    Part,
+    Pattern,
+    PlaneRef,
+    Provenance,
+    Revolve,
+    Selector,
+    Sketch,
+)
 from partwright_ir.placement import hole_centres
 
+BASE_PLANES = ("XY", "XZ", "YZ")
 DRILL_AXIS = {"XY": "Z", "XZ": "Y", "YZ": "X"}
-NON_EXPR_FIELDS = {"id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "open_face", "base"}
-POSITIVE_FIELDS = {"width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"}
+NON_EXPR_FIELDS = {
+    *("id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "base", "ref", "of", "normal", "parallel"),
+    *("convexity", "extreme", "type", "fastener", "fit", "drill_point", "thread", "extent", "arc", "direction"),
+    *("rotate_about", "process", "features", "mirror_plane", "material"),
+}
+POSITIVE_FIELDS = {
+    *("width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y", "distance2"),
+    *("cb_diameter", "cb_depth", "cs_diameter", "cs_angle", "depth"),
+}
+PATTERNABLE = (Extrude, Revolve, Hole)
 
 
 class IrError(BaseModel):
@@ -28,32 +52,8 @@ def validate(design: Design) -> list[IrError]:
     return [e for i, p in enumerate(design.parts) for e in _overlapping_holes(design, p, f"parts[{i}]")]
 
 
-def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
-    values = design.param_values()
-    holes = [
-        (f, c, evaluate(f.diameter, values), _depth_range(f, values))
-        for f in part.features
-        if isinstance(f, Hole)
-        for c in hole_centres(f, values)
-    ]
-    for i, (a, ca, da, ra) in enumerate(holes):
-        for b, cb, db, rb in holes[i + 1 :]:
-            gap = math.dist(ca, cb)
-            same_axis_line = a.plane.base == b.plane.base and gap < 1e-6
-            collide = a.plane.base == b.plane.base and not same_axis_line and gap < (da + db) / 2 - 1e-6
-            if collide and ra[0] < rb[1] and rb[0] < ra[1]:
-                where = f"{a.id!r} at ({ca[0]:g}, {ca[1]:g}) and {b.id!r} at ({cb[0]:g}, {cb[1]:g})"
-                plane = f"both on plane {a.plane.base}, drilling along {DRILL_AXIS[a.plane.base]}"
-                message = f"holes {where} overlap at the same depth ({plane}); spread them apart or put each on the face it belongs to"
-                yield IrError(path=f"{path}.features.{a.id}", message=message)
-                return
-
-
-def _depth_range(hole: Hole, values: dict[str, float]) -> tuple[float, float]:
-    if hole.depth is None:
-        return (-math.inf, math.inf)
-    top = evaluate(hole.plane.offset, values)
-    return (top - evaluate(hole.depth, values), top)
+def used_params(design: Design) -> set[str]:
+    return {n for part in design.parts for node in [*part.datums, *part.sketches, *part.features] for n in _names(node)}
 
 
 def _param_errors(design: Design) -> Iterator[IrError]:
@@ -66,10 +66,6 @@ def _param_errors(design: Design) -> Iterator[IrError]:
             yield IrError(path=f"params.{p.name}", message=f"value {p.value} outside [{p.min}, {p.max}]")
 
 
-def used_params(design: Design) -> set[str]:
-    return {n for part in design.parts for node in [*part.sketches, *part.features] for n in _names(node)}
-
-
 def _unused_params(design: Design) -> Iterator[IrError]:
     used = used_params(design)
     for p in design.params:
@@ -77,6 +73,146 @@ def _unused_params(design: Design) -> Iterator[IrError]:
             yield IrError(
                 path=f"params.{p.name}", message="defined but not used; reference it in feature expressions instead of a literal number"
             )
+
+
+def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
+    values = design.param_values()
+    sketches = {s.id: s for s in part.sketches}
+    datums = [d.id for d in part.datums]
+    for label, ids in (("sketch", [s.id for s in part.sketches]), ("feature", [f.id for f in part.features]), ("datum", datums)):
+        if len(set(ids)) != len(ids):
+            yield IrError(path=path, message=f"duplicate {label} id")
+    for d in part.datums:
+        yield from _exprs(d, values, f"{path}.datums.{d.id}")
+    for s in part.sketches:
+        yield from _exprs(s, values, f"{path}.sketches.{s.id}")
+    first = part.features[0]
+    if not isinstance(first, Extrude | Revolve) or first.mode != "add":
+        yield IrError(path=f"{path}.features[0]", message="first feature must be an additive extrude or revolve")
+    seen: dict[str, Feature] = {}
+    for f in part.features:
+        where = f"{path}.features.{f.id}"
+        yield from _feature_errors(f, sketches, datums, seen, values, where)
+        yield from _exprs(f, values, where)
+        seen[f.id] = f
+    used = {f.sketch for f in part.features if isinstance(f, Extrude | Revolve)}
+    for sid in sketches:
+        if sid not in used:
+            msg = "is not used by any extrude or revolve; holes must be hole features, so delete it or use it"
+            yield IrError(path=f"{path}.sketches.{sid}", message=msg)
+
+
+def _feature_errors(
+    f: Feature, sketches: dict[str, Sketch], datums: list[str], seen: dict[str, Feature], values: dict[str, float], path: str
+) -> Iterator[IrError]:
+    match f:
+        case Extrude() | Revolve():
+            sketch = sketches.get(f.sketch)
+            if sketch is None:
+                yield IrError(path=path, message=f"unknown sketch {f.sketch!r}; known: {list(sketches)}")
+            else:
+                yield from _ref_errors(sketch.plane, datums, seen, path)
+            if isinstance(f, Extrude):
+                yield from _extent_errors(f, bool(seen), path)
+        case Hole():
+            yield from _ref_errors(f.plane, datums, seen, path)
+            yield from _hole_errors(f, path)
+        case Pattern():
+            yield from _pattern_errors(f, seen, path)
+        case _:
+            selectors = [f.edges] if hasattr(f, "edges") else list(getattr(f, "open", []))
+            yield from (e for s in selectors for e in _selector_errors(s, seen, path))
+
+
+def _ref_errors(plane: PlaneRef, datums: list[str], seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+    ref = plane.ref
+    if ref in BASE_PLANES or ref in datums:
+        return
+    owner, _, face = ref.partition(".")
+    if not face:
+        yield IrError(path=path, message=f"unknown plane {ref!r}; use XY, XZ, YZ, a datum id {datums} or '<feature>.<face>'")
+    elif owner != "part" and owner not in seen:
+        yield IrError(path=path, message=f"plane {ref!r} refers to {owner!r}, which is not an earlier feature")
+    elif face not in FACE_NAMES:
+        yield IrError(path=path, message=f"unknown face {face!r} in {ref!r}; use one of {', '.join(FACE_NAMES)}")
+    elif face in ("start", "end") and not isinstance(seen.get(owner), Extrude):
+        yield IrError(path=path, message=f"{ref!r}: start and end faces exist only on extrudes")
+
+
+def _extent_errors(f: Extrude, has_part: bool, path: str) -> Iterator[IrError]:
+    if f.extent in ("blind", "symmetric", "two_sided") and f.distance is None:
+        yield IrError(path=path, message=f"extent {f.extent!r} needs a distance")
+    if f.extent == "two_sided" and f.distance2 is None:
+        yield IrError(path=path, message="extent 'two_sided' needs distance2 for the second side")
+    if f.extent == "through_all" and f.mode == "add":
+        yield IrError(path=path, message="extent 'through_all' only makes sense for cut or intersect")
+    if f.extent == "up_to_next" and not has_part:
+        yield IrError(path=path, message="extent 'up_to_next' needs an earlier feature to stop at")
+
+
+def _hole_errors(h: Hole, path: str) -> Iterator[IrError]:
+    if h.fastener is None and h.diameter is None:
+        yield IrError(path=path, message="give the hole a fastener (e.g. 'M6') or a diameter")
+    if h.fastener is not None and h.fastener not in TABLE:
+        yield IrError(path=path, message=f"unknown fastener {h.fastener!r}; known: {', '.join(TABLE)}")
+    if h.type == "tapped" and h.fastener is None:
+        yield IrError(path=path, message="a tapped hole needs a fastener such as 'M6'")
+    if h.type == "counterbore" and h.fastener is None and (h.cb_diameter is None or h.cb_depth is None):
+        yield IrError(path=path, message="a counterbore needs a fastener or both cb_diameter and cb_depth")
+    if h.type == "countersink" and h.fastener is None and h.cs_diameter is None:
+        yield IrError(path=path, message="a countersink needs a fastener or cs_diameter")
+    if h.type != "counterbore" and (h.cb_diameter is not None or h.cb_depth is not None):
+        yield IrError(path=path, message="cb_diameter and cb_depth need type 'counterbore'")
+    if h.type != "countersink" and h.cs_diameter is not None:
+        yield IrError(path=path, message="cs_diameter needs type 'countersink'")
+    if h.drill_point == "118" and h.depth is None:
+        yield IrError(path=path, message="a drill point only applies to a blind hole with a depth")
+
+
+def _pattern_errors(p: Pattern, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+    for fid in p.features:
+        source = seen.get(fid)
+        if source is None:
+            yield IrError(path=path, message=f"pattern source {fid!r} is not an earlier feature")
+        elif not isinstance(source, PATTERNABLE):
+            yield IrError(
+                path=path, message=f"pattern source {fid!r} is a {source.kind}; only extrudes, revolves and holes can be patterned"
+            )
+    if p.type == "linear" and p.spacing is None:
+        yield IrError(path=path, message="a linear pattern needs a spacing")
+
+
+def _selector_errors(s: Selector, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+    if s.of != "part" and s.of not in seen:
+        yield IrError(path=path, message=f"selector refers to {s.of!r}, which is not an earlier feature")
+
+
+def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
+    values = design.param_values()
+    holes = [
+        (f, c, hole_size(f, values).diameter, _depth_range(f, values))
+        for f in part.features
+        if isinstance(f, Hole)
+        for c in hole_centres(f, values)
+    ]
+    for i, (a, ca, da, ra) in enumerate(holes):
+        for b, cb, db, rb in holes[i + 1 :]:
+            gap = math.dist(ca, cb)
+            same_plane = a.plane.ref == b.plane.ref
+            if same_plane and gap > 1e-6 and gap < (da + db) / 2 - 1e-6 and ra[0] < rb[1] and rb[0] < ra[1]:
+                where = f"{a.id!r} at ({ca[0]:g}, {ca[1]:g}) and {b.id!r} at ({cb[0]:g}, {cb[1]:g})"
+                axis = DRILL_AXIS.get(a.plane.ref)
+                plane = f"both on plane {a.plane.ref}" + (f", drilling along {axis}" if axis else "")
+                message = f"holes {where} overlap at the same depth ({plane}); spread them apart or put each on the face it belongs to"
+                yield IrError(path=f"{path}.features.{a.id}", message=message)
+                return
+
+
+def _depth_range(hole: Hole, values: dict[str, float]) -> tuple[float, float]:
+    if hole.depth is None:
+        return (-math.inf, math.inf)
+    top = evaluate(hole.plane.offset, values)
+    return (top - evaluate(hole.depth, values), top)
 
 
 def _names(node: BaseModel) -> Iterator[str]:
@@ -103,39 +239,10 @@ def _item_names(value: object) -> Iterator[str]:
             return
 
 
-def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
-    values = design.param_values()
-    sketch_ids = [s.id for s in part.sketches]
-    if len(set(sketch_ids)) != len(sketch_ids):
-        yield IrError(path=f"{path}.sketches", message="duplicate sketch id")
-    for s in part.sketches:
-        yield from _exprs(s, values, f"{path}.sketches.{s.id}")
-    feature_ids = [f.id for f in part.features]
-    if len(set(feature_ids)) != len(feature_ids):
-        yield IrError(path=f"{path}.features", message="duplicate feature id")
-    if not isinstance(part.features[0], Extrude | Revolve) or part.features[0].mode != "add":
-        yield IrError(path=f"{path}.features[0]", message="first feature must be an additive extrude or revolve")
-    for f in part.features:
-        yield from _feature_errors(f, sketch_ids, values, f"{path}.features.{f.id}")
-    used = {f.sketch for f in part.features if isinstance(f, Extrude | Revolve)}
-    for sid in sketch_ids:
-        if sid not in used:
-            msg = "is not used by any extrude or revolve; holes must be hole features, so delete it or use it"
-            yield IrError(path=f"{path}.sketches.{sid}", message=msg)
-
-
-def _feature_errors(f: Feature, sketch_ids: list[str], values: dict[str, float], path: str) -> Iterator[IrError]:
-    if isinstance(f, Extrude | Revolve) and f.sketch not in sketch_ids:
-        yield IrError(path=path, message=f"unknown sketch {f.sketch!r}; known: {sketch_ids}")
-    if isinstance(f, Hole) and (f.counterbore_diameter is None) != (f.counterbore_depth is None):
-        yield IrError(path=path, message="counterbore needs both diameter and depth")
-    yield from _exprs(f, values, path)
-
-
 def _exprs(node: BaseModel, values: dict[str, float], path: str) -> Iterator[IrError]:
     for name, value in node:
         sub = f"{path}.{name}"
-        if isinstance(value, Provenance):
+        if isinstance(value, Provenance) or name in NON_EXPR_FIELDS:
             continue
         if isinstance(value, BaseModel):
             yield from _exprs(value, values, sub)
@@ -147,8 +254,8 @@ def _exprs(node: BaseModel, values: dict[str, float], path: str) -> Iterator[IrE
                     yield from (e for j, x in enumerate(item) for e in _expr(x, values, f"{sub}[{i}][{j}]", False))
                 else:
                     yield from _expr(item, values, f"{sub}[{i}]", False)
-        elif isinstance(value, float | int | str) and not isinstance(value, bool) and name not in NON_EXPR_FIELDS:
-            yield from _expr(value, values, sub, name in POSITIVE_FIELDS, name == "distance")
+        elif isinstance(value, float | int | str) and not isinstance(value, bool):
+            yield from _expr(value, values, sub, name in POSITIVE_FIELDS, name in ("distance", "spacing"))
 
 
 def _expr(value: Expr, values: dict[str, float], path: str, positive: bool, nonzero: bool = False) -> Iterator[IrError]:

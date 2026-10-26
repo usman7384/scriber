@@ -2,9 +2,8 @@ from typing import Literal
 
 from pydantic import Field
 
-from partwright_ir.model import Frozen, Provenance
+from partwright_ir.model import Frozen, Process, Provenance
 
-Process = Literal["any", "milling_3axis", "fdm", "sla", "sls"]
 RuleKind = Literal[
     "min_hole_edge_ratio",
     "min_wall_thickness",
