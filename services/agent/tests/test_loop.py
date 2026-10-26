@@ -134,3 +134,11 @@ def test_unused_params_are_dropped_before_validation(tmp_path: Path) -> None:
     result = steps[-1].result
     assert steps[-1].kind == "done" and result and result.design
     assert [p.name for p in result.design.params] == ["length", "hole_d"]
+
+
+def test_staged_generation_drafts_parameters_first(tmp_path: Path) -> None:
+    draft = json.dumps({"title": "Bracket", "params": [{"name": "length", "value": 80, "unit": "mm"}]})
+    llm = FakeLLM([REQS, draft, design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, staged=True))
+    assert [s.kind for s in steps] == ["requirements", "params", "emit", "done"]
+    assert '"length"' in llm.calls[2][-1].content
