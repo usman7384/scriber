@@ -7,7 +7,7 @@ from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ValidationError
 
-from partwright_agent.grounding import grounded
+from partwright_agent.grounding import grounded, measurable
 from partwright_agent.llm import LLM, Message
 from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
 from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
@@ -127,7 +127,7 @@ def extract_requirements(text: str, llm: LLM, seed: int = 0) -> list[Requirement
         reqs = RequirementList.model_validate_json(raw).requirements
     except ValidationError:
         return []
-    return grounded(reqs, text)
+    return measurable(grounded(reqs, text), text)
 
 
 @dataclass(frozen=True)

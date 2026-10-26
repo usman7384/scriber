@@ -1,4 +1,4 @@
-from partwright_agent.grounding import grounded
+from partwright_agent.grounding import grounded, measurable
 from partwright_agent.requirements import Requirement
 
 
@@ -18,3 +18,18 @@ def test_keeps_metric_hole_ranges_and_number_words() -> None:
     reqs = [Requirement(kind="holes", description="four M6", count=4, diameter_min=6.4, diameter_max=7.0)]
     assert grounded(reqs, "plate with four M6 holes") == reqs
     assert grounded(reqs, "plate with 4x M6 holes") == reqs
+
+
+THICK = Requirement(kind="extent", description="plate thickness 4", value=4)
+WALL = Requirement(kind="wall", description="wall 2", value=2)
+
+
+def test_stock_thickness_of_a_bent_part_is_not_an_extent() -> None:
+    length = Requirement(kind="extent", description="length 120", value=120)
+    assert measurable([THICK, length], "L-bracket from 4 mm plate, 120 mm long, two holes in each leg") == [length]
+    assert measurable([THICK, length], "mounting plate 120 x 80, 4 mm thick") == [THICK, length]
+
+
+def test_wall_checks_are_kept_only_for_round_parts() -> None:
+    assert measurable([WALL], "Open-top box, outside 100 x 60 x 40 mm, 2 mm walls and floor") == []
+    assert measurable([WALL], "Hollow cylinder, 50mm height, 2mm wall thickness") == [WALL]
