@@ -1,3 +1,5 @@
+import math
+
 # metric size -> ISO 273 clearance (close, loose), coarse pitch, ISO 4762 head diameter; mirrors the IR table for the sizes we sample
 FASTENERS: dict[str, tuple[float, float, float, float]] = {
     "M3": (3.2, 3.6, 0.5, 5.5),
@@ -34,3 +36,9 @@ def head(size: str) -> float:
 
 def counterbore_depth(size: str) -> float:
     return nominal(size) + 0.4
+
+
+def edge(size: str, kind: str = "simple") -> float:
+    # centre-to-edge distance the default 1.5 x D hole-edge rule needs, measured on the widest diameter of the hole
+    widest = {"simple": FASTENERS[size][1], "counterbore": head(size) + 2, "countersink": 2.24 * nominal(size)}[kind]
+    return math.ceil(1.5 * widest)
