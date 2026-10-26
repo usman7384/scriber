@@ -1,4 +1,5 @@
 import re
+from collections.abc import Sequence
 
 from pydantic import BaseModel, ConfigDict
 
@@ -21,13 +22,14 @@ class Grounding(BaseModel):
         return list(dict.fromkeys([*ids, *(r.id for r in self.rules.rules)]))
 
 
-def context_block(g: Grounding) -> str:
+def context_block(g: Grounding, overridden: Sequence[Fact] = ()) -> str:
     rule_lines = {r.source.ref for r in g.rules.rules if r.source.ref}
     candidates = [*g.pack.conventions, *(f for f in g.pack.facts if f not in g.pack.conventions)]
-    facts = [f for f in candidates if f.source.ref not in rule_lines][:MAX_FACTS]
+    facts = [f for f in candidates if f.source.ref not in rule_lines and f not in overridden][:MAX_FACTS]
     lines = [
         "Project data. When a parameter comes from one of these facts, set its provenance to "
-        '{"source": "document", "ref": "<fact id>", "quote": "<the fact text>"}.'
+        '{"source": "document", "ref": "<fact id>", "quote": "<the fact text>"}. '
+        "Where the request states a different value, the request wins."
     ]
     lines += [f"- [{f.id}] {_describe(f)}: {f.text}" for f in facts if f.kind != "material" or f in g.pack.conventions]
     if g.pack.conventions:
@@ -39,6 +41,26 @@ def context_block(g: Grounding) -> str:
     if prior:
         lines.append(prior)
     return "\n".join(lines)
+
+
+def overridden(stated: list[Requirement], facts: list[Fact]) -> list[Fact]:
+    return [f for f in facts if (r := _requirement(f)) is not None and _conflicts(r, stated)]
+
+
+def _conflicts(r: Requirement, stated: list[Requirement]) -> bool:
+    same = [s for s in stated if s.kind == r.kind]
+    if r.kind == "extent" and r.value is not None:
+        values = [s for s in same if s.value is not None]
+        return bool(values) and not any(abs(s.value - r.value) <= max(s.tolerance, r.tolerance) for s in values if s.value is not None)
+    if r.kind == "holes" and r.count is not None:
+        counted = [s for s in same if s.count is not None]
+        return bool(counted) and not any(s.count == r.count and _overlap(s, r) for s in counted)
+    return False
+
+
+def _overlap(a: Requirement, b: Requirement) -> bool:
+    lo = max(a.diameter_min or 0.0, b.diameter_min or 0.0)
+    return lo <= min(a.diameter_max or float("inf"), b.diameter_max or float("inf"))
 
 
 def fact_requirements(facts: list[Fact]) -> list[Requirement]:
