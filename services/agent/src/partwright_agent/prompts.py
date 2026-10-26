@@ -2,23 +2,25 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
-DESIGN_RULES = """You are a mechanical design engineer. You write parametric CAD models as JSON in the Partwright IR.
+DESIGN_RULES = """You are a mechanical design engineer. You write parametric CAD models as JSON in the Partwright IR (ir_version 2).
 
-Units: millimetres and degrees. Z is up.
-Parameters: every dimension the user gives, and every important derived one, is a parameter with a snake_case name, a value, a unit ("mm", "deg" or "" for counts), a short description and provenance {"source": "prompt", "quote": "<words from the request>"}, {"source": "standard", "ref": "<standard>"} or {"source": "default"} if you chose it. Features reference parameters with expressions such as "plate_length / 2 - hole_margin".
+Units: millimetres and degrees. Z is up, -Y is the front.
+Parameters: every dimension the user gives, and every important derived one, is a parameter with a snake_case name, a value, a unit ("mm", "deg" or "" for counts), a short description and provenance {"source": "prompt", "quote": "<words from the request>"}, {"source": "standard", "ref": "<standard>"} or {"source": "default"}. Features reference parameters with expressions such as "plate_length / 2 - hole_margin".
+Planes ("plane": {"ref": ..., "offset": ...}) for sketches and holes:
+- "XY" (sketch x -> X, y -> Y), "XZ" (x -> X, y -> Z), "YZ" (x -> Y, y -> Z), offset along the plane normal.
+- A face of an earlier feature: "<feature id>.<face>" or "part.<face>", face = top, bottom, front, back, left, right, or start / end of an extrude. Sketch coordinates on a face are the same as on the matching base plane (top/bottom like XY, front/back like XZ, left/right like YZ). Offset moves outward from the face.
+- A datum id from the part's "datums": base plane, offset, rotate_about x or y, angle; use it for sloped faces and angled holes.
 How to model:
-- Plates, brackets, flanges and boxes: draw the outline on the plane of the largest face and extrude it. A plate is a rect (or circle) on XY extruded by its thickness.
-- Bent or angled profiles (L, U, T sections, gussets): draw the cross-section as a polygon on XZ and extrude it symmetric by the width.
-- Turned parts (bushings, shafts, spacers): draw the half cross-section as a polygon on XZ with every x > 0 and revolve it about axis Y.
-- Holes are always hole features, never revolves or circle cuts.
-- Hollow boxes and cups: extrude the outside, then shell with the open face.
-Sketch planes: XY (sketch x -> X, sketch y -> Y, offset moves +Z), XZ (sketch x -> X, sketch y -> Z, offset moves -Y), YZ (sketch x -> Y, sketch y -> Z, offset moves +X). Rect and circle are centred on "center". Polygon points are absolute sketch coordinates. A circle with "subtract": true cuts a ring.
-Features run in order on one solid per part. The first feature of a part must be an extrude or revolve with mode "add". Extrude distance may be negative to go the other way; symmetric=true centres the extrusion on the plane.
-Holes: "plane" is where the drill enters, "at" gives the centres in that plane's sketch coordinates, depth null means through all. Use grid for rectangular patterns (centred on "center"), polar for bolt circles (diameter = pitch circle), points for anything else.
-Clearance holes (ISO 273 medium): M2 2.4, M2.5 2.9, M3 3.4, M4 4.5, M5 5.5, M6 6.6, M8 9.0, M10 11.0, M12 13.5. Tap drills: M3 2.5, M4 3.3, M5 4.2, M6 5.0, M8 6.8.
-Fillet/chamfer edge sets: all, top, bottom, parallel_x, parallel_y, parallel_z. Keep radii smaller than half the thinnest wall.
-Model only what was asked; do not add decorative features. Give the design a short descriptive title.
-Answer with JSON only."""
+- Plates, blocks, flanges and boxes: outline on XY extruded by the thickness. Bosses, ribs, pockets and recesses: a sketch on the face they sit on, extruded "add" (outward) or "cut" (into the part).
+- Bent or angled profiles (L, U, T sections): the cross-section as a polygon or path on XZ, extent "symmetric" by the width.
+- Turned parts: the half section on XZ with every x > 0, revolved about axis Y.
+- Outlines with arcs or rounded corners: a "path" entity (segments with "to", optional "arc" cw/ccw with "radius", optional corner "fillet").
+- Every hole, port, bore and passage is a hole feature on the face it enters. Give "fastener" (e.g. "M6") and the compiler sizes it: type "simple" (clearance, fit close/normal/loose), "counterbore", "countersink", or "tapped" (tap drill, add "thread": "M6x1"). Otherwise give "diameter". depth null means through; blind holes may have drill_point "118". Passages that meet are holes from two faces whose depths reach each other.
+- Repeated features: make one, then a "pattern" (linear with direction and spacing, polar about an axis, or mirror across a base plane).
+- Hollow boxes: extrude the outside, then shell with the open faces.
+Extrude extent: "blind" (distance; negative goes the other way on base planes), "symmetric", "two_sided" (distance and distance2), "through_all" (cuts only), "up_to_next". Mode add, cut or intersect.
+Fillet, chamfer and shell faces use selectors: {"of": "part" or a feature id, "normal": "+z"..., "parallel": "x"/"y"/"z", "convexity": "concave"/"convex", "extreme": "max"/"min"}. Inside corners of a milled pocket: {"of": "<pocket>", "parallel": "z", "convexity": "concave"}. Top edges: {"normal": "+z", "extreme": "max"}. Keep radii smaller than half the thinnest wall.
+Model only what was asked. Give the design a short descriptive title. Answer with JSON only."""
 
 
 def _p(name: str, value: float, unit: str, description: str, quote: str | None = None, ref: str | None = None) -> dict[str, Any]:
@@ -26,187 +28,196 @@ def _p(name: str, value: float, unit: str, description: str, quote: str | None =
     return {"name": name, "value": value, "unit": unit, "description": description, "provenance": source}
 
 
-def _part(pid: str, name: str, sketches: list[dict[str, Any]], features: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [{"id": pid, "name": name, "sketches": sketches, "features": features}]
+def _design(title: str, params: list[dict[str, Any]], sketches: list[dict[str, Any]], features: list[dict[str, Any]]) -> dict[str, Any]:
+    part = {"id": "part", "name": title, "sketches": sketches, "features": features}
+    return {"ir_version": 2, "title": title, "params": params, "parts": [part]}
+
+
+def _hole(hid: str, name: str, plane: str, at: dict[str, Any], **spec: Any) -> dict[str, Any]:
+    return {"kind": "hole", "id": hid, "name": name, "plane": {"ref": plane}, "at": at, **spec}
+
+
+def _at(*points: tuple[Any, Any]) -> dict[str, Any]:
+    return {"kind": "points", "points": [list(p) for p in points]}
 
 
 EXAMPLES: list[tuple[str, dict[str, Any]]] = [
     (
         "Round cover plate, 100 mm diameter, 6 mm thick, 6x M5 holes on an 80 mm bolt circle, 30 mm centre bore, 1 mm chamfer on the top edges.",
-        {
-            "title": "Round cover plate",
-            "params": [
+        _design(
+            "Round cover plate",
+            [
                 _p("plate_diameter", 100, "mm", "outer diameter", "100 mm diameter"),
                 _p("thickness", 6, "mm", "plate thickness", "6 mm thick"),
                 _p("bolt_count", 6, "", "number of bolts", "6x M5"),
-                _p("bolt_hole_diameter", 5.5, "mm", "M5 clearance", ref="ISO 273"),
                 _p("bolt_circle_diameter", 80, "mm", "pitch circle", "80 mm bolt circle"),
                 _p("bore_diameter", 30, "mm", "centre bore", "30 mm centre bore"),
                 _p("edge_chamfer", 1, "mm", "top edge chamfer", "1 mm chamfer"),
             ],
-            "parts": _part(
-                "cover",
-                "Cover plate",
-                [
-                    {
-                        "id": "disc",
-                        "plane": {"base": "XY", "offset": 0},
-                        "entities": [{"kind": "circle", "center": [0, 0], "diameter": "plate_diameter"}],
-                    }
-                ],
-                [
-                    {"kind": "extrude", "id": "body", "name": "Plate body", "sketch": "disc", "distance": "thickness", "mode": "add"},
-                    {
-                        "kind": "hole",
-                        "id": "bore",
-                        "name": "Centre bore",
-                        "plane": {"base": "XY", "offset": "thickness"},
-                        "at": {"kind": "points", "points": [[0, 0]]},
-                        "diameter": "bore_diameter",
-                        "depth": None,
-                    },
-                    {
-                        "kind": "hole",
-                        "id": "bolt_holes",
-                        "name": "Bolt holes",
-                        "plane": {"base": "XY", "offset": "thickness"},
-                        "at": {
-                            "kind": "polar",
-                            "center": [0, 0],
-                            "count": "bolt_count",
-                            "diameter": "bolt_circle_diameter",
-                            "start_angle": 0,
-                        },
-                        "diameter": "bolt_hole_diameter",
-                        "depth": None,
-                    },
-                    {"kind": "chamfer", "id": "top_chamfer", "name": "Top edge chamfer", "edges": "top", "length": "edge_chamfer"},
-                ],
-            ),
-        },
+            [{"id": "disc", "plane": {"ref": "XY"}, "entities": [{"kind": "circle", "diameter": "plate_diameter"}]}],
+            [
+                {"kind": "extrude", "id": "plate", "name": "Plate", "sketch": "disc", "distance": "thickness"},
+                _hole("bore", "Centre bore", "plate.top", _at((0, 0)), diameter="bore_diameter"),
+                _hole(
+                    "bolt_holes",
+                    "M5 bolt holes",
+                    "plate.top",
+                    {"kind": "polar", "count": "bolt_count", "diameter": "bolt_circle_diameter"},
+                    fastener="M5",
+                ),
+                {
+                    "kind": "chamfer",
+                    "id": "top_chamfer",
+                    "name": "Top chamfer",
+                    "edges": {"normal": "+z", "extreme": "max"},
+                    "length": "edge_chamfer",
+                },
+            ],
+        ),
     ),
     (
         "Angle bracket from 5 mm steel, legs 50 mm and 40 mm, 30 mm wide, one M8 hole in the middle of each leg.",
-        {
-            "title": "Angle bracket",
-            "params": [
+        _design(
+            "Angle bracket",
+            [
                 _p("base_leg", 50, "mm", "horizontal leg length", "legs 50 mm"),
                 _p("upright_leg", 40, "mm", "vertical leg height", "and 40 mm"),
                 _p("width", 30, "mm", "bracket width", "30 mm wide"),
                 _p("thickness", 5, "mm", "plate thickness", "5 mm steel"),
-                _p("hole_diameter", 9.0, "mm", "M8 clearance", ref="ISO 273"),
             ],
-            "parts": _part(
-                "bracket",
-                "Angle bracket",
-                [
-                    {
-                        "id": "profile",
-                        "plane": {"base": "XZ", "offset": 0},
-                        "entities": [
-                            {
-                                "kind": "polygon",
-                                "points": [
-                                    [0, 0],
-                                    ["base_leg", 0],
-                                    ["base_leg", "thickness"],
-                                    ["thickness", "thickness"],
-                                    ["thickness", "upright_leg"],
-                                    [0, "upright_leg"],
-                                ],
-                            }
-                        ],
-                    }
-                ],
-                [
-                    {"kind": "extrude", "id": "body", "name": "L profile", "sketch": "profile", "distance": "width", "symmetric": True},
-                    {
-                        "kind": "hole",
-                        "id": "base_hole",
-                        "name": "Base leg hole",
-                        "plane": {"base": "XY", "offset": "thickness"},
-                        "at": {"kind": "points", "points": [["thickness + (base_leg - thickness) / 2", 0]]},
-                        "diameter": "hole_diameter",
-                        "depth": None,
-                    },
-                    {
-                        "kind": "hole",
-                        "id": "upright_hole",
-                        "name": "Upright leg hole",
-                        "plane": {"base": "YZ", "offset": "thickness"},
-                        "at": {"kind": "points", "points": [[0, "thickness + (upright_leg - thickness) / 2"]]},
-                        "diameter": "hole_diameter",
-                        "depth": None,
-                    },
-                ],
-            ),
-        },
+            [
+                {
+                    "id": "profile",
+                    "plane": {"ref": "XZ"},
+                    "entities": [
+                        {
+                            "kind": "polygon",
+                            "points": [
+                                [0, 0],
+                                ["base_leg", 0],
+                                ["base_leg", "thickness"],
+                                ["thickness", "thickness"],
+                                ["thickness", "upright_leg"],
+                                [0, "upright_leg"],
+                            ],
+                        }
+                    ],
+                }
+            ],
+            [
+                {"kind": "extrude", "id": "body", "name": "L profile", "sketch": "profile", "extent": "symmetric", "distance": "width"},
+                _hole("base_hole", "Base leg hole", "XY", _at(("thickness + (base_leg - thickness) / 2", 0)), fastener="M8"),
+                _hole(
+                    "upright_hole", "Upright leg hole", "body.left", _at((0, "thickness + (upright_leg - thickness) / 2")), fastener="M8"
+                ),
+            ],
+        ),
     ),
     (
         "Open-top tray, outside 80 x 50 x 20 mm, 2 mm walls, 3 mm radius on the vertical corners.",
-        {
-            "title": "Open-top tray",
-            "params": [
+        _design(
+            "Open-top tray",
+            [
                 _p("length", 80, "mm", "outside length", "80 x 50 x 20 mm"),
                 _p("width", 50, "mm", "outside width", "80 x 50 x 20 mm"),
                 _p("height", 20, "mm", "outside height", "80 x 50 x 20 mm"),
                 _p("wall", 2, "mm", "wall and floor thickness", "2 mm walls"),
                 _p("corner_radius", 3, "mm", "vertical corner radius", "3 mm radius"),
             ],
-            "parts": _part(
-                "tray",
-                "Tray",
-                [
-                    {
-                        "id": "outline",
-                        "plane": {"base": "XY", "offset": 0},
-                        "entities": [{"kind": "rect", "center": [0, 0], "width": "length", "height": "width"}],
-                    }
-                ],
-                [
-                    {"kind": "extrude", "id": "block", "name": "Outer block", "sketch": "outline", "distance": "height"},
-                    {"kind": "fillet", "id": "corners", "name": "Corner radius", "edges": "parallel_z", "radius": "corner_radius"},
-                    {"kind": "shell", "id": "hollow", "name": "Shell", "open_face": "top", "thickness": "wall"},
-                ],
-            ),
-        },
+            [{"id": "outline", "plane": {"ref": "XY"}, "entities": [{"kind": "rect", "width": "length", "height": "width"}]}],
+            [
+                {"kind": "extrude", "id": "block", "name": "Outer block", "sketch": "outline", "distance": "height"},
+                {"kind": "fillet", "id": "corners", "name": "Corner radius", "edges": {"parallel": "z"}, "radius": "corner_radius"},
+                {"kind": "shell", "id": "hollow", "name": "Shell", "thickness": "wall", "open": [{"normal": "+z", "extreme": "max"}]},
+            ],
+        ),
     ),
     (
         "Flanged bushing: 20 mm bore, 30 mm outside diameter, 25 mm long overall, 45 mm flange 5 mm thick.",
-        {
-            "title": "Flanged bushing",
-            "params": [
+        _design(
+            "Flanged bushing",
+            [
                 _p("bore_diameter", 20, "mm", "bore", "20 mm bore"),
                 _p("outer_diameter", 30, "mm", "shank diameter", "30 mm outside diameter"),
                 _p("length", 25, "mm", "overall length", "25 mm long overall"),
                 _p("flange_diameter", 45, "mm", "flange diameter", "45 mm flange"),
                 _p("flange_thickness", 5, "mm", "flange thickness", "5 mm thick"),
             ],
-            "parts": _part(
-                "bushing",
-                "Bushing",
-                [
-                    {
-                        "id": "half_section",
-                        "plane": {"base": "XZ", "offset": 0},
-                        "entities": [
-                            {
-                                "kind": "polygon",
-                                "points": [
-                                    ["bore_diameter / 2", 0],
-                                    ["flange_diameter / 2", 0],
-                                    ["flange_diameter / 2", "flange_thickness"],
-                                    ["outer_diameter / 2", "flange_thickness"],
-                                    ["outer_diameter / 2", "length"],
-                                    ["bore_diameter / 2", "length"],
-                                ],
-                            }
-                        ],
-                    }
-                ],
-                [{"kind": "revolve", "id": "body", "name": "Turned body", "sketch": "half_section", "axis": "Y", "angle": 360}],
-            ),
-        },
+            [
+                {
+                    "id": "half_section",
+                    "plane": {"ref": "XZ"},
+                    "entities": [
+                        {
+                            "kind": "polygon",
+                            "points": [
+                                ["bore_diameter / 2", 0],
+                                ["flange_diameter / 2", 0],
+                                ["flange_diameter / 2", "flange_thickness"],
+                                ["outer_diameter / 2", "flange_thickness"],
+                                ["outer_diameter / 2", "length"],
+                                ["bore_diameter / 2", "length"],
+                            ],
+                        }
+                    ],
+                }
+            ],
+            [{"kind": "revolve", "id": "body", "name": "Turned body", "sketch": "half_section", "axis": "Y", "angle": 360}],
+        ),
+    ),
+    (
+        "Valve block 60 x 40 x 30 mm. M8 tapped port 20 mm deep in the top face, a 6 mm passage from the front face that meets it 10 mm below the top, two M5 counterbored mounting holes through the block 22 mm either side of centre, 1 mm chamfer on the top edges.",
+        _design(
+            "Valve block",
+            [
+                _p("length", 60, "mm", "block length", "60 x 40 x 30 mm"),
+                _p("width", 40, "mm", "block width", "60 x 40 x 30 mm"),
+                _p("height", 30, "mm", "block height", "60 x 40 x 30 mm"),
+                _p("port_depth", 20, "mm", "tapped port depth", "20 mm deep"),
+                _p("passage_diameter", 6, "mm", "cross passage", "6 mm passage"),
+                _p("passage_drop", 10, "mm", "passage below the top face", "10 mm below the top"),
+                _p("mount_offset", 22, "mm", "mounting holes from centre", "22 mm either side"),
+                _p("edge_chamfer", 1, "mm", "top edge chamfer", "1 mm chamfer"),
+            ],
+            [{"id": "outline", "plane": {"ref": "XY"}, "entities": [{"kind": "rect", "width": "length", "height": "width"}]}],
+            [
+                {"kind": "extrude", "id": "block", "name": "Block", "sketch": "outline", "distance": "height"},
+                _hole(
+                    "port",
+                    "M8 port",
+                    "block.top",
+                    _at((0, 0)),
+                    type="tapped",
+                    fastener="M8",
+                    thread="M8x1.25",
+                    depth="port_depth",
+                    drill_point="118",
+                ),
+                _hole(
+                    "passage",
+                    "Cross passage",
+                    "block.front",
+                    _at((0, "height - passage_drop")),
+                    diameter="passage_diameter",
+                    depth="width / 2",
+                ),
+                _hole(
+                    "mounts",
+                    "Mounting holes",
+                    "block.top",
+                    _at(("-mount_offset", 0), ("mount_offset", 0)),
+                    type="counterbore",
+                    fastener="M5",
+                ),
+                {
+                    "kind": "chamfer",
+                    "id": "top_chamfer",
+                    "name": "Top chamfer",
+                    "edges": {"normal": "+z", "extreme": "max"},
+                    "length": "edge_chamfer",
+                },
+            ],
+        ),
     ),
 ]
 
