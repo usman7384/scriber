@@ -1,0 +1,58 @@
+[
+  {
+    "id": "c01-manifold-challenge",
+    "model": "partwright-ir:0.8b-s0b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 25,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 81.3,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "c02-manifold-short",
+    "model": "partwright-ir:0.8b-s0b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 38.2,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "c01-manifold-challenge",
+    "model": "qwen3.5:4b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 25,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 378.6,
+    "final_step": "gave up after 4 attempts"
+  },
+  {
+    "id": "c02-manifold-short",
+    "model": "qwen3.5:4b",
+    "built": false,
+    "valid": false,
+    "agent_ok": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "failed_checks": [],
+    "attempts": 4,
+    "repairs": 3,
+    "seconds": 220.1,
+    "final_step": "gave up after 4 attempts"
+  }
+]

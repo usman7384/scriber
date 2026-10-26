@@ -51,10 +51,32 @@ Training uses the same chat format as inference, but with the short v2 rules onl
 |---|---|---|---|---|
 | S0 | Generators for 4 families, renderer, repair mutator; 2k samples; Qwen3.5-0.8B LoRA, 1 epoch (~10 min, estimate); GGUF → Ollama | laptop | free | synthetic held-out validity and build rate beat the prompted 0.8B; the pipeline runs end to end (also closes the M5 fine-tune row) |
 | S1 | All families, 15–25k samples; 0.8B, 2–3 epochs overnight (several hours, estimate) | laptop | free | M1 and synthetic gates; challenge reported |
-| S2 | Same data on Qwen3.5-4B, bf16 LoRA | rented 24 GB GPU | a few to tens of US dollars per run, estimate | all gates; challenge 2/2 is the target |
-| S3 | Preference or RL step using our checks as reward (repair outcomes as chosen/rejected) | rented GPU | similar | only if S2 misses the challenge gate |
+| S2 | ~~Same data on Qwen3.5-4B on a rented GPU~~ | — | — | dropped: training stays local (decision 2026-10-26) |
+| S3 | Preference step using our checks as reward (repair outcomes as chosen/rejected), on the 0.8B | laptop | free | only if S1 misses the challenge gate |
 
 Each stage records its data card (counts per family and type, licence: all ours), training config, and scorecards in `docs/agents/training.md`, and the served model tag goes into `config.yaml` (`partwright-ir:0.8b`, `partwright-ir:4b`) beside the base model so either can be selected.
+
+## S1 within 6 GB
+
+S0b result (see `docs/agents/training.md`): 39/40 on held-out synthetic cases but 0/10 on M1 against 4/10 for the prompted 4B. S1 is therefore about transfer, not more of the same templates, and it has a stop rule: **if S1 does not beat the prompted 4B on M1 and the grounded set, the 0.8B route stops** and the effort goes back into the prompted 4B. Training the 4B itself needs more than 6 GB (D-021).
+
+0. **Real-wording data first.** The biggest lever is paraphrase: every templated prompt is rewritten by the local `qwen3.5:4b` in several registers (terse, chatty, spec sheet, mixed units and number words). A paraphrase is kept only if every number survives. Add vague prompts with defaults ("a metal bracket with screw holes"), and part names used loosely: a "bracket" that is a flat plate, a "flange" that is a round plate. Track M1 and grounded scores per S1 checkpoint, not the training loss.
+
+Everything stays on the laptop. Figures measured in S0 (`docs/agents/training.md`): bf16 LoRA r16 on Qwen3.5-0.8B peaks at 4.4 GB with 4,096-token sequences and batch 2, and trains at about 1,100 tokens/s. That speed uses the slow fallbacks: no `causal_conv1d`, no flash-linear-attention, and PyTorch attention because the installed xformers was built for another torch.
+
+1. **Fix the kernels before scaling.** Add `flash-linear-attention` (Triton, no compile) and `causal-conv1d` (needs the CUDA toolkit in WSL, about 3 GB, or a matching wheel), and remove the mismatched xformers. Re-run the S0 data as a benchmark: the same 247 steps, now 47 min. Expect 2–3x (estimate). Without it, S1 is 6–8 h per epoch.
+2. **Model: stay on 0.8B.** Qwen3.5-2B needs 5 GB at short sequences, and our samples run to 4k tokens (6k for spec-sheet-length prompts). Try it only as a 20-step memory probe (batch 1, 4,096 tokens) after step 1. That costs a 4 GB download at about 1.3 MB/s, so about 50 min.
+3. **Sequence budget.** S0 maxed at 3,728 tokens. S1 adds challenge-length specs (about 2k-token prompt plus 3–4k-token design). Use `max_length` 6,144 at batch 1 with 8 accumulation steps; memory falls with batch 1, so measure it on the first steps. Drop anything longer instead of truncating it, because a cut-off design teaches cut-off answers.
+4. **Data, about 15k samples, about 25M tokens.**
+   - A complex manifold family built from the challenge's feature vocabulary, never its text: terraces, several bosses with bores, ears from a path plus a pattern, rib patterns on the side walls, a recessed front panel with filleted corners, a bottom chamfer, and ports on four faces with crossings.
+   - Enclosures with shells, flanges sized from standard tables, and angled holes from datums.
+   - Refine pairs.
+   - At least a quarter long spec-sheet prompts.
+   - Paraphrases by the local `qwen3.5:4b`, kept only when every number survives. S0 reached a loss of 0.002, so the model memorises our templates. Phrasing variety is what moves the real-text gates.
+   - On-policy successes from the local 4B agent.
+5. **Schedule.** One epoch overnight first (about 3 h with the kernels, about 6 h without). Run a second epoch only if the M1 and grounded scores, not the synthetic one, are still improving.
+6. **Export.** Merge, convert with llama.cpp (`convert_hf_to_gguf.py --outtype q8_0`, pinned release), then `ollama create` with the base model's renderer, parser and sampling parameters (`training/wsl/Modelfile`). Ollama cannot import Qwen3.5 safetensors on Windows (it needs its MLX runtime).
+7. **Gates.** The success criteria above, on the same commands: synthetic held-out, M1, grounded and challenge, all measured against `qwen3.5:0.8b-q8_0` and `qwen3.5:4b` as they are prompted today.
 
 ## Risks
 
@@ -64,8 +86,9 @@ Each stage records its data card (counts per family and type, licence: all ours)
 - **Disk**: the WSL training environment needs 6–8 GB on C:, which has about 7 GB free; D: has about 12 GB.
 - **Chat template / EOS mismatch** after GGUF export silently degrades output; the S0 gate catches it.
 
-## Decisions needed
+## Decisions
 
-1. **Cloud GPU for S2** (and possibly S1): allowed, and what budget? Training is off the product's default path; inference stays local.
-2. **Disk for the training environment**: free space on C: (the Docker Desktop data disk is 33.7 GB), move the WSL distro to D:, or run training only on the rented GPU.
-3. **Teacher model**: keep all data generated by our own generators and local models (default), or allow a stronger hosted model to write or check training designs, which raises licence and offline questions.
+1. Cloud GPU: no. Training stays local (2026-10-26), so the 4B is not fine-tuned.
+2. Disk: the training venv (6.0 GB) lives in WSL on C:, and models and data live on D:. That fits with about 14 GB still free on C:.
+3. Teacher model: only our generators and local models.
+4. GGUF export: llama.cpp converter, pinned release (approved 2026-10-26).
