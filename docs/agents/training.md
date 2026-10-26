@@ -97,3 +97,7 @@ After dropping requirements the checks cannot measure (bent-part stock thickness
 | M1 (`m1-20261026-222758`) | 4/10, 15/35 | **5/10**, 16/35, median 68 s |
 | Grounded, grounded mode (`grounded-20261026-223718`) | 1/10, 14/45 | 1/10, 14/45 (unchanged; no unmeasurable requirements there) |
 | Grounded, prompt mode | 2/10, 12/45 | **4/10**, 20/45 |
+
+## S1 on the 4B with QLoRA (started 2026-10-27)
+
+bf16 LoRA on Qwen3.5-4B needs about 10 GB, so the run uses QLoRA (base weights 4-bit, Unsloth advises against it for Qwen3.5 on quality grounds; the gates decide). Probes, 20 steps, batch 1 x 8 accumulation: 4,096 tokens peaks at 5.17 GB and 52 s per step, 2,048 tokens at 4.57 GB and 36 s. The full run uses 4,096 so the long spec-sheet and repair samples stay in: 608 steps, about 9 hours, a checkpoint every 100 steps, adapter only (merging a 4B to bf16 needs more RAM than WSL has, so it is a separate step). Base weights: `Qwen/Qwen3.5-4B` from Hugging Face in WSL (`~/models/Qwen3.5-4B`, 9.3 GB). Same gates and stop rule as S1.

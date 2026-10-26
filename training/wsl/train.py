@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from unsloth import FastLanguageModel  # isort: skip  (must be imported before transformers)
+import torch
 from datasets import Dataset
 from trl import SFTConfig, SFTTrainer
 from unsloth.chat_templates import train_on_responses_only
@@ -30,9 +31,14 @@ def main() -> None:
     p.add_argument("--accum", type=int, default=4)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-steps", type=int, default=-1)
+    p.add_argument("--save-steps", type=int, default=0, help="keep a resumable checkpoint every N steps")
+    p.add_argument("--load-4bit", action="store_true", help="QLoRA: base weights in 4-bit, for models that do not fit in bf16")
+    p.add_argument("--no-merge", action="store_true", help="save only the LoRA adapter")
     args = p.parse_args()
 
-    model, processor = FastLanguageModel.from_pretrained(args.model, max_seq_length=args.max_seq, load_in_4bit=False, load_in_16bit=True)
+    model, processor = FastLanguageModel.from_pretrained(
+        args.model, max_seq_length=args.max_seq, load_in_4bit=args.load_4bit, load_in_16bit=not args.load_4bit
+    )
     tok = getattr(processor, "tokenizer", processor)
     model = FastLanguageModel.get_peft_model(
         model,
@@ -71,16 +77,20 @@ def main() -> None:
             optim="adamw_8bit",
             seed=args.seed,
             output_dir=str(args.out / "checkpoints"),
-            save_strategy="no",
+            save_strategy="steps" if args.save_steps else "no",
+            save_steps=args.save_steps or 500,
+            save_total_limit=2,
             report_to="none",
         ),
     )
     trainer = train_on_responses_only(trainer, instruction_part="<|im_start|>user\n", response_part="<|im_start|>assistant\n")
     stats = trainer.train()
-    (args.out / "train_stats.json").write_text(json.dumps(stats.metrics, indent=2))
+    metrics = {**stats.metrics, "peak_reserved_gb": round(torch.cuda.max_memory_reserved() / 2**30, 2)}
+    (args.out / "train_stats.json").write_text(json.dumps(metrics, indent=2))
     model.save_pretrained(str(args.out / "lora"))
     tok.save_pretrained(str(args.out / "lora"))
-    model.save_pretrained_merged(str(args.out / "merged"), tok, save_method="merged_16bit")
+    if not args.no_merge:
+        model.save_pretrained_merged(str(args.out / "merged"), tok, save_method="merged_16bit")
 
 
 if __name__ == "__main__":
