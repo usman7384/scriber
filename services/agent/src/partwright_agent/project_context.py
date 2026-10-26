@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 from partwright_agent.requirements import Requirement
 from partwright_agent.standards import ISO273_RANGE
 from partwright_context import ContextPack, Fact
-from partwright_ir import Design, Param, Process, RuleSet
+from partwright_ir import Design, Param, Process, RuleSet, answer_json
 
 MAX_FACTS = 24
 
@@ -109,9 +109,7 @@ def _describe(f: Fact) -> str:
 def _prior(pack: ContextPack) -> str | None:
     best = next((p for p in pack.similar_parts if p.design is not None), None)
     if best is not None and best.design is not None:
-        return "A similar part designed earlier in this project; reuse its structure where it fits:\n" + best.design.model_dump_json(
-            exclude_defaults=True
-        )
+        return "A similar part designed earlier in this project; reuse its structure where it fits:\n" + answer_json(best.design)
     shape = next((p for p in pack.similar_parts if p.descriptor is not None), None)
     if shape is not None and shape.descriptor is not None:
         d = shape.descriptor
