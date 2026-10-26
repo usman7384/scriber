@@ -1,0 +1,23 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "height 50",
+      "passed": true,
+      "actual": "bounding box 40.00 x 40.00 x 50.00 mm"
+    },
+    {
+      "name": "wall 2",
+      "passed": true,
+      "actual": "wall from outer size and holes [2.0]"
+    },
+    {
+      "name": "one bore",
+      "passed": true,
+      "actual": "1 matching holes; all hole diameters [36.0]"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "attempt": 4,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "length 120",
+      "passed": true,
+      "actual": "bounding box 120.00 x 40.00 x 4.00 mm"
+    },
+    {
+      "name": "width 40",
+      "passed": true,
+      "actual": "bounding box 120.00 x 40.00 x 4.00 mm"
+    },
+    {
+      "name": "four 6 mm holes",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [6.0, 6.0, 6.0, 6.0]"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "height 60",
+      "passed": true,
+      "actual": "bounding box 105.00 x 80.00 x 60.00 mm"
+    },
+    {
+      "name": "4 bolt holes 8.5",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [8.5, 8.5, 8.5, 8.5, 36.0]"
+    },
+    {
+      "name": "spacing X 85",
+      "passed": true,
+      "actual": "hole centre distances [60.0, 85.0, 104.04]"
+    },
+    {
+      "name": "spacing Y 60",
+      "passed": true,
+      "actual": "hole centre distances [60.0, 85.0, 104.04]"
+    }
+  ]
+}

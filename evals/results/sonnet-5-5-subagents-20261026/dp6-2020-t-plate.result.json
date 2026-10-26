@@ -1,0 +1,23 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "thickness 4",
+      "passed": true,
+      "actual": "bounding box 60.00 x 60.00 x 4.00 mm"
+    },
+    {
+      "name": "five M5 clearance",
+      "passed": true,
+      "actual": "5 matching holes; all hole diameters [5.5, 5.5, 5.5, 5.5, 5.5]"
+    },
+    {
+      "name": "20 mm pitch",
+      "passed": true,
+      "actual": "hole centre distances [20.0, 28.28, 40.0, 44.72]"
+    }
+  ]
+}

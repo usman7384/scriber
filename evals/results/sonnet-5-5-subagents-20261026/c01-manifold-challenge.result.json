@@ -1,0 +1,133 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "X within 120",
+      "passed": true,
+      "actual": "X extent 120.00 mm"
+    },
+    {
+      "name": "Y within 90",
+      "passed": true,
+      "actual": "Y extent 90.00 mm"
+    },
+    {
+      "name": "Z within 75",
+      "passed": true,
+      "actual": "Z extent 73.00 mm"
+    },
+    {
+      "name": "at least 12 holes and ports",
+      "passed": true,
+      "actual": "31 holes; diameters [5.0, 5.0, 5.5, 5.5, 5.5, 5.5, 6.0, 6.6, 6.6, 6.75, 6.75, 6.75, 8.0, 8.0, 8.0, 8.0]"
+    },
+    {
+      "name": "at least 3 counterbored ports or holes",
+      "passed": true,
+      "actual": "12 found"
+    },
+    {
+      "name": "intersecting internal passages",
+      "passed": true,
+      "actual": "59 found"
+    },
+    {
+      "name": "ports along all three axes",
+      "passed": true,
+      "actual": "3 found"
+    },
+    {
+      "name": "parameter block_length",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter block_width",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter block_height",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter boss_diameter",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter boss_height",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter port_diameter_primary",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter port_diameter_secondary",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter port_spacing",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter mounting_hole_diameter",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter mounting_hole_offset",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter passage_diameter",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter sealing_groove_width",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter sealing_groove_depth",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter wall_thickness",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter edge_fillet_radius",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "parameter edge_chamfer_size",
+      "passed": true,
+      "actual": "present"
+    },
+    {
+      "name": "robust block_length +5%",
+      "passed": true,
+      "actual": "rebuilt valid"
+    },
+    {
+      "name": "robust port_spacing +5%",
+      "passed": true,
+      "actual": "rebuilt valid"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "length 200",
+      "passed": true,
+      "actual": "bounding box 200.00 x 120.00 x 5.00 mm"
+    },
+    {
+      "name": "width 120",
+      "passed": true,
+      "actual": "bounding box 200.00 x 120.00 x 5.00 mm"
+    },
+    {
+      "name": "thickness 5",
+      "passed": true,
+      "actual": "bounding box 200.00 x 120.00 x 5.00 mm"
+    },
+    {
+      "name": "ten 6.6 holes",
+      "passed": true,
+      "actual": "10 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6]"
+    },
+    {
+      "name": "pitch 40",
+      "passed": true,
+      "actual": "hole centre distances [40.0, 60.0, 72.11, 80.0, 100.0, 120.0, 134.16, 160.0, 170.88]"
+    },
+    {
+      "name": "row distance 60",
+      "passed": true,
+      "actual": "hole centre distances [40.0, 60.0, 72.11, 80.0, 100.0, 120.0, 134.16, 160.0, 170.88]"
+    }
+  ]
+}

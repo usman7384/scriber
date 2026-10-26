@@ -57,3 +57,17 @@ Reading:
 - The S0 gate passes: in distribution, the tuned 0.8B goes from 4/40 to 39/40 and is ten times faster.
 - It does not transfer. On M1 the tuned model is worse than its own base. Its answers are well formed but semantically wrong: it reads a hole diameter as an edge margin, draws an L-bracket as a solid rectangle without its thickness, and takes "mounting bracket ... 80x60 plate" to be an L profile, because in our data "bracket" always means one. It has learned our templates' wording, not the task.
 - The 4B's M1 score is unchanged at 4/10 after the order fix, but its median time halved (133 s to 68 s): fewer repairs are spent on keys the grammar cannot emit.
+
+## Reference: Claude Sonnet 5.5 as the agent's model (comparison only)
+
+Run 2026-10-26 on the user's Claude subscription, not part of the product path. Each attempt was a fresh Sonnet 5.5 subagent that saw only what the agent's model sees: the system rules, the five worked examples, the request, the IR JSON schema and, for repairs, the agent's own repair message quoting its previous answer. It never saw the case checks. Requirement extraction used one Sonnet subagent with the agent's extraction prompt. Answers were scored with our own validator, kernel, requirement checks, parameter and +5 % robustness checks, up to 4 attempts, as `partwright-evals` does. Differences from the Ollama path: no constrained decoding (answers were plain JSON) and Claude Code's own system prompt around the task. Harness, scorecard and final designs: `evals/results/sonnet-5-5-subagents-20261026/`.
+
+| Set | Sonnet 5.5 | qwen3.5:4b (prompted) | tuned 0.8B S0b |
+|---|---|---|---|
+| M1 (10) | **10/10**, 35/35 checks, 8 on the first attempt | 4/10, 15/35 | 0/10, 3/35 |
+| Challenge (2) | **2/2**, 29/29 checks (c01: all 16 named parameters, every robustness rebuild), both on the first attempt | 0/2 | 0/2 |
+
+What it shows:
+
+- The IR v2, compiler, kernel and checks can express and verify the challenge manifold; the remaining gap is entirely model capability.
+- Two failures came from our requirement extraction, not the model: "plate thickness 4" extracted as an overall extent for an L-bracket (the bounding box of an L is legs x width, so it can never be 4), and a "wall 2" requirement on an open box, which the wall check can only measure through holes. Both cost the local models repairs too; they are agent bugs to fix.

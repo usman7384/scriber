@@ -1,0 +1,33 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "60 square",
+      "passed": true,
+      "actual": "bounding box 60.00 x 60.00 x 5.00 mm"
+    },
+    {
+      "name": "thickness 5",
+      "passed": true,
+      "actual": "bounding box 60.00 x 60.00 x 5.00 mm"
+    },
+    {
+      "name": "four M3",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [3.4, 3.4, 3.4, 3.4, 22.0]"
+    },
+    {
+      "name": "31 mm square",
+      "passed": true,
+      "actual": "hole centre distances [31.0, 43.84]"
+    },
+    {
+      "name": "centre hole 22",
+      "passed": true,
+      "actual": "1 matching holes; all hole diameters [3.4, 3.4, 3.4, 3.4, 22.0]"
+    }
+  ]
+}

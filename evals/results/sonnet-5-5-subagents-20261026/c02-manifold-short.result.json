@@ -1,0 +1,28 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "ports and mounting holes",
+      "passed": true,
+      "actual": "9 holes; diameters [8.0, 8.0, 8.0, 8.5, 8.5, 9.0, 9.0, 15.0, 15.0]"
+    },
+    {
+      "name": "at least one counterbore",
+      "passed": true,
+      "actual": "2 found"
+    },
+    {
+      "name": "intersecting internal channels",
+      "passed": true,
+      "actual": "10 found"
+    },
+    {
+      "name": "ports on at least two axes",
+      "passed": true,
+      "actual": "3 found"
+    }
+  ]
+}

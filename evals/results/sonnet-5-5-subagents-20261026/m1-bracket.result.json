@@ -1,0 +1,28 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "length 80",
+      "passed": true,
+      "actual": "bounding box 80.00 x 60.00 x 5.00 mm"
+    },
+    {
+      "name": "width 60",
+      "passed": true,
+      "actual": "bounding box 80.00 x 60.00 x 5.00 mm"
+    },
+    {
+      "name": "thickness 5",
+      "passed": true,
+      "actual": "bounding box 80.00 x 60.00 x 5.00 mm"
+    },
+    {
+      "name": "4x M6 clearance",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6]"
+    }
+  ]
+}

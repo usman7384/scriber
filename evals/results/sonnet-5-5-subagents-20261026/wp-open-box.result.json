@@ -1,0 +1,25 @@
+{
+  "attempt": 4,
+  "problems": [
+    "requirement not met: wall and floor thickness 2 (actual: wall from outer size and holes [])"
+  ],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "length 100",
+      "passed": true,
+      "actual": "bounding box 100.00 x 60.00 x 40.00 mm"
+    },
+    {
+      "name": "width 60",
+      "passed": true,
+      "actual": "bounding box 100.00 x 60.00 x 40.00 mm"
+    },
+    {
+      "name": "height 40",
+      "passed": true,
+      "actual": "bounding box 100.00 x 60.00 x 40.00 mm"
+    }
+  ]
+}

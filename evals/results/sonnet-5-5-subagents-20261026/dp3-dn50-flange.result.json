@@ -1,0 +1,23 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "outer diameter 165",
+      "passed": true,
+      "actual": "bounding box 165.00 x 165.00 x 18.00 mm"
+    },
+    {
+      "name": "4 bolt holes 18",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [18.0, 18.0, 18.0, 18.0, 60.3]"
+    },
+    {
+      "name": "PCD 125 across",
+      "passed": true,
+      "actual": "hole centre distances [88.39, 125.0]"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "attempt": 1,
+  "problems": [],
+  "built": true,
+  "valid": true,
+  "checks": [
+    {
+      "name": "has screw holes",
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [5.5, 5.5, 5.5, 5.5]"
+    }
+  ]
+}
