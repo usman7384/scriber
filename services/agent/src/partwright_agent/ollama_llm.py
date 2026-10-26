@@ -1,8 +1,10 @@
 from typing import Any
 
-from ollama import Client
+from ollama import Client, ResponseError
 
 from partwright_agent.llm import Message
+
+REPEAT_ABORT = "token repeat limit"
 
 
 class OllamaLLM:
@@ -23,13 +25,19 @@ class OllamaLLM:
         self._client = Client(host=host)
 
     def chat(self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0) -> str:
-        response = self._client.chat(
-            model=self.name,
-            messages=[_message(m) for m in messages],
-            format=schema,
-            options={"temperature": temperature, "seed": seed, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
-            think=self.think,
-        )
+        try:
+            response = self._client.chat(
+                model=self.name,
+                messages=[_message(m) for m in messages],
+                format=schema,
+                options={"temperature": temperature, "seed": seed, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
+                think=self.think,
+            )
+        except ResponseError as e:
+            # Ollama stops a looping answer server-side; the loop treats an empty answer as cut off and asks again
+            if REPEAT_ABORT in str(e):
+                return ""
+            raise
         return response.message.content or ""
 
 
