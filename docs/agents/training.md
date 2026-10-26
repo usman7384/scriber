@@ -85,3 +85,15 @@ S1 data (`partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b
 Stop rule (`docs/FINE_TUNING_PLAN.md`): S1 had to beat the prompted 4B on M1 and on the grounded set. It does not beat it on M1 (3/10 and 10/35 against 4/10 and 15/35), so **the 0.8B route stops here**, as the rule says. On the grounded set it ties on fully passing cases, passes more checks, builds more parts and is about nine times faster; that is recorded, not a reason to bend the rule.
 
 The 4B's grounded score fell from 3/10, 23/45 (`grounded-20261026-035401`) to 1/10, 14/45 since the key-order and request-override changes. That needs a look before the next 4B work: the request-override logic, the reordered worked examples, or run-to-run variance.
+
+## The prompted 4B after the fixes (2026-10-26)
+
+The grounded drop (3/10 to 1/10) was traced with an A/B on the three cases that regressed: current prompt 0/3, old example key order 1/3 (g02 passes, g01 now fails), project block without the new request-wins line 0/3. No single change explains it; the 4B's greedy answers flip with small prompt changes (recorded in KNOWN_ISSUES). The old example order cannot come back, since it teaches keys the grammar cannot emit.
+
+After dropping requirements the checks cannot measure (bent-part stock thickness, walls on non-round parts):
+
+| Gate | qwen3.5:4b before | qwen3.5:4b now |
+|---|---|---|
+| M1 (`m1-20261026-222758`) | 4/10, 15/35 | **5/10**, 16/35, median 68 s |
+| Grounded, grounded mode (`grounded-20261026-223718`) | 1/10, 14/45 | 1/10, 14/45 (unchanged; no unmeasurable requirements there) |
+| Grounded, prompt mode | 2/10, 12/45 | **4/10**, 20/45 |

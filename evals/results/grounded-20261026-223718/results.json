@@ -1,0 +1,459 @@
+[
+  {
+    "id": "g01-sensor-plate",
+    "facts": {
+      "tp": 6,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 2,
+        "seconds": 39.015
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 5,
+        "failed_checks": [
+          "thickness 6: bounding box 120.00 x 80.00 x 3.00 mm"
+        ],
+        "rule_errors": [
+          "min_wall_thickness: wall is 0.07 mm thick; needs \u2265 3 mm"
+        ],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 2,
+        "cited_correct": 2,
+        "attempts": 4,
+        "seconds": 90.468
+      }
+    ]
+  },
+  {
+    "id": "g02-nema23-docx",
+    "facts": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 2,
+        "seconds": 45.359
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 92.578
+      }
+    ]
+  },
+  {
+    "id": "g03-hole-table-xlsx",
+    "facts": {
+      "tp": 13,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 63.608
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 422.407
+      }
+    ]
+  },
+  {
+    "id": "g04-enclosure-yaml",
+    "facts": {
+      "tp": 4,
+      "fp": 2,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 15.422
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 4,
+        "cited_correct": 4,
+        "attempts": 1,
+        "seconds": 18.203
+      }
+    ]
+  },
+  {
+    "id": "g05-flange-pdf",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 76.342
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 129.86
+      }
+    ]
+  },
+  {
+    "id": "g06-base-plate-txt",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 76.797
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 121.546
+      }
+    ]
+  },
+  {
+    "id": "g07-spacer-csv",
+    "facts": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": null,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 49.516
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 3,
+        "failed_checks": [
+          "bore 12.5: 0 matching holes; all hole diameters []"
+        ],
+        "rule_errors": [
+          "min_wall_thickness: wall is 0.5 mm thick; needs \u2265 0.8 mm"
+        ],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 3,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 61.358
+      }
+    ]
+  },
+  {
+    "id": "g08-milled-pocket",
+    "facts": {
+      "tp": 7,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 83.531
+      },
+      {
+        "mode": "grounded",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 87.11
+      }
+    ]
+  },
+  {
+    "id": "g09-previous-step",
+    "facts": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 4,
+        "failed_checks": [
+          "thickness 6 kept: bounding box 150.00 x 70.00 x 10.00 mm",
+          "four 6.6 holes kept: 1 matching holes; all hole diameters [6.6]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 17.375
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 1,
+        "checks_total": 4,
+        "failed_checks": [
+          "width 70 kept: bounding box 150.00 x 150.00 x 10.00 mm",
+          "thickness 6 kept: bounding box 150.00 x 150.00 x 10.00 mm",
+          "four 6.6 holes kept: 0 matching holes; all hole diameters [7.3, 7.3, 7.3, 7.3]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 3,
+        "cited_correct": 1,
+        "attempts": 1,
+        "seconds": 29.406
+      }
+    ]
+  },
+  {
+    "id": "g10-fdm-bracket",
+    "facts": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 1
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 23.266
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 5,
+        "failed_checks": [
+          "50 apart: hole centre distances [15.0]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 3,
+        "cited_correct": 3,
+        "attempts": 1,
+        "seconds": 22.28
+      }
+    ]
+  }
+]

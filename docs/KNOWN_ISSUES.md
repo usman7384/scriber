@@ -15,3 +15,4 @@
 - Counterbore seats above M12 and countersinks above M20 are derived from head-diameter rules, not tabulated values.
 - The API process started before IR v2 keeps the v1 compiler until it is restarted.
 
+- The prompted qwen3.5:4b is very sensitive to prompt bytes: with greedy decoding, reordering the worked examples or adding one sentence to the project block flips individual grounded cases both ways (A/B on g01, g02, g06, 2026-10-26). Single-run eval differences of one or two cases are within that noise; it also adds unrequested chamfers and fillets copied from the examples, which sometimes fail in the kernel.
