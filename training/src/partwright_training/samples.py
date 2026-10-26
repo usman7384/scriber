@@ -7,7 +7,7 @@ from typing import Any
 
 from partwright_agent import Requirement, design_messages, evaluate, repair_message, requirement_messages
 from partwright_geometry import LocalGeometry
-from partwright_ir import Design
+from partwright_ir import Design, answer_json
 from partwright_training.mutate import mutate
 from partwright_training.render import Prompt
 from partwright_training.spec import Spec, num
@@ -29,7 +29,7 @@ class Sample:
 
 
 def target(spec: Spec) -> str:
-    return json.dumps(spec.design.model_dump(mode="json", exclude_defaults=True), separators=(",", ":"))
+    return answer_json(spec.design)
 
 
 def generate_sample(spec: Spec, prompt: Prompt) -> Sample:

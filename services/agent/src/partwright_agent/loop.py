@@ -21,6 +21,7 @@ from partwright_ir import (
     Process,
     Provenance,
     RuleSet,
+    answer_json,
     apply_params,
     drop_unused_params,
     json_schema,
@@ -114,7 +115,7 @@ def refine(
             design, {u.name: u.value for u in answer.updates}, Provenance(source="prompt", quote=instruction)
         )
 
-    messages = [Message(role="user", content=refine_message(design.model_dump_json(), instruction))]
+    messages = [Message(role="user", content=refine_message(answer_json(design), instruction))]
     run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
     yield from _attempts(run, messages, RefineAnswer.model_json_schema(), decode, reqs)
 

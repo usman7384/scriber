@@ -2,6 +2,8 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
+from partwright_ir import Design, answer_json
+
 DESIGN_RULES = """You are a mechanical design engineer. You write parametric CAD models as JSON in the Partwright IR (ir_version 2).
 
 Units: millimetres and degrees. Z is up, -Y is the front.
@@ -245,7 +247,11 @@ REQUIREMENT_EXAMPLE = (
 
 
 def design_messages(request: str, reference: Sequence[str] = (), project: str = "", few_shot: bool = True) -> list[tuple[str, str]]:
-    shots = [m for req, design in EXAMPLES for m in (("user", req), ("assistant", json.dumps(design)))] if few_shot else []
+    shots = (
+        [m for req, design in EXAMPLES for m in (("user", req), ("assistant", answer_json(Design.model_validate(design))))]
+        if few_shot
+        else []
+    )
     task = _with_reference(request, reference) + (f"\n\n{project}" if project else "")
     return [("system", DESIGN_RULES), *shots, ("user", task)]
 
