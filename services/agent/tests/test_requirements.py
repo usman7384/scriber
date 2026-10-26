@@ -23,3 +23,20 @@ def test_hole_spacing() -> None:
     reqs = [Requirement(kind="hole_spacing", description="pitch", value=20), Requirement(kind="hole_spacing", description="x", value=25)]
     ok, bad = check(reqs, plate)
     assert ok.passed and not bad.passed
+
+
+def test_manifold_style_checks() -> None:
+    vertical = HoleInfo(diameter=10, axis=(0, 0, 1), center=(0, 0, 30), length=60)
+    counterbore = HoleInfo(diameter=16, axis=(0, 0, 1), center=(0, 0, 57), length=6)
+    sideways = HoleInfo(diameter=6, axis=(1, 0, 0), center=(-20, 0, 20), length=40)
+    elsewhere = HoleInfo(diameter=6, axis=(0, 1, 0), center=(30, 0, 50), length=20)
+    block = artifact([vertical, counterbore, sideways, elsewhere], (-55, -40, 0), (110, 80, 65))
+    reqs = [
+        Requirement(kind="max_extent", description="x", value=120, axis="x"),
+        Requirement(kind="max_extent", description="z", value=60, axis="z"),
+        Requirement(kind="min_holes", description="ports", count=4),
+        Requirement(kind="counterbores", description="cb", count=1),
+        Requirement(kind="crossing_holes", description="passages", count=1),
+        Requirement(kind="hole_axes", description="three faces", count=3),
+    ]
+    assert [c.passed for c in check(reqs, block)] == [True, False, True, True, True, True]

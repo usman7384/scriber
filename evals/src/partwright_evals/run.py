@@ -8,7 +8,8 @@ from pydantic import BaseModel
 
 from partwright_agent import LLM, Requirement, check, generate
 from partwright_cli.config import llm_for, load
-from partwright_geometry import LocalGeometry
+from partwright_geometry import BuildError, LocalGeometry
+from partwright_ir import Design, ParamError, apply_params
 
 
 class Case(BaseModel):
@@ -16,6 +17,8 @@ class Case(BaseModel):
     rows: list[str]
     prompt: str
     checks: list[Requirement]
+    params: list[str] = []
+    robust: list[str] = []
 
 
 class CaseResult(BaseModel):
@@ -43,21 +46,38 @@ def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path) -> Ca
     final = steps[-1]
     r = final.result
     artifact = r.artifact if r else None
-    results = check(case.checks, artifact) if artifact else []
+    results = [(c.requirement.description, c.passed, c.actual) for c in check(case.checks, artifact)] if artifact else []
+    if r and r.design and artifact:
+        results += design_checks(case, r.design, geometry, out_dir / case.id / "robust")
     return CaseResult(
         id=case.id,
         model=llm.name,
         built=artifact is not None,
         valid=bool(artifact and artifact.ok),
         agent_ok=bool(r and r.ok),
-        checks_passed=sum(c.passed for c in results),
-        checks_total=len(case.checks),
-        failed_checks=[f"{c.requirement.description}: {c.actual}" for c in results if not c.passed],
+        checks_passed=sum(passed for _, passed, _ in results),
+        checks_total=len(case.checks) + len(case.params) + len(case.robust),
+        failed_checks=[f"{name}: {actual}" for name, passed, actual in results if not passed],
         attempts=r.attempts if r else 0,
         repairs=r.repairs if r else 0,
         seconds=round(time.monotonic() - start, 1),
         final_step=final.message[:300],
     )
+
+
+def design_checks(case: Case, design: Design, geometry: LocalGeometry, out: Path) -> list[tuple[str, bool, str]]:
+    names = {p.name for p in design.params}
+    results = [(f"parameter {n}", n in names, "present" if n in names else "missing") for n in case.params]
+    for n in case.robust:
+        if n not in names:
+            results.append((f"robust {n} +5%", False, "parameter missing"))
+            continue
+        try:
+            rebuilt = geometry.build(apply_params(design, {n: design.param_values()[n] * 1.05}), out / n)
+            results.append((f"robust {n} +5%", rebuilt.ok, "rebuilt valid" if rebuilt.ok else f"{len(rebuilt.findings)} findings"))
+        except (BuildError, ParamError) as e:
+            results.append((f"robust {n} +5%", False, str(e)[:160]))
+    return results
 
 
 def scorecard(results: list[CaseResult]) -> str:
@@ -67,7 +87,7 @@ def scorecard(results: list[CaseResult]) -> str:
         n = len(rs)
         checks = sum(r.checks_passed for r in rs), sum(r.checks_total for r in rs)
         secs = sorted(r.seconds for r in rs)[n // 2]
-        perfect = sum(r.built and r.checks_passed == r.checks_total for r in rs)
+        perfect = sum(r.built and r.valid and r.checks_passed == r.checks_total for r in rs)
         lines.append(
             f"| {model} | {sum(r.built for r in rs)}/{n} | {sum(r.valid for r in rs)}/{n} | {checks[0]}/{checks[1]} "
             f"| {perfect}/{n} | {sum(r.repairs for r in rs)} | {secs} |"
