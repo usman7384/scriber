@@ -13,7 +13,7 @@ def normalize(design: Design) -> Design:
         return design
     data = design.model_dump(mode="json")
     for part in data["parts"]:
-        for node in [*part["sketches"], *part["features"]]:
+        for node in [*part.get("datums", []), *part["sketches"], *part["features"]]:
             _substitute(node, unused, None)
     return Design.model_validate(data)
 

@@ -1,10 +1,10 @@
 from partwright_ir.compile import compile_design
 from partwright_ir.diff import DesignDiff, diff
 from partwright_ir.expr import ExprError, evaluate
-from partwright_ir.model import Design, Param, Provenance
+from partwright_ir.model import Design, Param, Process, Provenance
 from partwright_ir.normalize import drop_unused_params, normalize
 from partwright_ir.params import ParamError, apply_params, label
-from partwright_ir.rules import Process, Rule, RuleKind, RuleSet, ShapeDescriptor
+from partwright_ir.rules import Rule, RuleKind, RuleSet, ShapeDescriptor
 from partwright_ir.schema import design_hash, json_schema
 from partwright_ir.validate import IrError, validate
 
