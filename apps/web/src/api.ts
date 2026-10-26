@@ -56,7 +56,7 @@ export interface Model {
   project_id: string;
   title: string;
   created: string;
-  latest_version: number;
+  latest_version: number | null;
   versions: number;
   thumbnail_url?: string | null;
 }
@@ -100,8 +100,8 @@ export interface Version {
   params: Param[];
   checks: Check[];
   findings: Finding[];
-  metrics: { volume: number; mass_g?: number | null };
-  files: Record<ExportFormat, string>;
+  metrics: { volume: number; mass_g?: number | null } | null;
+  files: Partial<Record<ExportFormat, string>>;
   thumbnail_url?: string | null;
 }
 
@@ -181,6 +181,7 @@ export const api = {
   project: (id: string) => request<Project>(`/projects/${id}`),
   createProject: (name: string) => post<Project>("/projects", { name }),
   models: (projectId: string) => request<Model[]>(`/projects/${projectId}/models`),
+  activeJobs: (projectId: string) => request<Job[]>(`/projects/${projectId}/jobs?active=true`),
   context: (projectId: string) =>
     request<{ files: ContextFile[]; stats: KbStats }>(`/projects/${projectId}/context`),
   upload: (projectId: string, files: File[]) => {

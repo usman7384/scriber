@@ -18,7 +18,7 @@ export function ModelGallery({ models }: { models: Model[] }) {
             <span className="card-title">{m.title}</span>
           </Link>
           <p className="muted small">
-            v{m.latest_version} · {date(m.created)}
+            {m.latest_version === null ? "no version yet" : `v${m.latest_version}`} · {date(m.created)}
           </p>
         </li>
       ))}

@@ -40,6 +40,15 @@ def get(e: Engine, job_id: str) -> Job | None:
         return Job.model_validate({**row._mapping, "steps": list(steps)})
 
 
+def for_project(e: Engine, project_id: str, active_only: bool) -> list[Job]:
+    query = select(db.jobs.c.id).where(db.jobs.c.project_id == project_id).order_by(db.jobs.c.created.desc())
+    if active_only:
+        query = query.where(db.jobs.c.status.in_(ACTIVE))
+    with e.connect() as c:
+        ids = list(c.execute(query).scalars())
+    return [job for job in (get(e, i) for i in ids) if job is not None]
+
+
 def busy(e: Engine, model_id: str) -> bool:
     with e.connect() as c:
         return c.execute(select(db.jobs.c.id).where(db.jobs.c.model_id == model_id, db.jobs.c.status.in_(ACTIVE))).first() is not None

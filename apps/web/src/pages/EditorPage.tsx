@@ -25,7 +25,17 @@ export function EditorPage() {
   const [error, setError] = useState<string>();
   const main = useRef<HTMLElement>(null);
 
-  if (!model.data || !versions.data?.length) return <Pending error={model.error ?? versions.error} />;
+  if (!model.data || !versions.data) return <Pending error={model.error ?? versions.error} />;
+  if (versions.data.length === 0)
+    return (
+      <section className="stack">
+        <h1>{model.data.title}</h1>
+        <p className="empty">
+          This model has no version yet: its generation is still running or was interrupted.{" "}
+          <Link to={`/p/${model.data.project_id}`}>Back to the project</Link>
+        </p>
+      </section>
+    );
   const all = versions.data;
   const latest = Math.max(...all.map((v) => v.number));
   const version = all.find((v) => v.number === (picked ?? latest)) ?? all[all.length - 1];
@@ -79,14 +89,18 @@ export function EditorPage() {
         />
       </aside>
       <section className="editor-main" ref={main}>
-        {version.status === "failed" && <p className="error">This version failed to build.</p>}
-        <Viewer
-          url={apiUrl(version.files.glb)}
-          findings={version.findings}
-          selected={selected}
-          onSelect={setSelected}
-          onLoad={(info) => setParts(info.parts)}
-        />
+        {version.status === "failed" && (
+          <p className="error">This version failed to build; its checks and history show why.</p>
+        )}
+        {version.files.glb && (
+          <Viewer
+            url={apiUrl(version.files.glb)}
+            findings={version.findings}
+            selected={selected}
+            onSelect={setSelected}
+            onLoad={(info) => setParts(info.parts)}
+          />
+        )}
         <RefineBox
           target={selected}
           busy={busy}
@@ -109,10 +123,12 @@ export function EditorPage() {
           busy={busy}
           onApply={(values) => start(api.setParams(modelId, values))}
         />
-        <p className="muted small">
-          Volume {(version.metrics.volume / 1000).toFixed(2)} cm³
-          {version.metrics.mass_g != null && ` · Mass ${version.metrics.mass_g.toFixed(1)} g`}
-        </p>
+        {version.metrics && (
+          <p className="muted small">
+            Volume {(version.metrics.volume / 1000).toFixed(2)} cm³
+            {version.metrics.mass_g != null && ` · Mass ${version.metrics.mass_g.toFixed(1)} g`}
+          </p>
+        )}
         <Findings checks={version.checks} findings={version.findings} />
       </aside>
     </div>
