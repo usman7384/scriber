@@ -1,5 +1,6 @@
 from typing import Any
 
+from pydantic import JsonValue
 from sqlalchemy import Engine, func, insert, select, update
 
 from partwright_api import db
@@ -9,8 +10,8 @@ from partwright_api.schemas import Job, JobKind, Step
 ACTIVE = ("queued", "running")
 
 
-def create(e: Engine, kind: JobKind, project_id: str, model_id: str | None) -> Job:
-    job = Job(id=new_id("j"), kind=kind, status="queued", project_id=project_id, model_id=model_id, created=now())
+def create(e: Engine, kind: JobKind, project_id: str, model_id: str | None, request: dict[str, JsonValue] | None = None) -> Job:
+    job = Job(id=new_id("j"), kind=kind, status="queued", project_id=project_id, model_id=model_id, created=now(), request=request)
     with e.begin() as c:
         c.execute(insert(db.jobs).values(**job.model_dump(exclude={"steps"})))
     return job

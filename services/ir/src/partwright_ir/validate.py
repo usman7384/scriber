@@ -7,6 +7,7 @@ from partwright_ir.expr import ExprError, evaluate, names
 from partwright_ir.model import Design, Expr, Extrude, Feature, Hole, Part, Provenance, Revolve
 from partwright_ir.placement import hole_centres
 
+DRILL_AXIS = {"XY": "Z", "XZ": "Y", "YZ": "X"}
 NON_EXPR_FIELDS = {"id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "open_face", "base"}
 POSITIVE_FIELDS = {"width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"}
 
@@ -30,14 +31,29 @@ def validate(design: Design) -> list[IrError]:
 def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
     values = design.param_values()
     holes = [
-        (f.id, f.plane.base, c, evaluate(f.diameter, values)) for f in part.features if isinstance(f, Hole) for c in hole_centres(f, values)
+        (f, c, evaluate(f.diameter, values), _depth_range(f, values))
+        for f in part.features
+        if isinstance(f, Hole)
+        for c in hole_centres(f, values)
     ]
-    for i, (a, base_a, ca, da) in enumerate(holes):
-        for b, base_b, cb, db in holes[i + 1 :]:
-            if base_a == base_b and math.dist(ca, cb) < (da + db) / 2 - 1e-6:
-                where = f"{a!r} at ({ca[0]:g}, {ca[1]:g}) and {b!r} at ({cb[0]:g}, {cb[1]:g})"
-                yield IrError(path=f"{path}.features.{a}", message=f"holes {where} overlap; spread the hole centres apart")
+    for i, (a, ca, da, ra) in enumerate(holes):
+        for b, cb, db, rb in holes[i + 1 :]:
+            gap = math.dist(ca, cb)
+            same_axis_line = a.plane.base == b.plane.base and gap < 1e-6
+            collide = a.plane.base == b.plane.base and not same_axis_line and gap < (da + db) / 2 - 1e-6
+            if collide and ra[0] < rb[1] and rb[0] < ra[1]:
+                where = f"{a.id!r} at ({ca[0]:g}, {ca[1]:g}) and {b.id!r} at ({cb[0]:g}, {cb[1]:g})"
+                plane = f"both on plane {a.plane.base}, drilling along {DRILL_AXIS[a.plane.base]}"
+                message = f"holes {where} overlap at the same depth ({plane}); spread them apart or put each on the face it belongs to"
+                yield IrError(path=f"{path}.features.{a.id}", message=message)
                 return
+
+
+def _depth_range(hole: Hole, values: dict[str, float]) -> tuple[float, float]:
+    if hole.depth is None:
+        return (-math.inf, math.inf)
+    top = evaluate(hole.plane.offset, values)
+    return (top - evaluate(hole.depth, values), top)
 
 
 def _param_errors(design: Design) -> Iterator[IrError]:

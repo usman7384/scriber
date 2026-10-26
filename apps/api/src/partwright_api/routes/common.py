@@ -1,5 +1,6 @@
 import re
 from collections.abc import Mapping
+from functools import partial
 
 import httpx
 from fastapi import HTTPException
@@ -78,7 +79,8 @@ def latest_design(d: Deps, model_id: str) -> Design:
 def start_generate(d: Deps, project_id: str, req: GenerateIn) -> Job:
     need_processed(d, project_id, [*(req.context_ids or []), *req.attachments])
     model_id = repo.create_model(d.engine, project_id, req.prompt)
-    return d.jobs.submit("generate", project_id, model_id, lambda emit: work.generate(d, project_id, model_id, req, emit))
+    run = partial(work.generate, d, project_id, model_id, req)
+    return d.jobs.submit("generate", project_id, model_id, run, req.model_dump(mode="json"))
 
 
 def start_refine(d: Deps, model: Row, req: RefineIn) -> Job:
@@ -88,7 +90,8 @@ def start_refine(d: Deps, model: Row, req: RefineIn) -> Job:
     if req.target is not None and req.target not in {p.id for p in design.parts}:
         raise HTTPException(400, f"unknown part {req.target!r}; parts: {sorted(p.id for p in design.parts)}")
     need_processed(d, project_id, req.attachments)
-    return d.jobs.submit("refine", project_id, model_id, lambda emit: work.refine(d, project_id, model_id, req, emit))
+    run = partial(work.refine, d, project_id, model_id, req)
+    return d.jobs.submit("refine", project_id, model_id, run, req.model_dump(mode="json"))
 
 
 def start_rebuild(d: Deps, model: Row, values: Mapping[str, float], kind: JobKind, origin: Origin) -> Job:
@@ -98,7 +101,8 @@ def start_rebuild(d: Deps, model: Row, values: Mapping[str, float], kind: JobKin
         apply_params(latest_design(d, model_id), values)
     except ParamError as e:
         raise HTTPException(400, str(e)) from None
-    return d.jobs.submit(kind, project_id, model_id, lambda emit: work.rebuild(d, project_id, model_id, values, origin, emit))
+    run = partial(work.rebuild, d, project_id, model_id, values, origin)
+    return d.jobs.submit(kind, project_id, model_id, run, {"values": dict(values)})
 
 
 def component_only(design: Design, component_id: str, names: set[str]) -> None:

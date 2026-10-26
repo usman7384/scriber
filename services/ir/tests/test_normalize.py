@@ -6,6 +6,7 @@ def plate(params: list[dict[str, object]], diameter: object, count: object = 2) 
         "kind": "hole",
         "id": "h",
         "name": "H",
+        "plane": {"offset": 0},
         "at": {"kind": "grid", "count_x": count, "count_y": 2, "spacing_x": 31, "spacing_y": 31},
         "diameter": diameter,
     }

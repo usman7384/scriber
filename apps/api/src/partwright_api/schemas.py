@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from partwright_context import KbStats
 from partwright_geometry import Finding
@@ -157,6 +157,7 @@ class Job(Frozen):
     created: str
     started: str | None = None
     finished: str | None = None
+    request: dict[str, JsonValue] | None = None
     steps: list[Step] = []
 
 

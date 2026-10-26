@@ -50,9 +50,46 @@ def test_unused_sketch_is_reported(bracket: Design) -> None:
 def test_overlapping_holes_are_reported(bracket: Design) -> None:
     data = bracket.model_dump()
     data["parts"][0]["features"].append(
-        {"kind": "hole", "id": "bore", "name": "Bore", "at": {"kind": "points", "points": [[25, 15]]}, "diameter": 20}
+        {
+            "kind": "hole",
+            "id": "bore",
+            "name": "Bore",
+            "plane": {"offset": 5},
+            "at": {"kind": "points", "points": [[25, 15]]},
+            "diameter": 20,
+        }
     )
     errors = [str(e) for e in validate(Design.model_validate(data))]
     assert len(errors) == 1
     assert "overlap" in errors[0]
     assert "'mount_holes' at (30, 20)" in errors[0]
+
+
+def hole(hid: str, x: float, d: float, offset: float = 5, depth: float | None = None, base: str = "XY") -> dict[str, object]:
+    at = {"kind": "points", "points": [[x, 0]]}
+    return {"kind": "hole", "id": hid, "name": hid, "plane": {"base": base, "offset": offset}, "at": at, "diameter": d, "depth": depth}
+
+
+def with_holes(bracket: Design, *holes: dict[str, object]) -> list[str]:
+    data = bracket.model_dump()
+    data["parts"][0]["features"] = [data["parts"][0]["features"][0], *holes]
+    data["params"] = [p for p in data["params"] if p["name"] in ("plate_length", "plate_width", "thickness")]
+    return [str(e) for e in validate(Design.model_validate(data))]
+
+
+def test_blind_holes_at_different_depths_may_share_a_projection(bracket: Design) -> None:
+    assert with_holes(bracket, hole("top", 0, 10, offset=5, depth=2), hole("bottom", 3, 10, offset=1, depth=1)) == []
+
+
+def test_concentric_holes_form_a_stepped_bore(bracket: Design) -> None:
+    assert with_holes(bracket, hole("bore", 0, 6), hole("step", 0, 12, depth=2)) == []
+
+
+def test_crossing_passages_on_different_axes_are_allowed(bracket: Design) -> None:
+    assert with_holes(bracket, hole("vertical", 0, 4), hole("sideways", 0, 3, offset=0, base="YZ")) == []
+
+
+def test_through_holes_that_collide_are_reported(bracket: Design) -> None:
+    errors = with_holes(bracket, hole("a", 0, 10), hole("b", 6, 10))
+    assert len(errors) == 1
+    assert "overlap at the same depth" in errors[0]

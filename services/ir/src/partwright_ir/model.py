@@ -121,7 +121,7 @@ class Revolve(FeatureBase):
 
 class Hole(FeatureBase):
     kind: Literal["hole"]
-    plane: SketchPlane = SketchPlane()
+    plane: SketchPlane
     at: Placement
     diameter: Expr
     depth: Expr | None = None
