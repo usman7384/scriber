@@ -142,3 +142,12 @@ def test_staged_generation_drafts_parameters_first(tmp_path: Path) -> None:
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, staged=True))
     assert [s.kind for s in steps] == ["requirements", "params", "emit", "done"]
     assert '"length"' in llm.calls[2][-1].content
+
+
+def test_cut_off_answer_is_not_quoted_back(tmp_path: Path) -> None:
+    llm = FakeLLM([REQS, '{"title": "Bracket", "params": [', design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
+    repair = llm.calls[-1][-1].content
+    assert "was cut off before it was complete JSON" in repair
+    assert '"params": [' not in repair
+    assert steps[-1].kind == "done"
