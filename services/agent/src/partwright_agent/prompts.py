@@ -268,13 +268,30 @@ def requirement_messages(request: str) -> list[tuple[str, str]]:
     return [("system", REQUIREMENT_RULES), ("user", example), ("assistant", json.dumps(answer)), ("user", request)]
 
 
+MAX_QUOTE = 12000
+
+
 def repair_message(previous: str, problems: list[str], unchanged: bool) -> str:
     listed = "\n".join(f"- {p}" for p in problems)
     again = "This design was already returned once with the same problems; change the parts that cause them.\n" if unchanged else ""
+    if not _is_json(previous) or len(previous) > MAX_QUOTE:
+        reason = "was cut off before it was complete JSON" if not _is_json(previous) else f"was {len(previous)} characters long"
+        return (
+            f"The first attempt {reason}. Write a shorter, complete design as JSON: use patterns for repeated features, "
+            "one hole feature per group of identical holes, and only the features the request asks for."
+        )
     return (
         f"A first attempt at this design:\n{previous}\n\n{again}It has these problems:\n{listed}\n"
         "Write the complete corrected design as JSON. Keep everything that was right."
     )
+
+
+def _is_json(text: str) -> bool:
+    try:
+        json.loads(text)
+    except ValueError:
+        return False
+    return True
 
 
 def refine_message(design_json: str, instruction: str) -> str:
