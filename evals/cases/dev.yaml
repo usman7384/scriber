@@ -1,0 +1,200 @@
+# Dev set for picking S2 checkpoints (D-028). Hand-written, never trained on; M1 and grounded stay the gates.
+- id: d01-cover-plate
+  rows: [DEV]
+  prompt: Cover plate 150 x 100 x 4 mm with six 5.5 mm holes, three along each long edge, 10 mm in from the edges, 65 mm pitch.
+  checks:
+    - {kind: extent, description: length 150, value: 150}
+    - {kind: extent, description: width 100, value: 100}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: six 5.5 holes, count: 6, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: pitch 65, value: 65, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: rows 80 apart, value: 80, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: d02-spacer-ring
+  rows: [DEV]
+  prompt: Spacer ring, 40 mm outside diameter, 21 mm inside diameter, 8 mm thick.
+  checks:
+    - {kind: extent, description: diameter 40, value: 40}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: one 21 bore, count: 1, diameter_min: 20.9, diameter_max: 21.1}
+    - {kind: wall, description: wall 9.5, value: 9.5, tolerance: 0.05}
+
+- id: d03-square-adapter
+  rows: [DEV]
+  prompt: Square adapter plate 100 x 100 x 8 mm, four M8 clearance holes on a 70 mm square, 40 mm centre bore.
+  checks:
+    - {kind: extent, description: 100 square, value: 100}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: four M8 clearance, count: 4, diameter_min: 8.4, diameter_max: 10.0}
+    - {kind: hole_spacing, description: 70 mm square, value: 70, diameter_min: 8.4, diameter_max: 10.0}
+    - {kind: holes, description: centre bore 40, count: 1, diameter_min: 39.9, diameter_max: 40.1}
+
+- id: d04-nema14-plate
+  rows: [DEV]
+  prompt: Mounting plate for a NEMA 14 stepper, 50 x 50 x 4 mm, with the standard screw holes and a hole for the motor's centring pilot.
+  checks:
+    - {kind: extent, description: 50 square, value: 50}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: four M3 clearance, count: 4, diameter_min: 3.2, diameter_max: 3.6}
+    - {kind: hole_spacing, description: 26 mm square, value: 26, diameter_min: 3.2, diameter_max: 3.6}
+    - {kind: holes, description: pilot 22, count: 1, diameter_min: 21.9, diameter_max: 22.1}
+
+- id: d05-dn80-flange
+  rows: [DEV]
+  prompt: Flat flange DN80 PN16 to EN 1092-1, 20 mm thick, standard bolt holes, 89 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 200, value: 200, tolerance: 0.5}
+    - {kind: extent, description: thickness 20, value: 20}
+    - {kind: holes, description: 8 bolt holes 18, count: 8, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: PCD 160 across, value: 160, tolerance: 0.5, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: holes, description: bore 89, count: 1, diameter_min: 88.9, diameter_max: 89.1}
+
+- id: d06-base-plate-pocket
+  rows: [DEV]
+  prompt: Base plate 160 x 90 x 10 mm with four 11 mm holes 18 mm from each edge, and a 60 x 40 mm pocket 4 mm deep in the middle of the top face.
+  checks:
+    - {kind: extent, description: length 160, value: 160}
+    - {kind: extent, description: width 90, value: 90}
+    - {kind: extent, description: thickness 10, value: 10}
+    - {kind: holes, description: four 11 holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: spacing 124, value: 124, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: spacing 54, value: 54, diameter_min: 10.9, diameter_max: 11.1}
+
+- id: d07-flat-l-plate
+  rows: [DEV]
+  prompt: Flat L-shaped plate 6 mm thick, outer size 100 x 70 mm, both arms 30 mm wide, with three 6.6 mm holes 30 mm apart on the centre line of the 100 mm arm.
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: width 70, value: 70}
+    - {kind: extent, description: thickness 6, value: 6}
+    - {kind: holes, description: three 6.6 holes, count: 3, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: 30 apart, value: 30, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: d08-u-bracket
+  rows: [DEV]
+  prompt: U-bracket bent from 3 mm sheet, 50 mm wide outside, 40 mm high, 60 mm long, with one 8.5 mm hole through both legs, centred along the length and 25 mm above the base.
+  checks:
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: extent, description: height 40, value: 40}
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: min_holes, description: 8.5 cross hole, count: 1, diameter_min: 8.4, diameter_max: 8.6}
+
+- id: d09-shaft-collar
+  rows: [DEV]
+  prompt: Shaft collar, 30 mm outside diameter, 15 mm bore, 16 mm long, with one M5 tapped hole radially into the bore at mid-length.
+  checks:
+    - {kind: extent, description: diameter 30, value: 30}
+    - {kind: extent, description: length 16, value: 16}
+    - {kind: min_holes, description: 15 bore, count: 1, diameter_min: 14.9, diameter_max: 15.1}
+    - {kind: min_holes, description: M5 tap drill, count: 1, diameter_min: 4.1, diameter_max: 4.3}
+
+- id: d10-gusset
+  rows: [DEV]
+  prompt: Right-angled triangular gusset plate, 80 mm along the bottom and 60 mm high, 5 mm thick, with one 6.5 mm hole 15 mm from both straight edges.
+  checks:
+    - {kind: extent, description: base 80, value: 80}
+    - {kind: extent, description: height 60, value: 60}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: one 6.5 hole, count: 1, diameter_min: 6.4, diameter_max: 6.6}
+
+- id: d11-tray
+  rows: [DEV]
+  prompt: Open-top tray, 140 x 90 x 25 mm outside, 3 mm walls and floor, R5 outside vertical corners, four 3.4 mm holes in the floor centred 12 mm from the outside edges.
+  checks:
+    - {kind: extent, description: length 140, value: 140}
+    - {kind: extent, description: width 90, value: 90}
+    - {kind: extent, description: height 25, value: 25}
+    - {kind: holes, description: four 3.4 holes, count: 4, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: hole_spacing, description: spacing 116, value: 116, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: hole_spacing, description: spacing 66, value: 66, diameter_min: 3.3, diameter_max: 3.5}
+
+- id: d12-bearing-block
+  rows: [DEV]
+  prompt: Bearing block 70 x 40 x 30 mm with a 22 mm bore through the 40 mm direction, centred 15 mm above the base, and two vertical M5 clearance holes 45 mm apart along the length.
+  checks:
+    - {kind: extent, description: length 70, value: 70}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: height 30, value: 30}
+    - {kind: min_holes, description: bore 22, count: 1, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: holes, description: two M5 clearance, count: 2, diameter_min: 5.3, diameter_max: 5.8}
+    - {kind: hole_spacing, description: 45 apart, value: 45, diameter_min: 5.3, diameter_max: 5.8}
+    - {kind: hole_axes, description: bore and mounting holes on two axes, count: 2}
+
+- id: d13-3030-joining-plate
+  rows: [DEV]
+  prompt: Straight joining plate for 3030 aluminium extrusion, 90 x 30 x 5 mm, with three M6 clearance holes on the 30 mm slot centres along the length.
+  checks:
+    - {kind: extent, description: length 90, value: 90}
+    - {kind: extent, description: width 30, value: 30}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: three M6 clearance, count: 3, diameter_min: 6.4, diameter_max: 7.0}
+    - {kind: hole_spacing, description: 30 pitch, value: 30, diameter_min: 6.4, diameter_max: 7.0}
+
+- id: d14-slotted-plate
+  rows: [DEV]
+  prompt: Adjustment plate 120 x 50 x 6 mm with two 6.5 mm wide, 25 mm long slots running along the length, slot centres 70 mm apart.
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: extent, description: thickness 6, value: 6}
+
+- id: d15-drilled-bar
+  rows: [DEV]
+  prompt: Flat bar 250 x 25 x 8 mm drilled with seven 5 mm holes at 35 mm pitch along the centre line.
+  checks:
+    - {kind: extent, description: length 250, value: 250}
+    - {kind: extent, description: width 25, value: 25}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: seven 5 holes, count: 7, diameter_min: 4.9, diameter_max: 5.1}
+    - {kind: hole_spacing, description: 35 pitch, value: 35, diameter_min: 4.9, diameter_max: 5.1}
+
+- id: d16-round-cover
+  rows: [DEV]
+  prompt: Round cover, 120 mm diameter, 4 mm thick, six M4 countersunk holes on a 90 mm pitch circle.
+  checks:
+    - {kind: extent, description: diameter 120, value: 120}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: six M4 clearance, count: 6, diameter_min: 4.3, diameter_max: 4.8}
+    - {kind: hole_spacing, description: PCD 90 across, value: 90, tolerance: 0.2, diameter_min: 4.3, diameter_max: 4.8}
+
+- id: d17-mounting-block
+  rows: [DEV]
+  prompt: Mounting block 80 x 50 x 40 mm with four 6.6 mm through holes from the top, 12 mm from the edges, and an M10 tapped hole 15 mm deep in the centre of the front face.
+  checks:
+    - {kind: extent, description: length 80, value: 80}
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: extent, description: height 40, value: 40}
+    - {kind: holes, description: four 6.6 holes, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: min_holes, description: M10 tap drill, count: 1, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_axes, description: holes on two axes, count: 2}
+
+- id: d18-fan-plate
+  rows: [DEV]
+  prompt: A small plate to mount a 40 mm cooling fan.
+  checks:
+    - {kind: min_holes, description: fan screw holes, count: 4}
+
+- id: d19-spec-motor-bracket
+  rows: [DEV]
+  prompt: |
+    Part: motor bracket plate
+    - 110 x 70 mm, 8 mm thick
+    - Ø32 bore in the centre
+    - 4 x Ø5.5 holes on 90 x 50 mm centres
+    - 1 mm chamfer on the top edges
+  checks:
+    - {kind: extent, description: length 110, value: 110}
+    - {kind: extent, description: width 70, value: 70}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: bore 32, count: 1, diameter_min: 31.9, diameter_max: 32.1}
+    - {kind: holes, description: four 5.5 holes, count: 4, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: spacing 90, value: 90, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: spacing 50, value: 50, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: d20-washer-plate
+  rows: [DEV]
+  prompt: Square washer plate 60 x 60 x 3 mm with a 25 mm centre hole and R6 corners.
+  checks:
+    - {kind: extent, description: 60 square, value: 60}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: centre hole 25, count: 1, diameter_min: 24.9, diameter_max: 25.1}
