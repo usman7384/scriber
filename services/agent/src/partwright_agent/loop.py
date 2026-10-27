@@ -7,10 +7,10 @@ from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ValidationError
 
-from partwright_agent.grounding import grounded, measurable
+from partwright_agent.grounding import grounded, measurable, misquoted
 from partwright_agent.llm import LLM, Message
 from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
-from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages
+from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages, resample_message
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_context import Fact
@@ -92,7 +92,8 @@ def generate(
         design = Design.model_validate_json(raw)
         return cite(design, context.pack) if context else design
 
-    yield from _attempts(_run(llm, geometry, context, out_dir, max_repairs, seed, clock), messages, json_schema(), decode, reqs)
+    run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
+    yield from _attempts(run, messages, json_schema(), decode, reqs, prompt)
 
 
 def refine(
@@ -153,34 +154,45 @@ def _run(llm: LLM, geometry: Geometry, context: Grounding | None, out_dir: Path,
 
 
 def _attempts(
-    run: _Run, messages: list[Message], schema: dict[str, Any], decode: Callable[[str], Design], reqs: list[Requirement]
+    run: _Run,
+    messages: list[Message],
+    schema: dict[str, Any],
+    decode: Callable[[str], Design],
+    reqs: list[Requirement],
+    request: str = "",
 ) -> Iterator[Step]:
     last: Result | None = None
-    previous, stuck, prompt = "", False, messages
+    seen: set[str] = set()
+    prompt = fresh = messages
     for attempt in range(1, run.max_repairs + 2):
-        temperature = 0.0 if attempt == 1 else STUCK_TEMPERATURE if stuck else REPAIR_TEMPERATURE
-        raw = run.llm.chat(prompt, schema, run.seed + attempt - 1, temperature)
+        seed = run.seed + attempt - 1
+        raw = run.llm.chat(prompt, schema, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE)
+        resampled = raw in seen
+        if resampled:
+            # a sharply tuned model copies the quoted answer back, so ask again without quoting it
+            raw = run.llm.chat(fresh, schema, seed, STUCK_TEMPERATURE)
+        seen.add(raw)
+        note = ", re-sampled because it repeated an earlier answer" if resampled else ""
         yield Step(
-            kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars", attempt=attempt, elapsed_ms=run.clock()
+            kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars{note}", attempt=attempt, elapsed_ms=run.clock()
         )
         attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = evaluate(raw, decode, reqs, run.build, attempt_dir)
+        problems, design, artifact, checks = evaluate(raw, decode, reqs, run.build, attempt_dir, request)
         last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
         if not problems:
             yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
             return
         yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
-        stuck = raw == previous
-        prompt = [*messages, Message(role="user", content=repair_message(raw, problems, unchanged=stuck))]
-        previous = raw
+        prompt = [*messages, Message(role="user", content=repair_message(raw, problems))]
+        fresh = [*messages, Message(role="user", content=resample_message(problems))]
     assert last is not None
     yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=run.clock(), result=last)
 
 
 def evaluate(
-    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path
+    raw: str, decode: Callable[[str], Design], reqs: list[Requirement], build: Build, out_dir: Path, request: str = ""
 ) -> tuple[list[str], Design | None, Artifact | None, list[CheckResult]]:
     try:
         design = drop_unused_params(normalize(decode(raw)))
@@ -198,7 +210,8 @@ def evaluate(
         hint = " The operation is impossible with the given sketch or dimensions; rethink that feature." if e.kind == "kernel" else ""
         return [f"CAD kernel error ({e.kind}){where}: {_short(e)}.{hint}"], design, None, []
     checks = check(reqs, artifact)
-    problems = [_finding_text(f) for f in artifact.findings if f.severity == "error"]
+    problems = misquoted(design, request) if request else []
+    problems += [_finding_text(f) for f in artifact.findings if f.severity == "error"]
     problems += [f"requirement not met: {c.requirement.description} (actual: {c.actual})" for c in checks if not c.passed]
     return list(dict.fromkeys(problems)), design, artifact, checks
 

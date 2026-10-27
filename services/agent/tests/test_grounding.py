@@ -1,5 +1,6 @@
-from partwright_agent.grounding import grounded, measurable
+from partwright_agent.grounding import grounded, measurable, misquoted
 from partwright_agent.requirements import Requirement
+from partwright_ir import Design
 
 
 def test_drops_requirements_copied_from_elsewhere() -> None:
@@ -33,3 +34,16 @@ def test_stock_thickness_of_a_bent_part_is_not_an_extent() -> None:
 def test_wall_checks_are_kept_only_for_round_parts() -> None:
     assert measurable([WALL], "Open-top box, outside 100 x 60 x 40 mm, 2 mm walls and floor") == []
     assert measurable([WALL], "Hollow cylinder, 50mm height, 2mm wall thickness") == [WALL]
+
+
+def test_quotes_must_come_from_the_request() -> None:
+    def param(name: str, quote: str, source: str = "prompt") -> dict[str, object]:
+        return {"name": name, "value": 1, "unit": "mm", "provenance": {"source": source, "quote": quote}}
+
+    params = [param("a", "100x60"), param("b", "5 MM thick"), param("c", "135 mm wide"), param("d", "135 mm wide", "standard")]
+    sketch = {"id": "s", "entities": [{"kind": "rect", "width": "a", "height": "b"}]}
+    extrude = {"kind": "extrude", "id": "e", "name": "E", "sketch": "s", "distance": 5}
+    part = {"id": "p", "name": "P", "sketches": [sketch], "features": [extrude]}
+    design = Design.model_validate({"title": "Plate", "params": params, "parts": [part]})
+    problems = misquoted(design, "Plate 100 \N{MULTIPLICATION SIGN} 60, 5 mm  thick")
+    assert len(problems) == 1 and "'c' quotes '135 mm wide'" in problems[0]
