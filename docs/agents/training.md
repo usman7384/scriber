@@ -101,3 +101,20 @@ After dropping requirements the checks cannot measure (bent-part stock thickness
 ## S1 on the 4B with QLoRA (started 2026-10-27)
 
 bf16 LoRA on Qwen3.5-4B needs about 10 GB, so the run uses QLoRA (base weights 4-bit, Unsloth advises against it for Qwen3.5 on quality grounds; the gates decide). Probes, 20 steps, batch 1 x 8 accumulation: 4,096 tokens peaks at 5.17 GB and 52 s per step, 2,048 tokens at 4.57 GB and 36 s. The full run uses 4,096 so the long spec-sheet and repair samples stay in: 608 steps, about 9 hours, a checkpoint every 100 steps, adapter only (merging a 4B to bf16 needs more RAM than WSL has, so it is a separate step). Base weights: `Qwen/Qwen3.5-4B` from Hugging Face in WSL (`~/models/Qwen3.5-4B`, 9.3 GB). Same gates and stop rule as S1.
+
+Run: 608 steps in 7 h 58 min, mean loss 0.018, peak 6.15 GB reserved. The adapter was merged afterwards with Unsloth, shard by shard, which fits in WSL's 7 GB. It was then converted to a bf16 GGUF and quantised with llama.cpp's `llama-quantize` (b11898, CPU build) to Q4_K_M, the base 4B's format, giving 2.8 GB. Served as `partwright-ir:4b-s1` (`training/wsl/Modelfile.4b`, the base 4B's renderer, parser and sampling parameters).
+
+| Gate | tuned 4B S1 (QLoRA) | qwen3.5:4b (prompted, `m1-20261026-222758`, `grounded-20261026-223718`) |
+|---|---|---|
+| M1 (`m1-20261027-084111`) | 4/10, 13/35 checks, 6/10 built, median 35 s | **5/10, 16/35**, median 68 s |
+| Grounded, grounded mode (`grounded-20261027-084807`) | **4/10, 25/45**, 8/10 built, 26/35 citations correct, median 25 s | 1/10, 14/45 |
+| Grounded, prompt mode | **5/10, 35/45**, 9/10 built, median 21 s | 4/10, 20/45 |
+
+Stop rule: the tuned 4B beats the prompted 4B clearly on the grounded set, but not on M1. It is one case and three checks behind on a 10-case set sampled once, but the rule asks for both gates, so **S1 on the 4B does not replace the default**.
+
+The M1 failures are the 0.8B's failure mode again, weaker: the model fits requests to our generator families.
+- `nema17-plate` reads "31 mm square" as an edge margin, so the hole spacing is negative and the part never builds.
+- `dp2-flanged-adapter` becomes a revolved part with M5 holes instead of the stated 8.5 mm ones, and quotes text that is not in the prompt.
+- `dp3-dn50-flange` uses 17.5 mm (M16 clearance) for the stated 18 mm holes.
+
+The low final loss (0.018) fits that reading: the data is learnable, but too narrow.
