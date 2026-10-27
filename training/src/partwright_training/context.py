@@ -1,7 +1,7 @@
 import random
 import re
 
-from partwright_agent import Grounding
+from partwright_agent import Grounding, Requirement
 from partwright_context import DEFAULT_RULES, ContextPack, Fact, PartRef
 from partwright_ir import Design, Provenance, RuleSet
 from partwright_training.render import Prompt
@@ -9,6 +9,11 @@ from partwright_training.spec import Spec, num
 
 RULES: RuleSet = DEFAULT_RULES.for_process("any")
 OTHER_SIZES = ("M4", "M5", "M6", "M8", "M10")
+EDIT_REQUESTS = (
+    "Same {title} as the previous one, but change the {what} to {new} mm; keep everything else",
+    "A new version of the previous {title} with the {what} at {new} mm, all other sizes unchanged",
+    "Based on the earlier {title}: {what} {new} mm instead, the rest as before",
+)
 DOC_REQUESTS = (
     "{title} per the project requirements",
     "Make the {title} from the attached spec",
@@ -42,6 +47,38 @@ def _conflicting(spec: Spec, rng: random.Random) -> list[Fact]:
         text = f"REQ-2 Mounting: {counted[0].count} x {size} through holes"
         facts.append(_fact(doc, 9, "holes", "req_2_mounting", float(size[1:]), text, count=counted[0].count))
     return facts
+
+
+def edited(spec: Spec, rng: random.Random) -> tuple[Prompt, Grounding, Design, tuple[Requirement, ...]] | None:
+    extents = [c.value for c in spec.checks if c.kind == "extent"]
+    options = [p for p in spec.design.params if p.provenance.source == "prompt" and p.unit == "mm" and p.value in extents]
+    if not options:
+        return None
+    p = rng.choice(options)
+    new = round(p.value * rng.choice((0.8, 0.9, 1.1, 1.2, 1.25, 1.5)) / (5 if p.value >= 30 else 1)) * (5 if p.value >= 30 else 1)
+    if new == p.value or new <= 0:
+        return None
+    request = rng.choice(EDIT_REQUESTS).format(title=spec.title.lower(), what=p.description, new=num(new))
+    carried = Provenance(source="user_edit", ref="previous design")
+    params = [
+        q.model_copy(update={"value": new, "provenance": Provenance(source="prompt", quote=f"{num(new)} mm")})
+        if q.name == p.name
+        else q.model_copy(update={"provenance": carried})
+        if q.provenance.source == "prompt"
+        else q
+        for q in spec.design.params
+    ]
+    hit = extents.index(p.value)
+    checks, seen = [], 0
+    for c in spec.checks:
+        if c.kind == "extent":
+            c = c.model_copy(update={"value": new, "description": f"{p.description} {num(new)}"}) if seen == hit else c
+            seen += 1
+        checks.append(c)
+    prior = PartRef(id="prior", name=spec.title, origin="generated", design=spec.design, score=0.9)
+    pack = ContextPack(query=spec.title, chunks=[], facts=[], rules=list(RULES.rules), similar_parts=[prior], conventions=[])
+    design = spec.design.model_copy(update={"params": params})
+    return Prompt("edit", request[0].upper() + request[1:]), Grounding(pack=pack, rules=RULES), design, tuple(checks)
 
 
 def documented(spec: Spec, rng: random.Random) -> tuple[Prompt, Grounding, Design]:
