@@ -54,7 +54,7 @@ def _extrusions(text: str) -> list[str]:
     if not re.search(r"extrusion|profile|v-slot|t-slot", text, re.IGNORECASE):
         return []
     out = []
-    for series, length in sorted({(int(a), int(b)) for a, b in re.findall(r"\b(20|30|40)(20|40|60|80)\b", text)}):
+    for series, length in sorted({(int(a), int(b)) for a, b in re.findall(r"\b(20|30|40)(20|30|40|60|80)\b", text)}):
         slot, screw = EXTRUSION[series]
         out.append(
             f"{series}{length} aluminium extrusion: {series} x {length} mm, slot centres every {series} mm, "

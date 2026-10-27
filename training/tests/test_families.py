@@ -41,3 +41,18 @@ def test_spec_sheet_lists_the_parameter_names() -> None:
 def test_generated_parts_build_and_meet_their_checks(family: str, geometry: LocalGeometry, tmp_path: Path) -> None:
     passed = sum(not failures(FAMILIES[family](random.Random(s)), geometry, tmp_path / str(s)) for s in range(6))
     assert passed >= 5
+
+
+def test_standard_sizes_used_by_the_evals_never_appear() -> None:
+    for seed in range(300):
+        text = render(FAMILIES["standard"](random.Random(seed)), random.Random(seed), "oneline").text
+        assert not any(s in text for s in ("DN50", "NEMA 17", "NEMA 23", "2020", "2040")), (seed, text)
+
+
+def test_flanges_and_motor_plates_take_their_pattern_from_the_standard() -> None:
+    specs = [FAMILIES["standard"](random.Random(seed)) for seed in range(40)]
+    looked_up = [s for s in specs if s.title.startswith(("DN", "NEMA"))]
+    assert looked_up
+    for s in looked_up:
+        refs = {p.provenance.ref for p in s.design.params if p.provenance.source == "standard"}
+        assert refs and all(r and r.split()[-1] in s.title for r in refs), (s.title, refs)

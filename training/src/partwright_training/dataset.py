@@ -71,7 +71,7 @@ def make(seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_
                 task = variant(spec, prompt, rng, para, FAMILIES[family](random.Random(seed + PRIOR_OFFSET)), seed)
                 prompt = task.prompt
                 made.append(generate_sample(spec, task))
-                if rng.random() < repair_rate and (repair := repair_sample(spec, task, g, out, rng)):
+                if rng.random() < repair_rate and not spec.exempt and (repair := repair_sample(spec, task, g, out, rng)):
                     made.append(repair)
                 if rng.random() < requirement_rate and (req := requirement_sample(spec, prompt)):
                     made.append(req)
@@ -82,6 +82,9 @@ def make(seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_
 
 def variant(spec: Spec, prompt: Prompt, rng: random.Random, para: Paraphraser | None, prior: Spec, seed: int) -> Task:
     roll = rng.random()
+    if spec.exempt:
+        # a standard part that breaks a default rule must not meet that rule in a project context
+        return Task(prompt, None, spec.design)
     if roll < DOCUMENTED:
         return Task(*documented(spec, rng))
     context = grounding(spec, rng, prior)

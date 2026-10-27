@@ -2,6 +2,8 @@ import math
 
 # metric size -> ISO 273 clearance (close, loose), coarse pitch, ISO 4762 head diameter; mirrors the IR table for the sizes we sample
 FASTENERS: dict[str, tuple[float, float, float, float]] = {
+    "M2": (2.2, 2.6, 0.4, 3.8),
+    "M2.5": (2.7, 3.1, 0.45, 4.5),
     "M3": (3.2, 3.6, 0.5, 5.5),
     "M4": (4.3, 4.8, 0.7, 7.0),
     "M5": (5.3, 5.8, 0.8, 8.5),

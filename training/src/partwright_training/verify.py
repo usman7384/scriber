@@ -11,7 +11,7 @@ def failures(spec: Spec, geometry: LocalGeometry, out_dir: Path) -> list[str]:
         artifact = geometry.build(spec.design, out_dir, RULES)
     except BuildError as e:
         return [f"build {e.kind}: {str(e)[:200]}"]
-    problems = [f"finding {f.rule_id}: {f.message}" for f in artifact.findings if f.severity == "error"]
+    problems = [f"finding {f.rule_id}: {f.message}" for f in artifact.findings if f.severity == "error" and f.rule_id not in spec.exempt]
     problems += [
         f"check {c.requirement.kind} {c.requirement.description}: {c.actual}" for c in check(list(spec.checks), artifact) if not c.passed
     ]
