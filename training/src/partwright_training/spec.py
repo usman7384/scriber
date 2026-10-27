@@ -15,6 +15,7 @@ class Spec:
     statements: tuple[tuple[str, str], ...]
     design: Design
     checks: tuple[Requirement, ...]
+    exempt: tuple[str, ...] = ()
 
     def params(self) -> list[str]:
         return [p.name for p in self.design.params]
@@ -32,9 +33,15 @@ class Draft:
     taken: list[tuple[float, float]] = field(default_factory=list)
     material: str | None = None
     process: str = "any"
+    exempt: tuple[str, ...] = ()
 
     def param(self, name: str, value: float, unit: str, description: str, quote: str) -> str:
         self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": _prov(quote)})
+        return name
+
+    def standard(self, name: str, value: float, unit: str, description: str, ref: str) -> str:
+        provenance = {"source": "standard", "ref": ref}
+        self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": provenance})
         return name
 
     def say(self, section: str, text: str) -> None:
@@ -59,7 +66,7 @@ class Draft:
         if self.process != "any":
             part["process"] = self.process
         design = Design.model_validate({"ir_version": 2, "title": self.title, "params": self.params, "parts": [part]})
-        return Spec(self.family, self.title, tuple(self.statements), design, tuple(self.checks))
+        return Spec(self.family, self.title, tuple(self.statements), design, tuple(self.checks), self.exempt)
 
 
 def _prov(quote: str) -> dict[str, str]:

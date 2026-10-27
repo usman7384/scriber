@@ -6,7 +6,16 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 
-from partwright_agent import Grounding, Requirement, context_block, design_messages, evaluate, repair_message, requirement_messages
+from partwright_agent import (
+    Grounding,
+    Requirement,
+    context_block,
+    design_messages,
+    evaluate,
+    reference_data,
+    repair_message,
+    requirement_messages,
+)
 from partwright_geometry import LocalGeometry
 from partwright_ir import Design, answer_json
 from partwright_training.context import RULES
@@ -42,7 +51,7 @@ class Task:
 
     def messages(self) -> tuple[tuple[str, str], ...]:
         project = context_block(self.context) if self.context else ""
-        return tuple(design_messages(self.prompt.text, project=project, few_shot=False))
+        return tuple(design_messages(self.prompt.text, reference_data(self.prompt.text), project, few_shot=False))
 
     def answer(self) -> str:
         return answer_json(self.design)

@@ -6,9 +6,13 @@ from partwright_agent.ollama_llm import OllamaLLM
 from partwright_agent.project_context import Grounding, context_block
 from partwright_agent.prompts import design_messages, repair_message, requirement_messages
 from partwright_agent.requirements import CheckResult, Requirement, check, overall_size
+from partwright_agent.standards import EN1092_PN16, EXTRUSION, NEMA, reference_data
 
 __all__ = [
+    "EN1092_PN16",
+    "EXTRUSION",
     "LLM",
+    "NEMA",
     "AnthropicLLM",
     "CheckResult",
     "FakeLLM",
@@ -26,6 +30,7 @@ __all__ = [
     "extract_requirements",
     "generate",
     "overall_size",
+    "reference_data",
     "refine",
     "repair_message",
     "requirement_messages",
