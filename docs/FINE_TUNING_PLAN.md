@@ -1,6 +1,6 @@
 # Fine-tuning plan: teaching a Qwen model our IR
 
-Status: stopped after S1 by the stop rule (2026-10-26): the tuned 0.8B did not beat the prompted 4B on M1. S1 on the 4B with QLoRA (2026-10-27) won the grounded set but not M1, so it also stays a comparison model (D-025). Results: `docs/agents/training.md`. The original plan follows.
+Status: stopped after S1 by the stop rule (2026-10-26): the tuned 0.8B did not beat the prompted 4B on M1. S1 on the 4B with QLoRA (2026-10-27) won the grounded set but not M1, so it also stays a comparison model (D-025). Next: S2, broader data outside the generator families (planned below, not started). Results: `docs/agents/training.md`. The original plan follows.
 
 ## Why fine-tune
 
@@ -51,7 +51,7 @@ Training uses the same chat format as inference, but with the short v2 rules onl
 |---|---|---|---|---|
 | S0 | Generators for 4 families, renderer, repair mutator; 2k samples; Qwen3.5-0.8B LoRA, 1 epoch (~10 min, estimate); GGUF → Ollama | laptop | free | synthetic held-out validity and build rate beat the prompted 0.8B; the pipeline runs end to end (also closes the M5 fine-tune row) |
 | S1 | All families, 15–25k samples; 0.8B, 2–3 epochs overnight (several hours, estimate) | laptop | free | M1 and synthetic gates; challenge reported |
-| S2 | ~~Same data on Qwen3.5-4B on a rented GPU~~ | — | — | dropped: training stays local (decision 2026-10-26) |
+| S2 | Breadth outside the generator families, QLoRA on the 4B (section below) | laptop | one night | beat the prompted 4B on M1 and grounded |
 | S3 | Preference step using our checks as reward (repair outcomes as chosen/rejected), on the 0.8B | laptop | free | only if S1 misses the challenge gate |
 
 Each stage records its data card (counts per family and type, licence: all ours), training config, and scorecards in `docs/agents/training.md`, and the served model tag goes into `config.yaml` (`partwright-ir:0.8b`, `partwright-ir:4b`) beside the base model so either can be selected.
@@ -77,6 +77,66 @@ Everything stays on the laptop. Figures measured in S0 (`docs/agents/training.md
 5. **Schedule.** One epoch overnight first (about 3 h with the kernels, about 6 h without). Run a second epoch only if the M1 and grounded scores, not the synthetic one, are still improving.
 6. **Export.** Merge, convert with llama.cpp (`convert_hf_to_gguf.py --outtype q8_0`, pinned release), then `ollama create` with the base model's renderer, parser and sampling parameters (`training/wsl/Modelfile`). Ollama cannot import Qwen3.5 safetensors on Windows (it needs its MLX runtime).
 7. **Gates.** The success criteria above, on the same commands: synthetic held-out, M1, grounded and challenge, all measured against `qwen3.5:0.8b-q8_0` and `qwen3.5:4b` as they are prompted today.
+
+## S2: breadth outside the generator families (planned 2026-10-27, not started)
+
+S1 on the 4B (D-025) won the grounded set but lost M1 by one case. The failures, and what they say about the S1 data (`data/training/s1/train.jsonl`, 4,250 designs):
+
+| Seen in the runs | Cause in the data |
+|---|---|
+| 8.5 mm holes became M5, 18 mm became 17.5, 6.6 mm became M4 (`dp2`, `dp3`, `g09`) | 78 % of holes name an M-size, and prompts never state a plain diameter for a fastener hole |
+| "31 mm square" read as an edge margin, giving a negative spacing (`nema17`); "spaced 85 x 60" gave no holes at the right pitch (`dp2`) | every grid is placed by `hole_margin` or `mount_margin`, never by the stated spacing |
+| T-plate and ten-hole plate holes outside the part (`dp6`, `in2`) | every outline is centred on the origin; no polygon, path or slot outlines with holes placed relative to them |
+| the L-bracket's outer-corner fillet fails the kernel every time (`dp21`) | bent parts never ask for fillets on chosen edges |
+| the same broken answer on all four attempts (4 of the 5 never-built M1 cases) | repair samples only fix our own mutations, so real kernel errors are out of distribution |
+| prompt quotes that are not in the prompt ("135 mm wide") | quotes are copied from template phrases; nothing checks that a quote appears in the request |
+| a kept 6 mm thickness came back as 10 (`g09`) | edit samples rarely keep explicit diameters and thicknesses |
+| — | 50 titles and 57 parameter names; slot, path, datums, `through_all`, `two_sided`, `taper` and mirror patterns never appear |
+
+Data changes, about 5k samples so the 4B run stays one night (608 steps, 8 h):
+
+1. **Holes by what the request says.**
+   - Mix: stated diameters about 50 % ("8.5 mm holes", "Ø6.6", "6.6 dia"), M-sizes about 30 %, both about 20 % ("M8 clearance, 9 mm").
+   - The target keeps `diameter` whenever the request gives one, and the hole check uses the stated value.
+2. **Placement by what the request says.** The phrasing of each pattern is drawn independently of the geometry, and the parameters are named after that phrasing (`hole_spacing_x`, not `hole_margin`):
+   - centre spacing ("spaced 85 x 60", "on a 47 mm square")
+   - a bolt circle or PCD
+   - margin from the edges
+   - coordinates from a corner or edge
+   - rows times columns at a pitch
+   - slot centres
+3. **New outlines and families.**
+   - Outlines: T, L, U, cross and gusset plates from polygons and paths, not centred on the origin; slotted plates; standoffs and spacers.
+   - Bent parts: L, U and Z brackets with holes on each leg's own face, and fillets or chamfers on named edges.
+   - Clamp blocks, shaft collars and keyed hubs (cut extrudes).
+   - Every IR entity, placement and extent used at least once in 2 % of designs.
+4. **Standard-referenced parts** from a small public table (`standards.py`, like `fasteners.py`, each row citing its source): EN 1092-1 PN10/PN16 flanges, NEMA motor faces, aluminium-extrusion slot pitches and 6000-series bearings. The sizes the eval sets use are left out of training (DN50, NEMA 17, NEMA 23, 2020), so the model learns to use the table rather than memorise eval answers.
+5. **Names decoupled from shapes.** About 300 titles and an open parameter vocabulary: synonyms, and names taken from the request's own words. The same name is used for different shapes ("bracket" can be a plate, an L or a gusseted angle).
+6. **On-policy repairs.**
+   - Run the prompted `qwen3.5:4b` and `partwright-ir:4b-s1` on about 600 new generated prompts (about 4 h at night), and keep each failing answer with the agent's real error text, paired with the verified design.
+   - Add kernel-error repairs that the mutator cannot produce: fillets too large, holes outside the part, overlapping holes.
+   - About a quarter of the repair samples come from this source.
+7. **Honest provenance.** Every training quote must appear verbatim in the request, and samples that fail are dropped.
+8. **Edits that keep values.** Prior-design requests that change one thing must keep every explicit diameter, thickness and spacing exactly.
+
+The S1 data is reused, re-rendered for items 1, 2 and 5 rather than added as-is. Rough mix: 35 % new families and outlines, 25 % re-rendered S1, 20 % repairs, 10 % edits, 5 % standards, 5 % requirement extraction.
+
+Before any training (cheap checks):
+- coverage counts for items 1–5 on the data card;
+- the 8-gram leak guard against M1, challenge, grounded and the dev set below;
+- every design built and checked under the default rules, as now.
+
+Gates and stop rule, unchanged in substance: the tuned 4B must beat the prompted 4B on M1 and on the grounded set.
+
+Agent fixes found on the way. These are not data work; they get their own changes and are measured before S2 so the baseline moves first:
+- the loop should notice an identical repeated answer and re-sample;
+- the validator should flag a prompt quote that is not in the request.
+
+Open questions for the user:
+1. **Repeated gate runs.** M1 is 10 cases sampled once, and S1-4B lost by one case. Should each gate be run three times and the means compared?
+2. **A dev set.** Should we write a 20-case hand-written dev set (`evals/cases/dev.yaml`, new parts, never trained on) to pick the best of the 100-step checkpoints, keeping M1 and grounded as the gates only?
+
+Rough cost: generator and pipeline code over a few sessions, one night of on-policy collection, one night of training, about an hour for export and gates.
 
 ## Risks
 
