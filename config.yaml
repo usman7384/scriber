@@ -1,6 +1,7 @@
 llm:
   host: http://127.0.0.1:11434
-  default: qwen3.5:4b
+  # built locally, not pulled (D-027; rebuild steps in docs/agents/training.md); without it use --model qwen3.5:4b
+  default: partwright-ir:4b-s1
   ci: qwen3.5:0.8b-q8_0
   models:
     qwen3.5:4b: {num_ctx: 16384, think: false}
