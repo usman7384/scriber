@@ -14,11 +14,24 @@ def profile(rng: random.Random) -> Spec:
     return rng.choice((_l_plate, _t_plate, _u_plate, _gusset, _slotted))(rng)
 
 
-def _outline(d: Draft, points: list[Point], thick: float) -> None:
+def _outline(d: Draft, points: list[Point], thick: float, rounded: tuple[int, ...] = ()) -> None:
     d.param("thickness", thick, "mm", "plate thickness", f"{num(thick)} mm thick")
-    d.sketches.append({"id": "outline", "plane": {"ref": "XY"}, "entities": [{"kind": "polygon", "points": [list(p) for p in points]}]})
+    entity: dict[str, Any] = {"kind": "polygon", "points": [list(p) for p in points]}
+    if rounded:
+        segments = [{"to": list(p), "fillet": "inside_radius" if i in rounded else 0} for i, p in enumerate(points[1:], 1)]
+        entity = {"kind": "path", "start": list(points[0]), "segments": segments}
+    d.sketches.append({"id": "outline", "plane": {"ref": "XY"}, "entities": [entity]})
     d.features.append({"kind": "extrude", "id": "plate", "name": "Plate", "sketch": "outline", "distance": "thickness"})
     d.need("extent", f"thickness {num(thick)}", value=thick)
+
+
+def _inside_radius(d: Draft, rng: random.Random, arm: float, corners: str) -> bool:
+    if rng.random() < 0.6:
+        return False
+    r = pick(rng, 2, min(10, arm / 2))
+    d.param("inside_radius", r, "mm", "inside corner radius", f"R{num(r)} {corners}")
+    d.say("Features", f"R{num(r)} {corners}")
+    return True
 
 
 def _l_plate(rng: random.Random) -> Spec:
@@ -31,7 +44,10 @@ def _l_plate(rng: random.Random) -> Spec:
     d.param("arm_width", arm, "mm", "width of both arms", f"both arms {num(arm)} mm wide")
     sizes = f"outer size {num(length)} x {num(height)} mm, both arms {num(arm)} mm wide"
     d.say("Overall dimensions", f"{d.title}, {sizes}, {num(thick)} mm thick")
-    _outline(d, [(0, 0), ("length", 0), ("length", "arm_width"), ("arm_width", "arm_width"), ("arm_width", "height"), (0, "height")], thick)
+    corner = (3,) if _inside_radius(d, rng, arm, "inside corner") else ()
+    inner = ("arm_width", "arm_width")
+    points: list[Point] = [(0, 0), ("length", 0), ("length", "arm_width"), inner, ("arm_width", "height"), (0, "height")]
+    _outline(d, points, thick, corner)
     d.need("extent", f"length {num(length)}", value=length)
     d.need("extent", f"height {num(height)}", value=height)
     size = rng.choice([s for s in ("M4", "M5", "M6", "M8") if 2 * edge(s) <= arm])
@@ -46,7 +62,7 @@ def _l_plate(rng: random.Random) -> Spec:
     b = bore(d, rng, size, "simple")
     word = count_word(rng, n)
     d.param("hole_pitch", pitch, "mm", "hole centre distance", f"{num(pitch)} mm apart")
-    where = f"on the centre line of the {num(length)} mm arm, centred in its free length"
+    where = f"along the middle of the {num(length)} mm arm, centred in its free length"
     d.say("Holes and ports", f"{b.many(word)} holes {num(pitch)} mm apart {where}")
     start = (f"(arm_width + length) / 2 - {n - 1} * hole_pitch / 2", "arm_width / 2")
     d.features.append(hole("arm_hole", "Arm hole", "plate.top", [start], **b.spec))
@@ -130,7 +146,7 @@ def _u_plate(rng: random.Random) -> Spec:
         (f"-({inner})", "depth"),
         ("-width / 2", "depth"),
     ]
-    _outline(d, points, thick)
+    _outline(d, points, thick, (4, 5) if _inside_radius(d, rng, min(arm, gap), "inside corners") else ())
     d.need("extent", f"width {num(width)}", value=width)
     d.need("extent", f"depth {num(depth)}", value=depth)
     sizes = [s for s in ("M4", "M5", "M6", "M8", "M10") if 2 * edge(s) <= arm and edge(s) <= depth - arm - 2]

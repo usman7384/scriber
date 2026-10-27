@@ -133,7 +133,9 @@ def overlapping_holes(d: Design, rng: random.Random) -> Design | None:
     if not listed:
         return None
     points = rng.choice(listed)["at"]["points"]
-    points.append(list(points[0]))
+    x, y = points[0]
+    # an exact duplicate is merged away by normalize, so the copy sits 1 mm off and overlaps instead
+    points.append([x + 1 if isinstance(x, int | float) else f"({x}) + 1", y])
     return d
 
 

@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Verified synthetic IR data for fine-tuning"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "pyyaml"]
+dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "partwright-cli", "pyyaml"]
 
 [project.scripts]
 partwright-dataset = "partwright_training.dataset:main"
+partwright-collect = "partwright_training.collect:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
@@ -17,3 +18,4 @@ build-backend = "uv_build"
 partwright-ir = { workspace = true }
 partwright-geometry = { workspace = true }
 partwright-agent = { workspace = true }
+partwright-cli = { workspace = true }
