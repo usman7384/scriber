@@ -2,7 +2,8 @@ import math
 import random
 from typing import Any
 
-from partwright_training.fasteners import clearance, counterbore_depth, edge, head, nominal
+from partwright_training.fasteners import counterbore_depth, edge, head, nominal
+from partwright_training.holes import Bore, bore, corner_grid, need_bores
 from partwright_training.spec import Draft, Spec, circle_sketch, count_word, finish, hole, num, pick, rect_sketch
 
 HOLE_TYPES = ("simple", "counterbore", "countersink")
@@ -29,7 +30,7 @@ def _rect_plate(rng: random.Random) -> Spec:
         "plate",
     )
     length, thick = pick(rng, 60, 200, 5), pick(rng, 4, 15)
-    width = pick(rng, 40, min(length, 150), 5)
+    width = length if length <= 150 and rng.random() < 0.15 else pick(rng, 40, min(length, 150), 5)
     size = f"{num(length)} x {num(width)} mm"
     d.param("plate_length", length, "mm", "plate length along X", size)
     d.param("plate_width", width, "mm", "plate width along Y", size)
@@ -49,9 +50,10 @@ def _rect_plate(rng: random.Random) -> Spec:
     kind = _hole_type(rng, size_m, thick)
     if 2 * edge(size_m, kind) > width - 10:
         kind = "simple"
-    if rng.random() < 0.5:
+    roll = rng.random()
+    if roll < 0.45:
         _corner_holes(d, rng, size_m, kind, length, width, thick)
-    else:
+    elif roll < 0.75 or not _hole_grid(d, rng, size_m, length, width):
         _hole_row(d, rng, size_m, kind, length, width)
     _finish_top(d, rng, thick)
     finish(d, rng, "milling_3axis")
@@ -66,17 +68,8 @@ def _hole_type(rng: random.Random, size: str, thick: float) -> str:
     return rng.choice(options)
 
 
-def _hole_spec(size: str, kind: str) -> dict[str, Any]:
-    return {"fastener": size} if kind == "simple" else {"fastener": size, "type": kind}
-
-
-def _kind_words(kind: str) -> str:
-    return {"simple": "clearance", "counterbore": "counterbored", "countersink": "countersunk"}[kind]
-
-
-def _need_holes(d: Draft, size: str, kind: str, n: int) -> None:
-    lo, hi = clearance(size)
-    d.need("holes", f"{n} {size} clearance holes", count=n, diameter_min=lo, diameter_max=hi)
+def _need_holes(d: Draft, b: Bore, size: str, kind: str, n: int) -> None:
+    need_bores(d, b, n)
     if kind == "counterbore":
         d.need("counterbores", f"{n} counterbores", count=n)
         d.take(head(size), head(size) + 2.5)
@@ -85,19 +78,12 @@ def _need_holes(d: Draft, size: str, kind: str, n: int) -> None:
 def _corner_holes(d: Draft, rng: random.Random, size: str, kind: str, length: float, width: float, thick: float) -> None:
     margin = pick(rng, max(6, math.ceil(head(size) / 2 + 3), edge(size, kind)), max(8, min(20, width / 4)))
     word = count_word(rng, 4)
-    d.param("hole_margin", margin, "mm", "hole centres from the plate edges", f"{num(margin)} mm from the edges")
-    d.say("Holes and ports", f"{word} {size} {_kind_words(kind)} holes, one in each corner, {num(margin)} mm from the edges")
-    at = {
-        "kind": "grid",
-        "count_x": 2,
-        "count_y": 2,
-        "spacing_x": "plate_length - 2 * hole_margin",
-        "spacing_y": "plate_width - 2 * hole_margin",
-    }
+    b = bore(d, rng, size, kind)
+    at, where = corner_grid(d, rng, ("plate_length", length), ("plate_width", width), margin, "hole")
+    d.say("Holes and ports", f"{b.many(word)} holes, one in each corner, {where}")
     d.features.append({"kind": "hole", "id": "corner_holes", "name": f"{size} corner holes", "plane": {"ref": "plate.top"}, "at": at})
-    d.features[-1].update(_hole_spec(size, kind))
-    _need_holes(d, size, kind, 4)
-    d.need("hole_spacing", f"spacing {num(length - 2 * margin)}", value=length - 2 * margin)
+    d.features[-1].update(b.spec)
+    _need_holes(d, b, size, kind, 4)
     if rng.random() < 0.5:
         _pocket(d, rng, size, length - 2 * margin, width - 2 * margin, thick)
 
@@ -109,10 +95,11 @@ def _hole_row(d: Draft, rng: random.Random, size: str, kind: str, length: float,
     if pitch * (n - 1) > room:
         n = 2
     word = count_word(rng, n)
-    d.param("hole_count", n, "", "number of holes in the row", f"{word} {size}")
+    b = bore(d, rng, size, kind)
+    d.param("hole_count", n, "", "number of holes in the row", b.many(word))
     d.param("hole_pitch", pitch, "mm", "hole centre distance", f"{num(pitch)} mm pitch")
-    d.say("Holes and ports", f"{word} {size} {_kind_words(kind)} holes in a row along the length, {num(pitch)} mm pitch, centred")
-    first = hole("row_hole", f"{size} hole", "plate.top", [("-(hole_count - 1) * hole_pitch / 2", 0)], **_hole_spec(size, kind))
+    d.say("Holes and ports", f"{b.many(word)} holes in a row along the length, {num(pitch)} mm pitch, centred")
+    first = hole("row_hole", f"{size} hole", "plate.top", [("-(hole_count - 1) * hole_pitch / 2", 0)], **b.spec)
     pattern = {
         "kind": "pattern",
         "id": "hole_row",
@@ -124,8 +111,33 @@ def _hole_row(d: Draft, rng: random.Random, size: str, kind: str, length: float,
         "spacing": "hole_pitch",
     }
     d.features += [first, pattern]
-    _need_holes(d, size, kind, n)
+    _need_holes(d, b, size, kind, n)
     d.need("hole_spacing", f"{num(pitch)} mm pitch", value=pitch)
+
+
+def _hole_grid(d: Draft, rng: random.Random, size: str, length: float, width: float) -> bool:
+    room_x, room_y = length - 2 * max(8, edge(size)), width - 2 * max(8, edge(size))
+    rows, cols = rng.randint(2, 3), rng.randint(2, 6)
+    least = max(10, head(size) + 4)
+    if room_y / (rows - 1) < least or room_x / (cols - 1) < least:
+        return False
+    pitch = pick(rng, least, min(60, room_x / (cols - 1)), 5 if room_x / (cols - 1) > least + 10 else 1)
+    gap = pick(rng, least, min(80, room_y / (rows - 1)), 5 if room_y / (rows - 1) > least + 10 else 1)
+    b = bore(d, rng, size, "simple")
+    rows_words, cols_words = f"{count_word(rng, rows)} rows", f"{count_word(rng, cols)} holes per row"
+    d.param("hole_columns", cols, "", "holes per row", cols_words)
+    d.param("hole_rows", rows, "", "number of rows", rows_words)
+    d.param("hole_pitch", pitch, "mm", "hole centre distance along each row", f"{num(pitch)} mm pitch")
+    d.param("row_spacing", gap, "mm", "distance between rows", f"rows {num(gap)} mm apart")
+    total = count_word(rng, rows * cols)
+    where = f"{rows_words}, {cols_words}, {num(pitch)} mm pitch, rows {num(gap)} mm apart, centred"
+    d.say("Holes and ports", f"{b.many(total)} holes in {where}")
+    at = {"kind": "grid", "count_x": "hole_columns", "count_y": "hole_rows", "spacing_x": "hole_pitch", "spacing_y": "row_spacing"}
+    d.features.append({"kind": "hole", "id": "hole_grid", "name": "Hole grid", "plane": {"ref": "plate.top"}, "at": at, **b.spec})
+    need_bores(d, b, rows * cols)
+    d.need("hole_spacing", f"{num(pitch)} mm pitch", value=pitch)
+    d.need("hole_spacing", f"rows {num(gap)} apart", value=gap)
+    return True
 
 
 def _pocket(d: Draft, rng: random.Random, size: str, span_x: float, span_y: float, thick: float) -> None:
@@ -183,22 +195,24 @@ def _round_plate(rng: random.Random) -> Spec:
     n = rng.choice((3, 4, 5, 6, 8))
     bcd = pick(rng, max(dia * 0.5, head(size) * 3), min(dia - head(size) - 8, dia - 2 * edge(size, kind)), 5 if dia > 100 else 1)
     word = count_word(rng, n)
-    d.param("bolt_count", n, "", "number of bolt holes", f"{word} {size}")
-    d.param("bolt_circle_diameter", bcd, "mm", "bolt circle diameter", f"{num(bcd)} mm bolt circle")
-    d.say("Holes and ports", f"{word} {size} {_kind_words(kind)} holes equally spaced on a {num(bcd)} mm bolt circle")
+    b = bore(d, rng, size, kind, "bolt_hole_diameter")
+    circle = rng.choice((f"{num(bcd)} mm bolt circle", f"{num(bcd)} mm PCD", f"{num(bcd)} mm pitch circle"))
+    d.param("bolt_count", n, "", "number of bolt holes", b.many(word))
+    d.param("bolt_circle_diameter", bcd, "mm", "bolt circle diameter", circle)
+    d.say("Holes and ports", f"{b.many(word)} holes equally spaced on a {circle}")
     at = {"kind": "polar", "count": "bolt_count", "diameter": "bolt_circle_diameter"}
     d.features.append({"kind": "hole", "id": "bolt_holes", "name": f"{size} bolt holes", "plane": {"ref": "plate.top"}, "at": at})
-    d.features[-1].update(_hole_spec(size, kind))
-    _need_holes(d, size, kind, n)
+    d.features[-1].update(b.spec)
+    _need_holes(d, b, size, kind, n)
     if n % 2 == 0:
         d.need("hole_spacing", f"bolt circle {num(bcd)}", value=bcd)
     room = bcd - head(size) - 10
-    bore = pick(rng, 16, room, 2)
-    if room >= 16 and rng.random() < 0.6 and d.free(bore, bore):
-        d.param("bore_diameter", bore, "mm", "centre bore", f"{num(bore)} mm centre bore")
-        d.say("Holes and ports", f"a {num(bore)} mm centre bore through the plate")
+    centre = pick(rng, 16, room, 2)
+    if room >= 16 and rng.random() < 0.6 and d.free(centre, centre):
+        d.param("bore_diameter", centre, "mm", "centre bore", f"{num(centre)} mm centre bore")
+        d.say("Holes and ports", f"a {num(centre)} mm centre bore through the plate")
         d.features.append(hole("bore", "Centre bore", "plate.top", [(0, 0)], diameter="bore_diameter"))
-        d.need("holes", f"{num(bore)} mm bore", count=1, diameter_min=bore - 0.1, diameter_max=bore + 0.1)
+        d.need("holes", f"{num(centre)} mm bore", count=1, diameter_min=centre - 0.1, diameter_max=centre + 0.1)
     _finish_top(d, rng, thick)
     finish(d, rng, "milling_3axis")
     return d.spec()

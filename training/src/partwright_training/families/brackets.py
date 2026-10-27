@@ -1,6 +1,7 @@
 import random
 
-from partwright_training.fasteners import clearance, edge, head
+from partwright_training.fasteners import edge, head
+from partwright_training.holes import bore, need_bores
 from partwright_training.spec import Draft, Spec, count_word, finish, hole, num, pick
 
 
@@ -50,15 +51,13 @@ def _angle(rng: random.Random) -> Spec:
         ys = ["-hole_spacing / 2", "hole_spacing / 2"]
     n = len(ys)
     word = count_word(rng, n) if pair else "one"
-    where = (
-        f"{word} {size} clearance holes in each leg, {num(s)} mm apart" if pair else f"one {size} clearance hole in the middle of each leg"
-    )
+    hb = bore(d, rng, size, "simple")
+    where = f"{hb.many(word)} holes in each leg, {num(s)} mm apart" if pair else f"one {hb.words} hole in the middle of each leg"
     d.say("Holes and ports", where)
     base_x, up_z = "thickness + (base_leg - thickness) / 2", "thickness + (upright_leg - thickness) / 2"
-    d.features.append(hole("base_holes", "Base leg holes", "body.bottom", [(base_x, y) for y in ys], fastener=size))
-    d.features.append(hole("upright_holes", "Upright leg holes", "body.left", [(y, up_z) for y in ys], fastener=size))
-    lo, hi = clearance(size)
-    d.need("holes", f"{2 * n} {size} holes", count=2 * n, diameter_min=lo, diameter_max=hi)
+    d.features.append(hole("base_holes", "Base leg holes", "body.bottom", [(base_x, y) for y in ys], **hb.spec))
+    d.features.append(hole("upright_holes", "Upright leg holes", "body.left", [(y, up_z) for y in ys], **hb.spec))
+    need_bores(d, hb, 2 * n)
     d.need("hole_axes", "holes in both legs", count=2)
     if pair:
         d.need("hole_spacing", f"{num(s)} mm apart", value=s)
@@ -97,14 +96,15 @@ def _channel(rng: random.Random) -> Spec:
         if pitch * (n - 1) > w - 2 * max(head(size), edge(size)):
             n = 1
         word = count_word(rng, n) if n > 1 else "one"
+        hb = bore(d, rng, size, "simple")
         if n > 1:
-            d.param("base_hole_count", n, "", "holes in the base", f"{word} {size}")
+            d.param("base_hole_count", n, "", "holes in the base", hb.many(word))
             d.param("base_hole_pitch", pitch, "mm", "base hole pitch", f"{num(pitch)} mm pitch")
-            d.say("Holes and ports", f"{word} {size} clearance holes along the centre line of the base, {num(pitch)} mm pitch")
+            d.say("Holes and ports", f"{hb.many(word)} holes along the centre line of the base, {num(pitch)} mm pitch")
         else:
-            d.say("Holes and ports", f"one {size} clearance hole in the centre of the base")
+            d.say("Holes and ports", f"one {hb.words} hole in the centre of the base")
         start = "-(base_hole_count - 1) * base_hole_pitch / 2" if n > 1 else 0
-        d.features.append(hole("base_hole", "Base hole", "body.bottom", [(0, start)], fastener=size))
+        d.features.append(hole("base_hole", "Base hole", "body.bottom", [(0, start)], **hb.spec))
         if n > 1:
             d.features.append(
                 {
@@ -119,8 +119,7 @@ def _channel(rng: random.Random) -> Spec:
                 }
             )
             d.need("hole_spacing", f"{num(pitch)} mm pitch", value=pitch)
-        lo, hi = clearance(size)
-        d.need("holes", f"{n} {size} base holes", count=n, diameter_min=lo, diameter_max=hi)
+        need_bores(d, hb, n, "base holes")
     pin = pick(rng, 4, min(16, (h - t) / 4), 1)
     if rng.random() < 0.6 and d.free(pin, pin):
         d.param("pin_diameter", pin, "mm", "cross hole through both walls", f"{num(pin)} mm cross hole")

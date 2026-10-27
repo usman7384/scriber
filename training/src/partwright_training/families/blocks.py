@@ -2,6 +2,7 @@ import random
 from dataclasses import dataclass
 
 from partwright_training.fasteners import clearance, counterbore_depth, edge, head, tap_drill, thread
+from partwright_training.holes import bore, corner_grid, need_bores
 from partwright_training.spec import Draft, Spec, circle_sketch, count_word, finish, hole, num, pick, rect_sketch
 
 
@@ -185,24 +186,15 @@ def _side_pocket(d: Draft, rng: random.Random, b: _Block) -> None:
 
 
 def _mounts(d: Draft, rng: random.Random, b: _Block, axes: set[str]) -> None:
-    kind = b.kind
-    words = "counterbored" if kind == "counterbore" else "clearance"
     word = count_word(rng, 4)
-    d.param("mount_margin", b.margin, "mm", "mounting hole centres from the edges", f"{num(b.margin)} mm from the edges")
-    d.say(
-        "Holes and ports",
-        f"{word} {b.mount} {words} mounting holes through the block, one near each corner, {num(b.margin)} mm from the edges",
-    )
-    at = {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": "length - 2 * mount_margin", "spacing_y": "width - 2 * mount_margin"}
-    mounts = {"kind": "hole", "id": "mounts", "name": "Mounting holes", "plane": {"ref": "block.top"}, "at": at, "fastener": b.mount}
-    if kind == "counterbore":
-        mounts["type"] = "counterbore"
+    bore_ = bore(d, rng, b.mount, b.kind, "mount_hole_diameter")
+    at, where = corner_grid(d, rng, ("length", b.length), ("width", b.width), b.margin, "mount")
+    d.say("Holes and ports", f"{bore_.many(word)} mounting holes through the block, one near each corner, {where}")
+    d.features.append({"kind": "hole", "id": "mounts", "name": "Mounting holes", "plane": {"ref": "block.top"}, "at": at, **bore_.spec})
+    if b.kind == "counterbore":
         d.need("counterbores", "4 counterbores", count=4)
         d.take(head(b.mount), head(b.mount) + 2.5)
-    d.features.append(mounts)
-    lo, hi = clearance(b.mount)
-    d.need("holes", f"4 {b.mount} mounting holes", count=4, diameter_min=lo, diameter_max=hi)
-    d.need("hole_spacing", f"spacing {num(b.length - 2 * b.margin)}", value=b.length - 2 * b.margin)
+    need_bores(d, bore_, 4, "mounting holes")
     axes.add("z")
 
 
