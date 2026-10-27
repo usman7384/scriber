@@ -181,7 +181,7 @@
     - 110 x 70 mm, 8 mm thick
     - Ø32 bore in the centre
     - 4 x Ø5.5 holes on 90 x 50 mm centres
-    - 1 mm chamfer on the top edges
+    - top edges chamfered 1 mm
   checks:
     - {kind: extent, description: length 110, value: 110}
     - {kind: extent, description: width 70, value: 70}

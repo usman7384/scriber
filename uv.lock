@@ -1206,6 +1206,7 @@ version = "0.1.0"
 source = { editable = "training" }
 dependencies = [
     { name = "partwright-agent" },
+    { name = "partwright-cli" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
     { name = "pyyaml" },
@@ -1214,6 +1215,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "partwright-agent", editable = "services/agent" },
+    { name = "partwright-cli", editable = "apps/cli" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
     { name = "pyyaml" },

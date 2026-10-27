@@ -17,14 +17,14 @@ FLANGE_REQUESTS = (
     "Plate flange for DN{dn} pipe, PN16 to EN 1092-1, {t} mm thick with a {bore} mm bore and the standard holes",
 )
 MOTOR_REQUESTS = (
-    "Mounting plate for a NEMA {n} stepper, {size}, with the standard screw holes and a pilot hole",
+    "Mounting plate for a NEMA {n} stepper, {size}, drilled for the motor screws, with a pilot hole",
     "NEMA {n} motor plate {size}: standard mounting pattern plus the centring pilot hole",
     "Plate to hold a NEMA {n} motor, {size}, with holes for the motor screws and its pilot",
 )
 EXTRUSION_REQUESTS = (
-    "Flat connector for {profile} extrusion profile, {size}, {holes} holes on the {s} mm slot centres",
-    "Splice plate joining two lengths of {profile} aluminium profile, {size}, with {holes} holes on the {s} mm slot centres",
-    "{profile} extrusion strap, {size}, {holes} holes on the {s} mm slot centres",
+    "Flat connector for {profile} extrusion profile, {size}, {holes} holes at the {s} mm slot pitch",
+    "Splice plate joining two lengths of {profile} aluminium profile, {size}, with {holes} holes matching the {s} mm slot spacing",
+    "{profile} extrusion strap, {size}, {holes} holes, one per slot, every {s} mm",
 )
 
 
@@ -99,7 +99,7 @@ def _extrusion_plate(rng: random.Random) -> Spec:
     d.param("length", length, "mm", "plate length", size)
     d.param("width", width, "mm", "plate width", size)
     d.param("thickness", thick, "mm", "plate thickness", size)
-    d.param("slot_pitch", s, "mm", "extrusion slot centres", f"{s} mm slot centres")
+    d.param("slot_pitch", s, "mm", "extrusion slot centres", f"{s} mm")
     b = bore(d, rng, screw, "simple")
     profile = f"{s}{s * rows}"
     holes = b.many(count_word(rng, slots * rows))

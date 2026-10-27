@@ -145,15 +145,18 @@ def _pocket(d: Draft, rng: random.Random, size: str, span_x: float, span_y: floa
     if pw < 15 or ph < 10 or thick < 6:
         return
     pw, ph = pick(rng, 15, pw), pick(rng, 10, ph)
-    depth = pick(rng, 2, thick - 2.5, 0.5)
     d.param("pocket_length", pw, "mm", "pocket length", f"{num(pw)} x {num(ph)} mm")
     d.param("pocket_width", ph, "mm", "pocket width", f"{num(pw)} x {num(ph)} mm")
+    d.sketches.append(rect_sketch("pocket_outline", "pocket_length", "pocket_width", plane="plate.top"))
+    cut = {"kind": "extrude", "id": "pocket", "name": "Pocket", "sketch": "pocket_outline", "mode": "cut"}
+    if rng.random() < 0.3:
+        d.say("Features", f"a central rectangular cut-out {num(pw)} x {num(ph)} mm through the plate")
+        d.features.append({**cut, "name": "Cut-out", "extent": "through_all"})
+        return
+    depth = pick(rng, 2, thick - 2.5, 0.5)
     d.param("pocket_depth", depth, "mm", "pocket depth", f"{num(depth)} mm deep")
     d.say("Features", f"a central rectangular pocket {num(pw)} x {num(ph)} mm, {num(depth)} mm deep, in the top face")
-    d.sketches.append(rect_sketch("pocket_outline", "pocket_length", "pocket_width", plane="plate.top"))
-    d.features.append(
-        {"kind": "extrude", "id": "pocket", "name": "Pocket", "sketch": "pocket_outline", "mode": "cut", "distance": "pocket_depth"}
-    )
+    d.features.append({**cut, "distance": "pocket_depth"})
     if rng.random() < 0.5:
         r = pick(rng, 1, min(4, ph / 4))
         d.param("pocket_corner_radius", r, "mm", "pocket inside corner radius", f"R{num(r)} inside corners")
