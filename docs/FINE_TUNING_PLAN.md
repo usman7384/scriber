@@ -132,9 +132,7 @@ Agent fixes found on the way. These are not data work; they get their own change
 - the loop should notice an identical repeated answer and re-sample;
 - the validator should flag a prompt quote that is not in the request.
 
-Open questions for the user:
-1. **Repeated gate runs.** M1 is 10 cases sampled once, and S1-4B lost by one case. Should each gate be run three times and the means compared?
-2. **A dev set.** Should we write a 20-case hand-written dev set (`evals/cases/dev.yaml`, new parts, never trained on) to pick the best of the 100-step checkpoints, keeping M1 and grounded as the gates only?
+Gate protocol (D-028): one run of each gate for the candidate and for the current default in the same session; the 20-case dev set (`evals/cases/dev.yaml`) picks the checkpoint.
 
 Rough cost: generator and pipeline code over a few sessions, one night of on-policy collection, one night of training, about an hour for export and gates.
 
