@@ -175,3 +175,21 @@ The tuned 4B is ahead on every gate in every run, so the S1 stop rule is now met
 The M1 passes differ by case:
 - the tuned model passes dp6 (2020 T-plate) and dp7 (angled bracket);
 - only the prompted model passes nema17, which the tuned model reads as an edge margin.
+
+`partwright-ir:4b-s1` became the default on this basis (D-027).
+
+## Rebuilding the default model on a fresh clone
+
+`partwright-ir:4b-s1` is not published, so it is built from the repo. It takes about 9 h on an RTX 3060 6 GB, needs about 20 GB free on the WSL disk while merging, and ends as a 2.8 GB GGUF. Same stack as the S0 run (`training/wsl/requirements.txt`), plus llama.cpp b11898 built with `cmake -B build -DGGML_CUDA=OFF && cmake --build build --target llama-quantize`.
+
+1. Data (Windows, Ollama running with `qwen3.5:4b`): `uv run partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b --out data/training/s1`. Paraphrases come from the local 4B, so the samples are close to ours, not byte-identical.
+2. Base weights in WSL: `Qwen/Qwen3.5-4B` from Hugging Face into `~/models/Qwen3.5-4B` (9.3 GB).
+3. Train (WSL, `~/partwright-train`):
+   `python train.py --data /mnt/d/Projects/bye-kyrall/data/training/s1/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s1-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
+4. Merge: `python merge.py --lora runs/s1-4b/lora --out runs/s1-4b/merged` (`training/wsl/merge.py`).
+5. Convert and quantise:
+   `python llama.cpp/convert_hf_to_gguf.py runs/s1-4b/merged --outtype bf16 --outfile runs/s1-4b/s1-4b-bf16.gguf`
+   `llama.cpp/build/bin/llama-quantize runs/s1-4b/s1-4b-bf16.gguf /mnt/d/Projects/bye-kyrall/data/training/s1-4b/run/partwright-ir-4b-s1-q4_k_m.gguf Q4_K_M`
+6. Import (Windows, from `training/wsl`): `ollama create partwright-ir:4b-s1 -f Modelfile.4b`.
+
+Check the result with `uv run partwright-evals evals/cases/m1.yaml --models partwright-ir:4b-s1` (5/10 expected). The LoRA adapter of the run recorded here (85 MB) is kept at `~/partwright-train/runs/s1-4b/lora` on the training laptop; with it, steps 1 and 3 can be skipped.
