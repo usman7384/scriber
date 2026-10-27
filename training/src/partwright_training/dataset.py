@@ -14,19 +14,20 @@ from typing import Any
 
 import yaml
 
-from partwright_agent import OllamaLLM
+from partwright_agent import OllamaLLM, misquoted
 from partwright_geometry import LocalGeometry
-from partwright_training.context import documented, grounding
+from partwright_training.context import documented, edited, grounding
 from partwright_training.families import FAMILIES
+from partwright_training.names import renamed
 from partwright_training.paraphrase import REGISTERS, Paraphraser, defaults, requote
 from partwright_training.render import Prompt, render
 from partwright_training.samples import Sample, Task, generate_sample, repair_sample, requirement_sample
 from partwright_training.spec import Spec
-from partwright_training.verify import failures
+from partwright_training.verify import design_failures, failures
 
 HELDOUT_OFFSET = 500_000
 PRIOR_OFFSET = 7_000_000
-DOCUMENTED, VAGUE, PARAPHRASED = 0.15, 0.15, 0.45
+DOCUMENTED, VAGUE, PARAPHRASED, EDIT = 0.15, 0.15, 0.45, 0.08
 EVAL_CASES = ("evals/cases/m1.yaml", "evals/cases/challenge.yaml", "evals/grounded/cases.yaml", "evals/cases/dev.yaml")
 
 
@@ -60,7 +61,7 @@ class Pool:
 def make(seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_rate: float, requirement_rate: float) -> Outcome:
     rng = random.Random(seed)
     family = list(FAMILIES)[seed % len(FAMILIES)]
-    spec = FAMILIES[family](rng)
+    spec = renamed(FAMILIES[family](rng), rng)
     prompt = render(spec, rng)
     out = Path(tempfile.mkdtemp(prefix="pw-ft-"))
     try:
@@ -68,16 +69,28 @@ def make(seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_
             problems = failures(spec, g, out / "verify")
             made: list[Sample] = []
             if samples and not problems:
-                task = variant(spec, prompt, rng, para, FAMILIES[family](random.Random(seed + PRIOR_OFFSET)), seed)
+                edit = edit_task(spec, rng, g, out) if not spec.exempt and rng.random() < EDIT else None
+                task = edit or variant(spec, prompt, rng, para, FAMILIES[family](random.Random(seed + PRIOR_OFFSET)), seed)
                 prompt = task.prompt
+                if bad := misquoted(task.design, prompt.text):
+                    return Outcome(spec, prompt, [f"misquoted: {bad[0][:100]}"], [])
                 made.append(generate_sample(spec, task))
-                if rng.random() < repair_rate and not spec.exempt and (repair := repair_sample(spec, task, g, out, rng)):
+                plain = edit is None and not spec.exempt
+                if plain and rng.random() < repair_rate and (repair := repair_sample(spec, task, g, out, rng)):
                     made.append(repair)
-                if rng.random() < requirement_rate and (req := requirement_sample(spec, prompt)):
+                if edit is None and rng.random() < requirement_rate and (req := requirement_sample(spec, prompt)):
                     made.append(req)
     finally:
         shutil.rmtree(out, ignore_errors=True)
     return Outcome(spec, prompt, problems, made)
+
+
+def edit_task(spec: Spec, rng: random.Random, g: LocalGeometry, out: Path) -> Task | None:
+    made = edited(spec, rng)
+    if made is None:
+        return None
+    prompt, context, design, checks = made
+    return None if design_failures(design, checks, spec.exempt, g, out / "edit") else Task(prompt, context, design)
 
 
 def variant(spec: Spec, prompt: Prompt, rng: random.Random, para: Paraphraser | None, prior: Spec, seed: int) -> Task:

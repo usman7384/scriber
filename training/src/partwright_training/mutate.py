@@ -118,7 +118,28 @@ def edge_too_close(d: Design, rng: random.Random) -> Design | None:
     return d
 
 
+def big_fillet(d: Design, rng: random.Random) -> Design | None:
+    radii = {f["radius"] for f in _features(d) if f["kind"] == "fillet" and isinstance(f["radius"], str)}
+    params = [p for p in d["params"] if p["name"] in radii]
+    if not params:
+        return None
+    p = rng.choice(params)
+    p["value"] = round(p["value"] * rng.choice((4, 6, 10)) + 5, 1)
+    return d
+
+
+def overlapping_holes(d: Design, rng: random.Random) -> Design | None:
+    listed = [h for h in _holes(d) if h["at"]["kind"] == "points"]
+    if not listed:
+        return None
+    points = rng.choice(listed)["at"]["points"]
+    points.append(list(points[0]))
+    return d
+
+
 MUTATIONS: dict[str, Mutation] = {
+    "big_fillet": big_fillet,
+    "overlapping_holes": overlapping_holes,
     "edge_too_close": edge_too_close,
     "drop_hole_plane": drop_hole_plane,
     "pattern_before_source": pattern_before_source,
@@ -133,8 +154,16 @@ MUTATIONS: dict[str, Mutation] = {
 }
 
 
-# failure modes from the replayed challenge runs (docs/agents/ir-v2.md) are tried first half the time
-FAILURES_SEEN = ("revolve_boss", "pattern_before_source", "port_outside", "word_in_number", "edge_too_close")
+# failure modes from the replayed challenge runs (docs/agents/ir-v2.md) and the S1 4B's M1 runs are tried first half the time
+FAILURES_SEEN = (
+    "revolve_boss",
+    "pattern_before_source",
+    "port_outside",
+    "word_in_number",
+    "edge_too_close",
+    "big_fillet",
+    "overlapping_holes",
+)
 
 
 def mutate(design: Design, rng: random.Random) -> tuple[str, str] | None:

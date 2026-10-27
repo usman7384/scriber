@@ -6,6 +6,7 @@ import pytest
 from partwright_geometry import LocalGeometry
 from partwright_ir import drop_unused_params, normalize, validate
 from partwright_training.families import FAMILIES
+from partwright_training.names import renamed
 from partwright_training.render import STYLES, render
 from partwright_training.verify import failures
 
@@ -56,3 +57,11 @@ def test_flanges_and_motor_plates_take_their_pattern_from_the_standard() -> None
     for s in looked_up:
         refs = {p.provenance.ref for p in s.design.params if p.provenance.source == "standard"}
         assert refs and all(r and r.split()[-1] in s.title for r in refs), (s.title, refs)
+
+
+@pytest.mark.parametrize("family", FAMILIES)
+def test_renamed_designs_stay_valid(family: str) -> None:
+    for seed in range(30):
+        spec = renamed(FAMILIES[family](random.Random(seed)), random.Random(seed), rate=1.0)
+        assert validate(spec.design) == [], (seed, validate(spec.design))
+        assert [p.name for p in drop_unused_params(normalize(spec.design)).params] == spec.params(), seed
