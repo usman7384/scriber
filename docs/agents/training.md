@@ -118,3 +118,20 @@ The M1 failures are the 0.8B's failure mode again, weaker: the model fits reques
 - `dp3-dn50-flange` uses 17.5 mm (M16 clearance) for the stated 18 mm holes.
 
 The low final loss (0.018) fits that reading: the data is learnable, but too narrow.
+
+## Agent fixes before S2 (2026-10-27, D-026)
+
+Re-sampling repeated answers, and treating prompt quotes that are not in the request as problems. The prompted 4B, rerun with both:
+
+| Gate | qwen3.5:4b before (`m1-20261026-222758`, `grounded-20261026-223718`) | qwen3.5:4b with the fixes (`m1-20261027-121813`, `grounded-20261027-122553`) |
+|---|---|---|
+| M1 | 5/10, 16/35, median 68 s | 4/10, 15/35, median 52 s |
+| Grounded, grounded mode | 1/10, 14/45 | 3/10, 25/45, 21/27 citations correct |
+| Grounded, prompt mode | 4/10, 20/45 | 4/10, 21/45 |
+
+Neither fix changed these numbers. The base 4B gave no repeated answers in either run, and the quote check fired only on g03 (attempts 2-4: a remark such as "Corrected coordinate to keep hole within bounds" written as a quote), which fails either way.
+- The M1 loss is dp7: its first answer differed from the earlier run at temperature 0, and with no measurable screw-hole requirement extracted, a hole-less third attempt was accepted.
+- The grounded gains (g02 and g04 pass in grounded mode) come from different first answers, not from repairs.
+- Both swings are run-to-run noise (KNOWN_ISSUES).
+
+The fixes target the tuned models: in the stored S1-4B attempts, 4 of the 5 never-built M1 cases repeated one answer on every repair, and 3 of its answers invented quotes. The baseline S2 has to beat is noisy, which argues for repeated gate runs (open question in `docs/FINE_TUNING_PLAN.md`).
