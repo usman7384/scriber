@@ -132,7 +132,7 @@ Re-sampling repeated answers, and treating prompt quotes that are not in the req
 Neither fix changed these numbers. The base 4B gave no repeated answers in either run, and the quote check fired only on g03 (attempts 2-4: a remark such as "Corrected coordinate to keep hole within bounds" written as a quote), which fails either way.
 - The M1 loss is dp7: its first answer differed from the earlier run at temperature 0, and with no measurable screw-hole requirement extracted, a hole-less third attempt was accepted.
 - The grounded gains (g02 and g04 pass in grounded mode) come from different first answers, not from repairs.
-- Both swings are run-to-run noise (KNOWN_ISSUES).
+- Both swings come from different first answers between days, not from the fixes (KNOWN_ISSUES).
 
 The fixes target the tuned models: in the stored S1-4B attempts, 4 of the 5 never-built M1 cases repeated one answer on every repair, and 3 of its answers invented quotes. The baseline S2 has to beat is noisy, which argues for repeated gate runs (open question in `docs/FINE_TUNING_PLAN.md`).
 
@@ -152,4 +152,26 @@ Where the fixes fired:
   - nema17's one invented quote was flagged on its first attempt.
   - No grounded-mode answer misquoted.
 
-On the same code, the tuned 4B is ahead on both gates: M1 by one case and one check, grounded by one case and eight checks, with every part built. The M1 margin is within the run-to-run noise measured today (KNOWN_ISSUES), so the default stays the prompted 4B until a repeated-run comparison settles it. The remaining M1 failures are the template-fitting ones S2 targets: 17.5 mm for 18 mm holes (dp3), a revolved adapter without its bolt pattern (dp2), and margin-placed grids (nema17, in2).
+On the same code, the tuned 4B is ahead on both gates: M1 by one case and one check, grounded by one case and eight checks, with every part built. The M1 margin is one case, so the three-run comparison below was run before any change of default. The remaining M1 failures are the template-fitting ones S2 targets: 17.5 mm for 18 mm holes (dp3), a revolved adapter without its bolt pattern (dp2), and margin-placed grids (nema17, in2).
+
+### Three runs per model on the same code (2026-10-27)
+
+Each model was run on M1 and the grounded set three times, back to back, with the fixes in place.
+
+| Gate | tuned 4B (`partwright-ir:4b-s1`) | prompted `qwen3.5:4b` |
+|---|---|---|
+| M1, fully passing | **5, 5, 5** of 10 | 4, 4, 4 |
+| M1, checks | **16, 15, 16** of 35 | 15, 15, 15 |
+| Grounded mode, fully passing | **4, 3, 4** of 10 | 3, 3, 3 |
+| Grounded mode, checks | **33, 27, 33** of 45; 10/10 built every run | 25, 25, 25; 7/10 built |
+| Prompt mode, fully passing | **5, 4, 5** of 10 | 4, 4, 4 |
+| Prompt mode, checks | **30, 34, 30** of 45 | 21, 21, 21 |
+| M1 median s | 68, 48, 79 | 52, 67, 69 |
+
+Runs: tuned `m1-20261027-130825`, `m1-20261027-135502`, `m1-20261027-150842`, `grounded-20261027-131956`, `grounded-20261027-140409`, `grounded-20261027-152238`; prompted `m1-20261027-121813`, `m1-20261027-142548`, `m1-20261027-154654`, `grounded-20261027-122553`, `grounded-20261027-143606`, `grounded-20261027-155749`.
+
+The tuned 4B is ahead on every gate in every run, so the S1 stop rule is now met on the same code. The repeats are near-identical (KNOWN_ISSUES), so they show the lead is not a one-off, not that it is statistically significant.
+
+The M1 passes differ by case:
+- the tuned model passes dp6 (2020 T-plate) and dp7 (angled bracket);
+- only the prompted model passes nema17, which the tuned model reads as an edge margin.
