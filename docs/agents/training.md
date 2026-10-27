@@ -193,3 +193,43 @@ The M1 passes differ by case:
 6. Import (Windows, from `training/wsl`): `ollama create partwright-ir:4b-s1 -f Modelfile.4b`.
 
 Check the result with `uv run partwright-evals evals/cases/m1.yaml --models partwright-ir:4b-s1` (5/10 expected). The LoRA adapter of the run recorded here (85 MB) is kept at `~/partwright-train/runs/s1-4b/lora` on the training laptop; with it, steps 1 and 3 can be skipped.
+
+## S2 data (built 2026-10-27, D-029)
+
+What changed in `training/` (S2 items in `docs/FINE_TUNING_PLAN.md`):
+
+| Item | Where | Done |
+|---|---|---|
+| 1. Holes by what the request says | `holes.py` (`bore`) in plates, blocks, brackets, profiles | about 60 % of holes by stated diameter, the rest by M-size or both |
+| 2. Placement by what the request says | `holes.py` (`corner_grid`), plate hole grids, PCD wording | margin, centre spacing, square, rows x columns |
+| 3. New outlines and families | `families/profiles.py` | flat L, T, U, gusset and slotted plates from a corner; rounded inside corners as paths |
+| 4. Standard parts | `families/standards.py` | EN 1092-1 flanges, NEMA 8/11/14 plates, 30 and 40 series extrusion plates; eval sizes left out |
+| 5. Names decoupled | `names.py` | parameters renamed to synonyms in about half the specs |
+| 6. Real repairs | `collect.py` (`partwright-collect`), `mutate.py` | first answers of a real model, plus fillet-too-large and overlapping-hole mutations |
+| 7. Honest provenance | `dataset.py` | samples whose target quotes words not in the request are dropped |
+| 8. Edits that keep values | `context.py` (`edited`) | previous design in context, one value changed, the rest carried over |
+
+The prompts also carry the agent's reference lines (EN 1092-1, NEMA, extrusions), as inference does; S1 prompts did not. Fix found on the way: the agent's extrusion lookup missed 30-series profiles such as 3030.
+
+Draft card (`partwright-dataset --seed 2 --specs 700`, no paraphrasing, `data/training/s2-draft`): 684 of 700 specs verified, 1,153 samples (679 generate, 307 repair, 167 requirement), 54 edits. The families are balanced at about 160 samples each.
+
+| Coverage | S1 | S2 draft |
+|---|---|---|
+| Holes by stated diameter | 22 % | 59 % |
+| Distinct titles | 50 | 85 |
+| Distinct parameter names | 57 | 126 |
+| Slot / path entities | 0 / 0 | 30 / 12 |
+| Through-all cuts, mirror patterns | 0 / 0 | 3 / 9 |
+| Eval sizes in prompts | — | 0 |
+
+Through-all cuts stay rare (about 0.4 %), below the plan's 2 %.
+
+The 8-gram leak guard dropped most L-plates at first, because one phrase ("mm apart on the centre line of the") matched dev case d07. The generators were reworded until leak drops fell to a handful of number-specific matches. For dev case d19, the dev wording was changed instead, because it repeated a long-standing generator phrase.
+
+Dev-set baseline, default `partwright-ir:4b-s1` (`dev-20261027-164441`): 7/20 cases, 43/95 checks. Its misses are the S2 targets: 11 mm holes made 12.2, 5 mm made 7, 18 mm made 17.5, and the wrong slot pitch.
+
+Next (overnight runs, laptop):
+1. `partwright-collect` on `qwen3.5:4b` and `partwright-ir:4b-s1`, 200 specs each.
+2. `partwright-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...` into `data/training/s2`.
+3. One night of QLoRA training on the 4B, then export.
+4. Gates: dev for the checkpoint; M1 and grounded against the default in the same session (D-028).
