@@ -1,0 +1,471 @@
+[
+  {
+    "id": "g01-sensor-plate",
+    "facts": {
+      "tp": 6,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 28.672
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 4,
+        "attempts": 1,
+        "seconds": 31.39
+      }
+    ]
+  },
+  {
+    "id": "g02-nema23-docx",
+    "facts": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 153.234
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 5,
+        "failed_checks": [
+          "47.14 square: hole centre distances [61.1, 86.41]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 4,
+        "attempts": 3,
+        "seconds": 151.703
+      }
+    ]
+  },
+  {
+    "id": "g03-hole-table-xlsx",
+    "facts": {
+      "tp": 13,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": false,
+        "checks_passed": 0,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 0,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 110.264
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 6,
+        "failed_checks": [
+          "ten 6.6 holes: 5 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6, 6.6]",
+          "rows 90 apart: hole centre distances [40.0, 80.0, 120.0, 160.0]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 3,
+        "attempts": 1,
+        "seconds": 35.172
+      }
+    ]
+  },
+  {
+    "id": "g04-enclosure-yaml",
+    "facts": {
+      "tp": 4,
+      "fp": 2,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 18.733
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 4,
+        "cited_correct": 4,
+        "attempts": 1,
+        "seconds": 22.734
+      }
+    ]
+  },
+  {
+    "id": "g05-flange-pdf",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 5,
+        "failed_checks": [
+          "six 9 mm bolt holes: 0 matching holes; all hole diameters [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 60.0]",
+          "PCD 110 across: hole centre distances []"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 32.655
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 5,
+        "failed_checks": [
+          "six 9 mm bolt holes: 0 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 60.0]",
+          "PCD 110 across: hole centre distances []"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 4,
+        "attempts": 4,
+        "seconds": 234.015
+      }
+    ]
+  },
+  {
+    "id": "g06-base-plate-txt",
+    "facts": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 6,
+        "checks_total": 6,
+        "failed_checks": [],
+        "rule_errors": [
+          "min_hole_edge_ratio: \u00d811 hole at (-60, -35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (-60, 35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (60, -35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)",
+          "min_hole_edge_ratio: \u00d811 hole at (60, 35, 5) is 15 mm from the outer edge; needs \u2265 16.5 mm (1.5 times \u00d8)"
+        ],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 26.781
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 4,
+        "checks_total": 6,
+        "failed_checks": [
+          "120 apart in X: hole centre distances [67.0, 117.0, 134.83]",
+          "70 apart in Y: hole centre distances [67.0, 117.0, 134.83]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 4,
+        "attempts": 3,
+        "seconds": 135.296
+      }
+    ]
+  },
+  {
+    "id": "g07-spacer-csv",
+    "facts": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": null,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 17.922
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 0,
+        "checks_total": 3,
+        "failed_checks": [
+          "OD 30: bounding box 10.00 x 10.00 x 25.00 mm",
+          "length 20: bounding box 10.00 x 10.00 x 25.00 mm",
+          "bore 12.5: 0 matching holes; all hole diameters [8.0]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 3,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 15.234
+      }
+    ]
+  },
+  {
+    "id": "g08-milled-pocket",
+    "facts": {
+      "tp": 7,
+      "fp": 1,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 7,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 30.858
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 3,
+        "checks_total": 3,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 6,
+        "cited": 6,
+        "cited_correct": 6,
+        "attempts": 4,
+        "seconds": 195.031
+      }
+    ]
+  },
+  {
+    "id": "g09-previous-step",
+    "facts": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 4,
+        "failed_checks": [
+          "thickness 6 kept: bounding box 150.00 x 70.00 x 10.00 mm",
+          "four 6.6 holes kept: 0 matching holes; all hole diameters [4.5, 4.5, 4.5, 4.5]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 4,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 4,
+        "seconds": 85.266
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 2,
+        "checks_total": 4,
+        "failed_checks": [
+          "thickness 6 kept: bounding box 150.00 x 70.00 x 10.00 mm",
+          "four 6.6 holes kept: 0 matching holes; all hole diameters [4.5, 4.5, 4.5, 4.5]"
+        ],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 1,
+        "attempts": 1,
+        "seconds": 38.359
+      }
+    ]
+  },
+  {
+    "id": "g10-fdm-bracket",
+    "facts": {
+      "tp": 5,
+      "fp": 0,
+      "fn": 0
+    },
+    "rules": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 1
+    },
+    "retrieval_recall": 1.0,
+    "modes": [
+      {
+        "mode": "prompt",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 0,
+        "cited_correct": 0,
+        "attempts": 1,
+        "seconds": 24.219
+      },
+      {
+        "mode": "grounded",
+        "built": true,
+        "checks_passed": 5,
+        "checks_total": 5,
+        "failed_checks": [],
+        "rule_errors": [],
+        "rule_warnings": 0,
+        "params": 5,
+        "cited": 5,
+        "cited_correct": 4,
+        "attempts": 1,
+        "seconds": 33.155
+      }
+    ]
+  }
+]
