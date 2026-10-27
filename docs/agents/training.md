@@ -135,3 +135,21 @@ Neither fix changed these numbers. The base 4B gave no repeated answers in eithe
 - Both swings are run-to-run noise (KNOWN_ISSUES).
 
 The fixes target the tuned models: in the stored S1-4B attempts, 4 of the 5 never-built M1 cases repeated one answer on every repair, and 3 of its answers invented quotes. The baseline S2 has to beat is noisy, which argues for repeated gate runs (open question in `docs/FINE_TUNING_PLAN.md`).
+
+The tuned 4B with the same fixes (`m1-20261027-130825`, `grounded-20261027-131956`), same code as the prompted rerun:
+
+| Gate | tuned 4B before the fixes | tuned 4B with the fixes | prompted 4B with the fixes |
+|---|---|---|---|
+| M1 | 4/10, 13/35, 6/10 built | **5/10, 16/35**, 7/10 built, median 68 s | 4/10, 15/35, 5/10 built |
+| Grounded, grounded mode | 4/10, 25/45, 8/10 built | **4/10, 33/45, 10/10 built**, 34/45 citations correct | 3/10, 25/45, 7/10 built |
+| Grounded, prompt mode | 5/10, 35/45 | 5/10, 30/45, 8/10 built | 4/10, 21/45 |
+
+Where the fixes fired:
+- **Repeats:** none remain on M1. Before the fixes, dp21, dp6, in2 and nema17 each repeated one answer through all four attempts; now every attempt is a different answer, and dp6 (the 2020 T-plate) passes after one repair. In grounded, one repeat survived (g05, 3 distinct answers in 4 attempts).
+- **Quotes:**
+  - dp3 dropped its quoted standard values ("165 mm", "125 mm") over three repairs.
+  - dp2 kept inventing quotes.
+  - nema17's one invented quote was flagged on its first attempt.
+  - No grounded-mode answer misquoted.
+
+On the same code, the tuned 4B is ahead on both gates: M1 by one case and one check, grounded by one case and eight checks, with every part built. The M1 margin is within the run-to-run noise measured today (KNOWN_ISSUES), so the default stays the prompted 4B until a repeated-run comparison settles it. The remaining M1 failures are the template-fitting ones S2 targets: 17.5 mm for 18 mm holes (dp3), a revolved adapter without its bolt pattern (dp2), and margin-placed grids (nema17, in2).
