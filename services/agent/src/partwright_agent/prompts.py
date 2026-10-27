@@ -270,9 +270,8 @@ def requirement_messages(request: str) -> list[tuple[str, str]]:
 MAX_QUOTE = 12000
 
 
-def repair_message(previous: str, problems: list[str], unchanged: bool) -> str:
+def repair_message(previous: str, problems: list[str]) -> str:
     listed = "\n".join(f"- {p}" for p in problems)
-    again = "This design was already returned once with the same problems; change the parts that cause them.\n" if unchanged else ""
     if not _is_json(previous) or len(previous) > MAX_QUOTE:
         reason = "was cut off before it was complete JSON" if not _is_json(previous) else f"was {len(previous)} characters long"
         return (
@@ -280,8 +279,16 @@ def repair_message(previous: str, problems: list[str], unchanged: bool) -> str:
             "one hole feature per group of identical holes, and only the features the request asks for."
         )
     return (
-        f"A first attempt at this design:\n{previous}\n\n{again}It has these problems:\n{listed}\n"
+        f"A first attempt at this design:\n{previous}\n\nIt has these problems:\n{listed}\n"
         "Write the complete corrected design as JSON. Keep everything that was right."
+    )
+
+
+def resample_message(problems: list[str]) -> str:
+    listed = "\n".join(f"- {p}" for p in problems)
+    return (
+        f"Earlier attempts kept returning the same design, which has these problems:\n{listed}\n"
+        "Write a new design for the request as JSON, built differently where those problems come from."
     )
 
 

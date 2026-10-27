@@ -65,7 +65,7 @@ def repair_sample(spec: Spec, task: Task, geometry: LocalGeometry, out_dir: Path
         build = partial(geometry.build, rules=RULES)
         problems, _, _, _ = evaluate(raw, Design.model_validate_json, list(spec.checks), build, out_dir / f"repair_{attempt}")
         if problems:
-            repair = repair_message(raw, problems, unchanged=False)
+            repair = repair_message(raw, problems)
             messages = (*task.messages(), ("user", repair), ("assistant", task.answer()))
             return Sample("repair", spec.family, task.prompt.style, name, messages)
     return None

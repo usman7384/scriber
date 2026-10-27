@@ -1,6 +1,7 @@
 import re
 
 from partwright_agent.requirements import Requirement
+from partwright_ir import Design
 
 NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "twelve": 12}
 
@@ -22,6 +23,20 @@ def measurable(reqs: list[Requirement], text: str) -> list[Requirement]:
         for r in reqs
         if not (stock and r.kind == "extent" and "thick" in r.description.lower()) and (r.kind != "wall" or ROUND.search(text))
     ]
+
+
+def misquoted(design: Design, text: str) -> list[str]:
+    said = _squash(text)
+    return [
+        f"parameter {p.name!r} quotes {p.provenance.quote!r}, which is not in the request; "
+        'quote the request\'s exact words, or use source "default" for a value you chose'
+        for p in design.params
+        if p.provenance.source == "prompt" and p.provenance.quote and _squash(p.provenance.quote) not in said
+    ]
+
+
+def _squash(text: str) -> str:
+    return re.sub(r"\s+", "", text.lower().replace("\N{MULTIPLICATION SIGN}", "x"))
 
 
 def _is_grounded(r: Requirement, numbers: set[float], text: str) -> bool:

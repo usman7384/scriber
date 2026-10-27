@@ -73,7 +73,7 @@ def score(case_id: str, attempt: int) -> None:
         geometry.close()
     (d / f"result_{attempt}.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     if problems and attempt < MAX_ATTEMPTS:
-        messages = [*task(case_id), ("user", repair_message(raw, problems, unchanged=False))]
+        messages = [*task(case_id), ("user", repair_message(raw, problems))]
         (d / f"prompt_{attempt + 1}.md").write_text(render(messages, json_schema(), d / f"answer_{attempt + 1}.json"), encoding="utf-8")
     status = "done" if not problems else ("retry" if attempt < MAX_ATTEMPTS else "failed")
     print(case_id, attempt, status, "; ".join(problems)[:300])

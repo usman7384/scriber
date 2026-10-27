@@ -42,7 +42,7 @@ def test_generate_streams_steps_then_done(api: Api) -> None:
 
 def test_failed_generation_ends_with_a_failed_event(api: Api) -> None:
     project = api.project()
-    job = api.generate(project, REQS, *["not json"] * 4)
+    job = api.generate(project, REQS, *[f"not json {i}" for i in range(4)])
     assert job["status"] == "failed" and "gave up" in job["error"]
     with api.client.stream("GET", f"/jobs/{job['id']}/events") as response:
         assert sse(list(response.iter_lines()))[-1][0] == "failed"

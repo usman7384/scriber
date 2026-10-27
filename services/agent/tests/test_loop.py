@@ -89,13 +89,13 @@ def test_unmet_requirement_triggers_repair(tmp_path: Path) -> None:
 
 
 def test_kernel_error_triggers_repair(tmp_path: Path) -> None:
-    steps = list(generate("bracket 80 x 60, 4x M6", FakeLLM([REQS, design(), design()]), FakeGeometry(fail_first=True), tmp_path))
+    steps = list(generate("bracket 80 x 60, 4x M6", FakeLLM([REQS, design(), design(), design()]), FakeGeometry(fail_first=True), tmp_path))
     assert "CAD kernel error (kernel)" in steps[2].message
     assert steps[-1].kind == "done"
 
 
 def test_gives_up_after_max_repairs(tmp_path: Path) -> None:
-    llm = FakeLLM([REQS, "not json", "not json", "not json"])
+    llm = FakeLLM([REQS, "not json", "still not json", "not json either"])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, max_repairs=2))
     assert steps[-1].kind == "failed"
     assert steps[-1].result and steps[-1].result.attempts == 3
@@ -121,7 +121,7 @@ def test_finding_suggestion_reaches_the_repair_prompt(tmp_path: Path) -> None:
             bad = Finding(rule_id="hole-edge", severity="error", message="hole too close", part="p", suggestion="move it to >= 15 mm")
             return art.model_copy(update={"findings": [bad]})
 
-    llm = FakeLLM([REQS, design(), design()])
+    llm = FakeLLM([REQS, design(), design(), design()])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, EdgeGeometry(), tmp_path))
     assert "Fix: move it to >= 15 mm." in llm.calls[-1][-1].content
     assert steps[-1].kind == "done"
@@ -142,4 +142,27 @@ def test_cut_off_answer_is_not_quoted_back(tmp_path: Path) -> None:
     repair = llm.calls[-1][-1].content
     assert "was cut off before it was complete JSON" in repair
     assert '"params": [' not in repair
+    assert steps[-1].kind == "done"
+
+
+def test_repeated_answer_is_resampled_without_quoting_it(tmp_path: Path) -> None:
+    short = design(length=70)
+    llm = FakeLLM([REQS, short, short, design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
+    resample = llm.calls[-1][-1].content
+    assert "kept returning the same design" in resample and "requirement not met: plate 80 mm" in resample
+    assert short not in resample
+    assert "re-sampled" in steps[-2].message
+    assert steps[-1].kind == "done" and steps[-1].result and steps[-1].result.attempts == 2
+
+
+def test_quote_not_in_the_request_is_repaired(tmp_path: Path) -> None:
+    def quoting(quote: str) -> str:
+        d = json.loads(design())
+        d["params"][0]["provenance"] = {"source": "prompt", "quote": quote}
+        return json.dumps(d)
+
+    llm = FakeLLM([REQS, quoting("80 mm long"), quoting("80 X 60")])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
+    assert "parameter 'length' quotes '80 mm long', which is not in the request" in steps[2].message
     assert steps[-1].kind == "done"
