@@ -7,6 +7,7 @@ llm:
     qwen3.5:0.8b-q8_0: {num_ctx: 8192, think: false}
     partwright-ir:0.8b-s0b: {num_ctx: 8192, think: false, few_shot: false}
     partwright-ir:0.8b-s1: {num_ctx: 8192, think: false, few_shot: false}
+    partwright-ir:4b-s1: {num_ctx: 16384, think: false, few_shot: false}
     qwen2.5-coder:7b-instruct-q4_K_M: {num_ctx: 8192}
     # hosted reference models for comparison runs only (need ANTHROPIC_API_KEY or `ant auth login`; never the default)
     claude-sonnet-5-5: {provider: anthropic, effort: high}
