@@ -54,6 +54,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | POST | /models/{id}/suggestions/{sid}/ignore | | 204 |
 | GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir&version=n | | file |
 | GET | /models/{id}/components?version=n | | [Component]: part id, name, material, parent part and joint |
+| POST | /models/{id}/face-driver | {point: [x,y,z], normal: [x,y,z], version?} | {part, feature, param, rate}: the parameter that moves the picked planar face; 404 when none does |
 | GET | /projects/{id}/jobs?active=true | | [Job] newest first; `active` keeps queued and running |
 | GET | /jobs/{id} | | Job |
 | GET | /jobs/{id}/events | | SSE: `event: step` data Step; `event: done` data Job; `event: failed` data Job |
@@ -75,5 +76,6 @@ Under `/api/v1`, with the same token auth: `POST /api/v1/generate {prompt, image
 - One GPU job runs at a time (generate, refine, edit); ingest and params jobs run beside it. Jobs survive an API restart as `failed` with error "interrupted".
 - `PATCH /models/{id}/params` rebuilds without the LLM and should finish in about a second for small parts once the CAD worker is warm.
 - Successful versions are recorded in the project knowledge graph. A context file change that makes models stale emits `version.stale` on hooks and starts a regeneration job per stale model: parameters that cite the changed fact take the new value without the LLM, otherwise the model refines the design with the change described (circular design).
+- `face-driver` matches the picked point (CAD mm) and outward normal against the cap planes of extrudes sketched on XY/XZ/YZ or an unrotated datum, within 0.01 mm. `rate` is mm the face moves along its normal per unit of `param`, so offsetting the face by `t` mm sets `param += t / rate`. Faces of parts placed by a joint, side walls and faces of other features have no driver yet.
 - `Step.progress` is a percentage, monotonic per job. `Version.inputs` lists the prompt and each file with role `used` or `unused`. PNG and JPG attachments are sent to the model as images on generate and refine; `context_ids` pass the selected files' facts.
 - Errors: `{"detail": "..."}` with 400 (bad input), 404, 409 (job still running), 422 (validation), 503 (Ollama unreachable).
