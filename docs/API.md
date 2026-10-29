@@ -39,7 +39,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | GET | /projects/{id}/rules | | [Rule] |
 | PUT | /projects/{id}/rules/{rule_id} | Rule | Rule |
 | GET | /projects/{id}/graph | | GraphView |
-| POST | /projects/{id}/generate | {prompt, process?: Process, context_ids?: [file_id], attachments?: [file_id]} | Job |
+| POST | /projects/{id}/generate | {prompt, process?: Process, context_ids?: [file_id], attachments?: [file_id], thinking?: low\|high} | Job |
 | GET | /projects/{id}/models | | [Model] |
 | GET | /models/{id} | | Model + latest Version |
 | GET | /models/{id}/versions | | [Version] |
@@ -47,6 +47,11 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | POST | /models/{id}/versions/{n}/restore | | Version (new number) |
 | POST | /models/{id}/refine | {instruction, target?: part_id, process?} | Job |
 | PATCH | /models/{id}/params | {values: {name: number}} | Job (fast path: no LLM) |
+| POST | /models/{id}/variants | {instruction} or {param, values: [number]} | [Job], one new model per value (origin `variant`) |
+| POST | /models/{id}/suggestions | | [Suggestion {id, target, change, rationale}] |
+| GET | /models/{id}/suggestions | | [Suggestion] |
+| POST | /models/{id}/suggestions/{sid}/accept | | Job (rebuild, origin `suggestion`) |
+| POST | /models/{id}/suggestions/{sid}/ignore | | 204 |
 | GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir&version=n | | file |
 | GET | /projects/{id}/jobs?active=true | | [Job] newest first; `active` keeps queued and running |
 | GET | /jobs/{id} | | Job |
@@ -68,5 +73,6 @@ Under `/api/v1`, with the same token auth: `POST /api/v1/generate {prompt, image
 
 - One GPU job runs at a time (generate, refine, edit); ingest and params jobs run beside it. Jobs survive an API restart as `failed` with error "interrupted".
 - `PATCH /models/{id}/params` rebuilds without the LLM and should finish in about a second for small parts once the CAD worker is warm.
-- Successful versions are recorded in the project knowledge graph. A context file change that makes models stale emits `version.stale` on hooks (circular design).
+- Successful versions are recorded in the project knowledge graph. A context file change that makes models stale emits `version.stale` on hooks and starts a regeneration job per stale model: parameters that cite the changed fact take the new value without the LLM, otherwise the model refines the design with the change described (circular design).
+- `Step.progress` is a percentage, monotonic per job. `Version.inputs` lists the prompt and each file with role `used` or `unused`. PNG and JPG attachments are sent to the model as images on generate and refine; `context_ids` pass the selected files' facts.
 - Errors: `{"detail": "..."}` with 400 (bad input), 404, 409 (job still running), 422 (validation), 503 (Ollama unreachable).
