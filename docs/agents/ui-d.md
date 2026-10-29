@@ -25,4 +25,4 @@ Spec: [`docs/design/UI_DIRECTION.md`](../design/UI_DIRECTION.md) §2, §3 (Sourc
 ## Not done
 
 - Status glyphs on part cards (mockup) need a per-model check summary, an API gap listed in §8; one version request per card was not worth it.
-- The parity and screenshot runs here hit intermittent "Unable to capture screenshot" errors from Chromium while other worktrees ran Playwright at the same time; each affected spec passed when rerun alone.
+- Parallel worktrees share port 5199 and `reuseExistingServer` is on outside CI, so a local run can test another worktree's dev server; runs here used a private port. Under that load WP-13 (about 20 s alone) sometimes runs past its 60 s budget, and Chromium sometimes fails a screenshot; every spec passed alone and the whole parity suite passed with two workers.
