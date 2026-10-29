@@ -1,0 +1,14 @@
+{
+  "row": "EX-4",
+  "passed": false,
+  "measured": {
+    "bundle_files": "design.json, features.json, manifest.json, model.py, model.step, params.json, sketches.json",
+    "features": "Base plate <- plate_sketch, XY, Load boss <- boss_sketch, plate.end, Mounting holes <- plate.end",
+    "sketch_constraints": "plate_sketch: 28, boss_sketch: 3",
+    "sketch_dof": "plate_sketch: 0, boss_sketch: 0",
+    "volume_drift": 0.0,
+    "bundle_ok": true,
+    "fcstd": "blocked: FreeCAD is not installed"
+  },
+  "note": "IR bundle half only; the FreeCAD .FCStd half and FeatureScript export are not built"
+}

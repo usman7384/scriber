@@ -1,0 +1,13 @@
+{
+  "row": "PR-8",
+  "passed": true,
+  "measured": {
+    "cog_shift_x": -3.862,
+    "predicted_shift_x": -3.862,
+    "shift_error_mm": 2.6645766811729078e-15,
+    "frame_hole_moves_x": "-20, -20, -20, -20",
+    "holes_aligned": true,
+    "broken_mates": ""
+  },
+  "note": ""
+}

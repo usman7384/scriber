@@ -1,0 +1,11 @@
+{
+  "row": "AS-2",
+  "passed": true,
+  "measured": {
+    "mates_in_ir": 9,
+    "step_components": 10,
+    "ir_reload_error": 0.0,
+    "step_reload_error": 0.0
+  },
+  "note": "mates travel in our IR bundle; STEP carries the product structure and placements"
+}

@@ -1,0 +1,17 @@
+{
+  "row": "IN-8",
+  "passed": true,
+  "measured": {
+    "to_valid": true,
+    "to_hausdorff_mm": 0.4974,
+    "to_hausdorff_pct_diag": 0.3653,
+    "to_hole_fit_mm": 0.0,
+    "scan_valid": true,
+    "scan_hausdorff_mm": 0.503,
+    "scan_hausdorff_pct_diag": 0.4035,
+    "scan_vs_nominal_pct_diag": 0.2155,
+    "scan_hole_fit_mm": 0.0077,
+    "scan_holes": 4
+  },
+  "note": ""
+}

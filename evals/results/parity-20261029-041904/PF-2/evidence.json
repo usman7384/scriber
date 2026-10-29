@@ -1,0 +1,9 @@
+{
+  "row": "PF-2",
+  "passed": true,
+  "measured": {
+    "bwb_xml_s": 3.47,
+    "mission_yaml_s": 3.73
+  },
+  "note": "input file to exported, checked part; the aircraft template needs no model"
+}

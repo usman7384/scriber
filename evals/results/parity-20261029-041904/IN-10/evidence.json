@@ -1,0 +1,15 @@
+{
+  "row": "IN-10",
+  "passed": true,
+  "measured": {
+    "step_schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF",
+    "step_bodies": "gearbox/base_plate, gearbox/shaft_assembly/shaft, gearbox/shaft_assembly/bearing, gearbox/cover",
+    "onshape_features": "Sketch 1 (newSketch), Base plate (extrude), Sketch 2 (newSketch), Bolt holes (extrude), Sketch 3 (newSketch), Boss (extrude), Sketch 4 (newSketch), Pin extrude (extrude), Mate connector 1 (mateConnector), Fillet 1 (fillet)",
+    "mapped": "8/10",
+    "ir_features": "Base plate, Bolt holes, Boss, Pin extrude",
+    "onshape_bodies": "Bracket, Pin",
+    "body_volume_drift": 4.8964420543244944e-15,
+    "docs_out_of_scope": "CATIA, NX, SolidWorks, Creo, Inventor, Parasolid"
+  },
+  "note": "Onshape API replayed from a recorded mock (no account); STEP fixtures written by OCCT"
+}

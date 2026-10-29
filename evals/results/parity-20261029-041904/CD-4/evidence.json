@@ -1,0 +1,13 @@
+{
+  "row": "CD-4",
+  "passed": false,
+  "measured": {
+    "to_valid": true,
+    "to_hausdorff_mm": 0.4974,
+    "to_hausdorff_pct_diag": 0.3653,
+    "to_hole_fit_mm": 0.0,
+    "reconstruction_passed": true,
+    "assembly": "pending"
+  },
+  "note": "reconstruction half only; replacing the part in an assembly with its mates kept needs the M4 assembly IR, not on this branch"
+}

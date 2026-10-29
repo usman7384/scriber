@@ -1,0 +1,18 @@
+{
+  "row": "GE-12",
+  "passed": true,
+  "measured": {
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF",
+    "step_face_groups": "mount_face, bolt_bores, load_face",
+    "material": "6061 aluminium",
+    "density_g_cm3": 2.7,
+    "mount_area": 4641.692,
+    "mount_normal": "(0.0, 0.0, -1.0)",
+    "load_area": 314.159,
+    "load_z": 21.0,
+    "bolt_bore_faces": 4,
+    "bundle_face_groups": "mount_face, load_face, bolt_bores",
+    "bundle_material": "6061 aluminium"
+  },
+  "note": "face names are STEP AP242 named sub-shapes; material is an AP214/AP242 material property"
+}

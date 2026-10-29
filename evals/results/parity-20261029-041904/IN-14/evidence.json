@@ -1,0 +1,23 @@
+{
+  "row": "IN-14",
+  "passed": true,
+  "measured": {
+    "solids": 1,
+    "valid": true,
+    "span": 1188.0,
+    "root_chord": 237.121,
+    "tip_chord": 106.704,
+    "sweep_deg": 25.001,
+    "dihedral_deg": 2.5,
+    "twist_deg": 5.142,
+    "airfoil_deviation_pct_chord": 0.0064,
+    "config": "blended_wing_body",
+    "params_linked": "11/11",
+    "mtom_g": 1040.9,
+    "battery_wh": 8.7,
+    "power_w": 26.1,
+    "body_bay_l": 1.143,
+    "required_bay_l": 1.058
+  },
+  "note": "params and config cite mission fields; sweep, dihedral, fin sweep via the config"
+}

@@ -1,0 +1,13 @@
+{
+  "row": "AS-4",
+  "passed": true,
+  "measured": {
+    "mass_g": 196.2701,
+    "hand_mass_g": 196.2701,
+    "mass_error_pct": 0.0,
+    "cog": "(1.931, -0.0, 3.2097)",
+    "hand_cog": "(1.931, 0.0, 3.2097)",
+    "cog_error_pct": 2.1373739074871155e-14
+  },
+  "note": "CoG error relative to the hand-calculated CoG distance"
+}

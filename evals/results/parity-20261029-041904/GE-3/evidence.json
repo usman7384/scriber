@@ -1,0 +1,16 @@
+{
+  "row": "GE-3",
+  "passed": false,
+  "measured": {
+    "designs": 780,
+    "sketches": 914,
+    "fully_constrained": 912,
+    "unsupported": 0,
+    "max_solve_error": 0.04116305363741329,
+    "constraints": 11658,
+    "driven_by_ir_expressions": 4405,
+    "plain_positions": 6,
+    "bundle_sketches": "plate_sketch: 28 constraints, dof 0, boss_sketch: 3 constraints, dof 0"
+  },
+  "note": "every IR design in the repo: worked examples, fixtures and live-run outputs; FreeCAD Sketcher replay not run"
+}

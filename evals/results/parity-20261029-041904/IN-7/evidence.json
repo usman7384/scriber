@@ -1,0 +1,14 @@
+{
+  "row": "IN-7",
+  "passed": true,
+  "measured": {
+    "valid": true,
+    "hausdorff_mm": 0.0,
+    "hausdorff_pct_diag": 0.0,
+    "sketch_features": "body, boss_1, bore",
+    "outer_diameter": 120.0,
+    "edited_od": 130.0,
+    "edited_valid": true
+  },
+  "note": ""
+}

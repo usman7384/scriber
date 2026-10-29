@@ -1,0 +1,9 @@
+{
+  "row": "PF-5",
+  "passed": true,
+  "measured": {
+    "seconds": 0.23,
+    "valid": true
+  },
+  "note": "reconstruct + rebuild of the IN-7 flange STL"
+}
