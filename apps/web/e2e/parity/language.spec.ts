@@ -44,11 +44,13 @@ async function tour(page: Page, row: { shot: (n: string) => Promise<void> }, lan
   for (const path of ["/", "/library", "/explore", "/settings", "/help", "/nowhere"]) {
     await page.goto(path);
     await expect(page.locator("main")).not.toContainText(t.loading);
+    await expect(page.locator("main")).not.toBeEmpty();
     await grab(path === "/" ? "projects" : path.slice(1));
   }
   await page.goto("/");
+  await expect(page.getByRole("list", { name: t.gallery.region })).toBeVisible();
   await page.keyboard.press("Control+k");
-  await expect(page.getByRole("option").first()).toBeVisible();
+  await expect(page.getByRole("listbox").getByRole("option").first()).toBeVisible();
   await grab("palette");
   await page.keyboard.press("Escape");
   await page.goto("/p/p1?context=f1");

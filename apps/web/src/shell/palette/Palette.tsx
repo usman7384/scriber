@@ -182,7 +182,7 @@ function PaletteBody({ initial, close }: { initial: string; close: () => void })
                       {range}
                     </span>
                   )}
-                  {shortcut && <Kbd keys={keyCaps(shortcut, mac)} />}
+                  {shortcut && <Kbd keys={keyCaps(shortcut, mac, t.agent.command.ctrl)} />}
                 </div>
               );
             })}
@@ -212,7 +212,16 @@ export function Palette({ query, onClose }: { query: string | undefined; onClose
       onClose={() => open && onClose()}
       onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}
     >
-      {open && <PaletteBody initial={query} close={() => ref.current?.close()} />}
+      {open && (
+        <PaletteBody
+          initial={query}
+          // The close event comes a task later; a Ctrl+K before it must open the palette, not toggle it shut.
+          close={() => {
+            ref.current?.close();
+            onClose();
+          }}
+        />
+      )}
     </dialog>
   );
 }

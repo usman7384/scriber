@@ -14,10 +14,9 @@ const routes = [
   "/nowhere",
 ];
 
-// Known: the legacy context files table, which package D replaces with the Sources sheet.
 const sizes = [
-  { width: 390, height: 844, legacy: ["/p/p1/context"] },
-  { width: 1440, height: 900, legacy: [] },
+  { width: 390, height: 844 },
+  { width: 1440, height: 900 },
 ];
 
 const overflow = (page: Page) =>
@@ -35,10 +34,10 @@ for (const size of sizes)
       await page.goto(path);
       await expect(page.locator("main")).not.toContainText("Loading…");
       if (path.startsWith("/m/") || path.startsWith("/shared/"))
-        await expect(page.getByLabel("Bounding box")).toBeVisible();
+        await expect(page.locator(".viewer canvas")).toBeVisible();
       if ((await overflow(page)) > 0) wide.push(path);
       const name = `${size.width}${path.replaceAll("/", "-") || "-home"}.png`;
       await info.attach(name, { body: await page.screenshot(), contentType: "image/png" });
     }
-    expect(wide).toEqual(size.legacy);
+    expect(wide).toEqual([]);
   });

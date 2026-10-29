@@ -1,6 +1,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { useT } from "../i18n";
+import { SearchButton } from "../shell/SearchButton";
 import { IconButton } from "../ui/IconButton";
 import { Icon } from "../ui/icons";
 import "./workspace.css";
@@ -19,7 +20,7 @@ interface Props {
   viewport: ReactNode;
   inspector: ReactNode;
   rail?: ReactNode;
-  // Slots for the agent I/O package: stream / status line, command bar, version scrubber.
+  // The agent I/O: stream and status line, command bar, version scrubber.
   stream?: ReactNode;
   command?: ReactNode;
   versions?: ReactNode;
@@ -47,7 +48,7 @@ export function Workspace(p: Props) {
       data-tab={tab}
     >
       <header className="ws-top editor-head">
-        <Link to="/" className="ws-mark" aria-label={e.home}>
+        <Link to="/" className="ws-mark" aria-label={t.nav.home}>
           <Icon name="mark" size={18} />
         </Link>
         {p.project && (
@@ -60,6 +61,7 @@ export function Workspace(p: Props) {
         <span className="badge ws-version mono">v{p.version}</span>
         {p.badges}
         <span className="ws-spacer" />
+        <SearchButton label={t.nav.searchOrRun} />
         {p.actions}
       </header>
       {p.rail && (
@@ -127,14 +129,14 @@ export function Workspace(p: Props) {
         {p.versions && (
           <>
             <div className="ws-stream" data-pane="activity">
-              {p.stream ?? <p className="ws-muted ws-mobile">{e.noActivity}</p>}
+              {p.stream}
             </div>
-            <div className="ws-versions ws-float" data-pane="versions">
+            <div className="ws-versions" data-pane="versions">
               {p.versions}
             </div>
           </>
         )}
-        {p.command && <div className="ws-command ws-float">{p.command}</div>}
+        {p.command && <div className="ws-command">{p.command}</div>}
       </div>
     </div>
   );
