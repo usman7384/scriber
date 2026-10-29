@@ -1,0 +1,15 @@
+{
+  "row": "WP-13",
+  "passed": true,
+  "measured": {
+    "table_strings": 198,
+    "language_dependent_strings": 191,
+    "shown_in_en_tour": 140,
+    "their_german_shown_in_de_tour": 140,
+    "english_left_in_de_tour": 0,
+    "untranslated": "",
+    "persisted": "{\"select\":\"de\",\"html_lang\":\"de\",\"stored\":\"de\"}",
+    "pages": "projects, library, settings, help, nowhere, project, context, editor, shared"
+  },
+  "note": "Own typed message table (src/i18n.ts, DE typed as EN so no key can be missing). The check walks every text node and aria-label, placeholder, title and alt on nine pages, hidden dialogs and tooltips included. API content (titles, findings, file names, example prompts) is not translated."
+}

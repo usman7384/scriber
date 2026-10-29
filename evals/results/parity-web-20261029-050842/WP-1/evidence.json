@@ -1,0 +1,17 @@
+{
+  "row": "WP-1",
+  "passed": true,
+  "measured": {
+    "glb_bbox": "120.0 mm × 80.0 mm × 6.0 mm",
+    "top_forward": "0, 0, -1",
+    "top_up": "0, 1, 0",
+    "front_forward": "0, 1, 0",
+    "front_up": "0, 0, 1",
+    "right_forward": "-1, 0, 0",
+    "right_up": "0, 0, 1",
+    "orbit_angle_deg": 40.9,
+    "orbit_radius_before_mm": 300,
+    "orbit_radius_after_mm": 300
+  },
+  "note": "Mock API serves the M2 sensor-plate GLB; camera vectors read from the live three.js camera."
+}

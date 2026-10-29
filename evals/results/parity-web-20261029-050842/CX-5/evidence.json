@@ -1,0 +1,14 @@
+{
+  "row": "CX-5",
+  "passed": true,
+  "measured": {
+    "api_entities": 8,
+    "api_relations": 4,
+    "rendered_nodes": 8,
+    "counter": "8 entities · 4 relations",
+    "fullscreen_px": "1280 x 900",
+    "viewport_px": "1280 x 900",
+    "exits": "Escape and button"
+  },
+  "note": ""
+}

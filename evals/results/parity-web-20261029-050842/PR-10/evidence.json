@@ -1,0 +1,15 @@
+{
+  "row": "PR-10",
+  "passed": true,
+  "measured": {
+    "base_plate_api_bbox": "120 x 80 x 5",
+    "base_plate_labels": "L 120.0 mm | W 80.0 mm | H 5.0 mm",
+    "base_plate_glb_size": "120 x 80 x 5",
+    "base_plate_labels_inside_view": true,
+    "motor_holder_api_bbox": "60 x 40 x 24",
+    "motor_holder_labels": "L 60.0 mm | W 40.0 mm | H 24.0 mm",
+    "motor_holder_glb_size": "60 x 40 x 24",
+    "motor_holder_labels_inside_view": true
+  },
+  "note": "Labels are drawn at the edges of the loaded GLB's box (one decimal); the GLB box is checked against metrics.bbox to 0.01 mm. GLBs and metrics are geometry-service output; the API is mocked."
+}

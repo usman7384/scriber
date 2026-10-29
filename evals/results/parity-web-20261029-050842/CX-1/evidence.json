@@ -1,0 +1,15 @@
+{
+  "row": "CX-1",
+  "passed": true,
+  "measured": {
+    "bracket-spec.pdf": "0 -> 100",
+    "motor.step": "0 -> 100",
+    "rules.md": "0 -> 100",
+    "notes-2.txt": "0 -> 100",
+    "holes.csv": "0 -> 100",
+    "photo.png": "0 -> 100",
+    "upload_requests": 1,
+    "listed_processed": 6
+  },
+  "note": "One multipart upload, one ingest job per file; each job streams progress 0 then 100 as apps/api ingest.py emits it (mocked, one event per response)."
+}

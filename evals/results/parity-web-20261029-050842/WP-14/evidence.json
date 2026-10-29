@@ -1,0 +1,16 @@
+{
+  "row": "WP-14",
+  "passed": true,
+  "measured": {
+    "ui_steps": 3,
+    "steps": "type the prompt -> Generate -> Download STL",
+    "prompt_sent": "motor holder for 28 mm motor, 2 M3 screws",
+    "download_url": "/models/m1/export?fmt=stl&version=1",
+    "stl_file": "motor-holder-v1.stl",
+    "triangles": 2036,
+    "size_mm": "60 x 40 x 24",
+    "volume_mm3": 15481.4,
+    "watertight_and_oriented": true
+  },
+  "note": "STL is geometry-service output for a hand-written motor-holder IR standing in for the model's answer (generation is mocked). VM-9 needs a slicer run on it; here it is checked watertight and consistently oriented."
+}

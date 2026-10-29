@@ -1,0 +1,12 @@
+{
+  "row": "AS-1",
+  "passed": true,
+  "measured": {
+    "click_Plate": "screen (600, 446) -> tree id plate",
+    "click_Cube": "screen (600, 282) -> tree id cube",
+    "api_components": "plate (Plate, parent -, joint -); cube (Cube, parent plate, joint cube_on_plate)",
+    "picked_ids": "plate, cube",
+    "refine_target": "cube"
+  },
+  "note": "GLB is geometry-service output for the D-033 cube-on-plate assembly; the component list is the shape of GET /models/{id}/components (mocked). The viewer maps glTF node names (part names) to API ids."
+}
