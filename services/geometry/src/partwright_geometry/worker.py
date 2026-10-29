@@ -10,6 +10,7 @@ from build123d import Compound, Shape, export_gltf, export_step, export_stl
 
 from partwright_geometry.dfm import dfm_findings
 from partwright_geometry.imports import describe, step_parts
+from partwright_geometry.joints import interferences, mate_checks
 from partwright_geometry.metrics import part_metrics
 from partwright_geometry.thumbnail import render_thumbnail
 from partwright_ir import RuleSet
@@ -48,11 +49,16 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any
     export_stl(model, files["stl"])
     export_gltf(model, str(files["glb"]), binary=True)
     metrics = {pid: part_metrics(pid, s) for pid, s in parts.items()}
-    return {
+    reply: dict[str, Any] = {
         "files": {k: str(v) for k, v in files.items()},
         "parts": [m.model_dump() for m in metrics.values()],
         "findings": [f.model_dump() for pid, s in parts.items() for f in dfm_findings(s, metrics[pid], rules)],
     }
+    mates = namespace.get("MATES")
+    if mates is not None:
+        checks, overlaps = mate_checks(parts, mates), interferences(parts)
+        reply["assembly"] = {"mates": [m.model_dump() for m in checks], "interferences": [i.model_dump() for i in overlaps]}
+    return reply
 
 
 OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {

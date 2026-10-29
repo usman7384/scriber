@@ -4,9 +4,13 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 Vec = tuple[float, float, float]
+Row = tuple[float, float, float, float]
+Placement = tuple[Row, Row, Row]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
 STEP_SUFFIXES = frozenset({".step", ".stp"})
 MESH_SUFFIXES = frozenset({".stl", ".obj"})
+INTERFERENCE_MM3 = 1e-6
+TOUCH_MM = 1e-6
 
 
 class Frozen(BaseModel):
@@ -32,6 +36,7 @@ class PartMetrics(Frozen):
     holes: list[HoleInfo]
     center_of_mass: Vec | None = None
     mass_g: float | None = None
+    placement: Placement | None = None
 
 
 class Location(Frozen):
@@ -51,12 +56,40 @@ class Finding(Frozen):
     suggestion: str | None = None
 
 
+class Interference(Frozen):
+    a: str
+    b: str
+    volume: float
+
+
+class MateCheck(Frozen):
+    joint: str
+    parent: str
+    child: str
+    gap: float
+
+
+class AssemblyReport(Frozen):
+    mates: list[MateCheck]
+    interferences: list[Interference]
+    mass_g: float | None = None
+    center_of_mass: Vec | None = None
+
+    def overlaps(self) -> list[Interference]:
+        return [i for i in self.interferences if i.volume > INTERFERENCE_MM3]
+
+    def broken_mates(self) -> list[str]:
+        overlapping = {frozenset((i.a, i.b)) for i in self.overlaps()}
+        return [m.joint for m in self.mates if m.gap > TOUCH_MM or frozenset((m.parent, m.child)) in overlapping]
+
+
 class Artifact(Frozen):
     design_hash: str
     files: dict[FileKind, Path]
     parts: list[PartMetrics]
     findings: list[Finding]
     elapsed_ms: int
+    assembly: AssemblyReport | None = None
 
     @property
     def ok(self) -> bool:

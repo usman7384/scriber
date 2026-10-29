@@ -3,11 +3,11 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
-from build123d import CenterOf, GeomType, Shape, Vector
+from build123d import CenterOf, GeomType, Location, Shape, Vector
 from OCP.BRepAdaptor import BRepAdaptor_Surface
 from OCP.BRepTools import BRepTools
 
-from partwright_geometry.models import HoleInfo, PartMetrics
+from partwright_geometry.models import HoleInfo, PartMetrics, Placement
 
 FULL_TURN = 2 * math.pi - 1e-3
 
@@ -35,7 +35,14 @@ def part_metrics(part_id: str, shape: Shape[Any]) -> PartMetrics:
         valid=shape.is_valid,
         holes=holes(shape),
         center_of_mass=_t(shape.center(CenterOf.MASS)),
+        placement=placement(shape.location),
     )
+
+
+def placement(loc: Location | None) -> Placement:
+    t = (loc or Location()).wrapped.Transformation()
+    r0, r1, r2 = ((t.Value(i, 1), t.Value(i, 2), t.Value(i, 3), t.Value(i, 4)) for i in (1, 2, 3))
+    return (r0, r1, r2)
 
 
 def holes(shape: Shape[Any]) -> list[HoleInfo]:
