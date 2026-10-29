@@ -1,6 +1,8 @@
 import shutil
 import time
 from collections import defaultdict
+from collections.abc import Callable
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -8,14 +10,17 @@ from partwright_api import repo
 from partwright_api.deps import Deps
 from partwright_api.jobs import Emit, Outcome
 from partwright_api.repo import Row
+from partwright_api.routes.common import follow_spec
 from partwright_api.schemas import HookEvent, Step
 from partwright_context import Fact
 
 Events = list[tuple[HookEvent, dict[str, Any]]]
+Followups = list[Callable[[], object]]
 
 
 def ingest(d: Deps, project_id: str, file_id: str, path: Path, emit: Emit) -> Outcome:
     start = time.monotonic()
+    emit(Step(kind="ingest", message=f"reading {path.name}", attempt=1, elapsed_ms=0, progress=0))
     try:
         with d.context_lock:
             doc = d.context.ingest(project_id, path)
@@ -24,21 +29,29 @@ def ingest(d: Deps, project_id: str, file_id: str, path: Path, emit: Emit) -> Ou
         raise
     repo.set_file(d.engine, file_id, status="processed", doc_id=doc.id)
     message = f"{doc.name}: {doc.kind}, {doc.chunks} chunks, {doc.facts} facts, {doc.rules} rules"
-    emit(Step(kind="ingest", message=message, attempt=1, elapsed_ms=int((time.monotonic() - start) * 1000)))
+    emit(Step(kind="ingest", message=message, attempt=1, elapsed_ms=int((time.monotonic() - start) * 1000), progress=100))
     events: Events = []
+    followups: Followups = []
     for old in repo.file_rows(d.engine, project_id):
         if old["name"] == path.name and old["id"] != file_id and old["status"] != "processing":
-            events += replace(d, project_id, old, doc.id)
-    return Outcome(events=tuple(events))
+            stale, regenerate = replace(d, project_id, old, doc.id)
+            events += stale
+            followups += regenerate
+    return Outcome(events=tuple(events), followups=tuple(followups))
 
 
-def replace(d: Deps, project_id: str, old: Row, new_doc: str) -> Events:
+def replace(d: Deps, project_id: str, old: Row, new_doc: str) -> tuple[Events, Followups]:
     if old["doc_id"] is None or old["doc_id"] == new_doc:
         drop(d, project_id, old["id"])
-        return []
+        return [], []
     with d.context_lock:
         before, after = d.context.facts(project_id, old["doc_id"]), d.context.facts(project_id, new_doc)
-    return remove(d, project_id, old, changed(before, after))
+    gone = changed(before, after)
+    events = remove(d, project_id, old, [f.id for f in gone])
+    now = {f.name: f for f in after}
+    pairs = [(f, now[f.name]) for f in gone if f.name in now]
+    relink = {old["doc_id"]: new_doc} | {f.id: now[f.name].id for f in before if f.name in now}
+    return events, [partial(follow_spec, d, e["model_id"], old["name"], pairs, relink) for _, e in events if pairs]
 
 
 def remove(d: Deps, project_id: str, row: Row, changed_facts: list[str] | None = None) -> Events:
@@ -67,9 +80,9 @@ def drop(d: Deps, project_id: str, file_id: str) -> None:
         shutil.rmtree(folder)
 
 
-def changed(before: list[Fact], after: list[Fact]) -> list[str]:
+def changed(before: list[Fact], after: list[Fact]) -> list[Fact]:
     kept = {_key(f) for f in after}
-    return [f.id for f in before if _key(f) not in kept]
+    return [f for f in before if _key(f) not in kept]
 
 
 def _key(f: Fact) -> tuple[object, ...]:

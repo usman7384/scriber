@@ -15,6 +15,7 @@ from partwright_api.routes.common import (
     start_refine,
 )
 from partwright_api.schemas import DownloadV1, EditV1, GenerateIn, GenerateV1, JobRef, ModifyV1, RefineIn
+from partwright_api.work import Rebuild
 
 DEFAULT_PROJECT = "default"
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_token)])
@@ -39,7 +40,7 @@ async def modify(body: ModifyV1, d: DepsDep) -> JobRef:
 async def edit(body: EditV1, d: DepsDep) -> JobRef:
     model = need_model(d, body.model_id)
     component_only(latest_design(d, body.model_id), body.component_id, set(body.params))
-    return JobRef(job_id=start_rebuild(d, model, body.params, "edit", "edit").id)
+    return JobRef(job_id=start_rebuild(d, model, Rebuild(body.params, "edit"), "edit").id)
 
 
 @router.post("/download")

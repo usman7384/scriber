@@ -34,6 +34,7 @@ def test_generate_streams_steps_then_done(api: Api) -> None:
     assert [e for e, _, _ in events] == ["step"] * 5 + ["done"]
     assert [d["kind"] for _, _, d in events[:-1]] == ["requirements", "emit", "check", "repair", "done"]
     assert [i for _, i, _ in events[:-1]] == ["0", "1", "2", "3", "4"]
+    assert [d["progress"] for _, _, d in events[:-1]] == [10, 40, 60, 70, 100]
     final = events[-1][2]
     assert final["status"] == "done" and final["version"] == 1 and len(final["steps"]) == 5
     with api.client.stream("GET", f"/jobs/{job['id']}/events", headers={"Last-Event-ID": "3"}) as response:

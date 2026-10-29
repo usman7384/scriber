@@ -3,6 +3,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 
+from partwright_agent import VariantPlan, plan_variants
 from partwright_api import disk, repo, views, work
 from partwright_api.auth import require_token
 from partwright_api.deps import Deps, DepsDep
@@ -16,9 +17,11 @@ from partwright_api.routes.common import (
     need_version,
     start_rebuild,
     start_refine,
+    start_variant,
 )
-from partwright_api.schemas import FileKind, Job, ModelDetail, ParamsIn, RefineIn, Version
-from partwright_ir import diff
+from partwright_api.schemas import Batch, FileKind, Job, ModelDetail, ParamsIn, RefineIn, VariantsIn, Version
+from partwright_api.work import Rebuild
+from partwright_ir import ParamError, apply_params, diff
 
 router = APIRouter(prefix="/models/{model_id}", dependencies=[Depends(require_token)])
 
@@ -67,7 +70,30 @@ async def refine(model_id: str, body: RefineIn, d: DepsDep) -> Job:
 
 @router.patch("/params", status_code=202)
 async def params(model_id: str, body: ParamsIn, d: DepsDep) -> Job:
-    return start_rebuild(d, need_model(d, model_id), body.values, "params", "params")
+    return start_rebuild(d, need_model(d, model_id), Rebuild(body.values, "params"), "params")
+
+
+@router.post("/variants", status_code=202)
+async def variants(model_id: str, body: VariantsIn, d: DepsDep) -> Batch:
+    model = need_model(d, model_id)
+    design = latest_design(d, model_id)
+    if body.instruction:
+        await need_ollama(d)
+        try:
+            async with d.jobs.gpu:
+                plan = await asyncio.to_thread(plan_variants, design, body.instruction, d.llm, d.settings.seed)
+        except ValueError as e:
+            raise HTTPException(502, f"could not plan the variants: {e}") from None
+    elif body.param and body.values:
+        plan = VariantPlan(param=body.param, values=body.values)
+    else:
+        raise HTTPException(422, "give an instruction, or a param with values")
+    try:
+        for value in plan.values:
+            apply_params(design, {plan.param: value})
+    except ParamError as e:
+        raise HTTPException(400, str(e)) from None
+    return Batch(jobs=[start_variant(d, model, plan.param, v) for v in plan.values])
 
 
 @router.get("/export")
@@ -99,6 +125,7 @@ def _restore(d: Deps, model: Row, number: int) -> int:
     restored = data.model_copy(update={"origin": "restore", "created": repo.now(), "changes": diff(current, design)})
     repo.add_version(d.engine, model_id, new, restored)
     repo.set_model(d.engine, model_id, title=design.title, stale=False)
+    used = work.live(d, model["project_id"], data.used)
     with d.context_lock:
-        d.context.record_generation(model["project_id"], work.graph_id(model_id, new), design, data.used)
+        d.context.record_generation(model["project_id"], work.graph_id(model_id, new), design, used)
     return new

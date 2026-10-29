@@ -85,7 +85,7 @@ def test_spec_change_marks_the_model_stale_and_notifies_hooks(make_api: MakeApi)
 
     upload(api, project, "spec.md", spec(130))
     after = listing(api, project)
-    assert after["stale"] == [model_id] and [f["name"] for f in after["files"]] == ["spec.md"] and after["files"][0]["id"] != old["id"]
+    assert [f["name"] for f in after["files"]] == ["spec.md"] and after["files"][0]["id"] != old["id"]
     until(lambda: len(received) == 1)
     assert received == [
         {
@@ -97,10 +97,30 @@ def test_spec_change_marks_the_model_stale_and_notifies_hooks(make_api: MakeApi)
             "changed_facts": [length["id"]],
         }
     ]
-    assert api.ok(api.client.get(f"/models/{model_id}"))["stale"] is True
-    assert api.ok(api.client.get(f"/models/{model_id}/versions/1"))["status"] == "ok"
-    api.wait(api.ok(api.client.patch(f"/models/{model_id}/params", json={"values": {"length": 130}}))["id"])
-    assert listing(api, project)["stale"] == []
+    until(lambda: api.ok(api.client.get(f"/models/{model_id}"))["latest_version"] == 2)
+    [job] = [j for j in api.ok(api.client.get(f"/projects/{project}/jobs")) if j["kind"] == "params"]
+    assert api.wait(job["id"])["status"] == "done"
+    v1, v2 = api.ok(api.client.get(f"/models/{model_id}/versions"))
+    assert v1["status"] == "ok" and v1["metrics"]["bbox"][0] == 120
+    assert (v2["origin"], v2["prompt"]) == ("context", "spec.md changed: plate_length 120 -> 130 mm")
+    assert v2["metrics"]["bbox"][0] == 130 and v2["changes"]["params"] == [{"name": "length", "old": 120.0, "new": 130.0}]
+    [cited] = [p["provenance"] for p in v2["params"] if p["name"] == "length"]
+    assert cited["source"] == "document" and cited["quote"] == "Plate length: 130 mm"
+    assert listing(api, project)["stale"] == [] and listing(api, project)["files"][0]["used_in"] == [model_id]
+
+
+def test_spec_change_without_a_cited_param_asks_the_model(api: Api) -> None:
+    project = api.project()
+    upload(api, project, "spec.md", spec(120))
+    model_id = api.generate(project, NO_REQS, plate())["model_id"]
+    api.llm.responses += [NO_REQS, json.dumps({"updates": [{"name": "length", "value": 130}], "design": None})]
+    upload(api, project, "spec.md", spec(130))
+    until(lambda: api.ok(api.client.get(f"/models/{model_id}"))["latest_version"] == 2)
+    [job] = [j for j in api.ok(api.client.get(f"/projects/{project}/jobs")) if j["kind"] == "refine"]
+    assert api.wait(job["id"])["status"] == "done"
+    v2 = api.ok(api.client.get(f"/models/{model_id}/versions/2"))
+    assert v2["origin"] == "context" and v2["metrics"]["bbox"][0] == 130
+    assert "plate_length 120 -> 130 mm" in api.llm.calls[-1][-1].content
 
 
 def test_deleting_a_used_file_marks_its_models_stale(api: Api) -> None:
@@ -124,7 +144,9 @@ def test_attachments_ground_the_design_and_are_recorded(api: Api) -> None:
     job = api.generate(project, NO_REQS, plate(), prompt="A plate like the sketch", attachments=both)
     version = api.ok(api.client.get(f"/models/{job['model_id']}/versions/1"))
     assert version["attachments"] == both and version["prompt"] == "A plate like the sketch"
-    assert "Plate length: 120 mm" in api.llm.calls[-1][-1].content
+    assert "Plate length: 120 mm" in api.llm.calls[-1][-1].content and api.llm.calls[-1][-1].images == (png(),)
+    roles = [(i["kind"], i["name"], i["role"]) for i in version["inputs"]]
+    assert roles == [("prompt", None, "used"), ("file", "sketch.png", "used"), ("file", "spec.md", "used")]
     assert any("Mounting holes" in c["description"] and c["passed"] for c in version["checks"])
 
     calls = len(api.llm.calls)
@@ -144,3 +166,16 @@ def test_generate_validates_input(api: Api) -> None:
     assert api.client.post(f"/projects/{project}/generate", json={"prompt": ""}).status_code == 422
     assert api.client.post(f"/projects/{project}/generate", json={"prompt": "x", "process": "laser"}).status_code == 422
     assert api.client.post("/projects/nope/generate", json={"prompt": "x"}).status_code == 404
+
+
+def test_selected_context_is_exactly_what_the_version_used(api: Api) -> None:
+    project = api.project()
+    for name, length in (("a.md", 120), ("b.md", 130), ("c.md", 140)):
+        upload(api, project, name, spec(length))
+    files = {f["name"]: f["id"] for f in listing(api, project)["files"]}
+    chosen = [files["a.md"], files["b.md"]]
+    job = api.generate(project, NO_REQS, plate(), prompt="Base plate", context_ids=chosen)
+    version = api.ok(api.client.get(f"/models/{job['model_id']}/versions/1"))
+    assert [i["id"] for i in version["inputs"] if i["kind"] == "file" and i["role"] == "used"] == chosen
+    used_in = {f["name"]: f["used_in"] for f in listing(api, project)["files"]}
+    assert used_in == {"a.md": [job["model_id"]], "b.md": [job["model_id"]], "c.md": []}

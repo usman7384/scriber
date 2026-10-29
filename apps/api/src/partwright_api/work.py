@@ -1,6 +1,6 @@
 import time
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import structlog
@@ -12,37 +12,61 @@ from partwright_agent import refine as agent_refine
 from partwright_api import disk, repo
 from partwright_api.deps import Deps
 from partwright_api.jobs import Emit, Outcome
-from partwright_api.schemas import Check, GenerateIn, Metrics, Origin, Param, RefineIn, Step, VersionData
+from partwright_api.schemas import Check, GenerateIn, Input, Metrics, Origin, Param, RefineIn, Step, VersionData
 from partwright_api.views import model_urls
 from partwright_geometry import Artifact, BuildError
-from partwright_ir import Design, Process, ShapeDescriptor, apply_params, diff, label
+from partwright_ir import Design, Process, Provenance, ShapeDescriptor, apply_params, diff, label
 
 log = structlog.get_logger()
+IMAGE_SUFFIXES = (".png", ".jpg", ".jpeg")
+PROGRESS = {"requirements": 10, "emit": 40, "check": 60, "repair": 70, "done": 100, "failed": 100}
+
+
+@dataclass(frozen=True)
+class Rebuild:
+    values: Mapping[str, float]
+    origin: Origin
+    note: str | None = None
+    sources: Mapping[str, Provenance] = field(default_factory=dict)
+    # variants build from another model's latest design
+    source_id: str | None = None
+    # a replaced document gives its facts new ids; lineage follows them
+    relink: Mapping[str, str] = field(default_factory=dict)
 
 
 def generate(d: Deps, project_id: str, model_id: str, req: GenerateIn, emit: Emit) -> Outcome:
     only = None if req.context_ids is None else docs(d, req.context_ids)
     context = ground(d, project_id, req.prompt, req.process, only, docs(d, req.attachments))
+    images = image_files(d, project_id, req.attachments)
     number, out = allocate(d, model_id)
-    steps = agent_generate(req.prompt, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context)
-    return finish(d, project_id, model_id, number, relay(steps, emit), Meta("generate", req.prompt, req.process, req.attachments))
+    steps = agent_generate(
+        req.prompt, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, tuple(images.values()), req.thinking
+    )
+    meta = Meta("generate", req.prompt, req.process, req.attachments, list(images))
+    return finish(d, project_id, model_id, number, relay(steps, emit), meta)
 
 
-def refine(d: Deps, project_id: str, model_id: str, req: RefineIn, emit: Emit) -> Outcome:
+def refine(d: Deps, project_id: str, model_id: str, req: RefineIn, emit: Emit, origin: Origin = "refine") -> Outcome:
     base_number, base = latest_ok(d, model_id)
     design = disk.design(disk.version_dir(d.settings.data_dir, model_id, base_number))
     instruction = req.instruction if req.target is None else f"Change only part {req.target!r}: {req.instruction}"
     process = req.process or base.process
     context = ground(d, project_id, instruction, process, None, docs(d, req.attachments))
+    images = image_files(d, project_id, req.attachments)
     number, out = allocate(d, model_id)
-    steps = agent_refine(design, instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context)
-    return finish(d, project_id, model_id, number, relay(steps, emit), Meta("refine", req.instruction, process, req.attachments, design))
+    images_sent = tuple(images.values())
+    steps = agent_refine(design, instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, images_sent)
+    meta = Meta(origin, req.instruction, process, req.attachments, list(images), design)
+    return finish(d, project_id, model_id, number, relay(steps, emit), meta)
 
 
-def rebuild(d: Deps, project_id: str, model_id: str, values: Mapping[str, float], origin: Origin, emit: Emit) -> Outcome:
-    base_number, base = latest_ok(d, model_id)
-    previous = disk.design(disk.version_dir(d.settings.data_dir, model_id, base_number))
-    design = apply_params(previous, values)
+def rebuild(d: Deps, project_id: str, model_id: str, edit: Rebuild, emit: Emit) -> Outcome:
+    source = edit.source_id or model_id
+    base_number, base = latest_ok(d, source)
+    previous = disk.design(disk.version_dir(d.settings.data_dir, source, base_number))
+    design = previous
+    for name, value in edit.values.items():
+        design = apply_params(design, {name: value}, edit.sources.get(name))
     with d.context_lock:
         rules = d.context.rules(project_id)
     number, out = allocate(d, model_id)
@@ -54,18 +78,19 @@ def rebuild(d: Deps, project_id: str, model_id: str, values: Mapping[str, float]
         message = "; ".join([f"rebuilt in {artifact.elapsed_ms} ms", *errors])
     except BuildError as e:
         message = f"CAD kernel error ({e.kind}): {e}"
-    result = Result(design=design, artifact=artifact, checks=[], attempts=1, repairs=0, used=base.used)
+    used = live(d, project_id, [edit.relink.get(u, u) for u in base.used])
+    result = Result(design=design, artifact=artifact, checks=[], attempts=1, repairs=0, used=used)
     kind = "done" if result.ok else "failed"
     step = AgentStep(kind=kind, message=message, attempt=1, elapsed_ms=int((time.monotonic() - start) * 1000), result=result)
-    prompt = ", ".join(f"{k}={v:g}" for k, v in values.items())
-    return finish(d, project_id, model_id, number, relay([step], emit), Meta(origin, prompt, base.process, [], previous))
+    prompt = edit.note or ", ".join(f"{k}={v:g}" for k, v in edit.values.items())
+    return finish(d, project_id, model_id, number, relay([step], emit), Meta(edit.origin, prompt, base.process, [], [], previous))
 
 
 def ground(d: Deps, project_id: str, request: str, process: Process, only: list[str] | None, attached: list[str]) -> Grounding:
     with d.context_lock:
         pack = d.context.retrieve(project_id, request)
         rules = d.context.rules(project_id)
-        extra = [f for doc in attached for f in d.context.facts(project_id, doc)]
+        extra = [f for doc in [*attached, *(only or [])] for f in d.context.facts(project_id, doc)]
     if only is not None:
         keep = {*only, *attached}
         pack = pack.model_copy(
@@ -84,6 +109,11 @@ def docs(d: Deps, file_ids: list[str]) -> list[str]:
     return [r["doc_id"] for r in rows if r and r["doc_id"]]
 
 
+def image_files(d: Deps, project_id: str, file_ids: list[str]) -> dict[str, bytes]:
+    rows = [r for r in (repo.file_row(d.engine, i) for i in file_ids) if r and r["name"].lower().endswith(IMAGE_SUFFIXES)]
+    return {r["id"]: disk.upload_path(d.settings.data_dir, project_id, r["id"], r["name"]).read_bytes() for r in rows}
+
+
 def latest_ok(d: Deps, model_id: str) -> tuple[int, VersionData]:
     ok = [(n, v) for n, v in repo.versions(d.engine, model_id) if v.status == "ok"]
     if not ok:
@@ -99,10 +129,12 @@ def allocate(d: Deps, model_id: str) -> tuple[int, Path]:
 
 
 def relay(steps: Iterable[AgentStep], emit: Emit) -> list[AgentStep]:
-    seen = []
+    seen: list[AgentStep] = []
+    progress = 0
     for s in steps:
         seen.append(s)
-        emit(Step(kind=s.kind, message=s.message, attempt=s.attempt, elapsed_ms=s.elapsed_ms))
+        progress = max(progress, PROGRESS.get(s.kind, progress))
+        emit(Step(kind=s.kind, message=s.message, attempt=s.attempt, elapsed_ms=s.elapsed_ms, progress=progress))
     return seen
 
 
@@ -112,6 +144,7 @@ class Meta:
     prompt: str | None
     process: Process
     attachments: list[str]
+    images: list[str]
     previous: Design | None = None
 
 
@@ -119,13 +152,19 @@ def finish(d: Deps, project_id: str, model_id: str, number: int, steps: list[Age
     out = disk.version_dir(d.settings.data_dir, model_id, number)
     result = steps[-1].result if steps else None
     disk.save(out, steps, result)
-    data = version_data(result, meta, thumbnail(d, out))
+    data = version_data(result, meta, thumbnail(d, out)).model_copy(update={"inputs": inputs(d, project_id, meta, result)})
     repo.add_version(d.engine, model_id, number, data)
     if result is None or result.design is None or data.status != "ok":
         return Outcome(version=number, error=steps[-1].message if steps else "no result")
     repo.set_model(d.engine, model_id, title=result.design.title, stale=False)
     record(d, project_id, model_id, number, result)
     return Outcome(version=number, events=(("version.created", created_payload(d, model_id, number)),))
+
+
+def live(d: Deps, project_id: str, used: list[str]) -> list[str]:
+    with d.context_lock:
+        known = {n.id for n in d.context.graph(project_id).nodes} | {r.id for r in d.context.rules(project_id).rules}
+    return [u for u in used if u in known]
 
 
 def record(d: Deps, project_id: str, model_id: str, number: int, result: Result) -> None:
@@ -136,6 +175,17 @@ def record(d: Deps, project_id: str, model_id: str, number: int, result: Result)
         shapes[result.design.parts[0].id] = d.geometry.describe(out / disk.FILE_NAMES["step"])
     with d.context_lock:
         d.context.record_generation(project_id, graph_id(model_id, number), result.design, result.used, shapes)
+
+
+def inputs(d: Deps, project_id: str, meta: Meta, result: Result | None) -> list[Input]:
+    rows = {r["id"]: r for r in repo.file_rows(d.engine, project_id)}
+    with d.context_lock:
+        fact_docs = {f.id: f.doc_id for f in d.context.facts(project_id)}
+    used_docs = {fact_docs.get(u, u) for u in (result.used if result else [])}
+    used = {i for i, r in rows.items() if r["doc_id"] in used_docs or i in meta.images}
+    listed = [i for i in dict.fromkeys([*meta.attachments, *(i for i in rows if i in used)]) if i in rows]
+    files = [Input(kind="file", id=i, name=rows[i]["name"], role="used" if i in used else "unused") for i in listed]
+    return [Input(kind="prompt", role="used"), *files] if meta.prompt else files
 
 
 def graph_id(model_id: str, number: int) -> str:

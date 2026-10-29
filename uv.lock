@@ -1149,21 +1149,25 @@ version = "0.1.0"
 source = { editable = "evals" }
 dependencies = [
     { name = "partwright-agent" },
+    { name = "partwright-api" },
     { name = "partwright-cli" },
     { name = "partwright-context" },
     { name = "partwright-geometry" },
     { name = "partwright-ir" },
     { name = "pyyaml" },
+    { name = "trimesh" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "partwright-agent", editable = "services/agent" },
+    { name = "partwright-api", editable = "apps/api" },
     { name = "partwright-cli", editable = "apps/cli" },
     { name = "partwright-context", editable = "services/context" },
     { name = "partwright-geometry", editable = "services/geometry" },
     { name = "partwright-ir", editable = "services/ir" },
     { name = "pyyaml" },
+    { name = "trimesh", specifier = "==5.2.0" },
 ]
 
 [[package]]

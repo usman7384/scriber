@@ -9,9 +9,13 @@ class FakeLLM:
         self.few_shot = True
         self.responses = list(responses)
         self.calls: list[list[Message]] = []
+        self.budgets: list[int | None] = []
 
-    def chat(self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0) -> str:
+    def chat(
+        self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0, think: int | None = None
+    ) -> str:
         self.calls.append(messages)
+        self.budgets.append(think)
         if not self.responses:
             raise AssertionError("FakeLLM ran out of scripted responses")
         return self.responses.pop(0)

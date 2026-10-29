@@ -166,3 +166,23 @@ def test_quote_not_in_the_request_is_repaired(tmp_path: Path) -> None:
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
     assert "parameter 'length' quotes '80 mm long', which is not in the request" in steps[2].message
     assert steps[-1].kind == "done"
+
+
+def test_images_reach_the_design_request(tmp_path: Path) -> None:
+    llm = FakeLLM([REQS, design()])
+    list(generate("bracket like the sketch, 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, images=(b"png",)))
+    assert llm.calls[0][-1].images == () and llm.calls[1][-1].images == (b"png",)
+    llm = FakeLLM([REQS, json.dumps({"updates": [{"name": "length", "value": 90}], "design": None})])
+    list(refine(Design.model_validate_json(design()), "like the photo", llm, FakeGeometry(), tmp_path / "r", images=(b"jpg",)))
+    assert llm.calls[1][-1].images == (b"jpg",)
+
+
+def test_thinking_level_sets_the_reasoning_budget(tmp_path: Path) -> None:
+    logs = {}
+    for level in ("low", "high"):
+        llm = FakeLLM([REQS, design()])
+        steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path / level, thinking=level))
+        assert steps[-1].kind == "done" and llm.budgets == [None, {"low": 0, "high": 8192}[level]]
+        logs[level] = steps[1].message
+    assert logs["low"].endswith("thinking low with a 0 token reasoning budget")
+    assert logs["high"].endswith("thinking high with a 8192 token reasoning budget")

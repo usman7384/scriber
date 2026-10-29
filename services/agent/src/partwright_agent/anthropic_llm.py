@@ -18,11 +18,14 @@ class AnthropicLLM:
         self.effort = effort
         self._client = anthropic.Anthropic()
 
-    def chat(self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0) -> str:
+    def chat(
+        self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0, think: int | None = None
+    ) -> str:
         # current Claude models reject sampling parameters, so seed and temperature are not sent
         config: BetaOutputConfigParam = {}
-        if self.effort:
-            config["effort"] = self.effort
+        effort = self.effort if think is None else "high" if think > 0 else "low"
+        if effort:
+            config["effort"] = effort
         if schema is not None:
             config["format"] = {"type": "json_schema", "schema": strict_schema(schema)}
         with self._client.beta.messages.stream(

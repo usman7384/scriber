@@ -52,3 +52,7 @@ def copy_version(src: Path, dst: Path) -> None:
 
 def upload_path(data_dir: Path, project_id: str, file_id: str, name: str) -> Path:
     return data_dir / "uploads" / project_id / file_id / name
+
+
+def suggestions_path(data_dir: Path, model_id: str) -> Path:
+    return model_dir(data_dir, model_id) / "suggestions.json"
