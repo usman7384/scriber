@@ -1,24 +1,22 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { api } from "../api";
 import { useT } from "../i18n";
+import { Button } from "../ui/Button";
+import { Sheet } from "../ui/Sheet";
+import type { BugTarget } from "./context";
 
-interface Props {
-  modelId: string;
-  version: number;
-  screenshot: () => string | undefined;
-}
-
-export function BugDialog({ modelId, version, screenshot }: Props) {
-  const dialog = useRef<HTMLDialogElement>(null);
+export function BugSheet({ target, onClose }: { target: BugTarget; onClose: () => void }) {
   const [text, setText] = useState("");
   const [attach, setAttach] = useState(true);
   const [result, setResult] = useState<string>();
+  const id = useId();
   const t = useT();
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const shot = attach ? screenshot() : undefined;
-    api.reportBug({ model_id: modelId, version, text, ...(shot && { screenshot: shot }) }).then(
+    const shot = attach ? target.screenshot() : undefined;
+    const report = { model_id: target.modelId, version: target.version, text };
+    api.reportBug({ ...report, ...(shot && { screenshot: shot }) }).then(
       () => {
         setText("");
         setResult(t.bug.saved);
@@ -28,30 +26,31 @@ export function BugDialog({ modelId, version, screenshot }: Props) {
   };
 
   return (
-    <>
-      <button type="button" className="ghost" onClick={() => dialog.current?.showModal()}>
-        {t.bug.open}
-      </button>
-      <dialog ref={dialog} aria-labelledby="bug-title">
-        <form onSubmit={submit} className="stack">
-          <h2 id="bug-title">{t.bug.open}</h2>
-          <label htmlFor="bug-text">{t.bug.question}</label>
-          <textarea id="bug-text" rows={5} value={text} onChange={(e) => setText(e.target.value)} required />
-          <label className="toggle">
-            <input type="checkbox" checked={attach} onChange={(e) => setAttach(e.target.checked)} />
-            {t.bug.attach}
-          </label>
-          {result && <p role="status">{result}</p>}
-          <div className="row">
-            <button type="button" className="secondary" onClick={() => dialog.current?.close()}>
-              {t.close}
-            </button>
-            <button type="submit" className="primary push">
-              {t.bug.send}
-            </button>
-          </div>
-        </form>
-      </dialog>
-    </>
+    <Sheet
+      open
+      onClose={onClose}
+      title={t.bug.open}
+      footer={
+        <Button type="submit" form={id} variant="primary" icon="send">
+          {t.bug.send}
+        </Button>
+      }
+    >
+      <form id={id} onSubmit={submit} className="shell-form">
+        <label htmlFor={`${id}-text`}>{t.bug.question}</label>
+        <textarea
+          id={`${id}-text`}
+          rows={6}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          required
+        />
+        <label className="shell-check">
+          <input type="checkbox" checked={attach} onChange={(e) => setAttach(e.target.checked)} />
+          {t.bug.attach}
+        </label>
+        {result && <p role="status">{result}</p>}
+      </form>
+    </Sheet>
   );
 }
