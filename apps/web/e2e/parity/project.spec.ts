@@ -84,8 +84,15 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   };
 
   await page.goto("/help");
+  const [popup] = await Promise.all([
+    page.waitForEvent("popup"),
+    nav.getByRole("link", { name: "API", exact: true }).click(),
+  ]);
+  await expect(popup).toHaveURL(/\/docs$/);
+  reached.push("API docs");
+  await popup.close();
   await visit("Projects", /\/$/, "Projects");
-  await visit("Library", /\/library$/, "Library");
+  await visit("All parts", /\/library$/, "All parts");
   await visit("Settings", /\/settings$/, "Settings");
   await page.getByLabel("Dark").check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -101,18 +108,10 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
     .allTextContents();
   await row.shot(`${reached.length + 1}-project-models`);
   reached.push("Project models");
-  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Context" }).click();
+  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();
   await expect(page.getByRole("table", { name: "Context files" })).toBeVisible();
-  await row.shot(`${reached.length + 1}-context`);
-  reached.push("Context manager");
-
-  const [popup] = await Promise.all([
-    page.waitForEvent("popup"),
-    nav.getByRole("link", { name: "API", exact: true }).click(),
-  ]);
-  await expect(popup).toHaveURL(/\/docs$/);
-  reached.push("API docs");
-  await popup.close();
+  await row.shot(`${reached.length + 1}-sources`);
+  reached.push("Sources");
 
   Object.assign(row.measured, { pages: reached.join(", "), project_generations: generations.length });
   expect(generations).toHaveLength(1);

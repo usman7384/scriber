@@ -26,11 +26,11 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   const meta = await cards.locator("p").allTextContents();
   await row.shot("2-community");
 
-  await page.getByLabel("Fork into project").selectOption({ label: "Bracket lab" });
   await page.getByRole("button", { name: "Fork Edge test plate" }).click();
-  await expect(page.getByRole("status")).toHaveText("Forked Edge test plate into Bracket lab. Open the copy");
-  await row.shot("3-forked");
-  await page.getByRole("link", { name: "Open the copy" }).click();
+  const picker = page.getByRole("dialog", { name: "Fork into project" });
+  await expect(picker.getByRole("button")).toHaveText(["Bracket lab", "Fixture shop"]);
+  await row.shot("3-fork-picker");
+  await picker.getByRole("button", { name: "Bracket lab" }).click();
   await expect(page).toHaveURL(/\/m\/m4$/);
   const provenance = page.getByText("Forked from Edge test plate v2 by alice");
   await expect(provenance).toBeVisible();

@@ -22,7 +22,7 @@ test("context manager lists files, filters, deletes, and shows the graph and lev
   await expect(page.getByRole("region", { name: "Facts from motor-mount-spec.pdf" })).toContainText("p1:l2");
 
   await expect(page.getByRole("table", { name: "Project rules" })).toContainText("plate-design-rules.md:4");
-  await expect(page.getByRole("heading", { name: "Knowledge base level 1" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Knowledge base" })).toContainText("Level 1");
 
   const kg = page.getByRole("region", { name: "Knowledge graph" });
   const graph = graphOf(api.files);
