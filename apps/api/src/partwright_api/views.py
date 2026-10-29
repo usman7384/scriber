@@ -39,6 +39,7 @@ def version(model_id: str, number: int, data: VersionData, urls: Urls) -> Versio
         files={k: urls(k) for k in FILE_NAMES} if data.metrics else {},
         thumbnail_url=urls("thumbnail") if data.thumbnail else None,
         attachments=data.attachments,
+        inputs=data.inputs,
         changes=data.changes,
     )
 

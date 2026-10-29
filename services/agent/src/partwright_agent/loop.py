@@ -1,14 +1,14 @@
 import json
 import time
 from collections.abc import Callable, Iterator, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ValidationError
 
 from partwright_agent.grounding import grounded, measurable, misquoted
-from partwright_agent.llm import LLM, Message
+from partwright_agent.llm import LLM, THINKING_BUDGET, Message, Thinking
 from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
 from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages, resample_message
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
@@ -78,6 +78,8 @@ def generate(
     max_repairs: int = 3,
     seed: int = 0,
     context: Grounding | None = None,
+    images: tuple[bytes, ...] = (),
+    thinking: Thinking | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
     stated = extract_requirements(prompt, llm, seed)
@@ -87,12 +89,13 @@ def generate(
     yield _requirements_step(reqs, clock, dropped)
     project = context_block(context, dropped) if context else ""
     messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, llm.few_shot)]
+    messages[-1] = messages[-1].model_copy(update={"images": images})
 
     def decode(raw: str) -> Design:
         design = Design.model_validate_json(raw)
         return cite(design, context.pack) if context else design
 
-    run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
+    run = replace(_run(llm, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking)
     yield from _attempts(run, messages, json_schema(), decode, reqs, prompt)
 
 
@@ -105,6 +108,7 @@ def refine(
     max_repairs: int = 3,
     seed: int = 0,
     context: Grounding | None = None,
+    images: tuple[bytes, ...] = (),
 ) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(instruction, llm, seed)
@@ -116,7 +120,7 @@ def refine(
             design, {u.name: u.value for u in answer.updates}, Provenance(source="prompt", quote=instruction)
         )
 
-    messages = [Message(role="user", content=refine_message(answer_json(design), instruction))]
+    messages = [Message(role="user", content=refine_message(answer_json(design), instruction), images=images)]
     run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
     yield from _attempts(run, messages, RefineAnswer.model_json_schema(), decode, reqs)
 
@@ -140,6 +144,7 @@ class _Run:
     seed: int
     clock: "_Clock"
     used: list[str]
+    thinking: Thinking | None = None
 
 
 def _run(llm: LLM, geometry: Geometry, context: Grounding | None, out_dir: Path, max_repairs: int, seed: int, clock: "_Clock") -> _Run:
@@ -164,15 +169,17 @@ def _attempts(
     last: Result | None = None
     seen: set[str] = set()
     prompt = fresh = messages
+    budget = THINKING_BUDGET[run.thinking] if run.thinking else None
+    thought = f", thinking {run.thinking} with a {budget} token reasoning budget" if run.thinking else ""
     for attempt in range(1, run.max_repairs + 2):
         seed = run.seed + attempt - 1
-        raw = run.llm.chat(prompt, schema, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE)
+        raw = run.llm.chat(prompt, schema, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE, budget)
         resampled = raw in seen
         if resampled:
             # a sharply tuned model copies the quoted answer back, so ask again without quoting it
-            raw = run.llm.chat(fresh, schema, seed, STUCK_TEMPERATURE)
+            raw = run.llm.chat(fresh, schema, seed, STUCK_TEMPERATURE, budget)
         seen.add(raw)
-        note = ", re-sampled because it repeated an earlier answer" if resampled else ""
+        note = thought + (", re-sampled because it repeated an earlier answer" if resampled else "")
         yield Step(
             kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars{note}", attempt=attempt, elapsed_ms=run.clock()
         )

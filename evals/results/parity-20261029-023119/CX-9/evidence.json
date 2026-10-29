@@ -1,0 +1,11 @@
+{
+  "row": "CX-9",
+  "passed": true,
+  "measured": {
+    "facts": 5,
+    "bore": "req_2_bore",
+    "mount": "req_1_mount",
+    "sourced": true
+  },
+  "note": ""
+}

@@ -1,0 +1,90 @@
+{
+  "ir_version": 2,
+  "title": "Fixture",
+  "params": [],
+  "parts": [
+    {
+      "id": "p",
+      "name": "P",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": 60.0,
+              "height": 40.0,
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body_s",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": 5.0,
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "h",
+          "name": "Hole",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "XY",
+            "offset": 5.0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                20.0,
+                0.0
+              ]
+            ]
+          },
+          "type": "simple",
+          "fastener": null,
+          "fit": "normal",
+          "diameter": 10.0,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

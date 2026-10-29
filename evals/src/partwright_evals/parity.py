@@ -40,9 +40,9 @@ def evidence(row: str, measured: Measured, *checks: bool, note: str = "") -> Evi
 
 
 def registry() -> dict[str, Demo]:
-    from partwright_evals import parity_m1
+    from partwright_evals import parity_m1, parity_m2, parity_m3
 
-    return {**parity_m1.ROWS}
+    return {**parity_m1.ROWS, **parity_m2.ROWS, **parity_m3.ROWS}
 
 
 def run_row(row: str, demo: Demo, rig: Rig) -> Evidence:

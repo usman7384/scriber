@@ -1,0 +1,26 @@
+{
+  "title": "Ribbed gripper jaw",
+  "params": [
+    {"name": "length", "value": 100, "unit": "mm"},
+    {"name": "width", "value": 40, "unit": "mm"},
+    {"name": "thickness", "value": 5, "unit": "mm"},
+    {"name": "rib_count", "value": 4, "unit": "", "min": 2, "max": 20},
+    {"name": "rib_t", "value": 2, "unit": "mm"},
+    {"name": "rib_h", "value": 15, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "jaw",
+      "name": "Jaw",
+      "sketches": [
+        {"id": "base", "entities": [{"kind": "rect", "width": "length", "height": "width"}]},
+        {"id": "rib", "plane": {"ref": "XY", "offset": "thickness"}, "entities": [{"kind": "rect", "center": ["-length / 2 + 5", 0], "width": "rib_t", "height": "width"}]}
+      ],
+      "features": [
+        {"kind": "extrude", "id": "plate", "name": "Plate", "sketch": "base", "distance": "thickness"},
+        {"kind": "extrude", "id": "rib1", "name": "Rib", "sketch": "rib", "distance": "rib_h"},
+        {"kind": "pattern", "id": "ribs", "name": "Ribs", "features": ["rib1"], "type": "linear", "count": "rib_count", "direction": "x", "spacing": "(length - 10) / (rib_count - 1)"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "ir_version": 2,
+  "title": "Fixture",
+  "params": [],
+  "parts": [
+    {
+      "id": "p",
+      "name": "P",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  20.0,
+                  0.0
+                ],
+                [
+                  20.0,
+                  10.0
+                ],
+                [
+                  40.0,
+                  29.999999999999996
+                ],
+                [
+                  40.0,
+                  35.0
+                ],
+                [
+                  0.0,
+                  35.0
+                ]
+              ],
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body_s",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": 10.0,
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -23,6 +23,7 @@ class Outcome:
     version: int | None = None
     error: str | None = None
     events: tuple[tuple[HookEvent, dict[str, Any]], ...] = ()
+    followups: tuple[Callable[[], object], ...] = ()
 
 
 Work = Callable[[Emit], Outcome]
@@ -32,7 +33,7 @@ class Jobs:
     def __init__(self, engine: Engine, hooks: Hooks) -> None:
         self._engine = engine
         self._hooks = hooks
-        self._gpu = asyncio.Semaphore(1)
+        self.gpu = asyncio.Semaphore(1)
         self._queues: dict[str, list[asyncio.Queue[Event]]] = {}
         self._tasks: set[asyncio.Task[None]] = set()
         if interrupted := jobs_db.interrupt(engine):
@@ -77,7 +78,7 @@ class Jobs:
     async def _run(self, job_id: str, kind: JobKind, work: Work) -> None:
         with bound_contextvars(job_id=job_id):
             if kind in GPU_KINDS:
-                async with self._gpu:
+                async with self.gpu:
                     await self._execute(job_id, work)
             else:
                 await self._execute(job_id, work)
@@ -105,6 +106,11 @@ class Jobs:
             self._hooks.fire(event, payload)
         if job.status == "failed":
             self._hooks.fire("job.failed", {"job": job.model_dump(mode="json")})
+        for followup in outcome.followups:
+            try:
+                followup()
+            except Exception:
+                log.exception("followup_failed")
 
     def _publish(self, job_id: str, event: Event) -> None:
         for queue in self._queues.get(job_id, []):

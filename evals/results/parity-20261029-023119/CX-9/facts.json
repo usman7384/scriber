@@ -1,0 +1,100 @@
+[
+  {
+    "id": "d95af8ffdb7ac:1.2.0",
+    "doc_id": "d95af8ffdb7ac",
+    "kind": "holes",
+    "name": "req_1_mount",
+    "value": 6.0,
+    "unit": "mm",
+    "tol": null,
+    "count": 4,
+    "at": null,
+    "page": 1,
+    "line": 2,
+    "text": "REQ-1: mount 4\u00d7M6",
+    "source": {
+      "source": "document",
+      "ref": "d95af8ffdb7ac#p1:l2",
+      "quote": "REQ-1: mount 4\u00d7M6"
+    }
+  },
+  {
+    "id": "d95af8ffdb7ac:1.3.0",
+    "doc_id": "d95af8ffdb7ac",
+    "kind": "tolerance",
+    "name": "req_2_bore",
+    "value": 82.0,
+    "unit": "mm",
+    "tol": [
+      -0.2,
+      0.2
+    ],
+    "count": null,
+    "at": null,
+    "page": 1,
+    "line": 3,
+    "text": "REQ-2: bore \u00d882 \u00b10.2 mm",
+    "source": {
+      "source": "document",
+      "ref": "d95af8ffdb7ac#p1:l3",
+      "quote": "REQ-2: bore \u00d882 \u00b10.2 mm"
+    }
+  },
+  {
+    "id": "d95af8ffdb7ac:1.4.0",
+    "doc_id": "d95af8ffdb7ac",
+    "kind": "parameter",
+    "name": "req_3_plate_size_x",
+    "value": 150.0,
+    "unit": "mm",
+    "tol": null,
+    "count": null,
+    "at": null,
+    "page": 1,
+    "line": 4,
+    "text": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm",
+    "source": {
+      "source": "document",
+      "ref": "d95af8ffdb7ac#p1:l4",
+      "quote": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm"
+    }
+  },
+  {
+    "id": "d95af8ffdb7ac:1.4.1",
+    "doc_id": "d95af8ffdb7ac",
+    "kind": "parameter",
+    "name": "req_3_plate_size_y",
+    "value": 150.0,
+    "unit": "mm",
+    "tol": null,
+    "count": null,
+    "at": null,
+    "page": 1,
+    "line": 4,
+    "text": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm",
+    "source": {
+      "source": "document",
+      "ref": "d95af8ffdb7ac#p1:l4",
+      "quote": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm"
+    }
+  },
+  {
+    "id": "d95af8ffdb7ac:1.4.2",
+    "doc_id": "d95af8ffdb7ac",
+    "kind": "parameter",
+    "name": "req_3_plate_size_z",
+    "value": 8.0,
+    "unit": "mm",
+    "tol": null,
+    "count": null,
+    "at": null,
+    "page": 1,
+    "line": 4,
+    "text": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm",
+    "source": {
+      "source": "document",
+      "ref": "d95af8ffdb7ac#p1:l4",
+      "quote": "REQ-3: plate 150 \u00d7 150 \u00d7 8 mm"
+    }
+  }
+]

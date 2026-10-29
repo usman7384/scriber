@@ -24,14 +24,17 @@ class OllamaLLM:
         self.max_tokens = max_tokens
         self._client = Client(host=host)
 
-    def chat(self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0) -> str:
+    def chat(
+        self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0, think: int | None = None
+    ) -> str:
+        predict = self.max_tokens + (think or 0)
         try:
             response = self._client.chat(
                 model=self.name,
                 messages=[_message(m) for m in messages],
                 format=schema,
-                options={"temperature": temperature, "seed": seed, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
-                think=self.think,
+                options={"temperature": temperature, "seed": seed, "num_ctx": self.num_ctx, "num_predict": predict},
+                think=self.think if think is None else think > 0,
             )
         except ResponseError as e:
             # Ollama stops a looping answer server-side; the loop treats an empty answer as cut off and asks again

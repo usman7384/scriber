@@ -8,7 +8,7 @@ from partwright_ir import DesignDiff, Process, Provenance, RuleKind
 
 JobKind = Literal["generate", "refine", "edit", "params", "ingest", "batch"]
 JobStatus = Literal["queued", "running", "done", "failed"]
-Origin = Literal["generate", "refine", "edit", "params", "restore"]
+Origin = Literal["generate", "refine", "edit", "params", "restore", "context", "variant", "suggestion"]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
 HookEvent = Literal["version.created", "job.failed", "version.stale"]
 
@@ -83,6 +83,13 @@ class Check(Frozen):
     actual: str
 
 
+class Input(Frozen):
+    kind: Literal["prompt", "file"]
+    role: Literal["used", "unused"]
+    id: str | None = None
+    name: str | None = None
+
+
 class Metrics(Frozen):
     bbox: tuple[float, float, float]
     volume: float
@@ -101,6 +108,7 @@ class VersionData(Frozen):
     findings: list[Finding] = []
     metrics: Metrics | None = None
     attachments: list[str] = []
+    inputs: list[Input] = []
     used: list[str] = []
     thumbnail: bool = False
     changes: DesignDiff | None = None
@@ -120,6 +128,7 @@ class Version(Frozen):
     files: dict[FileKind, str]
     thumbnail_url: str | None
     attachments: list[str]
+    inputs: list[Input]
     changes: DesignDiff | None
 
 
@@ -143,6 +152,7 @@ class Step(Frozen):
     message: str
     attempt: int
     elapsed_ms: int
+    progress: int = 0
     thumbnail_url: str | None = None
 
 
@@ -188,6 +198,7 @@ class GenerateIn(Frozen):
     process: Process = "any"
     context_ids: list[str] | None = None
     attachments: list[str] = []
+    thinking: Literal["low", "high"] | None = None
 
 
 class RefineIn(Frozen):
@@ -209,6 +220,20 @@ class BatchIn(Frozen):
 
 class Batch(Frozen):
     jobs: list[Job]
+
+
+class VariantsIn(Frozen):
+    instruction: str | None = Field(default=None, min_length=1)
+    param: str | None = None
+    values: list[float] = Field(default=[], max_length=1000)
+
+
+class SuggestionOut(Frozen):
+    id: str
+    target: str
+    change: dict[str, float]
+    rationale: str
+    status: Literal["open", "accepted", "ignored"] = "open"
 
 
 class ShareIn(Frozen):

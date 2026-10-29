@@ -1,0 +1,92 @@
+{
+  "ir_version": 2,
+  "title": "Fixture",
+  "params": [],
+  "parts": [
+    {
+      "id": "p",
+      "name": "P",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": 60.0,
+              "height": 40.0,
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "k",
+          "plane": {
+            "ref": "XY",
+            "offset": 20.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": 30.0,
+              "height": 20.0,
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body_s",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": 20.0,
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "pocket",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "k",
+          "mode": "cut",
+          "extent": "blind",
+          "distance": -10.0,
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    }
+  ]
+}

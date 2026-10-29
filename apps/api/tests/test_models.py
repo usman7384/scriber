@@ -159,3 +159,58 @@ def test_batch_variants_have_their_own_hole_counts(api: Api) -> None:
     batch = api.ok(api.client.post("/batch", json={"project_id": project, "prompts": prompts}))
     counts = [api.ok(api.client.get(f"/models/{api.wait(j['id'])['model_id']}"))["version"]["metrics"]["holes"] for j in batch["jobs"]]
     assert counts == [4, 6, 8]
+
+
+def test_variants_become_models_of_their_own(api: Api) -> None:
+    project = api.project()
+    base = api.generate(project)["model_id"]
+    api.llm.responses.append(json.dumps({"param": "bolt_spacing_x", "values": [70, 80, 90]}))
+    calls = len(api.llm.calls)
+    batch = api.ok(api.client.post(f"/models/{base}/variants", json={"instruction": "3 versions with 70, 80 and 90 mm bolt spacing"}))
+    assert len(api.llm.calls) == calls + 1
+    jobs = [api.wait(j["id"]) for j in batch["jobs"]]
+    assert [j["status"] for j in jobs] == ["done"] * 3 and len({j["model_id"] for j in jobs} | {base}) == 4
+    spacings = []
+    for job in jobs:
+        xs = sorted({round(h["center"][0], 3) for h in holes(api, job["model_id"], 1)})
+        spacings.append(xs[1] - xs[0])
+    assert spacings == pytest.approx([70, 80, 90], abs=0.01)
+    version = api.ok(api.client.get(f"/models/{jobs[0]['model_id']}/versions/1"))
+    assert version["origin"] == "variant" and version["prompt"] == "bolt_spacing_x=70"
+    sweep = api.ok(api.client.post(f"/models/{base}/variants", json={"param": "width", "values": [70, 75]}))
+    assert [api.wait(j["id"])["status"] for j in sweep["jobs"]] == ["done", "done"]
+    assert api.client.post(f"/models/{base}/variants", json={"param": "nope", "values": [1]}).status_code == 400
+    assert api.client.post(f"/models/{base}/variants", json={}).status_code == 422
+    assert len(api.ok(api.client.get(f"/projects/{project}/models"))) == 6
+
+
+def test_suggestions_are_accepted_or_ignored(api: Api) -> None:
+    model_id = api.generate(api.project())["model_id"]
+    answer = {
+        "suggestions": [
+            {"target": "thickness", "change": {"thickness": 6}, "rationale": "stiffer plate"},
+            {"target": "hole_d", "change": {"hole_d": 7}, "rationale": "looser fit"},
+        ]
+    }
+    api.llm.responses.append(json.dumps(answer))
+    made = api.ok(api.client.post(f"/models/{model_id}/suggestions"))
+    expected = [("thickness", {"thickness": 6}, "open"), ("hole_d", {"hole_d": 7}, "open")]
+    assert [(s["target"], s["change"], s["status"]) for s in made] == expected
+    ir = api.client.get(f"/models/{model_id}/export", params={"fmt": "ir"}).content
+    assert api.ok(api.client.post(f"/models/{model_id}/suggestions/{made[1]['id']}/ignore"))["status"] == "ignored"
+    assert api.client.get(f"/models/{model_id}/export", params={"fmt": "ir"}).content == ir
+    job = api.wait(api.ok(api.client.post(f"/models/{model_id}/suggestions/{made[0]['id']}/accept"))["id"])
+    version = api.ok(api.client.get(f"/models/{model_id}/versions/{job['version']}"))
+    assert version["origin"] == "suggestion" and version["metrics"]["bbox"][2] == pytest.approx(6)
+    assert [s["status"] for s in api.ok(api.client.get(f"/models/{model_id}/suggestions"))] == ["accepted", "ignored"]
+    assert api.client.post(f"/models/{model_id}/suggestions/{made[0]['id']}/accept").status_code == 409
+    assert api.client.post(f"/models/{model_id}/suggestions/nope/ignore").status_code == 404
+
+
+def test_thinking_level_reaches_the_model(api: Api) -> None:
+    project = api.project()
+    for level, budget in (("low", 0), ("high", 8192)):
+        api.llm.responses += [REQS, plate()]
+        job = api.wait(api.ok(api.client.post(f"/projects/{project}/generate", json={"prompt": "plate", "thinking": level}))["id"])
+        assert job["status"] == "done" and api.llm.budgets[-1] == budget
+        assert job["steps"][1]["message"].endswith(f"thinking {level} with a {budget} token reasoning budget")

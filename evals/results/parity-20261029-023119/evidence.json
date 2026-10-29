@@ -1,0 +1,60 @@
+[
+  {
+    "row": "CX-9",
+    "passed": true,
+    "measured": {
+      "facts": 5,
+      "bore": "req_2_bore",
+      "mount": "req_1_mount",
+      "sourced": true
+    },
+    "note": ""
+  },
+  {
+    "row": "VM-1",
+    "passed": true,
+    "measured": {
+      "pocket_sharp": "min_internal_corner_radius@milling_3axis",
+      "pocket_r4": "PASS",
+      "overhang_70": "max_overhang_angle@fdm",
+      "overhang_45": "PASS"
+    },
+    "note": ""
+  },
+  {
+    "row": "VM-3",
+    "passed": true,
+    "measured": {
+      "min_hole_edge_ratio": "static",
+      "min_internal_corner_radius@milling_3axis": "static",
+      "max_overhang_angle@fdm": "static",
+      "min_hole_diameter": "dynamic",
+      "dynamic_only_problems": 0,
+      "dynamic_only_warnings": "min_hole_diameter",
+      "static_problems": 1
+    },
+    "note": ""
+  },
+  {
+    "row": "VM-5",
+    "passed": true,
+    "measured": {
+      "aero_flags": 1,
+      "default_flags": 0,
+      "aero_measured_mm": 18.0,
+      "aero_required_mm": 20.0
+    },
+    "note": ""
+  },
+  {
+    "row": "CD-8",
+    "passed": true,
+    "measured": {
+      "params_kept": true,
+      "intents_kept": true,
+      "same_hash": true,
+      "volume_drift": 1.0913936421275139e-11
+    },
+    "note": ""
+  }
+]

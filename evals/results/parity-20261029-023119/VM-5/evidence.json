@@ -1,0 +1,11 @@
+{
+  "row": "VM-5",
+  "passed": true,
+  "measured": {
+    "aero_flags": 1,
+    "default_flags": 0,
+    "aero_measured_mm": 18.0,
+    "aero_required_mm": 20.0
+  },
+  "note": ""
+}

@@ -1,0 +1,14 @@
+{
+  "row": "VM-3",
+  "passed": true,
+  "measured": {
+    "min_hole_edge_ratio": "static",
+    "min_internal_corner_radius@milling_3axis": "static",
+    "max_overhang_angle@fdm": "static",
+    "min_hole_diameter": "dynamic",
+    "dynamic_only_problems": 0,
+    "dynamic_only_warnings": "min_hole_diameter",
+    "static_problems": 1
+  },
+  "note": ""
+}

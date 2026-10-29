@@ -1,0 +1,11 @@
+{
+  "row": "CD-8",
+  "passed": true,
+  "measured": {
+    "params_kept": true,
+    "intents_kept": true,
+    "same_hash": true,
+    "volume_drift": 1.0913936421275139e-11
+  },
+  "note": ""
+}

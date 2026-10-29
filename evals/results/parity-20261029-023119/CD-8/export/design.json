@@ -1,0 +1,147 @@
+{
+  "ir_version": 2,
+  "title": "Sensor bracket",
+  "params": [
+    {
+      "name": "length",
+      "value": 80.0,
+      "unit": "mm",
+      "min": 40.0,
+      "max": 200.0,
+      "description": "bracket length",
+      "provenance": {
+        "source": "document",
+        "ref": "spec#p1:l2",
+        "quote": "length 80 mm"
+      }
+    },
+    {
+      "name": "width",
+      "value": 40.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "bracket width",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "40 mm wide"
+      }
+    },
+    {
+      "name": "thickness",
+      "value": 5.0,
+      "unit": "mm",
+      "min": 3.0,
+      "max": null,
+      "description": "plate thickness",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "5 mm plate"
+      }
+    },
+    {
+      "name": "hole_spacing",
+      "value": 50.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "bolt spacing",
+      "provenance": {
+        "source": "rule",
+        "ref": "min_hole_edge_ratio",
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "bracket",
+      "name": "Bracket",
+      "material": "6061 aluminium",
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": "length",
+              "height": "width",
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "plate",
+          "name": "Plate",
+          "intent": "flat base that carries the sensor",
+          "provenance": {
+            "source": "document",
+            "ref": "spec#p1:l2",
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "outline",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "thickness",
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "mount",
+          "name": "M6 mounting holes",
+          "intent": "clearance for the two M6 frame bolts",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": "two M6 bolts"
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "plate.top",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_spacing / 2",
+                0.0
+              ],
+              [
+                "hole_spacing / 2",
+                0.0
+              ]
+            ]
+          },
+          "type": "simple",
+          "fastener": "M6",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

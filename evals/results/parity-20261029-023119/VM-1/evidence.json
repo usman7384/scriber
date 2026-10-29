@@ -1,0 +1,11 @@
+{
+  "row": "VM-1",
+  "passed": true,
+  "measured": {
+    "pocket_sharp": "min_internal_corner_radius@milling_3axis",
+    "pocket_r4": "PASS",
+    "overhang_70": "max_overhang_angle@fdm",
+    "overhang_45": "PASS"
+  },
+  "note": ""
+}

@@ -10,6 +10,8 @@ from partwright_api import disk, jobs_db, repo, work
 from partwright_api.deps import Deps
 from partwright_api.repo import Row
 from partwright_api.schemas import FileKind, GenerateIn, Job, JobKind, Origin, Project, RefineIn, VersionData
+from partwright_api.work import Rebuild
+from partwright_context import Fact
 from partwright_ir import Design, ParamError, apply_params, drop_unused_params
 
 
@@ -83,26 +85,48 @@ def start_generate(d: Deps, project_id: str, req: GenerateIn) -> Job:
     return d.jobs.submit("generate", project_id, model_id, run, req.model_dump(mode="json"))
 
 
-def start_refine(d: Deps, model: Row, req: RefineIn) -> Job:
+def start_refine(d: Deps, model: Row, req: RefineIn, origin: Origin = "refine") -> Job:
     model_id, project_id = model["id"], model["project_id"]
     need_idle(d, model_id)
     design = latest_design(d, model_id)
     if req.target is not None and req.target not in {p.id for p in design.parts}:
         raise HTTPException(400, f"unknown part {req.target!r}; parts: {sorted(p.id for p in design.parts)}")
     need_processed(d, project_id, req.attachments)
-    run = partial(work.refine, d, project_id, model_id, req)
+    run = partial(work.refine, d, project_id, model_id, req, origin=origin)
     return d.jobs.submit("refine", project_id, model_id, run, req.model_dump(mode="json"))
 
 
-def start_rebuild(d: Deps, model: Row, values: Mapping[str, float], kind: JobKind, origin: Origin) -> Job:
+def start_rebuild(d: Deps, model: Row, edit: Rebuild, kind: JobKind) -> Job:
     model_id, project_id = model["id"], model["project_id"]
     need_idle(d, model_id)
     try:
-        apply_params(latest_design(d, model_id), values)
+        apply_params(latest_design(d, edit.source_id or model_id), edit.values)
     except ParamError as e:
         raise HTTPException(400, str(e)) from None
-    run = partial(work.rebuild, d, project_id, model_id, values, origin)
-    return d.jobs.submit(kind, project_id, model_id, run, {"values": dict(values)})
+    run = partial(work.rebuild, d, project_id, model_id, edit)
+    return d.jobs.submit(kind, project_id, model_id, run, {"values": dict(edit.values), "origin": edit.origin})
+
+
+def start_variant(d: Deps, base: Row, param: str, value: float) -> Job:
+    model_id = repo.create_model(d.engine, base["project_id"], f"{base['title']} ({param} {value:g})")
+    model = need_model(d, model_id)
+    return start_rebuild(d, model, Rebuild({param: value}, "variant", source_id=base["id"]), "params")
+
+
+def follow_spec(d: Deps, model_id: str, file_name: str, pairs: list[tuple[Fact, Fact]], relink: Mapping[str, str]) -> Job:
+    model = need_model(d, model_id)
+    note = f"{file_name} changed: " + "; ".join(f"{new.name} {_v(old.value)} -> {_v(new.value)} {new.unit}".rstrip() for old, new in pairs)
+    by_ref = {old.source.ref: new for old, new in pairs if old.source.ref and isinstance(new.value, float)}
+    cited = {p.name: by_ref[p.provenance.ref] for p in latest_design(d, model_id).params if p.provenance.ref in by_ref}
+    if {f.id for f in cited.values()} == {new.id for _, new in pairs}:
+        values = {n: float(f.value) for n, f in cited.items()}
+        edit = Rebuild(values, "context", note, {n: f.source for n, f in cited.items()}, relink=relink)
+        return start_rebuild(d, model, edit, "params")
+    return start_refine(d, model, RefineIn(instruction=f"{note}. Update the design to match."), "context")
+
+
+def _v(value: float | str) -> str:
+    return f"{value:g}" if isinstance(value, float) else value
 
 
 def component_only(design: Design, component_id: str, names: set[str]) -> None:
