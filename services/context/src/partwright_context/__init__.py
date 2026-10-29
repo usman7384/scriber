@@ -1,3 +1,4 @@
+from partwright_context.batch import IngestOutcome, archive_files, ingest_all
 from partwright_context.defaults import DEFAULT_RULES
 from partwright_context.embed import Embedder, HashEmbedder, OllamaEmbedder
 from partwright_context.graph import derived_from, to_networkx
@@ -20,13 +21,16 @@ __all__ = [
     "GraphNode",
     "GraphView",
     "HashEmbedder",
+    "IngestOutcome",
     "KbStats",
     "LocalContext",
     "OllamaEmbedder",
     "PartRef",
     "Propose",
     "ProposedFact",
+    "archive_files",
     "derived_from",
     "document_text",
+    "ingest_all",
     "to_networkx",
 ]
