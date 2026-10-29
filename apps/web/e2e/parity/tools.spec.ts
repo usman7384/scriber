@@ -45,7 +45,9 @@ test("EX-4 (web) Export offers FreeCAD .FCStd when the API has FreeCAD, and show
 
   await openEditor(page, basePlate, { freecad: false, prusaslicer: true });
   await exportMenu(page);
-  const hidden = (await freecadItem(page).count()) === 0;
+  const disabled = await freecadItem(page).isDisabled();
+  const reason = await freecadItem(page).evaluate((e) => e.getAttribute("aria-describedby"));
+  const why = reason ? await page.locator(`#${reason}`).textContent() : null;
   await row.shot("3-no-freecad");
 
   Object.assign(row.measured, {
@@ -54,7 +56,8 @@ test("EX-4 (web) Export offers FreeCAD .FCStd when the API has FreeCAD, and show
     same_bytes_as_freecad_output: bytes.equals(expected),
     zip_with_document_xml: bytes.subarray(0, 2).toString("latin1") === "PK" && bytes.includes("Document.xml"),
     unsupported_message: message,
-    hidden_without_freecad: hidden,
+    disabled_without_freecad: disabled,
+    reason_without_freecad: why,
   });
   expect(file.suggestedFilename()).toBe("base-plate-v1.FCStd");
   expect(bytes.equals(expected)).toBe(true);
@@ -62,7 +65,8 @@ test("EX-4 (web) Export offers FreeCAD .FCStd when the API has FreeCAD, and show
   expect(message).toBe(
     "this design has no FreeCAD export: assembly joints and placements have no FreeCAD export yet",
   );
-  expect(hidden).toBe(true);
+  expect(disabled).toBe(true);
+  expect(why).toBe("FreeCAD is not set up on the server");
   row.note =
     "Export route mocked with the API's status codes and wording (apps/api tools.py); the .FCStd bytes and the unsupported message are FreeCAD 1.1.4 and fcstd_plan output written by e2e/fixtures/make_fixtures.py. The real route is apps/api tests/test_tools.py.";
 });
@@ -72,6 +76,7 @@ test("VM-9 (web) Check printability shows the PrusaSlicer report beside the manu
   row,
 }) => {
   const api = await openEditor(page, motorHolder);
+  await page.getByRole("button", { name: /^Checks:/ }).click();
   const panel = page.getByLabel("Printability", { exact: true });
   await panel.getByRole("button", { name: "Check printability" }).click();
   await expect(panel.getByText(/layers/)).toBeVisible();

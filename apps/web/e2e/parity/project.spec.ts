@@ -12,16 +12,16 @@ test("WP-2 prompt card with image, mesh and spec attachments makes one generatio
   await api.install(page);
   await page.goto("/p/p1");
   const attachments = [
-    { kind: "+ Image", name: "plate-photo.png", mimeType: "image/png", buffer: asset("plate.png") },
-    { kind: "+ Mesh", name: "old-plate.glb", mimeType: "model/gltf-binary", buffer: asset("plate.glb") },
+    { name: "plate-photo.png", mimeType: "image/png", buffer: asset("plate.png") },
+    { name: "old-plate.glb", mimeType: "model/gltf-binary", buffer: asset("plate.glb") },
     {
-      kind: "+ Spec file",
       name: "plate-spec.md",
       mimeType: "text/markdown",
       buffer: Buffer.from("# Plate\nREQ-1 Plate size 120 x 80 x 6 mm\n"),
     },
   ];
-  for (const { kind, ...file } of attachments) await page.getByLabel(kind).setInputFiles(file);
+  const attach = page.getByRole("form", { name: "New generation" }).locator("input[type=file]").first();
+  for (const file of attachments) await attach.setInputFiles(file);
   await expect(page.getByRole("list", { name: "Attachments" }).getByRole("listitem")).toHaveCount(3);
   await page.getByLabel("Describe the part").fill("Copy this plate but 120 x 80 x 6 mm");
   await row.shot("1-attached");
@@ -82,15 +82,27 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
     await row.shot(`${reached.length + 1}-${name.toLowerCase()}`);
     reached.push(name);
   };
+  // Settings and Help are sheets over the current page; Esc closes them.
+  const sheet = async (name: string, path: RegExp) => {
+    await nav.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(path);
+    await expect(page.getByRole("dialog", { name })).toBeVisible();
+    await row.shot(`${reached.length + 1}-${name.toLowerCase()}`);
+    reached.push(name);
+  };
 
   await page.goto("/help");
+  await expect(page.getByRole("dialog", { name: "Help" })).toBeVisible();
+  await page.keyboard.press("Escape");
   await visit("Projects", /\/$/, "Projects");
-  await visit("Library", /\/library$/, "Library");
-  await visit("Settings", /\/settings$/, "Settings");
+  await visit("All parts", /\/library$/, "All parts");
+  await sheet("Settings", /\/settings$/);
   await page.getByLabel("Dark").check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByLabel("Light").check();
-  await visit("Help", /\/help$/, "Help");
+  await page.keyboard.press("Escape");
+  await sheet("Help", /\/help$/);
+  await page.keyboard.press("Escape");
 
   await nav.getByRole("link", { name: "Projects" }).click();
   await page.getByRole("link", { name: "Bracket lab" }).click();
@@ -101,14 +113,18 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
     .allTextContents();
   await row.shot(`${reached.length + 1}-project-models`);
   reached.push("Project models");
-  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Context" }).click();
+  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();
   await expect(page.getByRole("table", { name: "Context files" })).toBeVisible();
-  await row.shot(`${reached.length + 1}-context`);
-  reached.push("Context manager");
+  await row.shot(`${reached.length + 1}-sources`);
+  reached.push("Sources");
+  // The Sources sheet is modal; close it before going back to the sidebar.
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/p\/p1$/);
 
+  await nav.getByRole("link", { name: "Settings", exact: true }).click();
   const [popup] = await Promise.all([
     page.waitForEvent("popup"),
-    nav.getByRole("link", { name: "API", exact: true }).click(),
+    page.getByRole("dialog", { name: "Settings" }).getByRole("link", { name: "API docs" }).click(),
   ]);
   await expect(popup).toHaveURL(/\/docs$/);
   reached.push("API docs");

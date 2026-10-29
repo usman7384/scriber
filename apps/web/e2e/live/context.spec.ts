@@ -158,15 +158,14 @@ test("CX-6 live: knowledge-base level and score equal the API and the formula af
     row.measured[`${stage}_api`] =
       `files ${s.files}, facts ${s.facts}, rules ${s.rules}, generations ${s.generations}, used ${s.used_in_generation}, score ${s.score}/${s.next_level_score}, level ${s.level}`;
     row.measured[`${stage}_ui`] =
-      `files ${shown.Files}, facts ${shown.Facts}, rules ${shown.Rules}, generations ${shown.Generations}, used ${shown["Used in generation"]}, score ${shown.score}/${shown.next}, level ${shown.level}`;
+      `files ${shown.files}, facts ${shown.facts}, rules ${shown.rules}, used ${shown.used}, score ${shown.score}/${shown.next}, level ${shown.level}`;
     row.measured[`${stage}_formula`] = `score ${score}/${100 * (level + 1) ** 2}, level ${level}`;
     expect([s.score, s.level, s.next_level_score]).toEqual([score, level, 100 * (level + 1) ** 2]);
     expect(shown).toMatchObject({
-      Files: s.files,
-      Facts: s.facts,
-      Rules: s.rules,
-      Generations: s.generations,
-      "Used in generation": s.used_in_generation,
+      files: s.files,
+      facts: s.facts,
+      rules: s.rules,
+      used: s.used_in_generation,
       score: s.score,
       level: s.level,
       next: s.next_level_score,
@@ -187,7 +186,7 @@ test("CX-6 live: knowledge-base level and score equal the API and the formula af
   const uploaded = await check("2-after-2-uploads");
 
   await page.getByLabel("Use plate_spec.md as context").check();
-  await page.getByRole("button", { name: "Use selected as context (1)" }).click();
+  await page.getByRole("button", { name: "Use 1 in the next generation" }).click();
   await page
     .getByLabel("Describe the part")
     .fill("mounting plate per the selected spec, 150 x 90 x 6 mm with four M6 clearance holes");

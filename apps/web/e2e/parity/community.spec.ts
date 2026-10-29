@@ -11,11 +11,14 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   await api.install(page);
   await page.goto("/m/m1");
   await expect(page.getByLabel("Bounding box")).toBeVisible();
-  await page.getByRole("button", { name: "Publish" }).click();
-  await expect(page.getByText("Published to the community")).toBeVisible();
+  await page.locator("details.menu summary").click();
+  await page.getByRole("button", { name: "Publish to Explore" }).click();
+  await expect(page.getByText("Published to Explore")).toBeVisible();
   await row.shot("1-published");
 
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Community" }).click();
+  // The workspace has no main navigation; its mark leads home.
+  await page.getByRole("link", { name: "Partwright home" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Explore" }).click();
   await expect(page).toHaveURL(/\/explore$/);
   const cards = page.getByRole("list", { name: "Published parts" }).getByRole("listitem");
   await expect(cards.locator(".card-title")).toHaveText(["Sensor plate", "Edge test plate"]);
@@ -26,11 +29,11 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   const meta = await cards.locator("p").allTextContents();
   await row.shot("2-community");
 
-  await page.getByLabel("Fork into project").selectOption({ label: "Bracket lab" });
   await page.getByRole("button", { name: "Fork Edge test plate" }).click();
-  await expect(page.getByRole("status")).toHaveText("Forked Edge test plate into Bracket lab. Open the copy");
-  await row.shot("3-forked");
-  await page.getByRole("link", { name: "Open the copy" }).click();
+  const picker = page.getByRole("dialog", { name: "Fork into project" });
+  await expect(picker.getByRole("button")).toHaveText(["Bracket lab", "Fixture shop"]);
+  await row.shot("3-fork-picker");
+  await picker.getByRole("button", { name: "Bracket lab" }).click();
   await expect(page).toHaveURL(/\/m\/m4$/);
   const provenance = page.getByText("Forked from Edge test plate v2 by alice");
   await expect(provenance).toBeVisible();
@@ -38,7 +41,7 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   await expect(page.getByLabel("Hole X", { exact: true })).toHaveValue("15");
   await row.shot("4-fork-in-editor");
 
-  await page.getByRole("link", { name: "← Project" }).click();
+  await page.getByRole("navigation", { name: "Location" }).getByRole("link", { name: "Bracket lab" }).click();
   const forkCard = page
     .getByRole("list", { name: "Models" })
     .getByRole("listitem")
