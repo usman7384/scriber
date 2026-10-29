@@ -1,0 +1,11 @@
+{
+  "row": "WP-9",
+  "passed": true,
+  "measured": {
+    "parts": 3,
+    "projects": 2,
+    "order": "Edge test plate > Sensor plate > Hole near edge",
+    "thumbnails_loaded": 3
+  },
+  "note": ""
+}

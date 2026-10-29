@@ -1,0 +1,128 @@
+{
+  "title": "Motor holder",
+  "params": [
+    {
+      "name": "motor_d",
+      "value": 28.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "28 mm motor"
+      },
+      "label": "Motor D"
+    },
+    {
+      "name": "clearance",
+      "value": 0.3,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Clearance"
+    },
+    {
+      "name": "wall",
+      "value": 3.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Wall"
+    },
+    {
+      "name": "ring_h",
+      "value": 20.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Ring H"
+    },
+    {
+      "name": "base_l",
+      "value": 60.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Base L"
+    },
+    {
+      "name": "base_w",
+      "value": 40.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Base W"
+    },
+    {
+      "name": "base_t",
+      "value": 4.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Base T"
+    },
+    {
+      "name": "screw_spacing",
+      "value": 48.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Screw Spacing"
+    }
+  ],
+  "metrics": {
+    "bbox": [
+      60.0,
+      40.0,
+      24.0
+    ],
+    "volume": 15483.826,
+    "mass_g": null,
+    "holes": 3
+  },
+  "findings": []
+}

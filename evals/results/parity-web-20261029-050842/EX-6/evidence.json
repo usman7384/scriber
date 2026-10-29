@@ -1,0 +1,12 @@
+{
+  "row": "EX-6",
+  "passed": true,
+  "measured": {
+    "link": "http://127.0.0.1:5199/shared/s1",
+    "shared_requests": "GET /s/s1, GET /s/s1/files/glb",
+    "editable_fields": 0,
+    "edit_buttons": 0,
+    "after_revoke": "share link not found or revoked"
+  },
+  "note": "Viewer page /shared/{id} reads only GET /s/{id} and its files (mocked in the apps/api shape); the API half (no auth, write 401, revoked 404) is parity-20261029-025007."
+}

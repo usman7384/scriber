@@ -1,31 +1,37 @@
 import { useState, type DragEvent } from "react";
 import { api, waitForJob } from "../api";
+import { useT } from "../i18n";
 
 interface Upload {
   name: string;
   status: "uploading" | "processing" | "processed" | "failed";
   error?: string | null | undefined;
+  progress: number;
 }
 
 export function UploadZone({ projectId, onChange }: { projectId: string; onChange: () => void }) {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [over, setOver] = useState(false);
+  const t = useT();
 
   const set = (name: string, patch: Partial<Upload>) =>
     setUploads((all) => all.map((u) => (u.name === name ? { ...u, ...patch } : u)));
 
   const add = async (files: File[]) => {
     if (files.length === 0) return;
-    setUploads((all) => [...files.map((f): Upload => ({ name: f.name, status: "uploading" })), ...all]);
+    setUploads((all) => [
+      ...files.map((f): Upload => ({ name: f.name, status: "uploading", progress: 0 })),
+      ...all,
+    ]);
     try {
       const jobs = await api.upload(projectId, files);
       onChange();
       await Promise.all(
         files.map(async (f, i) => {
           const job = jobs[i];
-          if (!job) return set(f.name, { status: "failed", error: "No ingest job returned" });
+          if (!job) return set(f.name, { status: "failed", error: t.context.noJob });
           set(f.name, { status: "processing" });
-          const end = await waitForJob(job.id);
+          const end = await waitForJob(job.id, (s) => set(f.name, { progress: s.progress ?? 0 }));
           set(f.name, { status: end.status === "done" ? "processed" : "failed", error: end.error });
           onChange();
         }),
@@ -52,9 +58,9 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         onDragLeave={() => setOver(false)}
         onDrop={drop}
       >
-        <p>Drop specs, drawings, CAD files, images or tables here</p>
+        <p>{t.context.drop}</p>
         <label className="button secondary">
-          Choose files
+          {t.context.choose}
           <input
             type="file"
             multiple
@@ -64,11 +70,12 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         </label>
       </div>
       {uploads.length > 0 && (
-        <ul className="list" aria-label="Uploads">
+        <ul className="list" aria-label={t.context.uploads}>
           {uploads.map((u, i) => (
             <li key={i} className="row">
               <span>{u.name}</span>
-              <span className={`badge ${u.status}`}>{u.status}</span>
+              <progress value={u.progress} max={100} aria-label={t.context.progress(u.name)} />
+              <span className={`badge ${u.status}`}>{t.status[u.status] ?? u.status}</span>
               {u.error && <span className="error small">{u.error}</span>}
             </li>
           ))}

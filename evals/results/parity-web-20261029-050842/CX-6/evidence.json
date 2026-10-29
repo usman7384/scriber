@@ -1,0 +1,12 @@
+{
+  "row": "CX-6",
+  "passed": true,
+  "measured": {
+    "before_ui": "files 6, facts 21, rules 2, used 1, score 132/400, level 1",
+    "before_formula": "score 132/400, level 1",
+    "after_2_uploads_1_generation_ui": "files 8, facts 23, rules 2, used 2, score 176/400, level 1",
+    "after_2_uploads_1_generation_formula": "score 176/400, level 1",
+    "score_delta": 44
+  },
+  "note": "Score = 10 files + 2 facts + 5 rules + 20 used-in-generation, level = isqrt(score / 100) (services/context LocalContext.stats); the counts come from the mocked GET /projects/{id}/context."
+}

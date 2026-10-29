@@ -18,7 +18,10 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await page.getByRole("button", { name: /^Spacer ring/ }).click();
   await expect(page.getByLabel("Describe the part")).toHaveValue(/^Spacer ring/);
   await page.getByLabel("Describe the part").fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
-  await page.getByRole("combobox").selectOption("milling_3axis");
+  await page
+    .getByRole("form", { name: "New generation" })
+    .getByRole("combobox")
+    .selectOption("milling_3axis");
   await page.getByRole("button", { name: "Generate" }).click();
 
   const timeline = page.getByRole("region", { name: "Generation timeline" });
@@ -46,7 +49,7 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await page.getByRole("button", { name: "Top" }).click();
   await expect(page.getByRole("button", { name: "Top" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("list", { name: "Components" }).getByRole("button")).toHaveText([
-    "Sensor mounting plate",
+    "Sensor mounting plate plate",
   ]);
   const marker = page.getByLabel(/^Finding: Hole Ø6.6/);
   await marker.hover();
@@ -76,10 +79,10 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await expect(history.locator("li").first()).toContainText("make it 10 mm thicker");
   expect(api.requests.find((r) => r.path.endsWith("/refine"))?.body).toEqual({
     instruction: "make it 10 mm thicker",
-    target: "Sensor mounting plate",
+    target: "plate",
   });
 
   await page.getByRole("button", { name: "Share" }).click();
-  await expect(page.getByLabel("Share link")).toHaveValue(`${baseURL}/s/s1`);
+  await expect(page.getByLabel("Share link")).toHaveValue(`${baseURL}/shared/s1`);
   expect(offsite).toEqual([]);
 });

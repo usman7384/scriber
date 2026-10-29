@@ -1,0 +1,72 @@
+{
+  "title": "Base plate",
+  "params": [
+    {
+      "name": "length",
+      "value": 120.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "120 x 80 x 5 mm"
+      },
+      "label": "Length"
+    },
+    {
+      "name": "width",
+      "value": 80.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "120 x 80 x 5 mm"
+      },
+      "label": "Width"
+    },
+    {
+      "name": "thickness",
+      "value": 5.0,
+      "unit": "mm",
+      "min": 2.0,
+      "max": 20.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      },
+      "label": "Thickness"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "standard",
+        "ref": "ISO 273",
+        "quote": null
+      },
+      "label": "Hole D"
+    }
+  ],
+  "metrics": {
+    "bbox": [
+      120.0,
+      80.0,
+      5.0
+    ],
+    "volume": 47315.761,
+    "mass_g": null,
+    "holes": 4
+  },
+  "findings": []
+}

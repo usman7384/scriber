@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useState, type FormEvent } from "react";
 import type { Param } from "../api";
+import { useT } from "../i18n";
 import { ParamRow } from "./ParamRow";
 
 const DEBOUNCE_MS = 400;
@@ -14,6 +15,7 @@ export function ParamPanel({ params, busy, onApply }: Props) {
   // Drafts belong to one params list; a new version or reload starts clean.
   const [edit, setEdit] = useState({ of: params, drafts: {} as Record<string, string> });
   const [instant, setInstant] = useState(false);
+  const t = useT();
   const drafts = edit.of === params ? edit.drafts : {};
   const changes = Object.fromEntries(
     params.flatMap((p) => {
@@ -36,12 +38,12 @@ export function ParamPanel({ params, busy, onApply }: Props) {
     apply();
   };
 
-  if (params.length === 0) return <p className="muted">This version has no parameters.</p>;
+  if (params.length === 0) return <p className="muted">{t.params.none}</p>;
   return (
-    <form className="params" onSubmit={submit} aria-label="Parameters">
+    <form className="params" onSubmit={submit} aria-label={t.params.form}>
       <label className="toggle">
         <input type="checkbox" checked={instant} onChange={(e) => setInstant(e.target.checked)} />
-        Apply instantly
+        {t.params.instant}
       </label>
       {params.map((p) => (
         <ParamRow
@@ -53,7 +55,7 @@ export function ParamPanel({ params, busy, onApply }: Props) {
       ))}
       {!instant && (
         <button type="submit" className="primary" disabled={!dirty || busy}>
-          Apply
+          {t.apply}
         </button>
       )}
     </form>

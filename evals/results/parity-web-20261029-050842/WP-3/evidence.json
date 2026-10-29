@@ -1,0 +1,10 @@
+{
+  "row": "WP-3",
+  "passed": true,
+  "measured": {
+    "title": "Sensor plate",
+    "chip_states": "Target: Entire object | Target: Sensor mounting plate | Target: Entire object | Target: Sensor mounting plate | Target: Entire object",
+    "back_and_new_generation": "both reach the project prompt"
+  },
+  "note": "Title is the API model title (GE-10 makes it on the server; mocked here)."
+}

@@ -7,6 +7,7 @@ import { test as base } from "@playwright/test";
 type Measured = Record<string, string | number | boolean | null>;
 
 export interface Row {
+  dir: string;
   measured: Measured;
   note: string;
   shot: (name: string) => Promise<void>;
@@ -23,6 +24,7 @@ export const test = base.extend<{ row: Row }>({
     const dir = join(runDir, id);
     mkdirSync(dir, { recursive: true });
     const row: Row = {
+      dir,
       measured: {},
       note: "",
       shot: async (name) => {

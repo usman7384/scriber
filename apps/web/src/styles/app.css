@@ -489,6 +489,12 @@ p {
   border-color: transparent;
   background: transparent;
 }
+.tree button[aria-pressed="true"] {
+  background: var(--accent);
+}
+.tree .tree {
+  padding-left: 16px;
+}
 .versions {
   display: flex;
   flex-direction: column;
@@ -605,6 +611,11 @@ tr[aria-selected="true"] {
 progress {
   width: 100%;
   accent-color: var(--accent);
+}
+.row > progress {
+  flex: 1;
+  width: auto;
+  min-width: 80px;
 }
 .stats {
   display: grid;

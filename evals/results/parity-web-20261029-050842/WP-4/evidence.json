@@ -1,0 +1,9 @@
+{
+  "row": "WP-4",
+  "passed": true,
+  "measured": {
+    "chips": 4,
+    "filled": 4
+  },
+  "note": ""
+}
