@@ -1,15 +1,15 @@
 import { Edges, useGLTF } from "@react-three/drei";
 import { useEffect, useEffectEvent, useMemo } from "react";
 import { Vector3 } from "three";
-import type { Finding } from "../api";
+import type { Finding, Vec3 } from "../api";
 import { CameraRig } from "./CameraRig";
 import { FindingMarkers } from "./FindingMarkers";
 import { Measurements } from "./Measurements";
 import { bounds, cadParts, type View } from "./scene";
 
-export interface ModelInfo {
-  parts: string[];
-  size: Vector3;
+export interface Hit {
+  point: Vec3;
+  normal: Vec3;
 }
 
 interface Props {
@@ -19,8 +19,8 @@ interface Props {
   measure: boolean;
   findings: Finding[];
   selected?: string | undefined;
-  onSelect: (part: string) => void;
-  onLoad: (info: ModelInfo) => void;
+  onSelect: (part: string, hit: Hit) => void;
+  onLoad: (size: Vector3) => void;
 }
 
 export function Model({ url, view, edges, measure, findings, selected, onSelect, onLoad }: Props) {
@@ -29,18 +29,20 @@ export function Model({ url, view, edges, measure, findings, selected, onSelect,
   const box = useMemo(() => bounds(parts), [parts]);
   const loaded = useEffectEvent(onLoad);
   useEffect(() => {
-    loaded({ parts: [...new Set(parts.map((p) => p.name))], size: box.getSize(new Vector3()) });
-  }, [parts, box]);
+    loaded(box.getSize(new Vector3()));
+  }, [box]);
   return (
     <>
       <CameraRig view={view} box={box} />
       {parts.map((p, i) => (
         <mesh
           key={i}
+          name={p.name}
           geometry={p.geometry}
           onClick={(e) => {
             e.stopPropagation();
-            onSelect(p.name);
+            const n = e.face?.normal ?? { x: 0, y: 0, z: 0 };
+            onSelect(p.name, { point: e.point.toArray(), normal: [n.x, n.y, n.z] });
           }}
         >
           <meshStandardMaterial

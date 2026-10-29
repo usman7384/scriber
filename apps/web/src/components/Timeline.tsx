@@ -12,6 +12,7 @@ interface Props {
 export function JobTimeline({ jobId, onEnd, children }: Props) {
   const { steps, job, error } = useJob(jobId, onEnd);
   const status = error ? "failed" : (job?.status ?? "running");
+  const progress = steps.at(-1)?.progress;
   return (
     <section className="panel" aria-label="Generation timeline">
       <header className="row">
@@ -20,6 +21,12 @@ export function JobTimeline({ jobId, onEnd, children }: Props) {
           {status}
         </span>
       </header>
+      {progress !== undefined && (
+        <div className="row">
+          <progress value={progress} max={100} aria-label="Progress" />
+          <span className="muted small">{progress} %</span>
+        </div>
+      )}
       <ol className="timeline">
         {steps.map((s, i) => (
           <li key={i} className={`step ${s.kind}`}>

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { api, waitForJob, type Job, type Process } from "../api";
+import { api, waitForJob, type ContextFile, type Job, type Process } from "../api";
 import { processes } from "../format";
 
 const examples = [
@@ -24,7 +24,14 @@ async function uploadAttachments(projectId: string, files: File[]): Promise<stri
   return files.flatMap((f) => newest.find((s) => s.name === f.name)?.id ?? []);
 }
 
-export function PromptPanel({ projectId, onJob }: { projectId: string; onJob: (job: Job) => void }) {
+interface Props {
+  projectId: string;
+  context?: ContextFile[];
+  onClearContext?: () => void;
+  onJob: (job: Job) => void;
+}
+
+export function PromptPanel({ projectId, context = [], onClearContext, onJob }: Props) {
   const [prompt, setPrompt] = useState("");
   const [proc, setProc] = useState<Process>("any");
   const [files, setFiles] = useState<File[]>([]);
@@ -37,7 +44,10 @@ export function PromptPanel({ projectId, onJob }: { projectId: string; onJob: (j
     setError(undefined);
     try {
       const attachments = await uploadAttachments(projectId, files);
-      onJob(await api.generate(projectId, { prompt: prompt.trim(), process: proc, attachments }));
+      const context_ids = context.length ? { context_ids: context.map((f) => f.id) } : {};
+      onJob(
+        await api.generate(projectId, { prompt: prompt.trim(), process: proc, attachments, ...context_ids }),
+      );
       setFiles([]);
     } catch (err) {
       setError((err as Error).message);
@@ -63,6 +73,20 @@ export function PromptPanel({ projectId, onJob }: { projectId: string; onJob: (j
           </button>
         ))}
       </div>
+      {context.length > 0 && (
+        <ul className="attachments" aria-label="Context files">
+          {context.map((f) => (
+            <li key={f.id} className="chip">
+              {f.name}
+            </li>
+          ))}
+          <li>
+            <button type="button" className="link" onClick={onClearContext}>
+              Clear context
+            </button>
+          </li>
+        </ul>
+      )}
       {files.length > 0 && (
         <ul className="attachments" aria-label="Attachments">
           {files.map((f) => (

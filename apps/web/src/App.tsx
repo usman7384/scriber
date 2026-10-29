@@ -10,6 +10,7 @@ import { ProjectsPage } from "./pages/ProjectsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
 const EditorPage = lazy(() => import("./pages/EditorPage").then((m) => ({ default: m.EditorPage })));
+const SharedPage = lazy(() => import("./pages/SharedPage").then((m) => ({ default: m.SharedPage })));
 
 export function App() {
   return (
@@ -26,6 +27,14 @@ export function App() {
           element={
             <Suspense fallback={<Pending />}>
               <EditorPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="shared/:shareId"
+          element={
+            <Suspense fallback={<Pending />}>
+              <SharedPage />
             </Suspense>
           }
         />

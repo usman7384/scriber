@@ -95,12 +95,12 @@ export interface Version {
   number: number;
   created: string;
   status: "ok" | "failed";
-  origin: "generate" | "refine" | "edit" | "params" | "restore";
+  origin: "generate" | "refine" | "edit" | "params" | "restore" | "context" | "variant" | "suggestion";
   prompt?: string | null;
   params: Param[];
   checks: Check[];
   findings: Finding[];
-  metrics: { volume: number; mass_g?: number | null } | null;
+  metrics: { bbox: Vec3; volume: number; mass_g?: number | null; holes: number } | null;
   files: Partial<Record<ExportFormat, string>>;
   thumbnail_url?: string | null;
 }
@@ -110,6 +110,7 @@ export interface Step {
   message: string;
   attempt: number;
   elapsed_ms: number;
+  progress?: number;
   thumbnail_url?: string | null;
 }
 
@@ -125,6 +126,39 @@ export interface Job {
   started?: string | null;
   finished?: string | null;
   steps: Step[];
+}
+
+export interface Component {
+  id: string;
+  name: string;
+  material: string | null;
+  parent: string | null;
+  joint: string | null;
+}
+
+export interface Suggestion {
+  id: string;
+  target: string;
+  change: Record<string, number>;
+  rationale: string;
+  status: "open" | "accepted" | "ignored";
+}
+
+export interface FacePick {
+  point: Vec3;
+  normal: Vec3;
+  version: number;
+}
+
+export interface FaceDriver {
+  part: string;
+  feature: string;
+  param: string;
+  rate: number;
+}
+
+export interface SharedModel extends Model {
+  version: Version;
 }
 
 export interface GraphView {
@@ -150,6 +184,7 @@ export interface GenerateRequest {
   prompt: string;
   process?: Process;
   attachments?: string[];
+  context_ids?: string[];
 }
 
 export interface BugReport {
@@ -203,8 +238,17 @@ export const api = {
     post<Job>(`/models/${id}/refine`, body),
   setParams: (id: string, values: Record<string, number>) =>
     request<Job>(`/models/${id}/params`, { method: "PATCH", body: JSON.stringify({ values }) }),
+  components: (id: string, version: number) =>
+    request<Component[]>(`/models/${id}/components?version=${version}`),
+  faceDriver: (id: string, pick: FacePick) => post<FaceDriver>(`/models/${id}/face-driver`, pick),
+  suggestions: (id: string) => request<Suggestion[]>(`/models/${id}/suggestions`),
+  suggest: (id: string) => post<Suggestion[]>(`/models/${id}/suggestions`),
+  acceptSuggestion: (id: string, sid: string) => post<Job>(`/models/${id}/suggestions/${sid}/accept`),
+  ignoreSuggestion: (id: string, sid: string) => post<Suggestion>(`/models/${id}/suggestions/${sid}/ignore`),
   share: (modelId: string, version: number) =>
     post<{ id: string; url: string }>("/shares", { model_id: modelId, version }),
+  shared: (shareId: string) => request<SharedModel>(`/s/${shareId}`),
+  revokeShare: (shareId: string) => request<undefined>(`/shares/${shareId}`, { method: "DELETE" }),
   reportBug: (report: BugReport) => post<unknown>("/bugs", report),
 };
 
@@ -232,7 +276,7 @@ export function streamJob(jobId: string, handlers: JobHandlers): () => void {
   return () => source.close();
 }
 
-export const waitForJob = (jobId: string) =>
+export const waitForJob = (jobId: string, onStep: (step: Step) => void = () => undefined) =>
   new Promise<Job>((resolve, reject) => {
-    streamJob(jobId, { onStep: () => undefined, onEnd: resolve, onError: (m) => reject(new Error(m)) });
+    streamJob(jobId, { onStep, onEnd: resolve, onError: (m) => reject(new Error(m)) });
   });

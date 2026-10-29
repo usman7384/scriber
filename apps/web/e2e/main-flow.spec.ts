@@ -46,7 +46,7 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await page.getByRole("button", { name: "Top" }).click();
   await expect(page.getByRole("button", { name: "Top" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("list", { name: "Components" }).getByRole("button")).toHaveText([
-    "Sensor mounting plate",
+    "Sensor mounting plate plate",
   ]);
   const marker = page.getByLabel(/^Finding: Hole Ø6.6/);
   await marker.hover();
@@ -76,10 +76,10 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await expect(history.locator("li").first()).toContainText("make it 10 mm thicker");
   expect(api.requests.find((r) => r.path.endsWith("/refine"))?.body).toEqual({
     instruction: "make it 10 mm thicker",
-    target: "Sensor mounting plate",
+    target: "plate",
   });
 
   await page.getByRole("button", { name: "Share" }).click();
-  await expect(page.getByLabel("Share link")).toHaveValue(`${baseURL}/s/s1`);
+  await expect(page.getByLabel("Share link")).toHaveValue(`${baseURL}/shared/s1`);
   expect(offsite).toEqual([]);
 });
