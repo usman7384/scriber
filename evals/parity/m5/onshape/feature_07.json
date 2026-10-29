@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "assignVariable",
+    "featureId": "F5p7aKlebXcc7jJ",
+    "name": "hole_spacing_x",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "f4a30d38e6c6bd296f1c91fc",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

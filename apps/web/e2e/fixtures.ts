@@ -8,6 +8,7 @@ import type {
   Model,
   Param,
   Project,
+  Publication,
   Suggestion,
   Vec3,
   Version,
@@ -232,14 +233,15 @@ export const motorHolder: Scenario = {
   build: () => holder,
 };
 
-export const versionUrls = (number: number) => ({
+// apps/api views.model_urls
+export const versionUrls = (number: number, model = "m1") => ({
   files: Object.fromEntries(
     (["step", "stl", "glb", "py", "ir"] as const).map((f) => [
       f,
-      `/models/m1/export?fmt=${f}&version=${number}`,
+      `/models/${model}/export?fmt=${f}&version=${number}`,
     ]),
   ),
-  thumbnail_url: `/models/m1/versions/${number}/thumbnail`,
+  thumbnail_url: `/models/${model}/versions/${number}/thumbnail`,
 });
 
 export const firstVersion = (s: Scenario = sensorPlate): Version => ({
@@ -300,3 +302,32 @@ export const graphOf = (files: ContextFile[]): GraphView => {
 };
 
 export const graph = graphOf(contextFiles);
+
+export interface Published {
+  publication: Publication;
+  version: Version;
+  built?: Built;
+}
+
+// Another user's publication: v2 of the shop's edge test plate, the hole moved to x = 15.
+export const alicePart: Published = {
+  publication: {
+    id: "c5e1a9b3d7f2",
+    model_id: "m2",
+    version: 2,
+    title: edgePlate.title,
+    author: "alice",
+    created: now(4),
+    thumbnail_url: "/models/m2/versions/2/thumbnail",
+  },
+  version: {
+    ...firstVersion(edgePlate),
+    ...versionUrls(2, "m2"),
+    model_id: "m2",
+    number: 2,
+    origin: "suggestion",
+    params: edgePlate.params.map((p) => (p.name === "hole_x" ? { ...p, value: 15 } : p)),
+    findings: [],
+  },
+  built: edgePlate.build({ hole_x: 15 }),
+};

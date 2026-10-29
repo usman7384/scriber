@@ -1,0 +1,11 @@
+{
+  "row": "CX-3",
+  "passed": true,
+  "measured": {
+    "chosen": "nema17-motor.step, plate-design-rules.md",
+    "context_ids_sent": "f2, f3",
+    "used_in_after": "nema17-motor.step: Sensor plate; plate-design-rules.md: Sensor plate",
+    "unchosen_used_in": "notes.txt: —"
+  },
+  "note": "Web half: the generate request carries exactly the chosen ids and Used in links the new model. Recording them on the generation is apps/api (mocked here)."
+}

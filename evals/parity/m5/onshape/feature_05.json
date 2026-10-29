@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "assignVariable",
+    "featureId": "FI4dGtfFz1srDp5",
+    "name": "boss_height",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "c9d8a8fa7014bd527ecc8e1f",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

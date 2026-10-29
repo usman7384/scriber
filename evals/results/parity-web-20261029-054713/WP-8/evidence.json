@@ -1,0 +1,13 @@
+{
+  "row": "WP-8",
+  "passed": true,
+  "measured": {
+    "model_card": "256x256",
+    "version_thumbs": 2,
+    "version_thumb_size": "256x256",
+    "distinct_urls": true,
+    "content_types": "image/png, image/png",
+    "changed_pixel_fraction": 0.013
+  },
+  "note": "PNGs are real 256 px renders from the geometry service for hole x=20 and x=15; the mock API stands in for regeneration on edit."
+}

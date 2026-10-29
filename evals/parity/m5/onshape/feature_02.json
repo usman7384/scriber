@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "assignVariable",
+    "featureId": "FFQWyL3I0KfpCZM",
+    "name": "plate_width",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "b77fe275ae1f2971305fd244",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

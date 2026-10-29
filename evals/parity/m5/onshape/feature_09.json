@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMSketch-151",
+    "featureType": "newSketch",
+    "featureId": "FIDEmGahfZCazFS",
+    "name": "plate_sketch",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "e59b62def78873892889c540",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

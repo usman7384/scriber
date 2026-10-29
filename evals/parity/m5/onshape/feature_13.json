@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "extrude",
+    "featureId": "FItyNil8wo6sTgY",
+    "name": "Motor boss",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "0077a37b0326de3c2c375a97",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

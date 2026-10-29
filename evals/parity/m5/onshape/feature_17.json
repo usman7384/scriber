@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMSketch-151",
+    "featureType": "newSketch",
+    "featureId": "Fp6rTG680kdk3JM",
+    "name": "mount_holes locations",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "ee4161756d85fd2c3e052262",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

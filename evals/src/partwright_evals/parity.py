@@ -51,6 +51,7 @@ def registry() -> dict[str, Demo]:
         parity_m4_mesh,
         parity_m4_mission,
         parity_m4_vision,
+        parity_m5_onshape,
         parity_m5_parts,
         parity_m5_platform,
     )
@@ -65,6 +66,7 @@ def registry() -> dict[str, Demo]:
         parity_m4_mesh,
         parity_m4_mission,
         parity_m4_vision,
+        parity_m5_onshape,
         parity_m5_parts,
         parity_m5_platform,
     )

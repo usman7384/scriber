@@ -4,7 +4,8 @@ import { byNewest, date } from "../format";
 import { useT } from "../i18n";
 
 export function ModelGallery({ models }: { models: Model[] }) {
-  const t = useT().gallery;
+  const all = useT();
+  const t = all.gallery;
   if (models.length === 0) return <p className="empty">{t.none}</p>;
   return (
     <ul className="gallery" aria-label={t.region}>
@@ -21,6 +22,11 @@ export function ModelGallery({ models }: { models: Model[] }) {
           <p className="muted small">
             {m.latest_version === null ? t.noVersion : `v${m.latest_version}`} · {date(m.created)}
           </p>
+          {m.forked_from && (
+            <p className="muted small">
+              {all.community.forkedFrom(m.forked_from.title, m.forked_from.version, m.forked_from.author)}
+            </p>
+          )}
         </li>
       ))}
     </ul>

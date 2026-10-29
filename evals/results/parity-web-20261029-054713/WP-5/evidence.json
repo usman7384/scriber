@@ -1,0 +1,9 @@
+{
+  "row": "WP-5",
+  "passed": true,
+  "measured": {
+    "pages": "Projects, Library, Settings, Help, Project models, Context manager, API docs",
+    "project_generations": 1
+  },
+  "note": "The API docs page is served by apps/api at /docs; the test stubs it."
+}

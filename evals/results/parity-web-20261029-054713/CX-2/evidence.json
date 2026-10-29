@@ -1,0 +1,14 @@
+{
+  "row": "CX-2",
+  "passed": true,
+  "measured": {
+    "columns": "Name, Type, Status, Facts, Used in, Uploaded, Actions",
+    "rows": 6,
+    "search_motor": "motor-mount-spec.pdf, nema17-motor.step",
+    "rows_after_delete": 5,
+    "graph_nodes_before": 8,
+    "graph_nodes_after": 7,
+    "deleted_file_in_graph": false
+  },
+  "note": "Graph removal is mocked like services/context does it (test_delete_document_removes_its_records)."
+}

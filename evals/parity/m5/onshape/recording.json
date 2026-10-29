@@ -1,0 +1,24 @@
+{
+  "POST /api/v10/documents": "document.json",
+  "POST /api/v10/partstudios/d/6a2d9f4c1b8e7d3a5f0c2e9b/w/9c3e5a7b1d2f4a6c8e0b2d4f": "part_studio.json",
+  "POST /api/v10/partstudios/d/6a2d9f4c1b8e7d3a5f0c2e9b/w/9c3e5a7b1d2f4a6c8e0b2d4f/e/4b8e2a6d0c9f1e3a7b5d2c8e/features": [
+    "feature_01.json",
+    "feature_02.json",
+    "feature_03.json",
+    "feature_04.json",
+    "feature_05.json",
+    "feature_06.json",
+    "feature_07.json",
+    "feature_08.json",
+    "feature_09.json",
+    "feature_10.json",
+    "feature_11.json",
+    "feature_12.json",
+    "feature_13.json",
+    "feature_14.json",
+    "feature_15.json",
+    "feature_16.json",
+    "feature_17.json",
+    "feature_18.json"
+  ]
+}

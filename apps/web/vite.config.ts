@@ -12,6 +12,7 @@ const apiPaths = [
   "/hooks",
   "/tokens",
   "/bugs",
+  "/community",
   "/docs",
   "/openapi.json",
 ];

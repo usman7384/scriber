@@ -13,7 +13,7 @@ The run stamp is set once in the runner process (`PARITY_RUN`) and inherited by 
 
 ## Rows
 
-Latest run: `evals/results/parity-web-20261029-050842/`, 24/24 pass (the 13 M3 rows plus the 11 M5 rows below; M3 run `parity-web-20261029-021647`).
+Latest run: `evals/results/parity-web-20261029-054713/`, 25/25 pass (the 13 M3 rows plus the 12 M5 rows below; M3 run `parity-web-20261029-021647`).
 
 | Row | Test | Measured | Status |
 |---|---|---|---|
@@ -36,7 +36,8 @@ Latest run: `evals/results/parity-web-20261029-050842/`, 24/24 pass (the 13 M3 r
 | PR-10 | `model.spec.ts` PR-10 | labels `L 120.0 mm`, `W 80.0 mm`, `H 5.0 mm` and `L 60.0 / W 40.0 / H 24.0 mm`, inside the view; GLB box equals metrics.bbox to 0.01 mm | web half; API half is `parity-20261029-025007` |
 | EX-6 | `share.spec.ts` EX-6 | link `/shared/s1`; the visitor page makes only `GET /s/s1` and `GET /s/s1/files/glb`; 0 editable fields and 0 edit buttons; after Revoke the page shows "share link not found or revoked" | web half; API half is `parity-20261029-025007` |
 | WP-6 | `project.spec.ts` WP-6 | SSE progress events 10, 40, 60, 70, 100; bar values seen 10, 40, 60, 70, 100 (150 ms apart) | web half; the values are apps/api `work.PROGRESS`, the stream is mocked |
-| WP-13 | `language.spec.ts` WP-13 | 191 language-dependent strings; 140 shown on nine pages in EN, all 140 German counterparts shown in DE, 0 English left (text nodes, aria-label, placeholder, title, alt, hidden dialogs and tooltips included); select, `html lang` and localStorage stay `de` after reload | closed (web only) |
+| WP-10 | `community.spec.ts` WP-10 | Publish in the editor sends `{model_id: m1, version: 1}`; the Community page lists 2 parts newest first (`v1 · by local`, `v2 · by alice`), thumbnails 256 px; Fork into Bracket lab posts `/community/c5e1a9b3d7f2/fork {project_id: p1}`; the copy opens in the editor (60 x 40 x 5 mm, Hole X 15, origin fork) and its card in the project shows "Forked from Edge test plate v2 by alice" | web half; API half is `parity-20261029-052939` |
+| WP-13 | `language.spec.ts` WP-13 | 199 language-dependent strings; 144 shown on ten pages in EN (Community page added), all 144 German counterparts shown in DE, 0 English left; was 191 / 140 on nine pages in EN, all 140 German counterparts shown in DE, 0 English left (text nodes, aria-label, placeholder, title, alt, hidden dialogs and tooltips included); select, `html lang` and localStorage stay `de` after reload | closed (web only) |
 | CX-1 | `context.spec.ts` CX-1 | 6 files (PDF, STEP, MD, TXT, CSV, PNG) in one upload; each progress bar 0 then 100; list returns 6 processed | web half; API half is `parity-20261029-025007` |
 | CX-3 | `context.spec.ts` CX-3 | chosen `nema17-motor.step`, `plate-design-rules.md`; generate sends `context_ids` f2, f3 exactly; both show Used in "Sensor plate", others unchanged; the link opens the model | web half; recording the ids on the generation is apps/api |
 | CX-6 | `context.spec.ts` CX-6 | before: 6 files, 21 facts, 2 rules, 1 used, score 132/400, level 1; after 2 uploads and 1 generation: 8, 23, 2, 2, score 176/400, level 1; delta 44 = 10·2 + 2·2 + 20·1; UI equals the formula both times | web half; API half is `parity-20261029-025007` |
@@ -67,6 +68,7 @@ Latest run: `evals/results/parity-web-20261029-050842/`, 24/24 pass (the 13 M3 r
 - Context: a checkbox per file and "Use selected as context" open the prompt with those files as `context_ids`; Used in links the models by title.
 - Project page: a finished generation offers Download STL next to Open model.
 - Language: EN/DE selector in the top bar (`src/i18n.ts`), remembered in localStorage.
+- Community: a Community tab (`/explore`, since `/community` is the API path the dev proxy forwards) lists every publication with thumbnail, title, version, author and date, and forks one into the project picked in "Fork into project"; the editor has Publish and shows "Forked from ... by ..." for a fork, as does its card in the project. A production server must serve `index.html` for `/explore`.
 - API: `POST /models/{id}/face-driver` (`apps/api/.../routes/faces.py`, lookup `partwright_ir.face_driver`, tests `test_faces.py` and `services/ir/tests/test_drivers.py`).
 
 ## Gaps
@@ -76,5 +78,6 @@ Latest run: `evals/results/parity-web-20261029-050842/`, 24/24 pass (the 13 M3 r
 - Suggestions are a panel, not bubbles in the 3D view.
 - The viewer maps glTF node names to API ids by part name; two parts with the same name would be ambiguous until the exporter names nodes by IR id.
 - Dates follow the browser locale, not the selected language; API text (titles, findings, step messages, file names, example prompts) is not translated.
+- Community: no Unpublish button yet (the API has `DELETE /community/{id}`); the page does not mark which publications are the viewer's own.
 - Library is client-side fan-out (one request per project); a `GET /models` would replace it.
 - One transient `main-flow.spec.ts` timeout on the first run after edits (cold Vite); five reruns passed.

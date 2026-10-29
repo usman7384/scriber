@@ -1,0 +1,44 @@
+{
+  "title": "Motor mount",
+  "params": [
+    {"name": "plate_length", "value": 100, "unit": "mm"},
+    {"name": "plate_width", "value": 60, "unit": "mm"},
+    {"name": "plate_thickness", "value": 6, "unit": "mm"},
+    {"name": "boss_diameter", "value": 36, "unit": "mm"},
+    {"name": "boss_height", "value": 12, "unit": "mm"},
+    {"name": "bore_diameter", "value": 22, "unit": "mm"},
+    {"name": "hole_spacing_x", "value": 80, "unit": "mm"},
+    {"name": "hole_spacing_y", "value": 40, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "mount",
+      "name": "Motor mount",
+      "material": "6061 aluminium",
+      "sketches": [
+        {"id": "plate_sketch", "entities": [{"kind": "rect", "width": "plate_length", "height": "plate_width"}]},
+        {"id": "boss_sketch", "plane": {"ref": "XY", "offset": "plate_thickness"}, "entities": [{"kind": "circle", "diameter": "boss_diameter"}]}
+      ],
+      "features": [
+        {"kind": "extrude", "id": "plate", "name": "Base plate", "sketch": "plate_sketch", "distance": "plate_thickness"},
+        {"kind": "extrude", "id": "boss", "name": "Motor boss", "sketch": "boss_sketch", "distance": "boss_height"},
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Motor bore",
+          "plane": {"ref": "XY", "offset": "plate_thickness + boss_height"},
+          "at": {"kind": "points", "points": [[0, 0]]},
+          "diameter": "bore_diameter"
+        },
+        {
+          "kind": "hole",
+          "id": "mount_holes",
+          "name": "Mounting holes",
+          "plane": {"ref": "XY", "offset": "plate_thickness"},
+          "at": {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": "hole_spacing_x", "spacing_y": "hole_spacing_y"},
+          "fastener": "M5"
+        }
+      ]
+    }
+  ]
+}

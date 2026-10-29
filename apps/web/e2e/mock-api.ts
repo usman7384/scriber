@@ -1,6 +1,7 @@
 import type { Page, Request, Route } from "@playwright/test";
 import type { BugReport, ContextFile, Job, Model, Step, Suggestion, Vec3, Version } from "../src/api";
 import {
+  alicePart,
   contextFiles,
   firstVersion,
   graphOf,
@@ -12,14 +13,16 @@ import {
   shopThumbnails,
   valuesOf,
   versionUrls,
+  type Published,
   type Scenario,
 } from "./fixtures";
 
-const apiPath = /^\/(projects|models|jobs|shares|s|bugs)(\/|$)/;
+const apiPath = /^\/(projects|models|jobs|shares|s|bugs|community)(\/|$)/;
 
 type Reply = Parameters<Route["fulfill"]>[0];
 type Handler = (m: RegExpMatchArray, req: Request) => Reply;
 type Event = [string, Step | Job];
+type Fork = Published & { model: Model };
 
 const json = (body: unknown, status = 200): Reply => ({ status, json: body });
 const png = (body: Buffer): Reply => ({ status: 200, contentType: "image/png", body });
@@ -54,6 +57,8 @@ export class MockApi {
   bugs: BugReport[] = [];
   suggestions: Suggestion[] = [];
   shares = new Map<string, number>();
+  published: Published[] = [alicePart];
+  forks: Fork[] = [];
   requests: { method: string; path: string; body: unknown; at: number }[] = [];
   drip?: number;
   jobs = new Map<string, { run: () => Event[]; events?: Event[]; sent: number }>();
@@ -218,12 +223,79 @@ export class MockApi {
     return v && { v, built: this.build(v) };
   }
 
+  // Like apps/api routes/community: without auth every request is user "local"; a fork copies the published version.
+  private publish(req: Request) {
+    const body = req.postDataJSON() as { model_id: string; version?: number | null };
+    if (body.model_id !== "m1") return json({ detail: `model ${body.model_id} not found` }, 404);
+    const version = body.version ? this.version(String(body.version)) : this.versions.at(-1);
+    if (!version) return json({ detail: `version ${body.version} not found` }, 404);
+    if (version.status !== "ok")
+      return json({ detail: `version ${version.number} failed and cannot be published` }, 400);
+    const publication = {
+      id: `c${String(this.published.length).padStart(12, "0")}`,
+      model_id: "m1",
+      version: version.number,
+      title: this.models[0]?.title ?? "",
+      author: "local",
+      created: now(50 + this.published.length),
+      thumbnail_url: version.thumbnail_url ?? null,
+    };
+    this.published = [{ publication, version, built: this.build(version) }, ...this.published];
+    return json(publication, 201);
+  }
+
+  private fork(id: string | undefined, req: Request) {
+    const source = this.published.find((p) => p.publication.id === id);
+    if (!source) return json({ detail: `publication ${id} not found` }, 404);
+    const { project_id } = req.postDataJSON() as { project_id: string };
+    if (!["p1", "p2"].includes(project_id)) return json({ detail: `project ${project_id} not found` }, 404);
+    const { publication: pub } = source;
+    const modelId = `m${4 + this.forks.length}`;
+    const version: Version = {
+      ...source.version,
+      ...versionUrls(1, modelId),
+      model_id: modelId,
+      number: 1,
+      origin: "fork",
+      prompt: `forked from '${pub.title}' v${pub.version} by ${pub.author} (${pub.id})`,
+      created: now(55),
+    };
+    const forked_from = {
+      publication: pub.id,
+      model_id: pub.model_id,
+      version: pub.version,
+      title: pub.title,
+      author: pub.author,
+    };
+    const model: Model = {
+      id: modelId,
+      project_id,
+      title: pub.title,
+      created: now(55),
+      latest_version: 1,
+      versions: 1,
+      thumbnail_url: version.thumbnail_url ?? null,
+      forked_from,
+    };
+    this.forks.push({ ...source, model, version });
+    return json({ ...model, stale: false, version }, 201);
+  }
+
+  private forked(id: string | undefined) {
+    return this.forks.find((f) => f.model.id === id);
+  }
+
+  private forkedReply(id: string | undefined, body: (f: Fork) => unknown) {
+    const found = this.forked(id);
+    return found ? json(body(found)) : missing("model");
+  }
+
   private routes: [string, RegExp, Handler][] = [
     ["GET", /^\/projects$/, () => json([{ ...project, model_count: this.models.length }, shop])],
     ["GET", /^\/projects\/p1$/, () => json(project)],
     ["GET", /^\/projects\/p2$/, () => json(shop)],
-    ["GET", /^\/projects\/p1\/models$/, () => json(this.models)],
-    ["GET", /^\/projects\/p2\/models$/, () => json(shopModels)],
+    ["GET", /^\/projects\/p1\/models$/, () => json([...this.models, ...this.forksIn("p1")])],
+    ["GET", /^\/projects\/p2\/models$/, () => json([...shopModels, ...this.forksIn("p2")])],
     ["GET", /^\/projects\/p\d\/jobs$/, () => json([])],
     ["POST", /^\/projects\/p1\/generate$/, (_, req) => this.generate(req)],
     ["GET", /^\/jobs\/([\w-]+)\/events$/, (m) => this.events(m[1] ?? "")],
@@ -253,7 +325,10 @@ export class MockApi {
       "GET",
       /^\/models\/(m\d)\/versions\/(\d+)\/thumbnail$/,
       (m) => {
-        const thumb = m[1] === "m1" ? this.build(this.version(m[2]))?.thumbnail : shopThumbnails[m[1] ?? ""];
+        const thumb =
+          m[1] === "m1"
+            ? this.build(this.version(m[2]))?.thumbnail
+            : (shopThumbnails[m[1] ?? ""] ?? this.forked(m[1])?.built?.thumbnail);
         return thumb ? png(thumb) : missing("thumbnail");
       },
     ],
@@ -370,6 +445,28 @@ export class MockApi {
         return json({ id: `b${this.bugs.length}` }, 201);
       },
     ],
+    ["GET", /^\/community$/, () => json(this.published.map((p) => p.publication))],
+    ["POST", /^\/community$/, (_, req) => this.publish(req)],
+    [
+      "GET",
+      /^\/community\/(\w+)$/,
+      (m) => {
+        const found = this.published.find((p) => p.publication.id === m[1]);
+        return found ? json(found.publication) : json({ detail: `publication ${m[1]} not found` }, 404);
+      },
+    ],
+    ["POST", /^\/community\/(\w+)\/fork$/, (m, req) => this.fork(m[1], req)],
+    ["GET", /^\/models\/(m\d+)$/, (m) => this.forkedReply(m[1], (f) => f.model)],
+    ["GET", /^\/models\/(m\d+)\/versions$/, (m) => this.forkedReply(m[1], (f) => [f.version])],
+    ["GET", /^\/models\/(m\d+)\/(components|suggestions)$/, () => json([])],
+    [
+      "GET",
+      /^\/models\/(m\d+)\/export$/,
+      (m) => {
+        const glb = this.forked(m[1])?.built?.glb;
+        return glb ? { status: 200, contentType: "model/gltf-binary", body: glb } : missing("geometry");
+      },
+    ],
     ["GET", /^\/projects\/p1\/context$/, () => json({ files: this.files, stats: this.stats(), stale: [] })],
     ["POST", /^\/projects\/p1\/context$/, (_, req) => json(this.upload(uploadedNames(req)), 202)],
     [
@@ -419,6 +516,10 @@ export class MockApi {
         ]),
     ],
   ];
+
+  private forksIn(projectId: string) {
+    return this.forks.filter((f) => f.model.project_id === projectId).map((f) => f.model);
+  }
 
   // Counts as services/context store.counts does; score and level by the documented formula (LocalContext.stats).
   stats() {

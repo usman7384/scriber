@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "hole",
+    "featureId": "FA6QGFI32oHfAXz",
+    "name": "Mounting holes",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "e812b3393c0b3d8c75c081c4",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

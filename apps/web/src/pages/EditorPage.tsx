@@ -8,6 +8,7 @@ import { FaceEdit } from "../components/FaceEdit";
 import { Findings } from "../components/Findings";
 import { ParamPanel } from "../components/ParamPanel";
 import { Pending } from "../components/Pending";
+import { PublishButton } from "../components/PublishButton";
 import { RefineBox } from "../components/RefineBox";
 import { ShareButton } from "../components/ShareButton";
 import { Suggestions } from "../components/Suggestions";
@@ -77,11 +78,21 @@ export function EditorPage() {
         </Link>
         <h1>{model.data.title}</h1>
         <span className="badge plain">v{version.number}</span>
+        {model.data.forked_from && (
+          <span className="muted small">
+            {t.community.forkedFrom(
+              model.data.forked_from.title,
+              model.data.forked_from.version,
+              model.data.forked_from.author,
+            )}
+          </span>
+        )}
         <span className="push" />
         <Link to={`/p/${model.data.project_id}`} className="button primary">
           {t.editor.newGeneration}
         </Link>
         <ShareButton modelId={modelId} version={version.number} />
+        <PublishButton modelId={modelId} version={version.number} />
         <ExportMenu modelId={modelId} version={version.number} />
         <BugDialog
           modelId={modelId}
