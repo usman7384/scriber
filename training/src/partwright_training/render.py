@@ -12,6 +12,9 @@ SPEC_PREAMBLE = (
 )
 
 
+EXPOSE = ("Parameters to expose: {names}.", "Name the parameters {names}.", "Keep {names} as named parameters.")
+
+
 @dataclass(frozen=True)
 class Prompt:
     style: str
@@ -42,3 +45,9 @@ def _spec_sheet(spec: Spec, rng: random.Random) -> Prompt:
     params = tuple(spec.params())
     lines += ["", f"## {number + 1}. Parameters", "Expose these named parameters: " + ", ".join(f"`{p}`" for p in params) + "."]
     return Prompt("spec", "\n".join(lines), params)
+
+
+def exposing(prompt: Prompt, spec: Spec, rng: random.Random) -> Prompt:
+    names = rng.sample(spec.params(), min(3, len(spec.params())))
+    listed = " and ".join([", ".join(f"`{n}`" for n in names[:-1]), f"`{names[-1]}`"])
+    return Prompt(prompt.style, f"{prompt.text}\n{rng.choice(EXPOSE).format(names=listed)}", tuple(names))

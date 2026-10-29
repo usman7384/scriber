@@ -6,6 +6,8 @@ from partwright_agent import Requirement
 from partwright_ir import Design
 
 SECTIONS = ("Overall dimensions", "Features", "Holes and ports", "Finish", "Manufacturing")
+# x and y of a hole centre from the part's lower-left corner, and its diameter
+Position = tuple[float, float, float]
 
 
 @dataclass(frozen=True)
@@ -16,6 +18,7 @@ class Spec:
     design: Design
     checks: tuple[Requirement, ...]
     exempt: tuple[str, ...] = ()
+    positions: tuple[Position, ...] = ()
 
     def params(self) -> list[str]:
         return [p.name for p in self.design.params]
@@ -34,6 +37,9 @@ class Draft:
     material: str | None = None
     process: str = "any"
     exempt: tuple[str, ...] = ()
+    parts: list[dict[str, Any]] = field(default_factory=list)
+    assembly: dict[str, Any] | None = None
+    positions: list[Position] = field(default_factory=list)
 
     def param(self, name: str, value: float, unit: str, description: str, quote: str) -> str:
         self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": _prov(quote)})
@@ -48,6 +54,9 @@ class Draft:
         provenance = {"source": "rule", "ref": ref}
         self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": provenance})
         return name
+
+    def quote(self, name: str) -> str:
+        return next(str(p["provenance"]["quote"]) for p in self.params if p["name"] == name)
 
     def say(self, section: str, text: str) -> None:
         assert section in SECTIONS, section
@@ -70,8 +79,11 @@ class Draft:
             part["material"] = self.material
         if self.process != "any":
             part["process"] = self.process
-        design = Design.model_validate({"ir_version": 2, "title": self.title, "params": self.params, "parts": [part]})
-        return Spec(self.family, self.title, tuple(self.statements), design, tuple(self.checks), self.exempt)
+        data = {"ir_version": 2, "title": self.title, "params": self.params, "parts": self.parts or [part]}
+        if self.assembly:
+            data["assembly"] = self.assembly
+        design = Design.model_validate(data)
+        return Spec(self.family, self.title, tuple(self.statements), design, tuple(self.checks), self.exempt, tuple(self.positions))
 
 
 def _prov(quote: str) -> dict[str, str]:
