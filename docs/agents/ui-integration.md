@@ -29,3 +29,7 @@ Spec: [`docs/design/UI_DIRECTION.md`](../design/UI_DIRECTION.md). Branch `feat/u
 - Compare draws the parameter diff but no ghost outline (the viewer has no second model); `onCompare` is optional.
 - Source chips in the generate bar cannot be removed in place; the Sources sheet or a new project link clears them.
 - Status glyphs on part cards still need a per-model check summary (UI_DIRECTION §8).
+
+## Live run on the integrated UI
+
+`evals/results/parity-web-live-20261029-221036/` (real API, `partwright-ir:4b-s2`, PrusaSlicer, FreeCAD; the GPU was shared with an S3 pipeline): CX-1, CX-2, EX-6, WP-11, WP-14 (substitute prompt; done in 314 s, 5/5 checks, sliced, 13 layers), AP-9, PR-6, PR-10, VM-4, AS-1 and WP-8 pass. CX-6: the meter equals the API and the formula before and after the uploads in every attempt; its one generation passed in the first run (only the video copy failed, since a concurrent local run cleared `test-results/`) and then failed once at a kernel error and timed out once, so the stored evidence is a failure on the model side.
