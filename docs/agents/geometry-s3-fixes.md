@@ -12,7 +12,7 @@ Five check and feature problems from S3 data generation (`docs/agents/training.m
 
 ## Showcase references under `DEFAULT_RULES`
 
-14 of 20 pass (12 before; sc05 and sc09 now pass, sc01 builds in 10 s instead of 45 s). The six others fail `min_hole_edge_ratio` because the prompt fixes the hole positions: sc04 (Ø11 15 mm from the end), sc07 (Ø4.5 at 6 mm), sc10 (Ø4.2 pin hole in an 8 mm knuckle), sc11 (Ø5.5 at 7.5 mm), sc13 (Ø9 at 12.5 mm), sc20 (Ø11 at 11 mm). The references match their prompts and were not changed.
+14 of 20 pass (12 before; sc05 and sc09 now pass, sc01 builds in 10 s instead of 45 s). The six others fail `min_hole_edge_ratio` because the prompt fixes the hole positions: sc04 (Ø11 15 mm from the end), sc07 (Ø4.5 at 6 mm), sc10 (Ø4.2 pin hole in an 8 mm knuckle), sc11 (Ø5.5 at 7.5 mm), sc13 (Ø9 at 12.5 mm), sc20 (Ø11 at 11 mm). The references matched their prompts; those six prompts were then changed so a designer following the default rules can meet them exactly (`docs/agents/showcase-default-rules.md`), and all 20 now pass.
 
 ## Rows
 

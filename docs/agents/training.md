@@ -264,15 +264,17 @@ Plan: `docs/FINE_TUNING_PLAN.md` (S3). Everything is behind `--s3` on `partwrigh
 | Named parameters | `render.py` (`exposing`) | 30 % of the non-spec-sheet S3 requests ask for three parameters by name |
 | Renaming | `names.py` | renamed parameters now also rename connector origins and joint angles |
 
-Limits found while verifying every target under the default rules (inputs for the geometry and IR owners; the generators stay inside them):
+Limits found while verifying every target under the default rules were fixed in the geometry service (D-039, `docs/agents/geometry-s3-fixes.md`); the generators no longer work around them:
 
-- The `min_wall_thickness` probe takes 20-80 s per spur gear, so a pair can pass the 120 s build timeout under load. The dataset pool and the collector now allow 600 s. The agent hits the same cost on every gear build.
-- On shafts under 20 mm the probe reads the edge of a DIN 6885 keyway as a 0.5-0.8 mm wall, so S3 puts keyways on 20 mm and up only.
-- `shell_with_lid` with its default bosses fails the default rules at common walls: with M3 screws, walls of 2-3 mm leave 0.3-0.7 mm slivers in the lid's lip beside the boss cut-outs, and at 2-2.5 mm the lid's screw holes sit closer than 1.5 D to the edge. Walls that pass: none 2-3, M2.5 4-5, M3 3.5 or 5, M4 4.5-5 mm. The showcase enclosure (2 mm walls, M3) is in the failing range.
-- Gear pairs at zero backlash: about a third report 1e-5 mm³ of interference (threshold 1e-6 mm³), and any backlash leaves a gap that fails the contact check; those pairs are rejected.
-- A keyed bore is not measured as a hole, so keyed bores have no hole check.
+- Builds time out at 180 s in the dataset pool and the collector (was 600 s); a gear pair now builds in about 10 s.
+- Keyways go on every shaft step DIN 6885 covers (was 20 mm and up); shafts now run 8-40 mm with the DIN 471 grooves for 8 and 10 mm added. A key is at least twice its width long (a shorter slot is a round pocket that reads as a hole, or fails to build), and a circlip groove never shares the keyed step (an overlapping groove left a 0.47 mm sliver). Gears take a bore keyway from 7 mm (was 10), pulleys at any bore (was 20 and up).
+- Keyed bores keep their hole checks (gears, pulleys); coupling halves gain a check on both keyed bores unless the bolt-hole size range overlaps it.
+- `shell_with_lid` enclosures take 2-5 mm walls with any screw (was a per-screw list); the screw-spacing check follows the shell's corner inset, max((wall + boss) / 2, 1.5 x clearance), with `boss_diameter` from the IR.
+- 30 % of gear pairs state a 0.05-0.15 mm backlash carried by both gears; zero and nonzero backlash both pass the mesh checks.
 
-Dry run (`partwright-dataset --s3 --seed 3 --specs 300 --workers 8`, no paraphrasing, into the temp folder and deleted afterwards; 8 min on this laptop): 294 of 300 specs verified. The 6 rejects were 3 shafts (two thin-wall readings, one hole-edge finding), one support whose counterbore and upright hole sizes fell in the same check range, one plate chamfer and one block hole edge. 493 samples: 291 generate, 120 repair, 82 requirement extraction.
+Dry run after these changes (`partwright-dataset --s3 --seed 3 --specs 200 --workers 4`, no paraphrasing, into a temp folder and deleted afterwards; 39 s on this laptop): 198 of 200 specs verified. The 2 rejects are not S3 limits: a support whose M4 counterbore and upright hole sizes fell in the same check range, and a plate chamfer too long for its edge. 322 samples: 195 generate, 71 repair, 56 requirement extraction; 20-26 per family. Generate targets carry spur_gear 18, keyway 24, groove 11, rib 13, boss_pattern 11, shell_with_lid 13, lid 13; 29 assemblies of 2 parts and 2 of 6, joints 18 fastened, 8 revolute, 13 implied lid mates; hole tables 10 in the request and 3 as uploaded facts; 650 of 650 features with intent; 107 titles, 209 parameter names; 0 eval sizes in prompts.
+
+The earlier dry run before D-039 (300 specs, 8 workers, 8 min): 294 verified, 493 samples.
 
 | Coverage (dry run) | Count |
 |---|---|
@@ -285,14 +287,14 @@ Dry run (`partwright-dataset --s3 --seed 3 --specs 300 --workers 8`, no paraphra
 | Eval sizes in prompts | 0 |
 | Samples over the trainer's 12,288-character cut | 11 (mostly block repairs, as in S2); `train.py` drops them |
 
-The 8-gram guard covers the showcase set as well. One coupling phrase matched showcase sc13 while the generators were written, so it was reworded; `test_s3.py` now holds the S3 families to at most 2 matches in 60 seeds x 4 styles.
+The 8-gram guard covers the showcase set as well. One coupling phrase matched showcase sc13 while the generators were written, so it was reworded; `test_s3.py` now holds the S3 families to at most 2 matches in 60 seeds x 4 styles. The six showcase prompts changed for the default rules (`docs/agents/showcase-default-rules.md`) add no match: over 300 seeds x 4 styles of every family, 62 of 18,000 texts share an 8-gram with an eval case, none of them with a changed prompt.
 
 ### Full S3 build and training (not run)
 
 1. On-policy repairs on S3 prompts (Windows, Ollama running; about 4 h for both, as for S2):
    `uv run partwright-collect --s3 --model partwright-ir:4b-s2 --specs 200 --seed 3 --out data/training/s3/onpolicy-4b-s2.jsonl`
    `uv run partwright-collect --s3 --model qwen3.5:4b --specs 200 --seed 3 --out data/training/s3/onpolicy-qwen3.5-4b.jsonl`
-2. Dataset with paraphrasing (as for S2: 4 workers, single-threaded BLAS so it fits beside Ollama; expect several hours because gears take a minute each in the wall probe):
+2. Dataset with paraphrasing (as for S2: 4 workers, single-threaded BLAS so it fits beside Ollama; gears now build in seconds, so expect a few hours as for S2):
    `OPENBLAS_NUM_THREADS=1 uv run partwright-dataset --s3 --seed 3 --specs 2900 --workers 4 --paraphrase-model qwen3.5:4b --onpolicy data/training/s3/onpolicy-4b-s2.jsonl data/training/s3/onpolicy-qwen3.5-4b.jsonl --out data/training/s3`
    2,900 specs give about 5,000 samples, so the run stays one night like S2 (626 steps).
 3. Train, merge, convert and quantise (WSL, `~/partwright-train`): `training/wsl/s2.sh` with `s2` replaced by `s3`, that is

@@ -53,7 +53,7 @@ def main() -> None:
     args = p.parse_args()
     llm = llm_for(load(args.config), args.model)
     base = args.seed * 1_000_000 + ONPOLICY_OFFSET
-    geometry = LocalGeometry(timeout_s=600)
+    geometry = LocalGeometry(timeout_s=180)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     kept = 0
     try:

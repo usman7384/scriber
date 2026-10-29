@@ -62,11 +62,10 @@ def pulley(rng: random.Random) -> Spec:
     d.features.append(body | {"intent": "rim grooves carry the V-belt; the bore fits the shaft"})
     d.need("extent", f"diameter {num(od)}", value=od)
     d.need("extent", f"length {num(length)}", value=length)
-    if bore >= 20 and rng.random() < 0.5:
+    if rng.random() < 0.5:
         d.say("Holes and ports", rng.choice(("DIN 6885 keyway in the bore", "a keyway in the bore to DIN 6885")))
         key = {"kind": "keyway", "id": "bore_key", "name": "Bore keyway", "of": "body", "on": "bore"}
         d.features.append(key | {"intent": "drives the pulley through a parallel key"})
-    else:
-        d.need("holes", f"{num(bore)} mm bore", count=1, diameter_min=bore - 0.1, diameter_max=bore + 0.1)
+    d.need("holes", f"{num(bore)} mm bore", count=1, diameter_min=bore - 0.1, diameter_max=bore + 0.1)
     finish(d, rng, "turning")
     return d.spec()

@@ -7,18 +7,20 @@ import yaml
 
 from partwright_agent import FakeLLM
 from partwright_cli.config import load
+from partwright_context import DEFAULT_RULES
 from partwright_evals import parity_m6
 from partwright_evals.parity import Rig, run_row
 from partwright_evals.parity_m6 import REFERENCE, ROWS, SHOWCASE, attempt, correct
 from partwright_evals.run import load_cases
 from partwright_evals.shapes import ShapeCheck, shape_check
 from partwright_geometry import LocalGeometry
-from partwright_ir import Design
+from partwright_ir import Design, apply_params
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})
 CASES = {c.id: c for c in load_cases(SHOWCASE)}
 DEMO = ["sc09-electronics-enclosure", "sc15-hub-gear", "sc20-flange-bearing"]
+RULES = DEFAULT_RULES.for_process("any")
 
 
 @pytest.fixture(scope="module")
@@ -50,6 +52,16 @@ def test_reference_design_builds_and_passes_its_own_checks(case_id: str, geometr
     assert correct(r), r.failed_checks or r.final_step
     assert r.checks_total == len(CASES[case_id].checks) + len(CASES[case_id].shape) + 2 * len(CASES[case_id].params)
     assert (tmp_path / f"{case_id}.png").exists()
+
+
+@pytest.mark.parametrize("case_id", sorted(CASES))
+def test_reference_and_its_edits_meet_the_default_rules(case_id: str, geometry: LocalGeometry, tmp_path: Path) -> None:
+    design = Design.model_validate_json(reference(case_id))
+    values = design.param_values()
+    edits = {n: apply_params(design, {n: values[n] * 1.05}) for n in CASES[case_id].params}
+    for name, d in {"reference": design, **edits}.items():
+        errors = [f.message for f in geometry.build(d, tmp_path / name, RULES).findings if f.severity == "error"]
+        assert errors == [], name
 
 
 def test_showcase_demo_passes_on_reference_answers(geometry: LocalGeometry, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

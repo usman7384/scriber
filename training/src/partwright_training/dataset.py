@@ -57,8 +57,7 @@ class Pool:
     def __init__(self, size: int) -> None:
         self._free: queue.Queue[LocalGeometry] = queue.Queue()
         for _ in range(size):
-            # gear pairs spend a minute in the default wall-thickness probe; more under a full pool
-            self._free.put(LocalGeometry(timeout_s=600))
+            self._free.put(LocalGeometry(timeout_s=180))
 
     @contextmanager
     def geometry(self) -> Iterator[LocalGeometry]:
