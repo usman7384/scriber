@@ -18,7 +18,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   await expect(visitor.getByRole("heading", { level: 1 })).toHaveText("Sensor plate");
   await expect(visitor.getByText("shared, read-only")).toBeVisible();
   await expect(visitor.getByLabel("Bounding box")).toHaveText("120.0 mm × 80.0 mm × 6.0 mm");
-  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Plate Length120 mm");
+  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Plate Length120.00 mm");
   const editable = await visitor.locator("main").getByRole("spinbutton").count();
   const textboxes = await visitor.locator("main").getByRole("textbox").count();
   const actions = await visitor
