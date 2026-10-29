@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from partwright_ir import Design
+
 Vec = tuple[float, float, float]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
 STEP_SUFFIXES = frozenset({".step", ".stp"})
@@ -129,3 +131,20 @@ class SketchDof(Frozen):
     dof: int | None
     solve_error: float = 0.0
     note: str = ""
+
+
+class FeatureEntry(Frozen):
+    part: str
+    id: str
+    name: str
+    kind: str
+    depends_on: list[str]
+
+
+class Bundle(Frozen):
+    title: str
+    design_hash: str
+    design: Design
+    features: list[FeatureEntry]
+    sketches: list[SketchDof]
+    files: list[str]
