@@ -12,6 +12,7 @@ from partwright_geometry.dfm import dfm_findings
 from partwright_geometry.imports import describe, step_parts
 from partwright_geometry.metrics import part_metrics
 from partwright_geometry.sections import span_sections
+from partwright_geometry.step_meta import read_step, write_step
 from partwright_geometry.thumbnail import render_thumbnail
 from partwright_ir import RuleSet
 
@@ -32,10 +33,11 @@ def handle(request: dict[str, Any]) -> dict[str, Any]:
 
 
 def build(request: dict[str, Any]) -> dict[str, Any]:
-    return run(request["source"], Path(request["out_dir"]), request["title"], RuleSet.model_validate(request["rules"]))
+    rules = RuleSet.model_validate(request["rules"])
+    return run(request["source"], Path(request["out_dir"]), request["title"], rules, request.get("materials", {}))
 
 
-def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any]:
+def run(source: str, out_dir: Path, title: str, rules: RuleSet, materials: dict[str, str | None]) -> dict[str, Any]:
     namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
     exec(compile(source, "model.py", "exec"), namespace)
     parts: dict[str, Shape[Any]] = namespace["build"]()
@@ -45,7 +47,11 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any
     model = Compound(label=title, children=list(parts.values()))
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {"step": out_dir / "model.step", "stl": out_dir / "model.stl", "glb": out_dir / "model.glb"}
-    export_step(model, files["step"])
+    faces = namespace.get("FACES", {})
+    if faces or any(materials.values()):
+        write_step(parts, title, faces, materials, files["step"])
+    else:
+        export_step(model, files["step"])
     export_stl(model, files["stl"])
     export_gltf(model, str(files["glb"]), binary=True)
     metrics = {pid: part_metrics(pid, s) for pid, s in parts.items()}
@@ -60,6 +66,7 @@ OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "build": build,
     "describe": lambda r: {"descriptor": describe(Path(r["path"])).model_dump()},
     "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
+    "step_metadata": lambda r: {"metadata": read_step(Path(r["path"])).model_dump()},
     "sections": lambda r: {"sections": span_sections(Path(r["path"]), r["ys"])},
     "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"]))},
 }

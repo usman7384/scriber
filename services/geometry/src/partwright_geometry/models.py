@@ -68,3 +68,23 @@ class BuildError(RuntimeError):
         super().__init__(message)
         self.kind = kind
         self.feature = feature
+
+
+class FaceGroupInfo(Frozen):
+    name: str
+    faces: int
+    area: float
+    center: Vec
+    normal: Vec | None
+
+
+class StepBody(Frozen):
+    name: str
+    material: str | None
+    density_g_cm3: float | None
+    face_groups: list[FaceGroupInfo]
+
+
+class StepMetadata(Frozen):
+    schema_name: str
+    bodies: list[StepBody]
