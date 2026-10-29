@@ -39,7 +39,7 @@ def hole_edge(shape: Shape[Any], part: PartMetrics, rule: Rule) -> list[Finding]
 
 
 def wall(shape: Shape[Any], part: PartMetrics, rule: Rule) -> list[Finding]:
-    thin = probes.thinnest(shape)
+    thin = probes.thinnest(shape, rule.value)
     if thin is None or thin[0] >= rule.value - TOL:
         return []
     t, point, face = thin

@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 from partwright_ir import Design, compile_design, joint_tree, validate
-from partwright_ir.fasteners import screw_holes
+from partwright_ir.fasteners import boss_diameter, screw_holes
 from partwright_ir.gear import gear_flank, gear_problems, involute
 from partwright_ir.keys import din6885
 
@@ -61,6 +61,21 @@ def test_din6885_rows_and_range() -> None:
 
 def test_screw_holes_follow_the_fastener_table() -> None:
     assert screw_holes("M3") == (3.0, 2.5, 3.4)
+
+
+@pytest.mark.parametrize("screw", ["M2", "M2.5", "M3", "M4", "M5", "M6", "M8", "M10", "M12", "M16"])
+def test_default_bosses_keep_the_pilot_one_and_a_half_diameters_from_their_edge(screw: str) -> None:
+    nominal, pilot, _ = screw_holes(screw)
+    assert boss_diameter(screw) / 2 >= 1.5 * pilot - 1e-9 and boss_diameter(screw) >= 2.5 * nominal
+
+
+def test_only_a_joint_between_two_gears_allows_a_backlash_gap() -> None:
+    connectors = [{"id": "a_axis", "part": "a", "origin": [40, 0, 0]}, {"id": "b_axis", "part": "b"}]
+    joint = {"id": "mesh", "parent": "a_axis", "child": "b_axis", "kind": "revolute"}
+    pair = design(part("a", gear(backlash=0.2)), part("b", gear(backlash=0.1)), assembly={"connectors": connectors, "joints": [joint]})
+    assert messages(pair) == []
+    assert "SLACK = {'mesh': (0.2 + 0.1) / 4 * cos(20.0)}" in compile_design(pair)
+    assert "SLACK" not in compile_design(design(part("box", enclosure()), part("lid", LID)))
 
 
 def test_valid_high_level_designs_compile_with_their_prelude_only_when_used() -> None:

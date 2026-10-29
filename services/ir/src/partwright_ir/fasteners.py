@@ -86,3 +86,9 @@ def screw_holes(screw: str) -> tuple[float, float, float]:
         raise ValueError(f"unknown screw {screw!r}; use M2 to M30")
     nominal, pitch = spec
     return nominal, round(nominal - pitch, 2), row(nominal)[0][FITS.index("normal")]
+
+
+def boss_diameter(screw: str) -> float:
+    nominal, pilot, _ = screw_holes(screw)
+    # 2.5 x the screw size, widened where needed so the pilot keeps 1.5 pilot diameters to the boss's edge (M5, M8 and up)
+    return max(2.5 * nominal, 3 * pilot)

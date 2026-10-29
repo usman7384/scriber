@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 from partwright_ir.expr import ExprError, evaluate
-from partwright_ir.fasteners import parse, screw_holes
+from partwright_ir.fasteners import boss_diameter, parse, screw_holes
 from partwright_ir.gear import gear_problems
 from partwright_ir.model import (
     BossPattern,
@@ -87,8 +87,8 @@ def _enclosure(f: ShellWithLid, values: dict[str, float]) -> Iterator[str]:
     if parse(f.screw) is None:
         yield f"unknown screw {f.screw!r}; use M2 to M30"
         return
-    nominal, _, clearance = screw_holes(f.screw)
-    bd = _maybe(values, f.boss_diameter) or 2.5 * nominal
+    _, _, clearance = screw_holes(f.screw)
+    bd = _maybe(values, f.boss_diameter) or boss_diameter(f.screw)
     if bd <= max(v["wall"], clearance):
         yield f"boss_diameter {bd:g} must exceed the wall {v['wall']:g} and the {f.screw} clearance hole {clearance:g}"
 

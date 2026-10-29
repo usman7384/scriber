@@ -10,6 +10,8 @@ from OCP.BRepTools import BRepTools
 from partwright_geometry.models import HoleInfo, PartMetrics, Placement
 
 FULL_TURN = 2 * math.pi - 1e-3
+# a bore cut by a keyway (or a flat) keeps one face over at least three quarters of a turn; fillets and slot ends span half or less
+NOTCHED_TURN = 1.5 * math.pi
 
 
 @dataclass(frozen=True)
@@ -18,8 +20,13 @@ class ConcaveCylinder:
     axis: Vector
     origin: Vector
     span: float
+    widest: float
     heights: list[float]
     point: Vector
+
+    @property
+    def bore(self) -> bool:
+        return self.span >= FULL_TURN or self.widest >= NOTCHED_TURN
 
 
 def part_metrics(part_id: str, shape: Shape[Any]) -> PartMetrics:
@@ -48,7 +55,7 @@ def placement(loc: Location | None) -> Placement:
 def holes(shape: Shape[Any]) -> list[HoleInfo]:
     out = []
     for c in concave_cylinders(shape):
-        if c.span < FULL_TURN:
+        if not c.bore:
             continue
         lo, hi = min(c.heights), max(c.heights)
         out.append(HoleInfo(diameter=2 * c.radius, axis=_t(c.axis), center=_t(c.origin + c.axis * ((lo + hi) / 2)), length=hi - lo))
@@ -80,8 +87,8 @@ def concave_cylinders(shape: Shape[Any]) -> list[ConcaveCylinder]:
     out = []
     for key, faces in groups.items():
         radius, d, loc = meta[key]
-        span = sum(s for s, _, _ in faces)
-        out.append(ConcaveCylinder(radius, d, loc, span, [t for _, ts, _ in faces for t in ts], faces[0][2]))
+        spans = [s for s, _, _ in faces]
+        out.append(ConcaveCylinder(radius, d, loc, sum(spans), max(spans), [t for _, ts, _ in faces for t in ts], faces[0][2]))
     return out
 
 

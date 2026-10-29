@@ -1,32 +1,34 @@
 import math
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design, validate
+from partwright_ir import Design, Rule, RuleSet, validate
 
 R, L = 10.0, 60.0
+WALL = RuleSet(rules=[Rule(id="min-wall", kind="min_wall_thickness", value=0.8, unit="mm")])
 
 
-def shaft(*features: dict[str, Any]) -> Design:
+def shaft(*features: dict[str, Any], diameter: float = 2 * R) -> Design:
     part = {
         "id": "p",
         "name": "Shaft",
-        "sketches": [{"id": "c", "entities": [{"kind": "circle", "diameter": 2 * R}]}],
+        "sketches": [{"id": "c", "entities": [{"kind": "circle", "diameter": diameter}]}],
         "features": [{"kind": "extrude", "id": "shaft", "name": "Shaft", "sketch": "c", "distance": L}, *features],
     }
     return Design.model_validate({"title": "Shaft", "params": [], "parts": [part]})
 
 
-def hub(*features: dict[str, Any]) -> Design:
+def hub(*features: dict[str, Any], outside: float = 40) -> Design:
     centre = {"kind": "points", "points": [[0, 0]]}
     bore = {"kind": "hole", "id": "bore", "name": "Bore", "plane": {"ref": "XY"}, "at": centre, "diameter": 2 * R}
     part = {
         "id": "p",
         "name": "Hub",
-        "sketches": [{"id": "c", "entities": [{"kind": "circle", "diameter": 40}]}],
+        "sketches": [{"id": "c", "entities": [{"kind": "circle", "diameter": outside}]}],
         "features": [{"kind": "extrude", "id": "body", "name": "Body", "sketch": "c", "distance": 30}, bore, *features],
     }
     return Design.model_validate({"title": "Hub", "params": [], "parts": [part]})
@@ -72,3 +74,27 @@ def test_groove_past_the_shaft_end_is_an_error(geometry: LocalGeometry) -> None:
     late = {"kind": "groove", "id": "late", "name": "Late", "of": "shaft", "position": 59.5, "width": 1, "depth": 0.5}
     with pytest.raises(BuildError, match=r"groove late: no shaft surface runs from 59\.5"):
         geometry.measure(shaft(late))
+
+
+@pytest.mark.parametrize("diameter", [8.0, 12.0, 16.0, 18.0])
+def test_small_keyed_shafts_have_no_thin_wall_at_the_keyway_edge(geometry: LocalGeometry, tmp_path: Path, diameter: float) -> None:
+    key = {"kind": "keyway", "id": "key", "name": "Key", "of": "shaft", "position": 10, "length": 25}
+    art = geometry.build(shaft(key, diameter=diameter), tmp_path, rules=WALL)
+    assert art.ok, art.findings
+
+
+def test_a_keyway_floor_close_to_the_outside_is_a_thin_wall(geometry: LocalGeometry, tmp_path: Path) -> None:
+    key = {"kind": "keyway", "id": "key", "name": "Key", "of": "bore", "on": "bore", "width": 6, "depth": 1.6}
+    art = geometry.build(hub(key, outside=24), tmp_path, rules=WALL)
+    (thin,) = art.findings
+    assert thin.measured is not None and thin.measured < 0.8 and not art.ok
+
+
+@pytest.mark.parametrize("angle", [0.0, 90.0])
+def test_a_keyed_bore_is_measured_as_a_hole(geometry: LocalGeometry, tmp_path: Path, angle: float) -> None:
+    key = {"kind": "keyway", "id": "key", "name": "Key", "of": "bore", "on": "bore", "angle": angle}
+    smallest = RuleSet(rules=[Rule(id="min-hole", kind="min_hole_diameter", value=25, unit="mm")])
+    art = geometry.build(hub(key), tmp_path, rules=smallest)
+    (bore,) = art.parts[0].holes
+    assert (bore.diameter, bore.length) == pytest.approx((2 * R, 30)) and bore.center == pytest.approx((0, 0, 15))
+    assert [f.measured for f in art.findings] == pytest.approx([2 * R])
