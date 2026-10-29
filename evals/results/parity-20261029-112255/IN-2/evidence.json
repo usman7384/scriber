@@ -1,0 +1,11 @@
+{
+  "row": "IN-2",
+  "passed": false,
+  "measured": {
+    "size": "200.000 x 120.000 x 5.000",
+    "holes": 10,
+    "through_holes": 10,
+    "max_centre_error_mm": 25.0
+  },
+  "note": ""
+}

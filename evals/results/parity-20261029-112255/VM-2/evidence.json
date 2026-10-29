@@ -1,0 +1,13 @@
+{
+  "row": "VM-2",
+  "passed": true,
+  "measured": {
+    "milling_before": false,
+    "milling_after": true,
+    "corner_radii": "3.000 x 3.000 x 3.000 x 3.000",
+    "diff_features": "p.inside_corner, p.body_s, p.pocket",
+    "diff_params": 7,
+    "same_size": true
+  },
+  "note": ""
+}

@@ -3,106 +3,94 @@
 Generated from `docs/reference/PARITY_CHECKLIST.md` by `partwright-parity-report`; a row is done only with a passing
 acceptance test and a recorded demo (D-030). Evidence paths are in each row's status.
 
-**61 done, 31 in progress, 46 open, of 138 rows.**
+**73 done, 51 in progress, 14 open, of 138 rows.**
 
 | Area | done | in progress | open |
 |---|---|---|---|
-| Inputs | 6 | 6 | 5 |
-| Context Manager / knowledge | 4 | 9 | 1 |
-| Generation & output | 7 | 0 | 6 |
-| Parameters & refinement | 6 | 2 | 2 |
-| Verification & manufacturability | 4 | 2 | 4 |
-| Assemblies | 2 | 1 | 1 |
+| Inputs | 9 | 8 | 0 |
+| Context Manager / knowledge | 6 | 7 | 1 |
+| Generation & output | 8 | 2 | 3 |
+| Parameters & refinement | 6 | 4 | 0 |
+| Verification & manufacturability | 6 | 2 | 2 |
+| Assemblies | 2 | 2 | 0 |
 | Export & interop | 4 | 3 | 1 |
-| Workflow & platform | 10 | 3 | 2 |
-| API & automation | 5 | 1 | 3 |
-| Circular design / simulation hooks | 5 | 0 | 3 |
-| Performance | 4 | 0 | 4 |
-| Demo parts (eval cases) | 4 | 4 | 14 |
+| Workflow & platform | 10 | 4 | 1 |
+| API & automation | 6 | 2 | 1 |
+| Circular design / simulation hooks | 5 | 3 | 0 |
+| Performance | 4 | 1 | 3 |
+| Demo parts (eval cases) | 7 | 13 | 2 |
 
 ## In progress
 
 | Row | Capability | Status |
 |---|---|---|
-| IN-2 | Text/spec file with exact specifications | in progress (M2): MD/CSV/XLSX specs give identical typed hole facts (`services/context` tests); full generation from `plate_spec.md` not run live |
-| IN-3 | Spreadsheet (CSV/Excel) with exact connection points and sizes | in progress (M2): CSV and XLSX hole tables give identical facts with positions (`test_readers`); generation from a table not run live |
-| IN-9 | Existing CAD (STEP) / past designs as reference | in progress (M2): STEP/STL describe + similar-part ranking (`test_import`, context retrieval); "20 % longer" edit not done |
-| IN-12 | Requirements/specification documents (PDF, MD) | in progress (M2): live demo `m2demo`: requirements PDF facts (120x80x6, 4xM6, Ø20 ±0.1) became checks, 5/5 passed, params cite p1:l2/p1:l4 |
-| IN-13 | Design rules and industry standards documents | in progress (M2): rules doc "hole-to-edge ≥ 2 x D" overrode the 1.5 default; violation caught on attempts 2-4 and repaired live |
-| IN-15 | Reports and sizing calculations as context | in progress (M2): report values cited to page and line (context tests); not used in a live generation yet |
+| IN-2 | Text/spec file with exact specifications | in progress: live run on `partwright-ir:4b-s2` fails: size=200.000 x 120.000 x 5.000, holes=10, through_holes=10, max_centre_error_mm=25.0 (`parity-20261029-112255`) |
+| IN-3 | Spreadsheet (CSV/Excel) with exact connection points and sizes | in progress: live run on `partwright-ir:4b-s2` fails: csv_size=200.000 x 120.000 x 5.000, csv_holes=10, csv_through_holes=10, csv_max_centre_error_mm=25.0, xlsx_size=200.000 x 120.000 x 5.000, xlsx_holes=10, xlsx_through_holes=10, xlsx_max_centre_error_mm=25.0, identical=True (`parity-20261029-112255`) |
+| IN-4 | Hand-drawn sketch image | in progress: live run on `partwright-ir:4b-s2` fails: no valid part in 6 attempts; qwen3.5:4b (vision) reads the dimensions from the image, e.g. 120/40/4 on the IN-4 sketch, but its designs fail to build (`parity-20261029-112255`) |
+| IN-5 | Photo/image of a part | in progress: live run on `partwright-ir:4b-s2` fails: no valid part in 6 attempts; qwen3.5:4b (vision) reads the dimensions from the image, e.g. 120/40/4 on the IN-4 sketch, but its designs fail to build (`parity-20261029-112255`) |
+| IN-6 | Technical drawing (incl. legacy pre-CAD drawings) → parametric part | in progress: live run on `partwright-ir:4b-s2` fails: no valid part in 6 attempts; qwen3.5:4b (vision) reads the dimensions from the image, e.g. 120/40/4 on the IN-4 sketch, but its designs fail to build (`parity-20261029-112255`) |
+| IN-9 | Existing CAD (STEP) / past designs as reference | in progress: live run on `partwright-ir:4b-s2` fails: source=5.000 x 40.000 x 80.000, output=40.000 x 70.000 x 120.000, length_ratio=1.5 (`parity-20261029-112255`) |
+| IN-13 | Design rules and industry standards documents | in progress: live run on `partwright-ir:4b-s2` fails: built=False; no design was built (`parity-20261029-112255`) |
+| IN-16 | Multiple inputs combined in one request ("upload as many inputs as you need") | in progress: live run on `partwright-ir:4b-s2` fails: inputs=prompt=used, sketch.png=used, plate_spec.md=used, spec_driven=plate_length, plate_thickness, plate_width, with_spec=ok, without_spec=ok (`parity-20261029-112255`) |
 | CX-1 | Per-account/project engineering data repository; drag-drop multi-file upload with per-file progress | in progress (M3): API half, 6 file kinds in one upload all processed with progress (`parity-20261029-025007`); per-file UI not demoed |
 | CX-2 | Context file table: Name, Type, Status, Used in, Uploaded, Action (delete), search, select | in progress (M3): file table, search, facts, delete in the UI (mock); graph removal on the server not demoed |
-| CX-3 | Use selected files as context + description → Generate | in progress (M2): retrieved context is passed to generation and `used_in` recorded; choosing context ids by hand is M3 (API/UI) |
-| CX-4 | Knowledge graph extracted from files, concepts and generated outputs | in progress (M2): knowledge graph built on ingest and extended on generation (28 → 63 relations in the live demo); KMM-28 ↔ M3 test |
+| CX-4 | Knowledge graph extracted from files, concepts and generated outputs | in progress: live run on `partwright-ir:4b-s2` fails: kmm28_related_to_m3=True, part_mentions_kmm28=True, part_mentions_m3=False, relations=47 (`parity-20261029-112255`) |
 | CX-6 | Knowledge-base level / score (files score, used in generation, level progress) | in progress (M3): API half, score and level follow the documented formula (`parity-20261029-025007`); UI not demoed |
-| CX-7 | Generation checks itself against uploaded inputs (every input considered) | in progress (M2): every checkable spec fact becomes a requirement check (5/5 in demo); no coverage report for facts that are not checkable |
-| CX-8 | Consistency with team conventions ("how you work", not only what) | in progress (M2): convention documents join every context pack and the prompt; not exercised in a live generation yet |
-| CX-10 | Design intent captured and preserved | in progress (M2): parameters carry document provenance (ref + quote) through IR, design.json and params.json; features keep intent text only |
-| CX-11 | Traceability requirement → feature → output | in progress (M2): `stale()` returns exactly the dependent model when REQ-1 changes (live demo) |
+| CX-7 | Generation checks itself against uploaded inputs (every input considered) | in progress: live run on `partwright-ir:4b-s2` fails: constraints=10, evaluated=0, passed=0, repairs=5 (`parity-20261029-112255`) |
+| CX-8 | Consistency with team conventions ("how you work", not only what) | in progress: live run on `partwright-ir:4b-s2` fails: built=False; no design was built (`parity-20261029-112255`) |
+| CX-10 | Design intent captured and preserved | in progress: live run on `partwright-ir:4b-s2` fails: features=3, with_intent=0, feature_sources=prompt, params_citing_documents=5, byte_identical=True (`parity-20261029-112255`) |
+| GE-5 | Functional assemblies with mates | in progress: live run on `partwright-ir:4b-s2` fails: built=False (`parity-20261029-112255`) |
+| GE-6 | Whole-system assembly (drone: frame, control surfaces, mounts) | in progress: live run on `partwright-ir:4b-s2` fails: built=False (`parity-20261029-112255`) |
+| PR-5 | Targeted edit of a selected component/segment only | in progress: live run on `partwright-ir:4b-s2` fails: base_hash_before=13289bd4a3dca3a2, base_hash_after=07cab0d0c0ef1667, other_components_changed=base, lid_volume_removed_mm3=-4763.683, valid=True (`parity-20261029-112255`) |
 | PR-6 | Edit by selecting edges/faces | in progress (M5): top face maps to thickness, offset +2 gives 7.000 mm and no other change (`test_faces` on the real kernel; UI on the mock `parity-web-20261029-050842`); no live demo |
+| PR-7 | AI suggestions with Accept / Ignore, shown in 3D space | in progress: live run on `partwright-ir:4b-s2` fails: suggestions=0 (`parity-20261029-112255`) |
 | PR-10 | Measurements (bounding box, distances) | in progress (M3): API half, bbox 120/80/5 matches the STEP (`parity-20261029-025007`); on-model labels not demoed |
-| VM-2 | User picks manufacturing method; part altered automatically to pass | in progress (M2): process selects rules and violations drive repair (live); automatic geometric fixes (e.g. fillet to tool radius) not done |
 | VM-4 | Rule violations shown as pop-up recommendations (e.g. hole-to-edge ≥ 1.5×D) | in progress (M3): finding marker 0.19 mm from the hole with suggestion, on real geometry output served by the mock API (`parity-web-20261029-021647`) |
+| VM-10 | Vision/visual critique of results (not claimed by reference; ours by design) | in progress: live run on `partwright-ir:4b-s2` fails: wrong_flagged=5/5, right_flagged=4/5; control: the correct parts must pass too, or a critic that rejects everything would meet the row (`parity-20261029-112255`) |
 | AS-1 | Segment selection & assembly tree | in progress (M5): API lists components (`test_assembly`); clicking parts in the viewer selects the same ids on the mock (`parity-web-20261029-050842`); no live run |
+| AS-3 | Place generated asset directly into an existing assembly | in progress: live run on `partwright-ir:4b-s2` fails: built=False (`parity-20261029-112255`) |
 | EX-4 | Native parametric CAD export with feature tree (reference: Onshape write) | in progress (M4): IR bundle with feature tree and sketch constraints reopens (`parity-20261029-041904`); FreeCAD .FCStd blocked (not installed), FeatureScript export not built |
 | EX-5 | Export to other CAD systems (CATIA, NX, SolidWorks, Creo; reference: read now, write in progress) | in progress (M5): docs/INTEROP.md export section; AP242 OCCT round trip drift 1.5e-16 (`parity-20261029-052939`); FreeCAD not installed |
 | EX-6 | Share link (read-only view) | in progress (M3): API half, share link view 200 with GLB, write 401, revoked 404 (`parity-20261029-025007`); viewer page not demoed |
+| WP-6 | Real-time generation progress | in progress: live run on `partwright-ir:4b-s2` fails: step_events=14, progress=10, 40, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100, final=failed; API half; the bar is the web suite's (`parity-20261029-112255`) |
 | WP-8 | Thumbnails for models and versions | in progress (M3): thumbnails change on edit in the UI (mock); server-side regeneration not demoed |
 | WP-11 | Report a bug from the editor | in progress (M5): API stores model, version, text, user and screenshot byte-identical (`parity-20261029-052939`); web dialog posts the same shape on the mock (`parity-web-20261029-050842`); no end-to-end run |
 | WP-14 | Beginner flow: idea → printable part without CAD experience | in progress (M5): prompt, Generate, Download STL in 3 UI steps on the mock (`parity-web-20261029-050842`); live generation and slicer check not run |
-| AP-8 | Onshape integration: describe a change → native Onshape features | in progress (M5): a described change via refine, exported as 18 named native Onshape features with linked variables against a recorded API mock, 0 import or translation calls (`test_parity_m5_onshape`, scripted model); live run pending; mock written from public docs, not captured |
-| DP-2 | Flanged adapter: Adapter Height 60.0 mm, Base Bolt Dia 8.5 mm, Base Bolt Spacing X 85.0 mm, Base Bolt Spacing Y 60.0 mm | in progress: live `partwright-ir:4b-s1` 1/4 checks, holes 5.5 instead of 8.5 (`parity-20261029-020105`); demo also checks the X 85 to 90 edit |
-| DP-7 | Metal bracket with angled support and screw holes | in progress: live bracket valid with holes but no angled support or gusset (`parity-20261029-020105`) |
-| DP-17 | Housing from model-ready context (Ø82 ±0.2 mm, 4×M6) | in progress (M2): analogous spec-driven plate (Ø20 ±0.1 bore, 4×M6) passes live; the Ø82 housing itself not run |
-| DP-21 | L-bracket concept (Length 120, Width 40, Thickness 4, Fillet 2 mm, Al 6061; constraints min wall ≥ 2, hole Ø ≥ 3, max length < 200; "7/7 checks") | in progress: live 2/3 checks, holes 4.5 instead of 6 (`parity-20261029-020105`) |
+| AP-2 | `generate` endpoint: prompt + optional image/mesh references | in progress: live run on `partwright-ir:4b-s2` fails: job_id=j7ae561da70d5, holes=2, angled_facet_mm2=1.4, angled_features=part.profile, title=Angle bracket (`parity-20261029-112255`) |
+| AP-3 | `modify` endpoint: natural-language change to an existing model | in progress: live run on `partwright-ir:4b-s2` fails: before=5.0, after=10.0, job=done; seeded 5 mm plate; the change is the model's (`parity-20261029-112255`) |
+| CD-1 | Requirement/calculation change → geometry updates automatically | in progress: live run on `partwright-ir:4b-s2` fails: auto_job=params, job=failed, v1_span=650.0, versions=2, origin=context, trigger=beam_spec.md changed: beam_span 1000 -> 1100 mm; params job = cited parameter rebuilt without the model; refine job = the model was asked (`parity-20261029-112255`) |
+| CD-3 | Simulation results flow back into design | in progress: live run on `partwright-ir:4b-s2` fails: allowable_mpa=138, safety_factor=2.0, ratio_before=1.4, load_n=193.2, proposal=[], thickness_after=4.0, stress_after_mpa=193.2; mock FEA: sigma = 6 F L / (w t^2) at mount_face, F fixed from the fixture result (`parity-20261029-112255`) |
+| CD-5 | Manufacturing method change reshapes geometry | in progress: live run on `partwright-ir:4b-s2` fails: fdm_passes=True, milling_before=False, milling_after=False, corner_radii=0.000 x 0.000 x 0.000 x 0.000, diff_params=1, same_size=True (`parity-20261029-112255`) |
+| PF-3 | Asset from drawing/photo, up to 90 % accurate, in < 1 min | in progress: live run on `partwright-ir:4b-s2` fails: IN-5_seconds=215.5, IN-5_built=False, IN-5_passed=False, IN-6_seconds=246.8, IN-6_built=False, IN-6_passed=False; time to a built model; accuracy is gated by IN-5 and IN-6 (`parity-20261029-112255`) |
+| DP-1 | Quad frame ("White Quad Frame" / "Rendered Quad Frame") | in progress: live run on `partwright-ir:4b-s2` fails: checks=2/6, valid=True, failed=FC square 16: hole centre distances [128.0, 181.02]; sixteen M3 motor holes: 4 matching holes; all hole diameters [2.4, 2.4, 2.4, 2.4, 3.4, 3.4, 3.4, 3.4]; motor holes 16 apart: hole centre distances [32.0, 45.25]; motor holes 19 (`parity-20261029-112255`) |
+| DP-2 | Flanged adapter: Adapter Height 60.0 mm, Base Bolt Dia 8.5 mm, Base Bolt Spacing X 85.0 mm, Base Bolt Spacing Y 60.0 mm | in progress: live run on `partwright-ir:4b-s2` fails: checks=1/4, valid=True, failed=4 bolt holes 8.5: 0 matching holes; all hole diameters [54.0]; spacing X 85: hole centre distances []; spacing Y 60: hole centre distances [] (`parity-20261029-112255`) |
+| DP-4 | Glider / sailplane with refinement "Increase length to 450mm for higher fineness" | in progress: live run on `partwright-ir:4b-s2` fails: checks=0/2, valid=False, seconds=89.1 (`parity-20261029-112255`) |
+| DP-6 | T-joint bracket for 2020 aluminium extrusion | in progress: live run on `partwright-ir:4b-s2` fails: checks=0/3, valid=False, seconds=136.8 (`parity-20261029-112255`) |
+| DP-7 | Metal bracket with angled support and screw holes | in progress: live run on `partwright-ir:4b-s2` builds a valid bracket with holes but no angled support or gusset (`parity-20261029-112255`) |
+| DP-8 | Greenhouse Hose Connector: Barb Base Diameter 16.0, Barb Length 30.0, Bore Diameter 12.0, Fitting Diameter 26.4 mm (more params hidden) | in progress: live run on `partwright-ir:4b-s2` fails: checks=0/1, valid=True, failed=bore 12: 0 holes; diameters [16.0], seconds=115.5 (`parity-20261029-112255`) |
+| DP-12 | Hobby servo motor asset from datasheet drawing + photo → Onshape | in progress: live run on `partwright-ir:4b-s2` fails: no valid part in 6 attempts; qwen3.5:4b (vision) reads the dimensions from the image, e.g. 120/40/4 on the IN-4 sketch, but its designs fail to build; IN-5 plus tab holes 27.8 ±0.1 (`parity-20261029-112255`) |
+| DP-13 | Fin-ray gripper finger, 3 versions with different rib counts | in progress: live run on `partwright-ir:4b-s2` fails: checks=2/2, valid=False, seconds=148.7 (`parity-20261029-112255`) |
+| DP-16 | Drone assembly with frame, control surfaces, mounts; battery mount moved for CoG | in progress: live run on `partwright-ir:4b-s2` fails: GE-6_built=False, PR-8_cog_shift_x=-3.862, PR-8_predicted_shift_x=-3.862, PR-8_shift_error_mm=2.6645766811729078e-15, PR-8_frame_hole_moves_x=-20, -20, -20, -20, PR-8_holes_aligned=True; GE-6 (generated drone) and PR-8 (battery mount moved for CoG) (`parity-20261029-112255`) |
+| DP-18 | Context-file parts: KMM-28 motor mount, KMP-30 motor plate, KSB-120 standard box, 10-hole plate 200×120, KFW-1200 fixed wing, aluminium profile types | in progress: live run on `partwright-ir:4b-s2` fails: cases=6, passed=5, failed=dp18-kmp-30; per-case checks in cases.json (`parity-20261029-112255`) |
+| DP-20 | Robot arms, enclosures, brackets, jigs (claimed range) | in progress: live run on `partwright-ir:4b-s2` fails: cases=3, passed=1, failed=dp20-two-link-arm, dp20-pcb-enclosure; per-case checks in cases.json (`parity-20261029-112255`) |
+| DP-21 | L-bracket concept (Length 120, Width 40, Thickness 4, Fillet 2 mm, Al 6061; constraints min wall ≥ 2, hole Ø ≥ 3, max length < 200; "7/7 checks") | in progress: live run on `partwright-ir:4b-s2` fails: checks=0/3, valid=False (`parity-20261029-112255`) |
+| DP-22 | Air intake (timelapse video title) | in progress: live run on `partwright-ir:4b-s2` fails: checks=0/1, valid=True, failed=duct 40: 0 holes; diameters [38.0], seconds=16.5 (`parity-20261029-112255`) |
 
 ## Open
 
 | Row | Capability | Status |
 |---|---|---|
-| IN-4 | Hand-drawn sketch image | open |
-| IN-5 | Photo/image of a part | open |
-| IN-6 | Technical drawing (incl. legacy pre-CAD drawings) → parametric part | open |
-| IN-16 | Multiple inputs combined in one request ("upload as many inputs as you need") | open |
-| IN-17 | Attachments on edits (IMAGE/MESH/FILE in the edit panel) | open |
 | CX-13 | Fine-tuning on company CAD/design habits (local) | open |
-| GE-5 | Functional assemblies with mates | open |
-| GE-6 | Whole-system assembly (drone: frame, control surfaces, mounts) | open |
 | GE-8 | Exact generation from specs and requirements | open |
-| GE-9 | Batch / variant generation (N variants from one prompt; hundreds/thousands of configurations) | open |
 | GE-11 | Accurate dimensions from imperfect inputs ("up to 90 %" of a part from drawing/photo) | open |
 | GE-13 | Generate mode / "Thinking level" selector | open |
-| PR-5 | Targeted edit of a selected component/segment only | open |
-| PR-7 | AI suggestions with Accept / Ignore, shown in 3D space | open |
-| VM-7 | Automatic evals: every input reflected in output, no manual checking | open |
 | VM-8 | Benchmark parts and test cases curated by CAD engineers | open |
 | VM-9 | "Ready to manufacture" output (printable/machinable as exported) | open |
-| VM-10 | Vision/visual critique of results (not claimed by reference; ours by design) | open |
-| AS-3 | Place generated asset directly into an existing assembly | open |
 | EX-8 | Implicit/field geometry → B-rep connection | open |
-| WP-6 | Real-time generation progress | open |
 | WP-15 | Runs locally / on-prem with small local models (laptop-class) | open |
-| AP-2 | `generate` endpoint: prompt + optional image/mesh references | open |
-| AP-3 | `modify` endpoint: natural-language change to an existing model | open |
 | AP-7 | Batch processing | open |
-| CD-1 | Requirement/calculation change → geometry updates automatically | open |
-| CD-3 | Simulation results flow back into design | open |
-| CD-5 | Manufacturing method change reshapes geometry | open |
 | PF-1 | Concept → manufacturable model "in minutes" | open |
-| PF-3 | Asset from drawing/photo, up to 90 % accurate, in < 1 min | open |
 | PF-7 | "Seconds" claims (intro post, job ads) | open |
 | PF-8 | Local small model on a standard laptop | open |
-| DP-1 | Quad frame ("White Quad Frame" / "Rendered Quad Frame") | open |
-| DP-3 | Round pipe flange with hub (export tile) | open |
-| DP-4 | Glider / sailplane with refinement "Increase length to 450mm for higher fineness" | open |
-| DP-6 | T-joint bracket for 2020 aluminium extrusion | open |
-| DP-8 | Greenhouse Hose Connector: Barb Base Diameter 16.0, Barb Length 30.0, Bore Diameter 12.0, Fitting Diameter 26.4 mm (more params hidden) | open |
-| DP-11 | Parametric Enclosure System: Lid Clearance 0.2 mm, Outer Height 50.0 mm, Outer Length 250.0 mm, Outer Width 100.0 mm; four M3 screws | open |
-| DP-12 | Hobby servo motor asset from datasheet drawing + photo → Onshape | open |
-| DP-13 | Fin-ray gripper finger, 3 versions with different rib counts | open |
 | DP-14 | Bracket family (16 variants: L-angles, U-channels, T-plates, gussets, ring with tabs, pedestal mount, lug) | open |
 | DP-15 | Flange family (16 variants: bolt-circle, weld-neck style, square-plate with spigot, rectangular frame, ring) | open |
-| DP-16 | Drone assembly with frame, control surfaces, mounts; battery mount moved for CoG | open |
-| DP-18 | Context-file parts: KMM-28 motor mount, KMP-30 motor plate, KSB-120 standard box, 10-hole plate 200×120, KFW-1200 fixed wing, aluminium profile types | open |
-| DP-20 | Robot arms, enclosures, brackets, jigs (claimed range) | open |
-| DP-22 | Air intake (timelapse video title) | open |

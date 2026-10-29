@@ -1,0 +1,10 @@
+{
+  "row": "AP-3",
+  "passed": false,
+  "measured": {
+    "before": 5.0,
+    "after": 10.0,
+    "job": "done"
+  },
+  "note": "seeded 5 mm plate; the change is the model's"
+}

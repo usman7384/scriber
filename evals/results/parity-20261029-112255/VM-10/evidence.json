@@ -1,0 +1,9 @@
+{
+  "row": "VM-10",
+  "passed": false,
+  "measured": {
+    "wrong_flagged": "5/5",
+    "right_flagged": "4/5"
+  },
+  "note": "control: the correct parts must pass too, or a critic that rejects everything would meet the row"
+}

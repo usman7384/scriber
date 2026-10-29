@@ -1,0 +1,14 @@
+{
+  "row": "CD-1",
+  "passed": false,
+  "measured": {
+    "auto_job": "params",
+    "job": "failed",
+    "v1_span": 650.0,
+    "new_span": null,
+    "versions": 2,
+    "origin": "context",
+    "trigger": "beam_spec.md changed: beam_span 1000 -> 1100 mm"
+  },
+  "note": "params job = cited parameter rebuilt without the model; refine job = the model was asked"
+}

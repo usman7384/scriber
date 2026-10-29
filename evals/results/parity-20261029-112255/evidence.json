@@ -1,0 +1,560 @@
+[
+  {
+    "row": "DP-2",
+    "passed": false,
+    "measured": {
+      "checks": "1/4",
+      "valid": true,
+      "failed": "4 bolt holes 8.5: 0 matching holes; all hole diameters [54.0]; spacing X 85: hole centre distances []; spacing Y 60: hole centre distances []"
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-7",
+    "passed": false,
+    "measured": {
+      "checks": "1/1",
+      "valid": true,
+      "failed": "",
+      "angled": ""
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-21",
+    "passed": false,
+    "measured": {
+      "checks": "0/3",
+      "valid": false,
+      "failed": ""
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-3",
+    "passed": true,
+    "measured": {
+      "checks": "3/3",
+      "valid": true,
+      "failed": "",
+      "seconds": 41.0
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-6",
+    "passed": false,
+    "measured": {
+      "checks": "0/3",
+      "valid": false,
+      "failed": "",
+      "seconds": 136.8
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-8",
+    "passed": false,
+    "measured": {
+      "checks": "0/1",
+      "valid": true,
+      "failed": "bore 12: 0 holes; diameters [16.0]",
+      "seconds": 115.5
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-22",
+    "passed": false,
+    "measured": {
+      "checks": "0/1",
+      "valid": true,
+      "failed": "duct 40: 0 holes; diameters [38.0]",
+      "seconds": 16.5
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-1",
+    "passed": false,
+    "measured": {
+      "checks": "2/6",
+      "valid": true,
+      "failed": "FC square 16: hole centre distances [128.0, 181.02]; sixteen M3 motor holes: 4 matching holes; all hole diameters [2.4, 2.4, 2.4, 2.4, 3.4, 3.4, 3.4, 3.4]; motor holes 16 apart: hole centre distances [32.0, 45.25]; motor holes 19 apart: hole centre distances [32.0, 45.25]",
+      "seconds": 118.7,
+      "motor_pads": 4,
+      "holes_per_pad": "1, 1, 1, 1",
+      "arm_reach_spread": 0.0
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-4",
+    "passed": false,
+    "measured": {
+      "checks": "0/2",
+      "valid": false,
+      "failed": "",
+      "seconds": 89.1
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-19",
+    "passed": true,
+    "measured": {
+      "phone_width": 75.0,
+      "source": "phone width 75 mm",
+      "inner_width": 75.5,
+      "expected": 75.5,
+      "job": "done"
+    },
+    "note": "cut across the cradle at mid-depth, mid-lip height"
+  },
+  {
+    "row": "IN-2",
+    "passed": false,
+    "measured": {
+      "size": "200.000 x 120.000 x 5.000",
+      "holes": 10,
+      "through_holes": 10,
+      "max_centre_error_mm": 25.0
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-3",
+    "passed": false,
+    "measured": {
+      "csv_size": "200.000 x 120.000 x 5.000",
+      "csv_holes": 10,
+      "csv_through_holes": 10,
+      "csv_max_centre_error_mm": 25.0,
+      "xlsx_size": "200.000 x 120.000 x 5.000",
+      "xlsx_holes": 10,
+      "xlsx_through_holes": 10,
+      "xlsx_max_centre_error_mm": 25.0,
+      "identical": true
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-9",
+    "passed": false,
+    "measured": {
+      "source": "5.000 x 40.000 x 80.000",
+      "output": "40.000 x 70.000 x 120.000",
+      "length_ratio": 1.5
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-12",
+    "passed": true,
+    "measured": {
+      "m6_clearance_holes": 4,
+      "bores": 1,
+      "valid": true,
+      "req_1_features": "part/part/corner_holes",
+      "req_2_features": "part/part/bore"
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-13",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": "no design was built"
+  },
+  {
+    "row": "IN-15",
+    "passed": true,
+    "measured": {
+      "side_walls": "3.200 x 3.200 x 3.200 x 3.200",
+      "params_citing_report": "wall_t"
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-17",
+    "passed": true,
+    "measured": {
+      "m6_clearance_holes": 4,
+      "bores": 1,
+      "valid": true,
+      "req_1_features": "part/part/corner_holes",
+      "req_2_features": "part/part/bore"
+    },
+    "note": ""
+  },
+  {
+    "row": "CX-4",
+    "passed": false,
+    "measured": {
+      "kmm28_related_to_m3": true,
+      "part_mentions_kmm28": true,
+      "part_mentions_m3": false,
+      "relations": 47
+    },
+    "note": ""
+  },
+  {
+    "row": "CX-7",
+    "passed": false,
+    "measured": {
+      "constraints": 10,
+      "evaluated": 0,
+      "passed": 0,
+      "repairs": 5
+    },
+    "note": ""
+  },
+  {
+    "row": "CX-8",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": "no design was built"
+  },
+  {
+    "row": "CX-10",
+    "passed": false,
+    "measured": {
+      "features": 3,
+      "with_intent": 0,
+      "feature_sources": "prompt",
+      "params_citing_documents": 5,
+      "byte_identical": true
+    },
+    "note": ""
+  },
+  {
+    "row": "CX-11",
+    "passed": true,
+    "measured": {
+      "req_3_features": "plate/part/corner_holes, plate/part/plate",
+      "changed": "req_3_plate_size_x",
+      "stale": "plate"
+    },
+    "note": ""
+  },
+  {
+    "row": "VM-2",
+    "passed": true,
+    "measured": {
+      "milling_before": false,
+      "milling_after": true,
+      "corner_radii": "3.000 x 3.000 x 3.000 x 3.000",
+      "diff_features": "p.inside_corner, p.body_s, p.pocket",
+      "diff_params": 7,
+      "same_size": true
+    },
+    "note": ""
+  },
+  {
+    "row": "VM-7",
+    "passed": true,
+    "measured": {
+      "mounting-plate": "0/10 evaluated, unevaluated: req_1_plate_size_x, req_1_plate_size_y, req_1_plate_size_z, req_2, req_3_centre_bore, req_4, req_5, req_6, req_7, req_8_sensor_bore",
+      "sensor-plate": "5/5 evaluated",
+      "lid": "3/4 evaluated, unevaluated: wall_thickness",
+      "gate": "fail"
+    },
+    "note": "lid-spec.md plants a wall thickness no check covers; the gate must fail on it"
+  },
+  {
+    "row": "CD-5",
+    "passed": false,
+    "measured": {
+      "fdm_passes": true,
+      "milling_before": false,
+      "milling_after": false,
+      "corner_radii": "0.000 x 0.000 x 0.000 x 0.000",
+      "diff_features": "",
+      "diff_params": 1,
+      "same_size": true
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-16",
+    "passed": false,
+    "measured": {
+      "inputs": "prompt=used, sketch.png=used, plate_spec.md=used",
+      "spec_driven": "plate_length, plate_thickness, plate_width",
+      "changed_without_spec": "",
+      "with_spec": "ok",
+      "without_spec": "ok"
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-17",
+    "passed": true,
+    "measured": {
+      "status_code": 202,
+      "job": "done",
+      "photo_role": "used",
+      "attachments": "f48f33ea04a00",
+      "photo_id": "f48f33ea04a00"
+    },
+    "note": "the image goes to the model with the change request; what the model makes of it is the live run's"
+  },
+  {
+    "row": "AP-2",
+    "passed": false,
+    "measured": {
+      "job_id": "j7ae561da70d5",
+      "holes": 2,
+      "angled_facet_mm2": 1.4,
+      "angled_features": "part.profile",
+      "title": "Angle bracket"
+    },
+    "note": ""
+  },
+  {
+    "row": "AP-3",
+    "passed": false,
+    "measured": {
+      "before": 5.0,
+      "after": 10.0,
+      "job": "done"
+    },
+    "note": "seeded 5 mm plate; the change is the model's"
+  },
+  {
+    "row": "CD-1",
+    "passed": false,
+    "measured": {
+      "auto_job": "params",
+      "job": "failed",
+      "v1_span": 650.0,
+      "new_span": null,
+      "versions": 2,
+      "origin": "context",
+      "trigger": "beam_spec.md changed: beam_span 1000 -> 1100 mm"
+    },
+    "note": "params job = cited parameter rebuilt without the model; refine job = the model was asked"
+  },
+  {
+    "row": "CD-3",
+    "passed": false,
+    "measured": {
+      "allowable_mpa": 138,
+      "safety_factor": 2.0,
+      "ratio_before": 1.4,
+      "load_n": 193.2,
+      "proposal": "[]",
+      "thickness_after": 4.0,
+      "stress_after_mpa": 193.2
+    },
+    "note": "mock FEA: sigma = 6 F L / (w t^2) at mount_face, F fixed from the fixture result"
+  },
+  {
+    "row": "PR-7",
+    "passed": false,
+    "measured": {
+      "suggestions": 0
+    },
+    "note": ""
+  },
+  {
+    "row": "CX-3",
+    "passed": true,
+    "measured": {
+      "job": "done",
+      "recorded": "f2ec50f71f67d, f3b09f4cd2e96",
+      "selected": "f2ec50f71f67d, f3b09f4cd2e96",
+      "used_in": "{\"f2ec50f71f67d\": [\"mbcb84332dfc9\"], \"f3b09f4cd2e96\": [\"mbcb84332dfc9\"], \"fc53f2acedcf1\": []}"
+    },
+    "note": "API half; the 'Used in' column is the web suite's"
+  },
+  {
+    "row": "WP-6",
+    "passed": false,
+    "measured": {
+      "step_events": 14,
+      "progress": "10, 40, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100",
+      "final": "failed"
+    },
+    "note": "API half; the bar is the web suite's"
+  },
+  {
+    "row": "GE-9",
+    "passed": true,
+    "measured": {
+      "variants": 3,
+      "rib_counts": "4, 6, 8",
+      "sweep": 100,
+      "sweep_valid": 100,
+      "sweep_seconds": 65.7
+    },
+    "note": "seeded base; the model plans the variants"
+  },
+  {
+    "row": "DP-13",
+    "passed": false,
+    "measured": {
+      "checks": "2/2",
+      "valid": false,
+      "failed": "",
+      "seconds": 148.7
+    },
+    "note": ""
+  },
+  {
+    "row": "AP-8",
+    "passed": true,
+    "measured": {
+      "changed": "bore_diameter 22 to 24, plate_thickness 6 to 10",
+      "calls": 20,
+      "endpoints": "POST documents, POST partstudios, POST partstudios/features",
+      "import_calls": 0,
+      "features": "plate_length (assignVariable), plate_width (assignVariable), plate_thickness (assignVariable), boss_diameter (assignVariable), boss_height (assignVariable), bore_diameter (assignVariable), hole_spacing_x (assignVariable), hole_spacing_y (assignVariable), plate_sketch (newSketch), Base plate (extrude), boss_sketch plane (cPlane), boss_sketch (newSketch), Motor boss (extrude), bore plane (cPlane), bore locations (newSketch), Motor bore (hole), mount_holes locations (newSketch), Mounting holes (hole)",
+      "variables": "plate_length=100.0 mm, plate_width=60.0 mm, plate_thickness=10.0 mm, boss_diameter=36.0 mm, boss_height=12.0 mm, bore_diameter=24.0 mm, hole_spacing_x=80.0 mm, hole_spacing_y=40.0 mm",
+      "linked": "Base plate.depth=#plate_thickness, boss_sketch plane.offset=#plate_thickness, Motor boss.depth=#boss_height, bore plane.offset=#plate_thickness + #boss_height, Motor bore.holeDiameter=#bore_diameter",
+      "dangling_refs": 0,
+      "volume_mm3": 61311.615
+    },
+    "note": "Onshape REST replayed from a recorded mock written from the public docs (no account, no network); bodies are the exporter's"
+  },
+  {
+    "row": "PR-5",
+    "passed": false,
+    "measured": {
+      "base_hash_before": "13289bd4a3dca3a2",
+      "base_hash_after": "07cab0d0c0ef1667",
+      "other_components_changed": "base",
+      "slot_features": "",
+      "lid_volume_removed_mm3": -4763.683,
+      "valid": true
+    },
+    "note": ""
+  },
+  {
+    "row": "AS-3",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "GE-5",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "GE-6",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-11",
+    "passed": true,
+    "measured": {
+      "checks": "3/3",
+      "valid": true,
+      "failed": "",
+      "seconds": 85.0
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-16",
+    "passed": false,
+    "measured": {
+      "GE-6_built": false,
+      "PR-8_cog_shift_x": -3.862,
+      "PR-8_predicted_shift_x": -3.862,
+      "PR-8_shift_error_mm": 2.6645766811729078e-15,
+      "PR-8_frame_hole_moves_x": "-20, -20, -20, -20",
+      "PR-8_holes_aligned": true,
+      "PR-8_broken_mates": ""
+    },
+    "note": "GE-6 (generated drone) and PR-8 (battery mount moved for CoG)"
+  },
+  {
+    "row": "IN-4",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-5",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "IN-6",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-12",
+    "passed": false,
+    "measured": {
+      "built": false
+    },
+    "note": "IN-5 plus tab holes 27.8 \u00b10.1"
+  },
+  {
+    "row": "VM-10",
+    "passed": false,
+    "measured": {
+      "wrong_flagged": "5/5",
+      "right_flagged": "4/5"
+    },
+    "note": "control: the correct parts must pass too, or a critic that rejects everything would meet the row"
+  },
+  {
+    "row": "PF-3",
+    "passed": false,
+    "measured": {
+      "IN-5_seconds": 215.5,
+      "IN-5_built": false,
+      "IN-5_passed": false,
+      "IN-6_seconds": 246.8,
+      "IN-6_built": false,
+      "IN-6_passed": false
+    },
+    "note": "time to a built model; accuracy is gated by IN-5 and IN-6"
+  },
+  {
+    "row": "DP-18",
+    "passed": false,
+    "measured": {
+      "cases": 6,
+      "passed": 5,
+      "failed": "dp18-kmp-30"
+    },
+    "note": "per-case checks in cases.json"
+  },
+  {
+    "row": "DP-20",
+    "passed": false,
+    "measured": {
+      "cases": 3,
+      "passed": 1,
+      "failed": "dp20-two-link-arm, dp20-pcb-enclosure"
+    },
+    "note": "per-case checks in cases.json"
+  }
+]

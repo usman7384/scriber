@@ -1,0 +1,12 @@
+{
+  "row": "CX-10",
+  "passed": false,
+  "measured": {
+    "features": 3,
+    "with_intent": 0,
+    "feature_sources": "prompt",
+    "params_citing_documents": 5,
+    "byte_identical": true
+  },
+  "note": ""
+}

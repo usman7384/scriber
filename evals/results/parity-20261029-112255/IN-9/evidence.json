@@ -1,0 +1,10 @@
+{
+  "row": "IN-9",
+  "passed": false,
+  "measured": {
+    "source": "5.000 x 40.000 x 80.000",
+    "output": "40.000 x 70.000 x 120.000",
+    "length_ratio": 1.5
+  },
+  "note": ""
+}

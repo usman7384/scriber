@@ -1,0 +1,12 @@
+{
+  "row": "IN-17",
+  "passed": true,
+  "measured": {
+    "status_code": 202,
+    "job": "done",
+    "photo_role": "used",
+    "attachments": "f48f33ea04a00",
+    "photo_id": "f48f33ea04a00"
+  },
+  "note": "the image goes to the model with the change request; what the model makes of it is the live run's"
+}

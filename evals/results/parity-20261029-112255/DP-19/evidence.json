@@ -1,0 +1,12 @@
+{
+  "row": "DP-19",
+  "passed": true,
+  "measured": {
+    "phone_width": 75.0,
+    "source": "phone width 75 mm",
+    "inner_width": 75.5,
+    "expected": 75.5,
+    "job": "done"
+  },
+  "note": "cut across the cradle at mid-depth, mid-lip height"
+}

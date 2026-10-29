@@ -1,0 +1,14 @@
+{
+  "row": "CD-3",
+  "passed": false,
+  "measured": {
+    "allowable_mpa": 138,
+    "safety_factor": 2.0,
+    "ratio_before": 1.4,
+    "load_n": 193.2,
+    "proposal": "[]",
+    "thickness_after": 4.0,
+    "stress_after_mpa": 193.2
+  },
+  "note": "mock FEA: sigma = 6 F L / (w t^2) at mount_face, F fixed from the fixture result"
+}

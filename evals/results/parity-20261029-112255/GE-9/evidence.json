@@ -1,0 +1,12 @@
+{
+  "row": "GE-9",
+  "passed": true,
+  "measured": {
+    "variants": 3,
+    "rib_counts": "4, 6, 8",
+    "sweep": 100,
+    "sweep_valid": 100,
+    "sweep_seconds": 65.7
+  },
+  "note": "seeded base; the model plans the variants"
+}

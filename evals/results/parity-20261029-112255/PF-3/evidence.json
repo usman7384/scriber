@@ -1,0 +1,13 @@
+{
+  "row": "PF-3",
+  "passed": false,
+  "measured": {
+    "IN-5_seconds": 215.5,
+    "IN-5_built": false,
+    "IN-5_passed": false,
+    "IN-6_seconds": 246.8,
+    "IN-6_built": false,
+    "IN-6_passed": false
+  },
+  "note": "time to a built model; accuracy is gated by IN-5 and IN-6"
+}

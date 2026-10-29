@@ -1,0 +1,11 @@
+{
+  "row": "VM-7",
+  "passed": true,
+  "measured": {
+    "mounting-plate": "0/10 evaluated, unevaluated: req_1_plate_size_x, req_1_plate_size_y, req_1_plate_size_z, req_2, req_3_centre_bore, req_4, req_5, req_6, req_7, req_8_sensor_bore",
+    "sensor-plate": "5/5 evaluated",
+    "lid": "3/4 evaluated, unevaluated: wall_thickness",
+    "gate": "fail"
+  },
+  "note": "lid-spec.md plants a wall thickness no check covers; the gate must fail on it"
+}

@@ -1,0 +1,11 @@
+{
+  "row": "DP-3",
+  "passed": true,
+  "measured": {
+    "checks": "3/3",
+    "valid": true,
+    "failed": "",
+    "seconds": 41.0
+  },
+  "note": ""
+}

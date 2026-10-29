@@ -1,0 +1,11 @@
+{
+  "row": "CX-4",
+  "passed": false,
+  "measured": {
+    "kmm28_related_to_m3": true,
+    "part_mentions_kmm28": true,
+    "part_mentions_m3": false,
+    "relations": 47
+  },
+  "note": ""
+}

@@ -1,0 +1,12 @@
+{
+  "row": "AP-2",
+  "passed": false,
+  "measured": {
+    "job_id": "j7ae561da70d5",
+    "holes": 2,
+    "angled_facet_mm2": 1.4,
+    "angled_features": "part.profile",
+    "title": "Angle bracket"
+  },
+  "note": ""
+}

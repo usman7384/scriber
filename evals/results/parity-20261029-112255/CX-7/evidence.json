@@ -1,0 +1,11 @@
+{
+  "row": "CX-7",
+  "passed": false,
+  "measured": {
+    "constraints": 10,
+    "evaluated": 0,
+    "passed": 0,
+    "repairs": 5
+  },
+  "note": ""
+}

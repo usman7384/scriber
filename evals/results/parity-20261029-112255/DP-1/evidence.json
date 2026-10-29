@@ -1,0 +1,14 @@
+{
+  "row": "DP-1",
+  "passed": false,
+  "measured": {
+    "checks": "2/6",
+    "valid": true,
+    "failed": "FC square 16: hole centre distances [128.0, 181.02]; sixteen M3 motor holes: 4 matching holes; all hole diameters [2.4, 2.4, 2.4, 2.4, 3.4, 3.4, 3.4, 3.4]; motor holes 16 apart: hole centre distances [32.0, 45.25]; motor holes 19 apart: hole centre distances [32.0, 45.25]",
+    "seconds": 118.7,
+    "motor_pads": 4,
+    "holes_per_pad": "1, 1, 1, 1",
+    "arm_reach_spread": 0.0
+  },
+  "note": ""
+}

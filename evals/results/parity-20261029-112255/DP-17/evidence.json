@@ -1,0 +1,12 @@
+{
+  "row": "DP-17",
+  "passed": true,
+  "measured": {
+    "m6_clearance_holes": 4,
+    "bores": 1,
+    "valid": true,
+    "req_1_features": "part/part/corner_holes",
+    "req_2_features": "part/part/bore"
+  },
+  "note": ""
+}

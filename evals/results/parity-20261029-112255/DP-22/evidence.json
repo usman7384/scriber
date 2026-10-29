@@ -1,0 +1,11 @@
+{
+  "row": "DP-22",
+  "passed": false,
+  "measured": {
+    "checks": "0/1",
+    "valid": true,
+    "failed": "duct 40: 0 holes; diameters [38.0]",
+    "seconds": 16.5
+  },
+  "note": ""
+}

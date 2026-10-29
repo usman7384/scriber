@@ -1,0 +1,11 @@
+{
+  "row": "CX-3",
+  "passed": true,
+  "measured": {
+    "job": "done",
+    "recorded": "f2ec50f71f67d, f3b09f4cd2e96",
+    "selected": "f2ec50f71f67d, f3b09f4cd2e96",
+    "used_in": "{\"f2ec50f71f67d\": [\"mbcb84332dfc9\"], \"f3b09f4cd2e96\": [\"mbcb84332dfc9\"], \"fc53f2acedcf1\": []}"
+  },
+  "note": "API half; the 'Used in' column is the web suite's"
+}

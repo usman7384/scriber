@@ -1,0 +1,16 @@
+{
+  "row": "IN-3",
+  "passed": false,
+  "measured": {
+    "csv_size": "200.000 x 120.000 x 5.000",
+    "csv_holes": 10,
+    "csv_through_holes": 10,
+    "csv_max_centre_error_mm": 25.0,
+    "xlsx_size": "200.000 x 120.000 x 5.000",
+    "xlsx_holes": 10,
+    "xlsx_through_holes": 10,
+    "xlsx_max_centre_error_mm": 25.0,
+    "identical": true
+  },
+  "note": ""
+}

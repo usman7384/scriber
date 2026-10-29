@@ -1,0 +1,10 @@
+{
+  "row": "DP-20",
+  "passed": false,
+  "measured": {
+    "cases": 3,
+    "passed": 1,
+    "failed": "dp20-two-link-arm, dp20-pcb-enclosure"
+  },
+  "note": "per-case checks in cases.json"
+}

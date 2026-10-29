@@ -1,0 +1,9 @@
+{
+  "row": "IN-15",
+  "passed": true,
+  "measured": {
+    "side_walls": "3.200 x 3.200 x 3.200 x 3.200",
+    "params_citing_report": "wall_t"
+  },
+  "note": ""
+}

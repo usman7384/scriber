@@ -1,0 +1,10 @@
+{
+  "row": "WP-6",
+  "passed": false,
+  "measured": {
+    "step_events": 14,
+    "progress": "10, 40, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100",
+    "final": "failed"
+  },
+  "note": "API half; the bar is the web suite's"
+}

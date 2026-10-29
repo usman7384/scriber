@@ -1,0 +1,14 @@
+{
+  "row": "DP-16",
+  "passed": false,
+  "measured": {
+    "GE-6_built": false,
+    "PR-8_cog_shift_x": -3.862,
+    "PR-8_predicted_shift_x": -3.862,
+    "PR-8_shift_error_mm": 2.6645766811729078e-15,
+    "PR-8_frame_hole_moves_x": "-20, -20, -20, -20",
+    "PR-8_holes_aligned": true,
+    "PR-8_broken_mates": ""
+  },
+  "note": "GE-6 (generated drone) and PR-8 (battery mount moved for CoG)"
+}

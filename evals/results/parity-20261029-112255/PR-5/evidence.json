@@ -1,0 +1,13 @@
+{
+  "row": "PR-5",
+  "passed": false,
+  "measured": {
+    "base_hash_before": "13289bd4a3dca3a2",
+    "base_hash_after": "07cab0d0c0ef1667",
+    "other_components_changed": "base",
+    "slot_features": "",
+    "lid_volume_removed_mm3": -4763.683,
+    "valid": true
+  },
+  "note": ""
+}

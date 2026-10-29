@@ -1,0 +1,12 @@
+{
+  "row": "IN-16",
+  "passed": false,
+  "measured": {
+    "inputs": "prompt=used, sketch.png=used, plate_spec.md=used",
+    "spec_driven": "plate_length, plate_thickness, plate_width",
+    "changed_without_spec": "",
+    "with_spec": "ok",
+    "without_spec": "ok"
+  },
+  "note": ""
+}

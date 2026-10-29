@@ -1,0 +1,10 @@
+{
+  "row": "DP-18",
+  "passed": false,
+  "measured": {
+    "cases": 6,
+    "passed": 5,
+    "failed": "dp18-kmp-30"
+  },
+  "note": "per-case checks in cases.json"
+}

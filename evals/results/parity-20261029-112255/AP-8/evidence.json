@@ -1,0 +1,16 @@
+{
+  "row": "AP-8",
+  "passed": true,
+  "measured": {
+    "changed": "bore_diameter 22 to 24, plate_thickness 6 to 10",
+    "calls": 20,
+    "endpoints": "POST documents, POST partstudios, POST partstudios/features",
+    "import_calls": 0,
+    "features": "plate_length (assignVariable), plate_width (assignVariable), plate_thickness (assignVariable), boss_diameter (assignVariable), boss_height (assignVariable), bore_diameter (assignVariable), hole_spacing_x (assignVariable), hole_spacing_y (assignVariable), plate_sketch (newSketch), Base plate (extrude), boss_sketch plane (cPlane), boss_sketch (newSketch), Motor boss (extrude), bore plane (cPlane), bore locations (newSketch), Motor bore (hole), mount_holes locations (newSketch), Mounting holes (hole)",
+    "variables": "plate_length=100.0 mm, plate_width=60.0 mm, plate_thickness=10.0 mm, boss_diameter=36.0 mm, boss_height=12.0 mm, bore_diameter=24.0 mm, hole_spacing_x=80.0 mm, hole_spacing_y=40.0 mm",
+    "linked": "Base plate.depth=#plate_thickness, boss_sketch plane.offset=#plate_thickness, Motor boss.depth=#boss_height, bore plane.offset=#plate_thickness + #boss_height, Motor bore.holeDiameter=#bore_diameter",
+    "dangling_refs": 0,
+    "volume_mm3": 61311.615
+  },
+  "note": "Onshape REST replayed from a recorded mock written from the public docs (no account, no network); bodies are the exporter's"
+}

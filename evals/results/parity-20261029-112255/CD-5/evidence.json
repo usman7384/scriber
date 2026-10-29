@@ -1,0 +1,14 @@
+{
+  "row": "CD-5",
+  "passed": false,
+  "measured": {
+    "fdm_passes": true,
+    "milling_before": false,
+    "milling_after": false,
+    "corner_radii": "0.000 x 0.000 x 0.000 x 0.000",
+    "diff_features": "",
+    "diff_params": 1,
+    "same_size": true
+  },
+  "note": ""
+}

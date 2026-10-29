@@ -1,0 +1,10 @@
+{
+  "row": "CX-11",
+  "passed": true,
+  "measured": {
+    "req_3_features": "plate/part/corner_holes, plate/part/plate",
+    "changed": "req_3_plate_size_x",
+    "stale": "plate"
+  },
+  "note": ""
+}
