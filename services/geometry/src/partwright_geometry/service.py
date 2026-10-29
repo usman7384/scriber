@@ -47,6 +47,13 @@ class LocalGeometry:
             assembly=assembly,
         )
 
+    def measure(self, design: Design) -> list[PartMetrics]:
+        source = compile_design(design)
+        reply = self._call({"op": "measure", "source": source})
+        if not reply["ok"]:
+            raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
+        return [PartMetrics.model_validate(p) for p in reply["parts"]]
+
     def describe(self, path: Path) -> ShapeDescriptor:
         return ShapeDescriptor.model_validate(self._read("describe", path, STEP_SUFFIXES | MESH_SUFFIXES)["descriptor"])
 
