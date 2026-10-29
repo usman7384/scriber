@@ -82,15 +82,26 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
     await row.shot(`${reached.length + 1}-${name.toLowerCase()}`);
     reached.push(name);
   };
+  // Settings and Help are sheets over the current page; Esc closes them.
+  const sheet = async (name: string, path: RegExp) => {
+    await nav.getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(path);
+    await expect(page.getByRole("dialog", { name })).toBeVisible();
+    await row.shot(`${reached.length + 1}-${name.toLowerCase()}`);
+    reached.push(name);
+  };
 
   await page.goto("/help");
+  await page.keyboard.press("Escape");
   await visit("Projects", /\/$/, "Projects");
   await visit("Library", /\/library$/, "Library");
-  await visit("Settings", /\/settings$/, "Settings");
+  await sheet("Settings", /\/settings$/);
   await page.getByLabel("Dark").check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByLabel("Light").check();
-  await visit("Help", /\/help$/, "Help");
+  await page.keyboard.press("Escape");
+  await sheet("Help", /\/help$/);
+  await page.keyboard.press("Escape");
 
   await nav.getByRole("link", { name: "Projects" }).click();
   await page.getByRole("link", { name: "Bracket lab" }).click();
@@ -106,9 +117,10 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   await row.shot(`${reached.length + 1}-context`);
   reached.push("Context manager");
 
+  await nav.getByRole("link", { name: "Settings", exact: true }).click();
   const [popup] = await Promise.all([
     page.waitForEvent("popup"),
-    nav.getByRole("link", { name: "API", exact: true }).click(),
+    page.getByRole("dialog", { name: "Settings" }).getByRole("link", { name: "API docs" }).click(),
   ]);
   await expect(popup).toHaveURL(/\/docs$/);
   reached.push("API docs");
