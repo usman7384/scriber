@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router";
 import { apiUrl } from "../api";
-
-type Theme = "light" | "dark";
-
-const initialTheme = (): Theme => {
-  const saved = localStorage.getItem("theme");
-  if (saved === "light" || saved === "dark") return saved;
-  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-};
+import { initialTheme, type ThemeState } from "../theme";
 
 export function Shell() {
   const [theme, setTheme] = useState(initialTheme);
@@ -16,7 +9,6 @@ export function Shell() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("theme", theme);
   }, [theme]);
-  const other = theme === "dark" ? "light" : "dark";
   return (
     <div className="shell">
       <header className="topbar">
@@ -28,16 +20,16 @@ export function Shell() {
           <NavLink to="/" end>
             Projects
           </NavLink>
+          <NavLink to="/library">Library</NavLink>
+          <NavLink to="/settings">Settings</NavLink>
+          <NavLink to="/help">Help</NavLink>
           <a href={apiUrl("/docs")} target="_blank" rel="noreferrer">
             API
           </a>
         </nav>
-        <button type="button" className="ghost" onClick={() => setTheme(other)}>
-          {other === "dark" ? "Dark" : "Light"} theme
-        </button>
       </header>
       <main className="page">
-        <Outlet />
+        <Outlet context={[theme, setTheme] satisfies ThemeState} />
       </main>
     </div>
   );

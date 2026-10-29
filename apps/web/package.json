@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc -p .",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "parity": "playwright test -c playwright.parity.config.ts"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",

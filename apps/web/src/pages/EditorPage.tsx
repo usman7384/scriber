@@ -68,6 +68,9 @@ export function EditorPage() {
         <h1>{model.data.title}</h1>
         <span className="badge plain">v{version.number}</span>
         <span className="push" />
+        <Link to={`/p/${model.data.project_id}`} className="button primary">
+          New generation
+        </Link>
         <ShareButton modelId={modelId} version={version.number} />
         <ExportMenu modelId={modelId} version={version.number} />
         <BugDialog

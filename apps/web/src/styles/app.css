@@ -196,6 +196,9 @@ p {
   align-items: center;
   gap: 16px;
 }
+.narrow {
+  max-width: 760px;
+}
 .tabs {
   display: flex;
   gap: 4px;
