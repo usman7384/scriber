@@ -3,6 +3,7 @@ from collections.abc import Iterator
 
 from pydantic import BaseModel
 
+from partwright_ir.assembly import assembly_errors, assembly_names
 from partwright_ir.expr import ExprError, evaluate, names
 from partwright_ir.fasteners import hole_size, parse
 from partwright_ir.model import (
@@ -52,14 +53,16 @@ class IrError(BaseModel):
 
 def validate(design: Design) -> list[IrError]:
     part_errors = [e for i, p in enumerate(design.parts) for e in _part_errors(design, p, f"parts[{i}]")]
-    errors = [*_param_errors(design), *part_errors, *_unused_params(design)]
+    joint_errors = [IrError(path=path, message=m) for path, m in assembly_errors(design)]
+    errors = [*_param_errors(design), *part_errors, *joint_errors, *_unused_params(design)]
     if errors:
         return errors
     return [e for i, p in enumerate(design.parts) for e in _overlapping_holes(design, p, f"parts[{i}]")]
 
 
 def used_params(design: Design) -> set[str]:
-    return {n for part in design.parts for node in [*part.datums, *part.sketches, *part.features] for n in _names(node)}
+    nodes = [node for part in design.parts for node in [*part.datums, *part.sketches, *part.features]]
+    return {n for node in nodes for n in _names(node)} | assembly_names(design)
 
 
 def _param_errors(design: Design) -> Iterator[IrError]:

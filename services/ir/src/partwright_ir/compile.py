@@ -1,3 +1,4 @@
+from partwright_ir.compile_assembly import MATE_PRELUDE, assembly_build
 from partwright_ir.expr import to_python
 from partwright_ir.fasteners import hole_size
 from partwright_ir.model import (
@@ -34,7 +35,10 @@ def compile_design(design: Design) -> str:
     values = design.param_values()
     parts = "\n\n\n".join(_part(i, p, values) for i, p in enumerate(design.parts))
     table = ", ".join(f"{p.id!r}: part_{i}()" for i, p in enumerate(design.parts))
-    return f"{PRELUDE}\n\nP = {{\n{params}\n}}\n\n\n{parts}\n\n\ndef build():\n    return {{{table}}}\n"
+    prelude, build = PRELUDE, f"def build():\n    return {{{table}}}\n"
+    if design.assembly is not None:
+        prelude, build = PRELUDE + MATE_PRELUDE, assembly_build(design)
+    return f"{prelude}\n\nP = {{\n{params}\n}}\n\n\n{parts}\n\n\n{build}"
 
 
 def _part(index: int, part: Part, values: dict[str, float]) -> str:
