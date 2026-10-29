@@ -1,0 +1,166 @@
+{
+  "btType": "BTFeatureListResponse-2457",
+  "isComplete": true,
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "c1d2e3f4a5b6c7d8e9f0a1b2",
+  "libraryVersion": 2433,
+  "features": [
+    {
+      "btType": "BTMSketch-151",
+      "featureType": "newSketch",
+      "featureId": "Fs1pL8aQ2kD",
+      "name": "Sketch 1",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterQueryList-148", "parameterId": "sketchPlane", "queries": [{"btType": "BTMIndividualQuery-138", "deterministicIds": ["JDC"]}]}
+      ],
+      "entities": [
+        {"btType": "BTMSketchCurveSegment-155", "entityId": "rect.bottom", "startPointId": "rect.bottom.start", "endPointId": "rect.bottom.end", "startParam": 0.0, "endParam": 0.08, "geometry": {"btType": "BTCurveGeometryLine-117", "pntX": -0.04, "pntY": -0.03, "dirX": 1.0, "dirY": 0.0}},
+        {"btType": "BTMSketchCurveSegment-155", "entityId": "rect.right", "startPointId": "rect.right.start", "endPointId": "rect.right.end", "startParam": 0.0, "endParam": 0.06, "geometry": {"btType": "BTCurveGeometryLine-117", "pntX": 0.04, "pntY": -0.03, "dirX": 0.0, "dirY": 1.0}},
+        {"btType": "BTMSketchCurveSegment-155", "entityId": "rect.top", "startPointId": "rect.top.start", "endPointId": "rect.top.end", "startParam": 0.0, "endParam": 0.08, "geometry": {"btType": "BTCurveGeometryLine-117", "pntX": 0.04, "pntY": 0.03, "dirX": -1.0, "dirY": 0.0}},
+        {"btType": "BTMSketchCurveSegment-155", "entityId": "rect.left", "startPointId": "rect.left.start", "endPointId": "rect.left.end", "startParam": 0.0, "endParam": 0.06, "geometry": {"btType": "BTCurveGeometryLine-117", "pntX": -0.04, "pntY": 0.03, "dirX": 0.0, "dirY": -1.0}}
+      ],
+      "constraints": [
+        {"btType": "BTMSketchConstraint-2", "constraintType": "HORIZONTAL", "entityId": "c.h1", "parameters": [{"btType": "BTMParameterString-149", "parameterId": "localFirst", "value": "rect.bottom"}]},
+        {"btType": "BTMSketchConstraint-2", "constraintType": "DISTANCE", "entityId": "c.width", "parameters": [{"btType": "BTMParameterString-149", "parameterId": "localFirst", "value": "rect.left"}, {"btType": "BTMParameterString-149", "parameterId": "localSecond", "value": "rect.right"}, {"btType": "BTMParameterQuantity-147", "parameterId": "length", "expression": "80 mm"}]}
+      ]
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "extrude",
+      "featureId": "Fe1mR4tY7uI",
+      "name": "Base plate",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterEnum-145", "parameterId": "bodyType", "enumName": "ExtendedToolBodyType", "value": "SOLID"},
+        {"btType": "BTMParameterEnum-145", "parameterId": "operationType", "enumName": "NewBodyOperationType", "value": "NEW"},
+        {"btType": "BTMParameterQueryList-148", "parameterId": "entities", "queries": [{"btType": "BTMIndividualSketchRegionQuery-140", "featureId": "Fs1pL8aQ2kD"}]},
+        {"btType": "BTMParameterEnum-145", "parameterId": "endBound", "enumName": "BoundingType", "value": "BLIND"},
+        {"btType": "BTMParameterQuantity-147", "parameterId": "depth", "expression": "6 mm", "isInteger": false}
+      ]
+    },
+    {
+      "btType": "BTMSketch-151",
+      "featureType": "newSketch",
+      "featureId": "Fs2zX3cV5bN",
+      "name": "Sketch 2",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterQueryList-148", "parameterId": "sketchPlane", "queries": [{"btType": "BTMIndividualQuery-138", "deterministicIds": ["JDC"]}]}
+      ],
+      "entities": [
+        {"btType": "BTMSketchCurve-4", "entityId": "hole.1", "centerId": "hole.1.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.0033, "xCenter": -0.03, "yCenter": -0.02, "xDir": 1.0, "yDir": 0.0, "clockwise": false}},
+        {"btType": "BTMSketchCurve-4", "entityId": "hole.2", "centerId": "hole.2.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.0033, "xCenter": 0.03, "yCenter": -0.02, "xDir": 1.0, "yDir": 0.0, "clockwise": false}},
+        {"btType": "BTMSketchCurve-4", "entityId": "hole.3", "centerId": "hole.3.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.0033, "xCenter": 0.03, "yCenter": 0.02, "xDir": 1.0, "yDir": 0.0, "clockwise": false}},
+        {"btType": "BTMSketchCurve-4", "entityId": "hole.4", "centerId": "hole.4.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.0033, "xCenter": -0.03, "yCenter": 0.02, "xDir": 1.0, "yDir": 0.0, "clockwise": false}}
+      ],
+      "constraints": [
+        {"btType": "BTMSketchConstraint-2", "constraintType": "DIAMETER", "entityId": "c.d1", "parameters": [{"btType": "BTMParameterString-149", "parameterId": "localFirst", "value": "hole.1"}, {"btType": "BTMParameterQuantity-147", "parameterId": "length", "expression": "6.6 mm"}]},
+        {"btType": "BTMSketchConstraint-2", "constraintType": "EQUAL", "entityId": "c.e1", "parameters": [{"btType": "BTMParameterString-149", "parameterId": "localFirst", "value": "hole.1"}, {"btType": "BTMParameterString-149", "parameterId": "localSecond", "value": "hole.2"}]}
+      ]
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "extrude",
+      "featureId": "Fe2gH6jK8lO",
+      "name": "Bolt holes",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterEnum-145", "parameterId": "bodyType", "enumName": "ExtendedToolBodyType", "value": "SOLID"},
+        {"btType": "BTMParameterEnum-145", "parameterId": "operationType", "enumName": "NewBodyOperationType", "value": "REMOVE"},
+        {"btType": "BTMParameterQueryList-148", "parameterId": "entities", "queries": [{"btType": "BTMIndividualSketchRegionQuery-140", "featureId": "Fs2zX3cV5bN"}]},
+        {"btType": "BTMParameterEnum-145", "parameterId": "endBound", "enumName": "BoundingType", "value": "THROUGH_ALL"}
+      ]
+    },
+    {
+      "btType": "BTMSketch-151",
+      "featureType": "newSketch",
+      "featureId": "Fs3wE2rT4yU",
+      "name": "Sketch 3",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterQueryList-148", "parameterId": "sketchPlane", "queries": [{"btType": "BTMIndividualQuery-138", "deterministicIds": ["JDC"]}]}
+      ],
+      "entities": [
+        {"btType": "BTMSketchCurve-4", "entityId": "boss", "centerId": "boss.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.01, "xCenter": 0.0, "yCenter": 0.0, "xDir": 1.0, "yDir": 0.0, "clockwise": false}}
+      ],
+      "constraints": []
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "extrude",
+      "featureId": "Fe3aS5dF7gH",
+      "name": "Boss",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterEnum-145", "parameterId": "bodyType", "enumName": "ExtendedToolBodyType", "value": "SOLID"},
+        {"btType": "BTMParameterEnum-145", "parameterId": "operationType", "enumName": "NewBodyOperationType", "value": "ADD"},
+        {"btType": "BTMParameterQueryList-148", "parameterId": "entities", "queries": [{"btType": "BTMIndividualSketchRegionQuery-140", "featureId": "Fs3wE2rT4yU"}]},
+        {"btType": "BTMParameterEnum-145", "parameterId": "endBound", "enumName": "BoundingType", "value": "BLIND"},
+        {"btType": "BTMParameterQuantity-147", "parameterId": "depth", "expression": "21 mm", "isInteger": false}
+      ]
+    },
+    {
+      "btType": "BTMSketch-151",
+      "featureType": "newSketch",
+      "featureId": "Fs4qW1eR3tY",
+      "name": "Sketch 4",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterQueryList-148", "parameterId": "sketchPlane", "queries": [{"btType": "BTMIndividualQuery-138", "deterministicIds": ["JDC"]}]}
+      ],
+      "entities": [
+        {"btType": "BTMSketchCurve-4", "entityId": "pin", "centerId": "pin.center", "geometry": {"btType": "BTCurveGeometryCircle-115", "radius": 0.004, "xCenter": 0.07, "yCenter": 0.0, "xDir": 1.0, "yDir": 0.0, "clockwise": false}}
+      ],
+      "constraints": []
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "extrude",
+      "featureId": "Fe4zX6cV8bN",
+      "name": "Pin extrude",
+      "suppressed": false,
+      "parameters": [
+        {"btType": "BTMParameterEnum-145", "parameterId": "bodyType", "enumName": "ExtendedToolBodyType", "value": "SOLID"},
+        {"btType": "BTMParameterEnum-145", "parameterId": "operationType", "enumName": "NewBodyOperationType", "value": "NEW"},
+        {"btType": "BTMParameterQueryList-148", "parameterId": "entities", "queries": [{"btType": "BTMIndividualSketchRegionQuery-140", "featureId": "Fs4qW1eR3tY"}]},
+        {"btType": "BTMParameterEnum-145", "parameterId": "endBound", "enumName": "BoundingType", "value": "BLIND"},
+        {"btType": "BTMParameterQuantity-147", "parameterId": "depth", "expression": "1.2 in", "isInteger": false}
+      ]
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "mateConnector",
+      "featureId": "Fm1aZ2sX3dC",
+      "name": "Mate connector 1",
+      "suppressed": false,
+      "parameters": []
+    },
+    {
+      "btType": "BTMFeature-134",
+      "featureType": "fillet",
+      "featureId": "Ff1qA2wS3eD",
+      "name": "Fillet 1",
+      "suppressed": true,
+      "parameters": [
+        {"btType": "BTMParameterQueryList-148", "parameterId": "entities", "queries": [{"btType": "BTMIndividualQuery-138", "deterministicIds": ["JHO"]}]},
+        {"btType": "BTMParameterQuantity-147", "parameterId": "radius", "expression": "2 mm", "isInteger": false}
+      ]
+    }
+  ],
+  "featureStates": {
+    "Fs1pL8aQ2kD": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fe1mR4tY7uI": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fs2zX3cV5bN": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fe2gH6jK8lO": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fs3wE2rT4yU": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fe3aS5dF7gH": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fs4qW1eR3tY": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fe4zX6cV8bN": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Fm1aZ2sX3dC": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": false},
+    "Ff1qA2wS3eD": {"btType": "BTFeatureState-1688", "featureStatus": "OK", "inactive": true}
+  },
+  "imports": [],
+  "rollbackIndex": 10,
+  "defaultFeatures": []
+}
