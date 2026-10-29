@@ -1,0 +1,7 @@
+mission:
+  name: Survey blended wing UAV
+  payload:
+    mass: 500 g
+  endurance: 20 min
+  constraints:
+    max_span: 1.2 m
