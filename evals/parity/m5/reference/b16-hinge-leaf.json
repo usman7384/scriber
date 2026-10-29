@@ -1,0 +1,90 @@
+{
+  "title": "Hinge leaf",
+  "params": [
+    {
+      "name": "length",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 3,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "cs_d",
+      "value": 9,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch",
+      "value": 20,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Hinge leaf",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "screws",
+          "name": "Screws",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 3,
+            "count_y": 1,
+            "spacing_x": "pitch",
+            "spacing_y": 0
+          },
+          "diameter": "hole_d",
+          "type": "countersink",
+          "cs_diameter": "cs_d"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,471 @@
+# Demo-part rows (M5). Our own wording; the demos in partwright_evals.parity_m5_parts add the row-specific geometry checks.
+- id: dp1-quad-frame
+  rows: [DP-1]
+  prompt: 5-inch X quad frame, 4 mm carbon plate, 16x16 M2 FC mount, M3 motor mounts 16/19 mm
+  checks:
+    - {kind: extent, description: plate 4 thick, value: 4}
+    - {kind: holes, description: four M2 FC holes, count: 4, diameter_min: 2.1, diameter_max: 2.6}
+    - {kind: hole_spacing, description: FC square 16, value: 16, tolerance: 0.05, diameter_min: 2.1, diameter_max: 2.6}
+    - {kind: holes, description: sixteen M3 motor holes, count: 16, diameter_min: 3.1, diameter_max: 3.6}
+    - {kind: hole_spacing, description: motor holes 16 apart, value: 16, tolerance: 0.05, diameter_min: 3.1, diameter_max: 3.6}
+    - {kind: hole_spacing, description: motor holes 19 apart, value: 19, tolerance: 0.05, diameter_min: 3.1, diameter_max: 3.6}
+
+- id: dp3-dn50-pn16
+  rows: [DP-3]
+  prompt: DN50 PN16 flange
+  checks:
+    - {kind: extent, description: outer diameter 165, value: 165}
+    - {kind: holes, description: four 18 bolt holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: dp4-glider
+  rows: [DP-4]
+  prompt: Hand-launch glider with a slim round fuselage 400 mm long and 30 mm in diameter, a straight 600 mm wing and a tailplane.
+  checks:
+    - {kind: extent, description: fuselage 400, value: 400}
+    - {kind: extent, description: span 600, value: 600}
+
+- id: dp6-tee-plate
+  rows: [DP-6]
+  prompt: Flat tee plate joining 2020 extrusions, 4 mm thick, with five 5.5 mm clearance holes for M5 that all sit on slot centre lines at 20 mm pitch.
+  checks:
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: five 5.5 holes, count: 5, diameter_min: 5.45, diameter_max: 5.55}
+    - {kind: hole_spacing, description: pitch 20, value: 20, tolerance: 0.05, diameter_min: 5.45, diameter_max: 5.55}
+
+- id: dp8-hose-connector
+  rows: [DP-8]
+  prompt: "Greenhouse hose connector: barb base diameter 16.0 mm, barb length 30.0 mm, bore diameter 12.0 mm, fitting diameter 26.4 mm, with a hex collar between the barb and the fitting."
+  checks:
+    - {kind: min_holes, description: bore 12, count: 1, diameter_min: 11.95, diameter_max: 12.05}
+
+- id: dp11-enclosure
+  rows: [DP-11]
+  prompt: "Parametric enclosure system, a box and a lid: outer length 250 mm, outer width 100 mm, outer height 50 mm with the lid fitted, lid clearance 0.2 mm, the lid held by four M3 screws into bosses in the box."
+  checks:
+    - {kind: extent, description: length 250, value: 250}
+    - {kind: extent, description: width 100, value: 100}
+    - {kind: extent, description: height 50, value: 50}
+
+- id: dp13-fin-ray
+  rows: [DP-13]
+  prompt: Fin-ray gripper finger 100 mm long and 20 mm thick, tapering from 30 mm wide at the base to a narrow tip, with two 2 mm flexible flanks joined by 4 cross ribs; keep the rib count as a parameter.
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: thickness 20, value: 20}
+
+- id: dp19-phone-holder
+  rows: [DP-19]
+  prompt: Desk phone holder for a phone 75 mm wide, with the phone width as a parameter; a cradle whose two side walls hold the phone's long edges, the inner width between the walls being the phone width plus 0.5 mm clearance, on a flat base.
+  checks: []
+
+- id: dp20-two-link-arm
+  rows: [DP-20]
+  prompt: Two-link robot arm, two 100 mm links 25 mm wide and 6 mm thick joined by a revolute joint, each link with a through pocket for a 9 g micro servo body (22.8 x 12.6 mm) and two 2 mm screw holes 27.8 mm apart for the servo tabs.
+  checks:
+    - {kind: holes, description: four 2 mm tab holes, count: 4, diameter_min: 1.9, diameter_max: 2.2}
+    - {kind: hole_spacing, description: tab holes 27.8 apart, value: 27.8, diameter_min: 1.9, diameter_max: 2.2}
+
+- id: dp20-pcb-enclosure
+  rows: [DP-20]
+  prompt: Open-top case for a 100 x 60 mm circuit board with 1 mm clearance all round, 2 mm walls and floor, 30 mm deep inside, and four 6 mm tall standoffs with 2.5 mm holes for M3 screws under the board holes, which are 3.5 mm in from each corner.
+  checks:
+    - {kind: extent, description: outside length 106, value: 106}
+    - {kind: extent, description: outside width 66, value: 66}
+    - {kind: extent, description: height 32, value: 32}
+    - {kind: holes, description: four standoff holes, count: 4, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: hole_spacing, description: board holes 93 apart, value: 93, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: hole_spacing, description: board holes 53 apart, value: 53, diameter_min: 2.4, diameter_max: 2.6}
+
+- id: dp20-drill-jig
+  rows: [DP-20]
+  prompt: "Drill jig for the flanged adapter whose base flange is 110 x 80 x 8 mm: a 130 x 100 x 20 mm block with a 110.4 x 80.4 mm pocket 6 mm deep in the top that the flange drops into, and four 8.5 mm guide holes through the block on an 85 by 60 mm rectangle, matching the flange holes."
+  checks:
+    - {kind: extent, description: length 130, value: 130}
+    - {kind: extent, description: width 100, value: 100}
+    - {kind: extent, description: height 20, value: 20}
+    - {kind: holes, description: four 8.5 guide holes, count: 4, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_spacing, description: guides 85 apart, value: 85, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_spacing, description: guides 60 apart, value: 60, diameter_min: 8.4, diameter_max: 8.6}
+
+- id: dp22-naca-intake
+  rows: [DP-22]
+  prompt: NACA flush air intake for 40 mm duct
+  checks:
+    - {kind: min_holes, description: duct 40, count: 1, diameter_min: 39.9, diameter_max: 40.1}
+
+# DP-14 bracket family: one prompt per variant type
+- id: dp14-equal-angle
+  rows: [DP-14]
+  prompt: Equal L-angle bracket with 40 mm legs, 30 mm wide and 4 mm thick, one 5.5 mm hole centred in each leg.
+  checks:
+    - {kind: extent, description: legs 40, value: 40}
+    - {kind: extent, description: width 30, value: 30}
+    - {kind: holes, description: two 5.5 holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_axes, description: one hole per leg, count: 2}
+
+- id: dp14-long-angle
+  rows: [DP-14]
+  prompt: Long angle 200 mm long with 30 x 30 mm legs, 3 mm thick, three 4.5 mm holes in each leg at 80 mm pitch.
+  checks:
+    - {kind: extent, description: length 200, value: 200}
+    - {kind: extent, description: legs 30, value: 30}
+    - {kind: holes, description: six 4.5 holes, count: 6, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: pitch 80, value: 80, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_axes, description: holes in both legs, count: 2}
+
+- id: dp14-u-channel
+  rows: [DP-14]
+  prompt: U-channel bracket 60 mm long from 3 mm sheet, 40 mm across the outside of its 25 mm high legs, with one 6.6 mm hole passing through both legs.
+  checks:
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: height 25, value: 25}
+    - {kind: holes, description: one 6.6 cross hole, count: 1, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: dp14-t-plate
+  rows: [DP-14]
+  prompt: Flat T plate 3 mm thick, 90 mm across the bar and 70 mm tall overall, both arms 25 mm wide, with three 5.5 mm holes along the bar and two down the stem.
+  checks:
+    - {kind: extent, description: bar 90, value: 90}
+    - {kind: extent, description: height 70, value: 70}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: five 5.5 holes, count: 5, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: dp14-single-gusset
+  rows: [DP-14]
+  prompt: Angle bracket 50 x 50 mm, 40 mm wide and 5 mm thick, stiffened by one central triangular gusset, with a 6.6 mm hole in each leg beside it.
+  checks:
+    - {kind: extent, description: legs 50, value: 50}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: holes, description: two 6.6 holes, count: 2, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_axes, description: one hole per leg, count: 2}
+
+- id: dp14-double-gusset
+  rows: [DP-14]
+  prompt: Heavy angle bracket with 80 mm legs, 60 mm wide and 6 mm thick, two triangular gussets near the side edges and two 8.5 mm holes in each leg between them.
+  checks:
+    - {kind: extent, description: legs 80, value: 80}
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: holes, description: four 8.5 holes, count: 4, diameter_min: 8.4, diameter_max: 8.6}
+    - {kind: hole_axes, description: holes in both legs, count: 2}
+
+- id: dp14-ring-tabs
+  rows: [DP-14]
+  prompt: Ring bracket, a 60 mm ring with a 40 mm bore and 5 mm thick, with three mounting tabs at 120 degree spacing, each tab carrying a 4.5 mm hole on an 80 mm circle.
+  checks:
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: bore 40, count: 1, diameter_min: 39.9, diameter_max: 40.1}
+    - {kind: holes, description: three tab holes, count: 3, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: tab holes 69.28 apart, value: 69.28, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: dp14-pedestal
+  rows: [DP-14]
+  prompt: Pedestal mount with an 80 x 80 x 8 mm base, four 6.6 mm corner holes on a 64 mm square, and a 30 mm round post 50 mm tall in the middle with a 10 mm hole down its centre.
+  checks:
+    - {kind: extent, description: base 80, value: 80}
+    - {kind: extent, description: height 58, value: 58}
+    - {kind: holes, description: four 6.6 holes, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: 64 square, value: 64, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: holes, description: post hole 10, count: 1, diameter_min: 9.9, diameter_max: 10.1}
+
+- id: dp14-lifting-lug
+  rows: [DP-14]
+  prompt: Weld-on lifting lug cut from 12 mm plate, 80 mm wide at the foot and 70 mm tall with a rounded top, with a 25 mm eye whose centre is 45 mm above the foot.
+  checks:
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: height 70, value: 70}
+    - {kind: extent, description: plate 12, value: 12}
+    - {kind: holes, description: eye 25, count: 1, diameter_min: 24.9, diameter_max: 25.1}
+
+- id: dp14-z-bracket
+  rows: [DP-14]
+  prompt: Z bracket from 3 mm sheet, 40 mm wide and 30 mm tall overall, with a 25 mm flange at the top and one at the bottom pointing opposite ways, each flange with one 5.5 mm hole.
+  checks:
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: height 30, value: 30}
+    - {kind: holes, description: two 5.5 holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: dp14-corner-plate
+  rows: [DP-14]
+  prompt: Flat corner plate shaped like an L, two arms 20 mm wide and 60 mm long measured outside, 3 mm thick, with two 4.5 mm holes in each arm.
+  checks:
+    - {kind: extent, description: arms 60, value: 60}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: four 4.5 holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: dp14-mending-plate
+  rows: [DP-14]
+  prompt: Straight mending plate 100 x 18 x 2 mm with four 4 mm countersunk holes in a line, 25 mm apart.
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: width 18, value: 18}
+    - {kind: extent, description: thickness 2, value: 2}
+    - {kind: holes, description: four 4 holes, count: 4, diameter_min: 3.9, diameter_max: 4.1}
+    - {kind: hole_spacing, description: pitch 25, value: 25, diameter_min: 3.9, diameter_max: 4.1}
+    - {kind: hole_spacing, description: end holes 75 apart, value: 75, diameter_min: 3.9, diameter_max: 4.1}
+
+- id: dp14-clevis
+  rows: [DP-14]
+  prompt: Clevis bracket, a 60 x 40 x 6 mm base with two 6.6 mm holes, carrying two parallel 6 mm lugs 30 mm tall that are 20 mm apart inside, with a 10 mm pin hole through both lugs.
+  checks:
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: holes, description: pin hole 10, count: 1, diameter_min: 9.9, diameter_max: 10.1}
+    - {kind: holes, description: two base holes, count: 2, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_axes, description: pin crosswise to the base holes, count: 2}
+
+- id: dp14-shelf-bracket
+  rows: [DP-14]
+  prompt: Triangular shelf bracket from 5 mm plate with a 150 mm horizontal arm and a 120 mm vertical arm, both 30 mm deep, a diagonal brace between the arms, and two 5.5 mm holes in each arm.
+  checks:
+    - {kind: extent, description: arm 150, value: 150}
+    - {kind: extent, description: arm 120, value: 120}
+    - {kind: extent, description: depth 30, value: 30}
+    - {kind: holes, description: four 5.5 holes, count: 4, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_axes, description: holes in both arms, count: 2}
+
+- id: dp14-pipe-saddle
+  rows: [DP-14]
+  prompt: Saddle clamp for a 32 mm pipe, a half ring 3 mm thick and 20 mm wide with a flat foot on each side, each foot with a 5.5 mm hole, the two holes 60 mm apart.
+  checks:
+    - {kind: extent, description: width 20, value: 20}
+    - {kind: holes, description: two 5.5 holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: holes 60 apart, value: 60, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: dp14-hat-bracket
+  rows: [DP-14]
+  prompt: Hat-section bracket from 2 mm sheet, 40 mm long, a raised channel 30 mm wide and 25 mm high with a 15 mm flange on either side, and a 5.5 mm hole in the middle of each flange.
+  checks:
+    - {kind: extent, description: overall width 60, value: 60}
+    - {kind: extent, description: height 25, value: 25}
+    - {kind: extent, description: length 40, value: 40}
+    - {kind: holes, description: two 5.5 holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: holes 45 apart, value: 45, diameter_min: 5.4, diameter_max: 5.6}
+
+# DP-15 flange family: standard sizes, bolt circle within 0.1 mm
+- id: dp15-en-dn15
+  rows: [DP-15]
+  prompt: Slip-on plate flange DN15 PN16 to EN 1092-1, 14 mm thick, with a 22 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 95, value: 95}
+    - {kind: holes, description: four 14 holes, count: 4, diameter_min: 13.9, diameter_max: 14.1}
+    - {kind: hole_spacing, description: bolt circle 65, value: 65, diameter_min: 13.9, diameter_max: 14.1}
+
+- id: dp15-en-dn25
+  rows: [DP-15]
+  prompt: EN 1092-1 plate flange, size DN25 for PN16, 16 mm thick, bored 34.5 mm.
+  checks:
+    - {kind: extent, description: outer diameter 115, value: 115}
+    - {kind: holes, description: four 14 holes, count: 4, diameter_min: 13.9, diameter_max: 14.1}
+    - {kind: hole_spacing, description: bolt circle 85, value: 85, diameter_min: 13.9, diameter_max: 14.1}
+
+- id: dp15-en-dn40
+  rows: [DP-15]
+  prompt: PN16 flat flange for DN40 pipe per EN 1092-1, 16 mm thick, 49 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 150, value: 150}
+    - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 110, value: 110, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: dp15-en-dn100-blind
+  rows: [DP-15]
+  prompt: Blind flange DN100 PN16 per EN 1092-1, 20 mm thick, no bore.
+  checks:
+    - {kind: extent, description: outer diameter 220, value: 220}
+    - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 180, value: 180, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: dp15-en-dn125-ring
+  rows: [DP-15]
+  prompt: Loose backing ring for a DN125 PN16 lap joint, 250 mm outside, 141 mm bore, 22 mm thick, eight 18 mm holes on the 210 mm bolt circle.
+  checks:
+    - {kind: extent, description: outer diameter 250, value: 250}
+    - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 210, value: 210, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: holes, description: bore 141, count: 1, diameter_min: 140.9, diameter_max: 141.1}
+
+- id: dp15-en-dn150
+  rows: [DP-15]
+  prompt: DN150 PN16 plate flange, 285 mm across, 24 mm thick, 170 mm bore, eight 22 mm bolt holes on a 240 mm pitch circle.
+  checks:
+    - {kind: extent, description: outer diameter 285, value: 285}
+    - {kind: holes, description: eight 22 holes, count: 8, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: hole_spacing, description: bolt circle 240, value: 240, diameter_min: 21.9, diameter_max: 22.1}
+
+- id: dp15-en-dn200
+  rows: [DP-15]
+  prompt: DN200 PN16 plate flange, 340 mm outside diameter, 24 mm thick, 222 mm bore, twelve 22 mm bolt holes on a 295 mm pitch circle.
+  checks:
+    - {kind: extent, description: outer diameter 340, value: 340}
+    - {kind: holes, description: twelve 22 holes, count: 12, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: hole_spacing, description: bolt circle 295, value: 295, diameter_min: 21.9, diameter_max: 22.1}
+
+- id: dp15-weld-neck-dn50
+  rows: [DP-15]
+  prompt: Weld-neck style flange DN50 PN16 (EN 1092-1 drilling), 18 mm flange plate with a tapered neck rising to a 60.3 mm pipe end, 48 mm tall overall, 54.5 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 165, value: 165}
+    - {kind: extent, description: height 48, value: 48}
+    - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: dp15-weld-neck-dn80
+  rows: [DP-15]
+  prompt: Weld-neck style flange DN80 PN16 to EN 1092-1 drilling, 20 mm plate with a neck tapering to an 88.9 mm pipe end, 50 mm tall overall, 82.5 mm bore.
+  checks:
+    - {kind: extent, description: outer diameter 200, value: 200}
+    - {kind: extent, description: height 50, value: 50}
+    - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 160, value: 160, diameter_min: 17.9, diameter_max: 18.1}
+
+- id: dp15-asme-nps2
+  rows: [DP-15]
+  prompt: ASME B16.5 class 150 slip-on flange for NPS 2, 152.4 mm outside, 19 mm thick, 61 mm bore, four 19.05 mm holes on a 120.65 mm bolt circle.
+  checks:
+    - {kind: extent, description: outer diameter 152.4, value: 152.4}
+    - {kind: holes, description: four 19.05 holes, count: 4, diameter_min: 18.95, diameter_max: 19.15}
+    - {kind: hole_spacing, description: bolt circle 120.65, value: 120.65, diameter_min: 18.95, diameter_max: 19.15}
+
+- id: dp15-asme-nps4
+  rows: [DP-15]
+  prompt: Class 150 flange to ASME B16.5, NPS 4, outside diameter 228.6 mm, 24 mm thick, 116 mm bore, eight 19.05 mm holes on a 190.5 mm bolt circle.
+  checks:
+    - {kind: extent, description: outer diameter 228.6, value: 228.6}
+    - {kind: holes, description: eight 19.05 holes, count: 8, diameter_min: 18.95, diameter_max: 19.15}
+    - {kind: hole_spacing, description: bolt circle 190.5, value: 190.5, diameter_min: 18.95, diameter_max: 19.15}
+
+- id: dp15-iso5211-f07
+  rows: [DP-15]
+  prompt: ISO 5211 F07 actuator mounting flange, a 90 x 90 x 10 mm square plate with a 55 mm spigot 3 mm high, a 30 mm centre bore, and four 9 mm holes for M8 on the 70 mm bolt circle.
+  checks:
+    - {kind: extent, description: square 90, value: 90}
+    - {kind: holes, description: four 9 holes, count: 4, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: bolt circle 70, value: 70, diameter_min: 8.9, diameter_max: 9.1}
+
+- id: dp15-iso5211-f10
+  rows: [DP-15]
+  prompt: Square actuator flange to ISO 5211 size F10, 125 x 125 x 12 mm, a 70 mm spigot 3 mm high, a 40 mm bore, and four 11 mm holes for M10 on the 102 mm bolt circle.
+  checks:
+    - {kind: extent, description: square 125, value: 125}
+    - {kind: holes, description: four 11 holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: bolt circle 102, value: 102, diameter_min: 10.9, diameter_max: 11.1}
+
+- id: dp15-iec-ff130
+  rows: [DP-15]
+  prompt: IEC B5 motor flange FF130, a 160 mm round plate 10 mm thick with a 110 mm spigot 3.5 mm high, a 40 mm shaft opening, and four 10 mm holes on a 130 mm pitch circle.
+  checks:
+    - {kind: extent, description: outer diameter 160, value: 160}
+    - {kind: holes, description: four 10 holes, count: 4, diameter_min: 9.9, diameter_max: 10.1}
+    - {kind: hole_spacing, description: pitch circle 130, value: 130, diameter_min: 9.9, diameter_max: 10.1}
+
+- id: dp15-iec-ff165
+  rows: [DP-15]
+  prompt: Motor flange to IEC FF165, 200 mm across and 12 mm thick, a 130 mm spigot 3.5 mm high, a 50 mm shaft opening, four 12 mm holes on the 165 mm pitch circle.
+  checks:
+    - {kind: extent, description: outer diameter 200, value: 200}
+    - {kind: holes, description: four 12 holes, count: 4, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: hole_spacing, description: pitch circle 165, value: 165, diameter_min: 11.9, diameter_max: 12.1}
+
+- id: dp15-duct-frame
+  rows: [DP-15]
+  prompt: Rectangular duct flange, a frame 200 x 140 mm outside with 30 mm wide sides and 6 mm thick, eight 7 mm holes on a 170 x 110 mm rectangle, one at each corner and one in the middle of each side.
+  checks:
+    - {kind: extent, description: length 200, value: 200}
+    - {kind: extent, description: width 140, value: 140}
+    - {kind: holes, description: eight 7 holes, count: 8, diameter_min: 6.9, diameter_max: 7.1}
+    - {kind: hole_spacing, description: holes 170 apart, value: 170, diameter_min: 6.9, diameter_max: 7.1}
+    - {kind: hole_spacing, description: holes 110 apart, value: 110, diameter_min: 6.9, diameter_max: 7.1}
+
+# DP-18 context-file parts: each prompt is our own spec document for the named part
+- id: dp18-kmm-28
+  rows: [DP-18]
+  prompt: |
+    KMM-28 motor mount, spec rev A
+    Purpose: carries a 28 mm brushless outrunner on the airframe.
+    - Base plate 40 x 40 mm, 4 mm thick, PETG.
+    - Frame fixing: four 3.4 mm holes for M3 on a 32 x 32 mm square.
+    - Motor fixing: four 3.2 mm holes for M3, one pair 19 mm apart along X and one pair 16 mm apart along Y, centred on the plate.
+    - Centre hole 10 mm for the shaft circlip.
+  checks:
+    - {kind: extent, description: plate 40, value: 40}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: four frame holes 3.4, count: 4, diameter_min: 3.35, diameter_max: 3.45}
+    - {kind: hole_spacing, description: frame square 32, value: 32, diameter_min: 3.35, diameter_max: 3.45}
+    - {kind: holes, description: four motor holes 3.2, count: 4, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: hole_spacing, description: motor pair 19, value: 19, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: hole_spacing, description: motor pair 16, value: 16, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: holes, description: centre hole 10, count: 1, diameter_min: 9.9, diameter_max: 10.1}
+
+- id: dp18-kmp-30
+  rows: [DP-18]
+  prompt: |
+    KMP-30 motor plate, spec rev B
+    Purpose: adapter plate between a 30 mm motor and a square tube arm.
+    - Plate 50 x 50 x 3 mm, 6061 aluminium.
+    - Centre hole 12 mm.
+    - Motor: four 3.2 mm holes equally spaced on a 25 mm bolt circle.
+    - Arm: four 4.5 mm holes on a 40 x 40 mm square.
+  checks:
+    - {kind: extent, description: plate 50, value: 50}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: centre hole 12, count: 1, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: holes, description: four motor holes, count: 4, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: hole_spacing, description: motor bolt circle 25, value: 25, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: holes, description: four arm holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: arm square 40, value: 40, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: dp18-ksb-120
+  rows: [DP-18]
+  prompt: |
+    KSB-120 standard box, spec rev A
+    Purpose: general electronics housing, open top, lid sold separately.
+    - Outside 120 x 80 x 50 mm.
+    - Walls and floor 2.5 mm.
+    - Floor fixing: four 4.5 mm holes on a 100 x 60 mm rectangle, centred.
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: height 50, value: 50}
+    - {kind: holes, description: four floor holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: holes 100 apart, value: 100, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: holes 60 apart, value: 60, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: dp18-kpl-10
+  rows: [DP-18]
+  prompt: |
+    KPL-10 ten-hole plate 200 x 120, spec rev C
+    - Plate 200 x 120 x 5 mm, origin at the lower-left corner.
+    - Ten 6.6 mm through holes in two rows.
+    - Row 1 at y = 25: x = 25, 62.5, 100, 137.5, 175.
+    - Row 2 at y = 95: x = 25, 62.5, 100, 137.5, 175.
+  checks:
+    - {kind: extent, description: length 200, value: 200}
+    - {kind: extent, description: width 120, value: 120}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: ten 6.6 holes, count: 10, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: pitch 37.5, value: 37.5, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: rows 70 apart, value: 70, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: dp18-kfw-1200
+  rows: [DP-18]
+  prompt: |
+    KFW-1200 fixed wing, spec rev A
+    Purpose: straight wing for a 1.2 m trainer.
+    - Span 1200 mm, one piece.
+    - Constant chord 180 mm, NACA 2412 section, no twist, no dihedral.
+  checks:
+    - {kind: extent, description: span 1200, value: 1200}
+    - {kind: extent, description: chord 180, value: 180}
+
+- id: dp18-kap-2020
+  rows: [DP-18]
+  prompt: |
+    KAP-2020 aluminium profile, spec rev A
+    - B-type 2020 extrusion, 20 x 20 mm section, cut to 150 mm.
+    - 6 mm slot opening on all four sides.
+    - 4.2 mm centre bore along the full length, tapped M5 at both ends.
+  checks:
+    - {kind: extent, description: section 20, value: 20}
+    - {kind: extent, description: length 150, value: 150}
+    - {kind: holes, description: centre bore 4.2, count: 1, diameter_min: 4.1, diameter_max: 4.3}

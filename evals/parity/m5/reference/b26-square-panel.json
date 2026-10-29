@@ -1,0 +1,108 @@
+{
+  "title": "Square panel",
+  "params": [
+    {
+      "name": "size",
+      "value": 150,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 3,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "inset",
+      "value": 7.5,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Square panel",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "fixings",
+          "name": "Fixings",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "size / 2 - inset",
+                "size / 2 - inset"
+              ],
+              [
+                "-(size / 2 - inset)",
+                "size / 2 - inset"
+              ],
+              [
+                "size / 2 - inset",
+                "-(size / 2 - inset)"
+              ],
+              [
+                "-(size / 2 - inset)",
+                "-(size / 2 - inset)"
+              ],
+              [
+                0,
+                "size / 2 - inset"
+              ],
+              [
+                0,
+                "-(size / 2 - inset)"
+              ],
+              [
+                "size / 2 - inset",
+                0
+              ],
+              [
+                "-(size / 2 - inset)",
+                0
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

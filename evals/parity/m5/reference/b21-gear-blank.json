@@ -1,0 +1,109 @@
+{
+  "title": "Gear blank",
+  "params": [
+    {
+      "name": "od",
+      "value": 48,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_d",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_len",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 8,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Gear blank",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "hub",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "hub_d",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "hub",
+          "name": "Hub",
+          "sketch": "hub",
+          "distance": "hub_len"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness + hub_len"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        }
+      ]
+    }
+  ]
+}

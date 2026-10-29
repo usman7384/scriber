@@ -1,0 +1,104 @@
+{
+  "title": "Bolt disc",
+  "params": [
+    {
+      "name": "od",
+      "value": 100,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_count",
+      "value": 6,
+      "unit": ""
+    },
+    {
+      "name": "pcd",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Bolt disc",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "bolts",
+          "name": "Bolts",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "polar",
+            "count": "bolt_count",
+            "diameter": "pcd"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

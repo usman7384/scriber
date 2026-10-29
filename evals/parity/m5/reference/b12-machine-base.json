@@ -1,0 +1,130 @@
+{
+  "title": "Machine base",
+  "params": [
+    {
+      "name": "length",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "recess_l",
+      "value": 70,
+      "unit": "mm"
+    },
+    {
+      "name": "recess_w",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "recess_depth",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_x",
+      "value": 100,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_y",
+      "value": 60,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Machine base",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "recess",
+          "plane": {
+            "ref": "body.end",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "recess_l",
+              "height": "recess_w",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "recess",
+          "name": "Recess",
+          "sketch": "recess",
+          "distance": "recess_depth",
+          "mode": "cut"
+        },
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch_x",
+            "spacing_y": "pitch_y"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "title": "Control knob",
+  "params": [
+    {
+      "name": "od",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 15,
+      "unit": "mm"
+    },
+    {
+      "name": "shaft_d",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "shaft_depth",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "chamfer",
+      "value": 1,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Control knob",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "height"
+        },
+        {
+          "kind": "hole",
+          "id": "shaft_hole",
+          "name": "Shaft hole",
+          "plane": {
+            "ref": "body.start",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "shaft_d",
+          "depth": "shaft_depth"
+        },
+        {
+          "kind": "chamfer",
+          "id": "top_edge",
+          "name": "Top chamfer",
+          "edges": {
+            "normal": "+z",
+            "extreme": "max"
+          },
+          "length": "chamfer"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "title": "Flat bar",
+  "params": [
+    {
+      "name": "length",
+      "value": 160,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 4,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_count",
+      "value": 6,
+      "unit": ""
+    },
+    {
+      "name": "pitch",
+      "value": 25,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Flat bar",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": "hole_count",
+            "count_y": 1,
+            "spacing_x": "pitch",
+            "spacing_y": 0
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "title": "Cross-drilled cube",
+  "params": [
+    {
+      "name": "size",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 10,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Cross-drilled cube",
+      "sketches": [
+        {
+          "id": "face",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "face",
+          "distance": "size"
+        },
+        {
+          "kind": "hole",
+          "id": "z_hole",
+          "name": "Z hole",
+          "plane": {
+            "ref": "XY",
+            "offset": "size"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        },
+        {
+          "kind": "hole",
+          "id": "y_hole",
+          "name": "Y hole",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "size / 2"
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        },
+        {
+          "kind": "hole",
+          "id": "x_hole",
+          "name": "X hole",
+          "plane": {
+            "ref": "YZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "size / 2"
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

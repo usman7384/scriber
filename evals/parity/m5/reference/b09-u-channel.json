@@ -1,0 +1,122 @@
+{
+  "title": "U-channel bracket",
+  "params": [
+    {
+      "name": "length",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "outer_width",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 4,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_pitch",
+      "value": 50,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "U-channel bracket",
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "YZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "-outer_width / 2",
+                  0
+                ],
+                [
+                  "outer_width / 2",
+                  0
+                ],
+                [
+                  "outer_width / 2",
+                  "height"
+                ],
+                [
+                  "outer_width / 2 - thickness",
+                  "height"
+                ],
+                [
+                  "outer_width / 2 - thickness",
+                  "thickness"
+                ],
+                [
+                  "-(outer_width / 2 - thickness)",
+                  "thickness"
+                ],
+                [
+                  "-(outer_width / 2 - thickness)",
+                  "height"
+                ],
+                [
+                  "-outer_width / 2",
+                  "height"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "profile",
+          "distance": "length",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "hole",
+          "id": "base_holes",
+          "name": "Base holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_pitch / 2",
+                0
+              ],
+              [
+                "hole_pitch / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

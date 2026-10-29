@@ -1,0 +1,106 @@
+{
+  "title": "Shaft collar",
+  "params": [
+    {
+      "name": "od",
+      "value": 28,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "tap_d",
+      "value": 4.2,
+      "unit": "mm"
+    },
+    {
+      "name": "tap_depth",
+      "value": 9,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Shaft collar",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "width"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "width"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "set_screw",
+          "name": "Set screw",
+          "plane": {
+            "ref": "YZ",
+            "offset": "od / 2"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "width / 2"
+              ]
+            ]
+          },
+          "diameter": "tap_d",
+          "depth": "tap_depth",
+          "type": "tapped",
+          "fastener": "M5"
+        }
+      ]
+    }
+  ]
+}

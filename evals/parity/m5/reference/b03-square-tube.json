@@ -1,0 +1,99 @@
+{
+  "title": "Square tube",
+  "params": [
+    {
+      "name": "size",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "wall",
+      "value": 3,
+      "unit": "mm"
+    },
+    {
+      "name": "length",
+      "value": 100,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.5,
+      "unit": "mm"
+    },
+    {
+      "name": "end_gap",
+      "value": 20,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Square tube",
+      "sketches": [
+        {
+          "id": "section",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            },
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size - 2 * wall",
+              "height": "size - 2 * wall",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "section",
+          "distance": "length"
+        },
+        {
+          "kind": "hole",
+          "id": "cross_holes",
+          "name": "Cross holes",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "end_gap"
+              ],
+              [
+                0,
+                "length - end_gap"
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

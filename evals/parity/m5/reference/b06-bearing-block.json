@@ -1,0 +1,118 @@
+{
+  "title": "Bearing block",
+  "params": [
+    {
+      "name": "length",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "depth",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "bore_height",
+      "value": 25,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_d",
+      "value": 9,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_pitch",
+      "value": 60,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Bearing block",
+      "sketches": [
+        {
+          "id": "footprint",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "depth",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "footprint",
+          "distance": "height"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "bore_height"
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "bolts",
+          "name": "Bolts",
+          "plane": {
+            "ref": "XY",
+            "offset": "height"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-bolt_pitch / 2",
+                0
+              ],
+              [
+                "bolt_pitch / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "bolt_d"
+        }
+      ]
+    }
+  ]
+}

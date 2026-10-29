@@ -1,0 +1,74 @@
+{
+  "title": "Round spacer",
+  "params": [
+    {
+      "name": "od",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "length",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 10.5,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Round spacer",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "length"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "length"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        }
+      ]
+    }
+  ]
+}
