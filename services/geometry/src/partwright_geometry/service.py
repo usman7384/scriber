@@ -10,7 +10,7 @@ from typing import IO, Any
 
 from partwright_geometry.checks import validity_findings
 from partwright_geometry.mass import with_mass
-from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, BuildError, Finding, PartMetrics
+from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, BuildError, Finding, PartMetrics, Vec
 from partwright_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
@@ -49,6 +49,12 @@ class LocalGeometry:
 
     def import_step(self, path: Path) -> list[PartMetrics]:
         return [PartMetrics.model_validate(p) for p in self._read("import_step", path, STEP_SUFFIXES)["parts"]]
+
+    def sections(self, step: Path, ys: list[float]) -> list[list[Vec]]:
+        reply = self._call({"op": "sections", "path": str(step), "ys": ys})
+        if not reply["ok"]:
+            raise BuildError("kernel", f"sections of {step.name}: {reply['error']}")
+        return [[(x, y, z) for x, y, z in outline] for outline in reply["sections"]]
 
     def thumbnail(self, glb: Path, png: Path, size: int = 256) -> Path:
         reply = self._call({"op": "thumbnail", "path": str(glb), "png": str(png), "size": size})

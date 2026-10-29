@@ -1,3 +1,7 @@
+import inspect
+
+from partwright_ir.airfoil import naca4
+
 PRELUDE = """import math
 
 from build123d import *
@@ -203,4 +207,13 @@ def _shell(part, faces, t):
     if not faces:
         return part - offset(part, amount=-t)
     return offset(part, amount=-t, openings=faces)
+"""
+
+AIRFOIL_PRELUDE = f"""
+
+{inspect.getsource(naca4)}
+
+def _airfoil(code, chord, le, twist):
+    points = [(x * chord, y * chord) for x, y in naca4(code)]
+    return Pos(*le) * Rot(0, 0, -twist) * Face(Wire([Spline(*points), Line(points[-1], points[0])]))
 """

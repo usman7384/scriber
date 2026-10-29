@@ -1,6 +1,7 @@
 from partwright_ir.expr import to_python
 from partwright_ir.fasteners import hole_size
 from partwright_ir.model import (
+    AirfoilSection,
     Chamfer,
     Circle,
     Datum,
@@ -11,6 +12,7 @@ from partwright_ir.model import (
     Fillet,
     GridPattern,
     Hole,
+    Loft,
     Part,
     Path,
     Pattern,
@@ -26,7 +28,7 @@ from partwright_ir.model import (
     Sketch,
     Slot,
 )
-from partwright_ir.prelude import PRELUDE
+from partwright_ir.prelude import AIRFOIL_PRELUDE, PRELUDE
 
 
 def compile_design(design: Design) -> str:
@@ -34,7 +36,9 @@ def compile_design(design: Design) -> str:
     values = design.param_values()
     parts = "\n\n\n".join(_part(i, p, values) for i, p in enumerate(design.parts))
     table = ", ".join(f"{p.id!r}: part_{i}()" for i, p in enumerate(design.parts))
-    return f"{PRELUDE}\n\nP = {{\n{params}\n}}\n\n\n{parts}\n\n\ndef build():\n    return {{{table}}}\n"
+    airfoils = any(isinstance(f, AirfoilSection) for p in design.parts for f in p.features)
+    prelude = PRELUDE + AIRFOIL_PRELUDE if airfoils else PRELUDE
+    return f"{prelude}\n\nP = {{\n{params}\n}}\n\n\n{parts}\n\n\ndef build():\n    return {{{table}}}\n"
 
 
 def _part(index: int, part: Part, values: dict[str, float]) -> str:
@@ -100,6 +104,14 @@ def _body(f: Feature, sketches: dict[str, Sketch], values: dict[str, float]) -> 
         case Shell():
             faces = " + ".join(_select("faces", s) for s in f.open) or "[]"
             return [f"    part = _shell(part, {faces}, {_x(f.thickness)})"]
+        case AirfoilSection():
+            return [*_on(f.plane), f"    T[{f.id!r}] = pl * _airfoil({f.naca!r}, {_x(f.chord)}, {_pt(f.leading_edge)}, {_x(f.twist)})"]
+        case Loft():
+            return [
+                f"    tool = loft([{', '.join(f'T[{s!r}]' for s in f.sections)}], ruled={f.ruled})",
+                "    part = _apply(part, tool, 'add')",
+                f"    T[{f.id!r}] = (tool, 'add', None)",
+            ]
 
 
 def _on(plane: PlaneRef) -> list[str]:
