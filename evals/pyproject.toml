@@ -19,6 +19,7 @@ dependencies = [
 partwright-evals = "partwright_evals.run:main"
 partwright-grounded = "partwright_evals.grounded:main"
 partwright-parity = "partwright_evals.parity:main"
+partwright-parity-report = "partwright_evals.parity_report:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
