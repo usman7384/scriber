@@ -105,7 +105,8 @@ test("WP-11 report a bug from the editor", async ({ page, row }) => {
   await api.install(page);
   await page.goto("/m/m1");
   await expect(page.getByLabel("Bounding box")).toHaveText("120.0 mm × 80.0 mm × 6.0 mm");
-  await page.getByRole("button", { name: "Report a bug" }).click();
+  await page.keyboard.press("?");
+  await page.getByRole("dialog", { name: "Help" }).getByRole("button", { name: "Report a bug" }).click();
   const text = "Top view hides the hole markers";
   await page.getByLabel("What went wrong?").fill(text);
   await row.shot("1-dialog");

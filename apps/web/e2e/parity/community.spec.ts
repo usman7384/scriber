@@ -11,13 +11,14 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   await api.install(page);
   await page.goto("/m/m1");
   await expect(page.getByLabel("Bounding box")).toBeVisible();
-  await page.getByRole("button", { name: "Publish" }).click();
-  await expect(page.getByText("Published to the community")).toBeVisible();
+  await page.locator("details.menu summary").click();
+  await page.getByRole("button", { name: "Publish to Explore" }).click();
+  await expect(page.getByText("Published to Explore")).toBeVisible();
   await row.shot("1-published");
 
   // The workspace has no main navigation; its mark leads home.
   await page.getByRole("link", { name: "Partwright home" }).click();
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Community" }).click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Explore" }).click();
   await expect(page).toHaveURL(/\/explore$/);
   const cards = page.getByRole("list", { name: "Published parts" }).getByRole("listitem");
   await expect(cards.locator(".card-title")).toHaveText(["Sensor plate", "Edge test plate"]);
@@ -40,7 +41,7 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   await expect(page.getByLabel("Hole X", { exact: true })).toHaveValue("15");
   await row.shot("4-fork-in-editor");
 
-  await page.getByRole("link", { name: "← Project" }).click();
+  await page.getByRole("navigation", { name: "Location" }).getByRole("link", { name: "Bracket lab" }).click();
   const forkCard = page
     .getByRole("list", { name: "Models" })
     .getByRole("listitem")
