@@ -269,6 +269,27 @@ export const api = {
     files.forEach((f) => form.append("files[]", f));
     return request<Job[]>(`/projects/${projectId}/context`, { method: "POST", body: form });
   },
+  // XMLHttpRequest because fetch reports no upload progress.
+  uploadWithProgress: (projectId: string, file: File, onProgress: (percent: number) => void) =>
+    new Promise<Job[]>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const form = new FormData();
+      form.append("files[]", file);
+      xhr.open("POST", apiUrl(`/projects/${projectId}/context`));
+      xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(Math.round((100 * e.loaded) / e.total));
+      xhr.onload = () => {
+        try {
+          const body = JSON.parse(xhr.responseText) as unknown;
+          if (xhr.status < 300) return resolve(body as Job[]);
+          const detail = (body as { detail?: unknown } | null)?.detail;
+          reject(new Error(typeof detail === "string" ? detail : `${xhr.status} ${xhr.statusText}`));
+        } catch {
+          reject(new Error(`${xhr.status} ${xhr.statusText}`));
+        }
+      };
+      xhr.onerror = () => reject(new Error(`upload of ${file.name} failed`));
+      xhr.send(form);
+    }),
   facts: (projectId: string, fileId: string) =>
     request<Fact[]>(`/projects/${projectId}/context/${fileId}/facts`),
   deleteFile: (projectId: string, fileId: string) =>
