@@ -136,6 +136,7 @@ Reference-compatible aliases under `/api/v1`: `generate`, `modify`, `edit`, `dow
 | M4 assemblies + vision + mesh | joints and exploded view, sketch/photo/drawing → model, STL → parametric, FCStd feature tree verified headless, sizing XML → aircraft |
 | Challenge gate (M4/M5) | `evals/cases/challenge.yaml` (user-submitted manifold prompts, verbatim) must pass: one valid solid, every geometric check, every named parameter, and the 5 % robustness rebuilds. Failing today; it is a required exit criterion for M5 and is reported on every scorecard until it passes |
 | M5 parity | every row green with a scripted demo; ≥50 eval specs; fine-tune toy run; `PARITY_REPORT.md`; demo script + GIF |
+| M6 showcase (planned) | about 20 one-line prompts for recognisable parts and small assemblies (gears, housings, enclosures with lids, hinges); 15/20 fully correct on the default local model, median under 2 min, all editable (`docs/M6_SHOWCASE_PLAN.md`) |
 
 ## Row assignment
 
