@@ -1,23 +1,25 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { api, apiUrl, exportUrl, type ExportFormat, type Finding, type Job } from "../api";
-import { BugDialog } from "../components/BugDialog";
+import { AgentStatus } from "../agent/AgentStatus";
+import { AgentStream } from "../agent/AgentStream";
+import { CommandBar } from "../agent/CommandBar";
+import { Proposals } from "../agent/Proposals";
+import { VersionScrubber } from "../agent/VersionScrubber";
 import { Pending } from "../components/Pending";
-import { RefineBox } from "../components/RefineBox";
-import { Suggestions } from "../components/Suggestions";
-import { JobTimeline } from "../components/Timeline";
-import { VersionHistory } from "../components/VersionHistory";
 import { useResource } from "../hooks";
 import { useT } from "../i18n";
+import { useBugAction } from "../shell/bug";
+import { useShell } from "../shell/context";
 import { Viewer } from "../viewer/Viewer";
 import { ChecksPopover } from "../workspace/ChecksPopover";
 import { DeliverMenu } from "../workspace/DeliverMenu";
 import { Inspector, type Selection } from "../workspace/inspector/Inspector";
 import { usePrintCheck } from "../workspace/usePrintCheck";
-import { ShareButton } from "../workspace/ShareButton";
 import { useShortcuts } from "../workspace/shortcuts";
 import { StructureRail } from "../workspace/StructureRail";
 import { tally } from "../workspace/tally";
+import { useEditorActions } from "../workspace/useEditorActions";
 import { Workspace } from "../workspace/Workspace";
 
 const focusParam = (name: string) =>
@@ -40,13 +42,53 @@ export function EditorPage() {
   const components = useResource(`components:${modelId}:${shown}`, () =>
     shown ? api.components(modelId, shown) : Promise.resolve([]),
   );
-  const [job, setJob] = useState<{ id: string; running: boolean }>();
+  // The job this session started: streamed in the dock while it runs, then summed up by the status line.
+  const [job, setJob] = useState<{ id: string; ended?: Job }>();
   const [selection, setSelection] = useState<Selection>();
   const [hidden, setHidden] = useState<string[]>([]);
   const [error, setError] = useState<string>();
   const pill = useRef<HTMLButtonElement>(null);
   const print = usePrintCheck(modelId, shown);
   const t = useT();
+  const { openPalette } = useShell();
+  const all = versions.data ?? [];
+  const version = all.find((v) => v.number === shown) ?? all.at(-1);
+  const parts = components.data ?? [];
+  const nameOf = (id?: string | null) => parts.find((c) => c.id === id)?.name;
+  const selectedPart =
+    selection?.kind === "part"
+      ? selection.id
+      : selection?.kind === "face"
+        ? selection.driver.part
+        : selection?.kind === "finding"
+          ? version?.findings[selection.index]?.part
+          : undefined;
+  const target = parts.find((c) => c.id === selectedPart)?.id;
+  const busy = job !== undefined && !job.ended;
+  const fail = (e: Error) => setError(e.message);
+  const start = (request: Promise<Job>) => {
+    setError(undefined);
+    setSelection((s) => (s?.kind === "face" ? undefined : s));
+    request.then((j) => setJob({ id: j.id }), fail);
+  };
+  const setParams = (values: Record<string, number>) => start(api.setParams(modelId, values));
+  useBugAction({
+    modelId,
+    version: version?.number ?? 0,
+    screenshot: () => document.querySelector<HTMLCanvasElement>(".viewer canvas")?.toDataURL("image/png"),
+  });
+  useEditorActions({
+    params: version?.params ?? [],
+    numbers: all.map((v) => v.number),
+    shown,
+    target: nameOf(target),
+    editable: latest > 0 && shown === latest,
+    setParam: (name, value) => setParams({ [name]: value }),
+    focusParam,
+    refine: (instruction) => start(api.refine(modelId, { instruction, ...(target && { target }) })),
+    show: setPicked,
+    newGeneration: () => void navigate(`/p/${model.data?.project_id ?? ""}`),
+  });
   // Esc closes an open popover, menu or dialog first (the browser does that); only then does it clear the selection.
   useShortcuts({
     Escape: () =>
@@ -63,31 +105,11 @@ export function EditorPage() {
         </p>
       </section>
     );
-  const all = versions.data;
-  const version = all.find((v) => v.number === shown) ?? all[all.length - 1];
   if (!version) return null;
   const newest = all.find((v) => v.number === latest);
-  const parts = components.data ?? [];
-  const nameOf = (id?: string | null) => parts.find((c) => c.id === id)?.name;
-  const selectedPart =
-    selection?.kind === "part"
-      ? selection.id
-      : selection?.kind === "face"
-        ? selection.driver.part
-        : selection?.kind === "finding"
-          ? version.findings[selection.index]?.part
-          : undefined;
-  const target = parts.find((c) => c.id === selectedPart)?.id;
   const sourcesHref = `/p/${model.data.project_id}/context`;
-
-  const fail = (e: Error) => setError(e.message);
-  const start = (request: Promise<Job>) => {
-    setError(undefined);
-    setSelection((s) => (s?.kind === "face" ? undefined : s));
-    request.then((j) => setJob({ id: j.id, running: true }), fail);
-  };
   const ended = (j: Job) => {
-    setJob({ id: j.id, running: false });
+    setJob({ id: j.id, ended: j });
     versions.reload();
     model.reload();
     if (j.status === "done" && j.version) setPicked(j.version);
@@ -97,8 +119,6 @@ export function EditorPage() {
       versions.reload();
       setPicked(v.number);
     }, fail);
-  const busy = job?.running ?? false;
-  const setParams = (values: Record<string, number>) => start(api.setParams(modelId, values));
   const ask = (f: Finding) =>
     start(
       api.refine(modelId, {
@@ -162,31 +182,20 @@ export function EditorPage() {
         </>
       }
       actions={
-        <>
-          <span className="ws-desktop">
-            <BugDialog
-              modelId={modelId}
-              version={version.number}
-              screenshot={() =>
-                document.querySelector<HTMLCanvasElement>(".viewer canvas")?.toDataURL("image/png")
-              }
-            />
-          </span>
-          <ShareButton modelId={modelId} version={version.number} />
-          <DeliverMenu
-            heading={t.deliver.export}
-            links={formats.map(([label, fmt]) => [label, exportUrl(modelId, fmt, version.number)])}
-            fcstd={{ available: tools?.freecad ?? false, download: () => void downloadFcstd() }}
-            publish={() => api.publish(modelId, version.number)}
-            checkPrint={
-              slicer &&
-              (() => {
-                slicer.check();
-                pill.current?.click();
-              })
-            }
-          />
-        </>
+        <DeliverMenu
+          heading={t.deliver.export}
+          links={formats.map(([label, fmt]) => [label, exportUrl(modelId, fmt, version.number)])}
+          fcstd={{ available: tools?.freecad ?? false, download: () => void downloadFcstd() }}
+          share={{ create: () => api.share(modelId, version.number), revoke: api.revokeShare }}
+          publish={() => api.publish(modelId, version.number)}
+          checkPrint={
+            slicer &&
+            (() => {
+              slicer.check();
+              pill.current?.click();
+            })
+          }
+        />
       }
       viewport={
         <>
@@ -269,44 +278,50 @@ export function EditorPage() {
           onBack={() => setPicked(latest)}
           proposals={
             <section id="ws-proposals" className="ws-insp-section">
-              <Suggestions
-                modelId={modelId}
-                version={version.number}
-                params={version.params}
-                busy={busy}
-                onAccept={start}
-              />
+              <Proposals key={latest} modelId={modelId} onApplied={(j) => setJob({ id: j.id })} />
             </section>
           }
         />
       }
       stream={
-        (error || job) && (
-          <>
-            {error && (
-              <p role="alert" className="ws-error ws-float">
-                {error}
-              </p>
-            )}
-            {job && <JobTimeline key={job.id} jobId={job.id} onEnd={ended} />}
-          </>
-        )
+        <>
+          {error && (
+            <p role="alert" className="ws-error ws-alert">
+              {error}
+            </p>
+          )}
+          {job && <AgentStream key={job.id} jobId={job.id} variant="dock" onDone={ended} />}
+          {!busy && <AgentStatus job={job?.ended} versions={all} onRevert={(n) => void restore(n)} />}
+        </>
       }
       command={
-        <RefineBox
-          target={nameOf(target)}
-          busy={busy}
+        <CommandBar
+          mode="refine"
+          modelId={modelId}
+          target={
+            target === undefined
+              ? undefined
+              : {
+                  id: target,
+                  label: nameOf(target) ?? target,
+                  kind: selection?.kind === "face" ? "face" : "part",
+                }
+          }
           onClearTarget={() => setSelection(undefined)}
-          onRefine={(instruction) => start(api.refine(modelId, { instruction, ...(target && { target }) }))}
+          busy={busy}
+          onJob={(j) => {
+            setError(undefined);
+            setJob({ id: j.id });
+          }}
+          onCommand={openPalette}
         />
       }
       versions={
-        <VersionHistory
+        <VersionScrubber
           versions={all}
-          selected={version.number}
-          latest={latest}
-          onSelect={setPicked}
-          onRestore={restore}
+          shown={version.number}
+          onShow={setPicked}
+          onRestore={(n) => void restore(n)}
         />
       }
     />

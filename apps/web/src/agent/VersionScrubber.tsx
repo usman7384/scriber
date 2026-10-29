@@ -14,7 +14,7 @@ interface Props {
   // Restores that version as a new one.
   onRestore: (n: number) => void;
   // The shown version and the one it is compared with; undefined when the comparison ends.
-  onCompare: (pair?: [number, number]) => void;
+  onCompare?: (pair?: [number, number]) => void;
 }
 
 export function VersionScrubber({ versions, shown, onShow, onRestore, onCompare }: Props) {
@@ -54,12 +54,12 @@ export function VersionScrubber({ versions, shown, onShow, onRestore, onCompare 
     if (!comparing) return onShow(n);
     if (n === current.number) return;
     setOther(n);
-    onCompare([current.number, n]);
+    onCompare?.([current.number, n]);
   };
   const toggleCompare = () => {
     setComparing(!comparing);
     setOther(undefined);
-    if (comparing) onCompare(undefined);
+    if (comparing) onCompare?.(undefined);
   };
   const against = comparing ? sorted.find((x) => x.number === other) : undefined;
   const diff = against && paramDiff(current.params, against.params);
