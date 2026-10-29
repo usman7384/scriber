@@ -137,3 +137,17 @@ def test_vertical_fillet_skips_hole_seams(geometry: LocalGeometry, tmp_path: Pat
     art = geometry.build(variant(BRACKET, features=[*features[:2], {**features[2], "radius": 3}]), tmp_path)
     assert art.ok
     assert len(art.parts[0].holes) == 4
+
+
+def test_measure_matches_build_without_writing_files(geometry: LocalGeometry, tmp_path: Path) -> None:
+    design = Design.model_validate(BRACKET)
+    (built,) = geometry.build(design, tmp_path).parts
+    (measured,) = geometry.measure(design)
+    assert measured.model_copy(update={"mass_g": built.mass_g, "center_of_mass": built.center_of_mass}) == built
+
+
+def test_measure_reports_kernel_failures(geometry: LocalGeometry) -> None:
+    huge_fillet = {"kind": "fillet", "id": "f", "name": "F", "edges": "all", "radius": 40}
+    with pytest.raises(BuildError) as e:
+        geometry.measure(variant(BRACKET, features=[*BRACKET["parts"][0]["features"][:2], huge_fillet]))
+    assert e.value.kind == "kernel"

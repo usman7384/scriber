@@ -36,12 +36,7 @@ def build(request: dict[str, Any]) -> dict[str, Any]:
 
 
 def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any]:
-    namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
-    exec(compile(source, "model.py", "exec"), namespace)
-    parts: dict[str, Shape[Any]] = namespace["build"]()
-    for pid, shape in parts.items():
-        if not isinstance(shape, Shape):
-            raise TypeError(f"part {pid!r} produced {type(shape).__name__}, not a solid")
+    parts = solids(source)
     model = Compound(label=title, children=list(parts.values()))
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {"step": out_dir / "model.step", "stl": out_dir / "model.stl", "glb": out_dir / "model.glb"}
@@ -56,8 +51,19 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet) -> dict[str, Any
     }
 
 
+def solids(source: str) -> dict[str, Shape[Any]]:
+    namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
+    exec(compile(source, "model.py", "exec"), namespace)
+    parts: dict[str, Shape[Any]] = namespace["build"]()
+    for pid, shape in parts.items():
+        if not isinstance(shape, Shape):
+            raise TypeError(f"part {pid!r} produced {type(shape).__name__}, not a solid")
+    return parts
+
+
 OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "build": build,
+    "measure": lambda r: {"parts": [part_metrics(pid, s).model_dump() for pid, s in solids(r["source"]).items()]},
     "describe": lambda r: {"descriptor": describe(Path(r["path"])).model_dump()},
     "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
     "sections": lambda r: {"sections": span_sections(Path(r["path"]), r["ys"])},
