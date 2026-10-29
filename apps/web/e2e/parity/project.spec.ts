@@ -12,16 +12,16 @@ test("WP-2 prompt card with image, mesh and spec attachments makes one generatio
   await api.install(page);
   await page.goto("/p/p1");
   const attachments = [
-    { kind: "+ Image", name: "plate-photo.png", mimeType: "image/png", buffer: asset("plate.png") },
-    { kind: "+ Mesh", name: "old-plate.glb", mimeType: "model/gltf-binary", buffer: asset("plate.glb") },
+    { name: "plate-photo.png", mimeType: "image/png", buffer: asset("plate.png") },
+    { name: "old-plate.glb", mimeType: "model/gltf-binary", buffer: asset("plate.glb") },
     {
-      kind: "+ Spec file",
       name: "plate-spec.md",
       mimeType: "text/markdown",
       buffer: Buffer.from("# Plate\nREQ-1 Plate size 120 x 80 x 6 mm\n"),
     },
   ];
-  for (const { kind, ...file } of attachments) await page.getByLabel(kind).setInputFiles(file);
+  const attach = page.getByRole("form", { name: "New generation" }).locator("input[type=file]").first();
+  for (const file of attachments) await attach.setInputFiles(file);
   await expect(page.getByRole("list", { name: "Attachments" }).getByRole("listitem")).toHaveCount(3);
   await page.getByLabel("Describe the part").fill("Copy this plate but 120 x 80 x 6 mm");
   await row.shot("1-attached");
