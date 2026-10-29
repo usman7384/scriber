@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { api, waitForJob } from "../api";
+import { api, waitForJob, type Job } from "../api";
 
 export type AttachKind = "image" | "mesh" | "spec";
 
@@ -21,8 +21,10 @@ const meshes = /\.(stl|obj|step|stp|iges|igs|glb|gltf|3mf|fcstd)$/i;
 export const kindOf = (file: File): AttachKind =>
   file.type.startsWith("image/") ? "image" : meshes.test(file.name) ? "mesh" : "spec";
 
-async function ingest(projectId: string, file: File, set: (p: Patch) => void): Promise<string> {
-  const [job] = await api.uploadWithProgress(projectId, file, (progress) => set({ progress }));
+type Upload = (file: File, onProgress: (percent: number) => void) => Promise<Job[]>;
+
+async function ingest(projectId: string, file: File, upload: Upload, set: (p: Patch) => void) {
+  const [job] = await upload(file, (progress) => set({ progress }));
   if (!job) throw new Error(`no ingest job for ${file.name}`);
   set({ status: "reading", progress: 0 });
   const end = await waitForJob(job.id, (s) => set({ progress: s.progress ?? 0 }));
@@ -43,12 +45,20 @@ export function useAttachments(projectId: string) {
   const pending = useRef(new Map<number, Promise<void>>());
   const ready = useRef(new Map<number, string>());
   const live = useRef(new Set<number>());
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+
+  // One upload at a time, so files reach the project (and the request) in the order they were added.
+  const upload: Upload = (file, onProgress) => {
+    const sent = queue.current.then(() => api.uploadWithProgress(projectId, file, onProgress));
+    queue.current = sent.catch(() => undefined);
+    return sent;
+  };
 
   const patch = (key: number, p: Patch) =>
     setItems((all) => all.map((a) => (a.key === key ? { ...a, ...p } : a)));
 
   const start = (key: number, file: File) => {
-    const run = ingest(projectId, file, (p) => live.current.has(key) && patch(key, p)).then(
+    const run = ingest(projectId, file, upload, (p) => live.current.has(key) && patch(key, p)).then(
       (id) => void (live.current.has(key) && ready.current.set(key, id)),
       (e: unknown) => patch(key, { status: "failed", error: e instanceof Error ? e.message : String(e) }),
     );
