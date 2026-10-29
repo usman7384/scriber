@@ -35,6 +35,7 @@ EVAL_CASES = (
     "evals/cases/dev.yaml",
     "evals/cases/parts.yaml",
     "evals/cases/benchmark.yaml",
+    "evals/cases/conventions.yaml",
 )
 
 
