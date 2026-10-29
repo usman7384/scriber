@@ -221,11 +221,34 @@ class Part(Frozen):
     features: list[Feature] = Field(min_length=1)
 
 
+class Connector(Frozen):
+    id: str
+    part: str
+    origin: Point3 = (0.0, 0.0, 0.0)
+    z: Direction = Field(default="+z", description="mating axis, in the part's own coordinates")
+    x: Direction = Field(default="+x", description="perpendicular to z; fixes the rotation about it")
+
+
+class Joint(Frozen):
+    id: str
+    parent: str = Field(description="connector id on the part that stays")
+    child: str = Field(description="connector id on the part placed so its connector meets the parent's")
+    kind: Literal["fastened", "revolute", "slider"] = "fastened"
+    angle: Expr = Field(default=0.0, description="rotation of the child about the parent connector's z, deg")
+    offset: Expr = Field(default=0.0, description="shift of the child along the parent connector's z")
+
+
+class Assembly(Frozen):
+    connectors: list[Connector] = []
+    joints: list[Joint] = []
+
+
 class Design(Frozen):
     ir_version: Literal[2] = 2
     title: str = Field(max_length=60)
     params: list[Param]
     parts: list[Part] = Field(min_length=1)
+    assembly: Assembly | None = None
 
     @model_validator(mode="before")
     @classmethod
