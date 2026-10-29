@@ -594,6 +594,7 @@ details:not([open]) > summary.agent-step-head::after {
   color: var(--text-2);
   font-size: var(--t-sm);
   translate: -50% 0;
+  pointer-events: none;
 }
 .agent-tick-item:first-child .agent-tick-card {
   left: auto;
@@ -605,7 +606,7 @@ details:not([open]) > summary.agent-step-head::after {
   translate: none;
 }
 .agent-tick-item:hover .agent-tick-card,
-.agent-tick-item:focus-within .agent-tick-card {
+.agent-tick:focus-visible + .agent-tick-card {
   display: grid;
 }
 .agent-tick-card img {
