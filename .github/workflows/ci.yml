@@ -3,17 +3,42 @@ on: [push, pull_request]
 jobs:
   python:
     runs-on: ubuntu-24.04
+    env:
+      # thumbnails render offscreen without a display
+      PYOPENGL_PLATFORM: osmesa
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.9.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.3"
+      - run: sudo apt-get update && sudo apt-get install -y libosmesa6 libgl1
+      - run: npm ci --prefix evals/parity/tools
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy services apps evals training/src training/tests
       - run: uv run lint-imports
       - run: uv run pytest -m "not llm"
+  web:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.3"
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - run: npm run parity
   llm-integration:
     runs-on: ubuntu-24.04
     needs: python
