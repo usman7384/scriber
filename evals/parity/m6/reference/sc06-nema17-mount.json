@@ -1,0 +1,212 @@
+{
+  "ir_version": 2,
+  "title": "NEMA 17 motor mount",
+  "params": [
+    {
+      "name": "thickness",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "plate_width",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "upright_height",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "base_depth",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "pilot_diameter",
+      "value": 23,
+      "unit": "mm"
+    },
+    {
+      "name": "motor_hole_spacing",
+      "value": 31,
+      "unit": "mm"
+    },
+    {
+      "name": "motor_hole",
+      "value": 3.4,
+      "unit": "mm"
+    },
+    {
+      "name": "base_hole",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "base_hole_spacing",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "slot_length",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "slot_width",
+      "value": 8,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "mount",
+      "name": "Motor mount",
+      "material": "aluminium",
+      "sketches": [
+        {
+          "id": "base",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "base_depth / 2"
+              ],
+              "width": "plate_width",
+              "height": "base_depth"
+            }
+          ]
+        },
+        {
+          "id": "upright",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "upright_height / 2"
+              ],
+              "width": "plate_width",
+              "height": "upright_height"
+            }
+          ]
+        },
+        {
+          "id": "belt_slot",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "slot",
+              "center": [
+                0,
+                "thickness + 15"
+              ],
+              "length": "slot_length",
+              "width": "slot_width",
+              "angle": 0
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "base",
+          "name": "Base",
+          "sketch": "base",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "upright",
+          "name": "Upright",
+          "sketch": "upright",
+          "distance": "-thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "pilot",
+          "name": "Pilot hole",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "upright_height / 2 + thickness / 2"
+              ]
+            ]
+          },
+          "diameter": "pilot_diameter"
+        },
+        {
+          "kind": "hole",
+          "id": "motor_holes",
+          "name": "Motor holes",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "motor_hole_spacing",
+            "spacing_y": "motor_hole_spacing",
+            "center": [
+              0,
+              "upright_height / 2 + thickness / 2"
+            ]
+          },
+          "diameter": "motor_hole"
+        },
+        {
+          "kind": "hole",
+          "id": "base_holes",
+          "name": "Base holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-base_hole_spacing / 2",
+                "base_depth - 12"
+              ],
+              [
+                "base_hole_spacing / 2",
+                "base_depth - 12"
+              ]
+            ]
+          },
+          "diameter": "base_hole"
+        },
+        {
+          "kind": "extrude",
+          "id": "slot",
+          "name": "Belt slot",
+          "sketch": "belt_slot",
+          "distance": "thickness",
+          "mode": "cut"
+        }
+      ]
+    }
+  ]
+}

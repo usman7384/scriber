@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from partwright_agent import LLM, Requirement, check, generate
 from partwright_cli.config import llm_for, load
+from partwright_evals.shapes import ShapeCheck, shape_check
 from partwright_geometry import BuildError, LocalGeometry
 from partwright_ir import Design, ParamError, apply_params
 
@@ -19,6 +20,7 @@ class Case(BaseModel):
     checks: list[Requirement]
     params: list[str] = []
     robust: list[str] = []
+    shape: list[ShapeCheck] = []
 
 
 class CaseResult(BaseModel):
@@ -40,13 +42,16 @@ def load_cases(path: Path) -> list[Case]:
     return [Case.model_validate(c) for c in yaml.safe_load(path.read_text(encoding="utf-8"))]
 
 
-def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path) -> CaseResult:
+def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path, max_repairs: int = 3, seed: int = 0) -> CaseResult:
     start = time.monotonic()
-    steps = list(generate(case.prompt, llm, geometry, out_dir / case.id))
+    steps = list(generate(case.prompt, llm, geometry, out_dir / case.id, max_repairs, seed))
+    seconds = round(time.monotonic() - start, 1)
     final = steps[-1]
     r = final.result
     artifact = r.artifact if r else None
     results = [(c.requirement.description, c.passed, c.actual) for c in check(case.checks, artifact)] if artifact else []
+    if artifact:
+        results += [(s.description, *shape_check(s, artifact)) for s in case.shape]
     if r and r.design and artifact:
         results += design_checks(case, r.design, geometry, out_dir / case.id / "robust")
     return CaseResult(
@@ -56,11 +61,11 @@ def run_case(case: Case, llm: LLM, geometry: LocalGeometry, out_dir: Path) -> Ca
         valid=bool(artifact and artifact.ok),
         agent_ok=bool(r and r.ok),
         checks_passed=sum(passed for _, passed, _ in results),
-        checks_total=len(case.checks) + len(case.params) + len(case.robust),
+        checks_total=len(case.checks) + len(case.shape) + len(case.params) + len(case.robust),
         failed_checks=[f"{name}: {actual}" for name, passed, actual in results if not passed],
         attempts=r.attempts if r else 0,
         repairs=r.repairs if r else 0,
-        seconds=round(time.monotonic() - start, 1),
+        seconds=seconds,
         final_step=final.message[:300],
     )
 

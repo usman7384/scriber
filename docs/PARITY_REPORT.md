@@ -3,18 +3,18 @@
 Generated from `docs/reference/PARITY_CHECKLIST.md` by `partwright-parity-report`; a row is done only with a passing
 acceptance test and a recorded demo (D-030). Evidence paths are in each row's status.
 
-**81 done, 56 in progress, 1 open, of 138 rows.**
+**91 done, 46 in progress, 1 open, of 138 rows.**
 
 | Area | done | in progress | open |
 |---|---|---|---|
 | Inputs | 9 | 8 | 0 |
-| Context Manager / knowledge | 7 | 7 | 0 |
+| Context Manager / knowledge | 10 | 4 | 0 |
 | Generation & output | 8 | 5 | 0 |
-| Parameters & refinement | 6 | 4 | 0 |
-| Verification & manufacturability | 8 | 2 | 0 |
-| Assemblies | 2 | 2 | 0 |
-| Export & interop | 6 | 1 | 1 |
-| Workflow & platform | 10 | 5 | 0 |
+| Parameters & refinement | 8 | 2 | 0 |
+| Verification & manufacturability | 9 | 1 | 0 |
+| Assemblies | 3 | 1 | 0 |
+| Export & interop | 7 | 0 | 1 |
+| Workflow & platform | 12 | 3 | 0 |
 | API & automation | 6 | 3 | 0 |
 | Circular design / simulation hooks | 5 | 3 | 0 |
 | Performance | 7 | 1 | 0 |
@@ -32,10 +32,7 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | IN-9 | Existing CAD (STEP) / past designs as reference | in progress: live run on `partwright-ir:4b-s2` fails: source=5.000 x 40.000 x 80.000, output=40.000 x 70.000 x 120.000, length_ratio=1.5 (`parity-20261029-112255`) |
 | IN-13 | Design rules and industry standards documents | in progress: live run on `partwright-ir:4b-s2` fails: built=False; no design was built (`parity-20261029-112255`) |
 | IN-16 | Multiple inputs combined in one request ("upload as many inputs as you need") | in progress: live run on `partwright-ir:4b-s2` fails: inputs=prompt=used, sketch.png=used, plate_spec.md=used, spec_driven=plate_length, plate_thickness, plate_width, with_spec=ok, without_spec=ok (`parity-20261029-112255`) |
-| CX-1 | Per-account/project engineering data repository; drag-drop multi-file upload with per-file progress | in progress (M3): API half, 6 file kinds in one upload all processed with progress (`parity-20261029-025007`); per-file UI not demoed |
-| CX-2 | Context file table: Name, Type, Status, Used in, Uploaded, Action (delete), search, select | in progress (M3): file table, search, facts, delete in the UI (mock); graph removal on the server not demoed |
 | CX-4 | Knowledge graph extracted from files, concepts and generated outputs | in progress: live run on `partwright-ir:4b-s2` fails: kmm28_related_to_m3=True, part_mentions_kmm28=True, part_mentions_m3=False, relations=47 (`parity-20261029-112255`) |
-| CX-6 | Knowledge-base level / score (files score, used in generation, level progress) | in progress (M3): API half, score and level follow the documented formula (`parity-20261029-025007`); UI not demoed |
 | CX-7 | Generation checks itself against uploaded inputs (every input considered) | in progress: live run on `partwright-ir:4b-s2` fails: constraints=10, evaluated=0, passed=0, repairs=5 (`parity-20261029-112255`) |
 | CX-8 | Consistency with team conventions ("how you work", not only what) | in progress: live run on `partwright-ir:4b-s2` fails: built=False; no design was built (`parity-20261029-112255`) |
 | CX-10 | Design intent captured and preserved | in progress: live run on `partwright-ir:4b-s2` fails: features=3, with_intent=0, feature_sources=prompt, params_citing_documents=5, byte_identical=True (`parity-20261029-112255`) |
@@ -45,18 +42,11 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | GE-11 | Accurate dimensions from imperfect inputs ("up to 90 %" of a part from drawing/photo) | in progress: live run on `partwright-ir:4b-s2` fails: plate_a=0/6, plate_b=4/6, plate_c=0/6, plate_d=5/6, flange_a=0/6, flange_b=5/6, flange_c=0/6, flange_d=5/6, recovered=19/48, share=0.3958 (`parity-20261029-132754`) |
 | GE-13 | Generate mode / "Thinking level" selector | in progress: live run on `partwright-ir:4b-s2` fails: low_valid=3, high_valid=3, low_log=low with a 0 token reasoning budget / low with a 0 token reasoning budget, re-sampled because it repeated an earlier answer, high_log=high with a 8192 token reasoning budget / high with a 8192 token reasoning budget, re-sampl (`parity-20261029-132754`) |
 | PR-5 | Targeted edit of a selected component/segment only | in progress: live run on `partwright-ir:4b-s2` fails: base_hash_before=13289bd4a3dca3a2, base_hash_after=07cab0d0c0ef1667, other_components_changed=base, lid_volume_removed_mm3=-4763.683, valid=True (`parity-20261029-112255`) |
-| PR-6 | Edit by selecting edges/faces | in progress (M5): top face maps to thickness, offset +2 gives 7.000 mm and no other change (`test_faces` on the real kernel; UI on the mock `parity-web-20261029-050842`); no live demo |
 | PR-7 | AI suggestions with Accept / Ignore, shown in 3D space | in progress: live run on `partwright-ir:4b-s2` fails: suggestions=0 (`parity-20261029-112255`) |
-| PR-10 | Measurements (bounding box, distances) | in progress (M3): API half, bbox 120/80/5 matches the STEP (`parity-20261029-025007`); on-model labels not demoed |
-| VM-4 | Rule violations shown as pop-up recommendations (e.g. hole-to-edge ≥ 1.5×D) | in progress (M3): finding marker 0.19 mm from the hole with suggestion, on real geometry output served by the mock API (`parity-web-20261029-021647`) |
 | VM-10 | Vision/visual critique of results (not claimed by reference; ours by design) | in progress: live run on `partwright-ir:4b-s2` fails: wrong_flagged=5/5, right_flagged=4/5; control: the correct parts must pass too, or a critic that rejects everything would meet the row (`parity-20261029-112255`) |
-| AS-1 | Segment selection & assembly tree | in progress (M5): API lists components (`test_assembly`); clicking parts in the viewer selects the same ids on the mock (`parity-web-20261029-050842`); no live run |
 | AS-3 | Place generated asset directly into an existing assembly | in progress: live run on `partwright-ir:4b-s2` fails: built=False (`parity-20261029-112255`) |
-| EX-6 | Share link (read-only view) | in progress (M3): API half, share link view 200 with GLB, write 401, revoked 404 (`parity-20261029-025007`); viewer page not demoed |
 | WP-6 | Real-time generation progress | in progress: live run on `partwright-ir:4b-s2` fails: step_events=14, progress=10, 40, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100, final=failed; API half; the bar is the web suite's (`parity-20261029-112255`) |
-| WP-8 | Thumbnails for models and versions | in progress (M3): thumbnails change on edit in the UI (mock); server-side regeneration not demoed |
-| WP-11 | Report a bug from the editor | in progress (M5): API stores model, version, text, user and screenshot byte-identical (`parity-20261029-052939`); web dialog posts the same shape on the mock (`parity-web-20261029-050842`); no end-to-end run |
-| WP-14 | Beginner flow: idea → printable part without CAD experience | in progress (M5): prompt, Generate, Download STL in 3 UI steps on the mock (`parity-web-20261029-050842`); live generation and slicer check not run |
+| WP-14 | Beginner flow: idea → printable part without CAD experience | in progress (M5): prompt, Generate, Download STL in 3 UI steps live with a slicer-clean STL, but only for "mounting plate 60 x 40 x 4 mm with two M3 holes 48 mm apart"; the checklist prompt "motor holder for 28 mm motor, 2 M3 screws" fails on partwright-ir:4b-s2 after 6 attempts (`parity-web-live-20261029-200716`) |
 | WP-15 | Runs locally / on-prem with small local models (laptop-class) | in progress: live run on `partwright-ir:4b-s2` fails: prompts=10, completed=9, errors=b17-cup: gave up after 6 attempts, model_host=127.0.0.1; outbound sockets and name lookups to anything but loopback raise inside the run (`parity-20261029-132754`) |
 | AP-2 | `generate` endpoint: prompt + optional image/mesh references | in progress: live run on `partwright-ir:4b-s2` fails: job_id=j7ae561da70d5, holes=2, angled_facet_mm2=1.4, angled_features=part.profile, title=Angle bracket (`parity-20261029-112255`) |
 | AP-3 | `modify` endpoint: natural-language change to an existing model | in progress: live run on `partwright-ir:4b-s2` fails: before=5.0, after=10.0, job=done; seeded 5 mm plate; the change is the model's (`parity-20261029-112255`) |

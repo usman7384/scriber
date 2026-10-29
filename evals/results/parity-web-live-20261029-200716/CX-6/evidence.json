@@ -1,0 +1,20 @@
+{
+  "row": "CX-6",
+  "passed": true,
+  "measured": {
+    "1-empty_api": "files 0, facts 0, rules 0, generations 0, used 0, score 0/100, level 0",
+    "1-empty_ui": "files 0, facts 0, rules 0, generations 0, used 0, score 0/100, level 0",
+    "1-empty_formula": "score 0/100, level 0",
+    "2-after-2-uploads_api": "files 2, facts 5, rules 0, generations 0, used 0, score 30/100, level 0",
+    "2-after-2-uploads_ui": "files 2, facts 5, rules 0, generations 0, used 0, score 30/100, level 0",
+    "2-after-2-uploads_formula": "score 30/100, level 0",
+    "generation": "done",
+    "generation_steps": "requirements 0: length 150; width 90; thickness 6; 4 M6 clearance holes; Mounting holes: 4 x M6 [d152b0c964aea:1.6.0] | emit 1: answer of 1474 chars | check 1: CAD kernel error (kernel) in feature 'row_hole': ValueError: hole at (-112.5, 0) lies outside the part: its centre X must be between -71.6 and 71.6 (the hole drills along Z). The operation is impossible with the given sketch or dimensions; rethink that feature. | repair 2: answer of 1478 chars, re-sampled because it repeated an earlier answer | check 2: CAD kernel error (kernel) in feature 'row_hole': ValueError: hole at (-112.5, 0) lies outside the part: its centre X must be between -71.5 and 71.5 (the hole drills along Z). The operation is impossible with the given sketch or dimensions; rethink that feature. | repair 3: answer of 1439 chars | check 3: CAD kernel error (kernel) in feature 'hole_row': ValueError: pattern of row_hole removed no material: it misses the part or points away from it. The operation is impossible with the given sketch or dimensions; rethink that feature. | repair 4: answer of 1461 chars | check 4: CAD kernel error (kernel) in feature 'hole_row': ValueError: pattern of row_hole removed no material: it misses the part or points away from it. The operation is impossible with the given sketch or dimensions; rethink that feature. | repair 5: answer of 1292 chars, re-sampled because it repeated an earlier answer | done 5: Mounting plate: 5/5 requirement checks passed, 4 repairs",
+    "3-after-1-generation_api": "files 2, facts 5, rules 0, generations 1, used 1, score 50/100, level 0",
+    "3-after-1-generation_ui": "files 2, facts 5, rules 0, generations 1, used 1, score 50/100, level 0",
+    "3-after-1-generation_formula": "score 50/100, level 0",
+    "score_delta": 20,
+    "used_delta": 1
+  },
+  "note": "Live: two uploads and one model generation (default model) with plate_spec.md selected; the card is compared with GET /projects/{id}/context stats and with score = 10 files + 2 facts + 5 rules + 20 used, level = isqrt(score / 100)."
+}

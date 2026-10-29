@@ -1,0 +1,16 @@
+{
+  "row": "PR-6",
+  "passed": true,
+  "measured": {
+    "picked_point": "10.171, 9.89, 5",
+    "picked_normal": "0, 0, 1",
+    "patch": "{\"values\":{\"thickness\":7}}",
+    "v2_origin": "params",
+    "thickness_before": 5,
+    "thickness_after": 7,
+    "changed_params": "thickness",
+    "api_bbox_after": "120 x 80 x 7",
+    "glb_height_mm": 7
+  },
+  "note": "Live: real face-driver route, PATCH rebuild on the kernel and the GLB it exported."
+}

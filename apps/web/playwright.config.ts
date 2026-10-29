@@ -4,7 +4,7 @@ const port = 5199;
 
 export default defineConfig({
   testDir: "e2e",
-  testIgnore: "parity/**",
+  testIgnore: ["parity/**", "live/**"],
   timeout: 30_000,
   reporter: "list",
   use: {

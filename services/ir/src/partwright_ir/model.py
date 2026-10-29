@@ -223,7 +223,98 @@ class Loft(FeatureBase):
     ruled: bool = False
 
 
-Feature = Annotated[Extrude | Revolve | Hole | Pattern | Fillet | Chamfer | Shell | AirfoilSection | Loft, Field(discriminator="kind")]
+class SpurGear(FeatureBase):
+    kind: Literal["spur_gear"]
+    plane: PlaneRef = PlaneRef()
+    center: Point = (0.0, 0.0)
+    module: Expr
+    teeth: Expr
+    face_width: Expr
+    pressure_angle: Expr = 20.0
+    backlash: Expr = Field(default=0.0, description="circular backlash of a pair that both carry it; each tooth is thinned by half")
+    bore: Expr | None = None
+    hub_diameter: Expr | None = None
+    hub_length: Expr | None = None
+
+
+class Rib(FeatureBase):
+    kind: Literal["rib"]
+    plane: PlaneRef = Field(description="the face the rib stands on; it grows along the face's outward normal")
+    start: Point
+    end: Point
+    thickness: Expr
+    height: Expr
+
+
+class BossPattern(FeatureBase):
+    kind: Literal["boss_pattern"]
+    plane: PlaneRef
+    at: Placement
+    diameter: Expr
+    height: Expr
+    hole_diameter: Expr | None = Field(default=None, description="pilot or insert hole from the boss top")
+    hole_depth: Expr | None = Field(default=None, description="defaults to the boss height")
+
+
+class ShellWithLid(FeatureBase):
+    kind: Literal["shell_with_lid"]
+    width: Expr
+    depth: Expr
+    height: Expr
+    wall: Expr
+    floor: Expr
+    lid_thickness: Expr
+    lip_height: Expr
+    clearance: Expr = 0.2
+    screw: str | None = Field(default="M3", description="corner screws, e.g. M3; null for no bosses")
+    boss_diameter: Expr | None = Field(default=None, description="defaults to 2.5 x the screw size")
+
+
+class Lid(FeatureBase):
+    kind: Literal["lid"]
+    of: str = Field(description="id of the part whose shell_with_lid this lid closes")
+
+
+class Keyway(FeatureBase):
+    kind: Literal["keyway"]
+    of: str = Field(description="the extrude, revolve or hole that made the shaft or bore")
+    on: Literal["shaft", "bore"] = "shaft"
+    position: Expr = Field(default=0.0, description="from the surface's -x/-y/-z end along its axis")
+    length: Expr | None = Field(default=None, description="null runs the full surface length")
+    width: Expr | None = Field(default=None, description="null takes DIN 6885 from the diameter")
+    depth: Expr | None = Field(default=None, description="null takes DIN 6885 t1 (shaft) or t2 (bore)")
+    angle: Expr = Field(default=0.0, description="about the axis, from +z (or +x for a z axis)")
+
+
+class Groove(FeatureBase):
+    kind: Literal["groove"]
+    of: str = Field(description="the extrude, revolve or hole that made the shaft or bore")
+    on: Literal["shaft", "bore"] = "shaft"
+    position: Expr = Field(description="from the surface's -x/-y/-z end along its axis to the groove's near side")
+    width: Expr
+    depth: Expr
+
+
+HIGH_LEVEL = (SpurGear, Rib, BossPattern, ShellWithLid, Lid, Keyway, Groove)
+Feature = Annotated[
+    Extrude
+    | Revolve
+    | Hole
+    | Pattern
+    | Fillet
+    | Chamfer
+    | Shell
+    | AirfoilSection
+    | Loft
+    | SpurGear
+    | Rib
+    | BossPattern
+    | ShellWithLid
+    | Lid
+    | Keyway
+    | Groove,
+    Field(discriminator="kind"),
+]
 
 
 class FaceGroup(Frozen):

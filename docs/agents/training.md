@@ -246,3 +246,59 @@ Gates, one run per model in the same session (D-028), `training/wsl/s2_gates.sh`
 | Grounded, prompt mode | 5/10, 35/45 | **6/10, 39/45** |
 
 S2 wins every gate, so it becomes the default (D-036). It is not better everywhere: grounded mode shows 4 project-rule errors in final designs against 0 for S1, and on M1 one more case fails to build (6 against 7) while more checks pass. The dev cases it fixed are the S2 targets: stated hole diameters kept (d19 7/7, NEMA 17 5/5).
+
+## S3 data (generators built 2026-10-29, not trained)
+
+Plan: `docs/FINE_TUNING_PLAN.md` (S3). Everything is behind `--s3` on `partwright-dataset` and `partwright-collect`; without the flag the families, seeds and samples are those of S2.
+
+| What | Where | Done |
+|---|---|---|
+| Gears | `families/gears.py` | single spur gears (module 0.8-3, optional hub, DIN 6885 keyed bore) and meshing pairs as two parts with a revolute joint at m(z1 + z2)/2, the wheel turned half a pitch when its tooth count is even; checked by bore spacing = centre distance |
+| Pulleys, shafts | `families/pulleys.py`, `families/shafts.py` | V-belt pulleys with 1-3 grooves (width, depth, angle stated), hub, keyed bore; stepped shafts of 2-4 sections with a keyway (DIN 6885 or stated) and a DIN 471 circlip groove |
+| Housings | `families/housings.py` | open ribbed housings with ribs across the floor and a `boss_pattern` of screw bosses; pillow blocks for 6201-6206 bearings, optional retaining-ring groove in the seat |
+| Enclosures | `families/enclosures.py` | `shell_with_lid` box and a `lid` part (implied mate), corner screws or a push fit, optional board standoffs |
+| Assemblies (2-6 parts) | `families/assemblies.py`, `families/couplings.py` | standoff stack (base, four tapped standoffs, top plate: 6 parts, 5 joints), split shaft clamp, servo dropped through a plate cut-out, hinge with a revolute joint, flange coupling of two flipped halves |
+| Multi-feature brackets | `families/supports.py` | gusseted angles (one web, or a pair by a mirror pattern; counterbored base holes), Z and hat sections, clevis with two lugs and a cross pin, pedestal with a bored column, lifting lug; the DP-14 themes in new wording |
+| Hole tables (IN-2, IN-3) | `families/tables.py`, `context.py` (`tabled`), `verify.py` | 4-12 holes in 1-3 sizes as a markdown table, CSV, list or grouped by size, from the lower-left corner or the centre; 40 % of corner tables come as uploaded hole-table facts with the request naming only the plate; every hole centre is verified within 0.05 mm of the table from the part's corner |
+| Design intent (CX-10) | `intent.py`, every S3 family | every feature of every S3 target carries `intent`; S1/S2 families get one per feature id |
+| Named parameters | `render.py` (`exposing`) | 30 % of the non-spec-sheet S3 requests ask for three parameters by name |
+| Renaming | `names.py` | renamed parameters now also rename connector origins and joint angles |
+
+Limits found while verifying every target under the default rules (inputs for the geometry and IR owners; the generators stay inside them):
+
+- The `min_wall_thickness` probe takes 20-80 s per spur gear, so a pair can pass the 120 s build timeout under load. The dataset pool and the collector now allow 600 s. The agent hits the same cost on every gear build.
+- On shafts under 20 mm the probe reads the edge of a DIN 6885 keyway as a 0.5-0.8 mm wall, so S3 puts keyways on 20 mm and up only.
+- `shell_with_lid` with its default bosses fails the default rules at common walls: with M3 screws, walls of 2-3 mm leave 0.3-0.7 mm slivers in the lid's lip beside the boss cut-outs, and at 2-2.5 mm the lid's screw holes sit closer than 1.5 D to the edge. Walls that pass: none 2-3, M2.5 4-5, M3 3.5 or 5, M4 4.5-5 mm. The showcase enclosure (2 mm walls, M3) is in the failing range.
+- Gear pairs at zero backlash: about a third report 1e-5 mm³ of interference (threshold 1e-6 mm³), and any backlash leaves a gap that fails the contact check; those pairs are rejected.
+- A keyed bore is not measured as a hole, so keyed bores have no hole check.
+
+Dry run (`partwright-dataset --s3 --seed 3 --specs 300 --workers 8`, no paraphrasing, into the temp folder and deleted afterwards; 8 min on this laptop): 294 of 300 specs verified. The 6 rejects were 3 shafts (two thin-wall readings, one hole-edge finding), one support whose counterbore and upright hole sizes fell in the same check range, one plate chamfer and one block hole edge. 493 samples: 291 generate, 120 repair, 82 requirement extraction.
+
+| Coverage (dry run) | Count |
+|---|---|
+| Samples per family | 30-38 each for all 15 families (S1/S2: plate 35, block 31, turned 32, bracket 33, box 32, profile 32, standard 30; S3: gear 34, pulley 35, shaft 25, housing 31, enclosure 38, assembly 34, support 34, table 37) |
+| High-level features in generate targets | spur_gear 30, keyway 35, groove 17, rib 22, boss_pattern 20, shell_with_lid 20, lid 20 |
+| Assemblies | 48 of 2 parts, 2 of 6 parts; joints: 25 fastened, 13 revolute, 20 implied lid mates |
+| Hole tables | 15 in the request, 5 as uploaded hole-table facts |
+| Features with intent | 962 of 962 |
+| Titles, parameter names | 134, 216 (S2 draft: 85, 126) |
+| Eval sizes in prompts | 0 |
+| Samples over the trainer's 12,288-character cut | 11 (mostly block repairs, as in S2); `train.py` drops them |
+
+The 8-gram guard covers the showcase set as well. One coupling phrase matched showcase sc13 while the generators were written, so it was reworded; `test_s3.py` now holds the S3 families to at most 2 matches in 60 seeds x 4 styles.
+
+### Full S3 build and training (not run)
+
+1. On-policy repairs on S3 prompts (Windows, Ollama running; about 4 h for both, as for S2):
+   `uv run partwright-collect --s3 --model partwright-ir:4b-s2 --specs 200 --seed 3 --out data/training/s3/onpolicy-4b-s2.jsonl`
+   `uv run partwright-collect --s3 --model qwen3.5:4b --specs 200 --seed 3 --out data/training/s3/onpolicy-qwen3.5-4b.jsonl`
+2. Dataset with paraphrasing (as for S2: 4 workers, single-threaded BLAS so it fits beside Ollama; expect several hours because gears take a minute each in the wall probe):
+   `OPENBLAS_NUM_THREADS=1 uv run partwright-dataset --s3 --seed 3 --specs 2900 --workers 4 --paraphrase-model qwen3.5:4b --onpolicy data/training/s3/onpolicy-4b-s2.jsonl data/training/s3/onpolicy-qwen3.5-4b.jsonl --out data/training/s3`
+   2,900 specs give about 5,000 samples, so the run stays one night like S2 (626 steps).
+3. Train, merge, convert and quantise (WSL, `~/partwright-train`): `training/wsl/s2.sh` with `s2` replaced by `s3`, that is
+   `python train.py --data /mnt/d/Projects/bye-kyrall/data/training/s3/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s3-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
+   `python /mnt/d/Projects/bye-kyrall/training/wsl/merge.py --lora runs/s3-4b/lora --out runs/s3-4b/merged`
+   `python llama.cpp/convert_hf_to_gguf.py runs/s3-4b/merged --outtype bf16 --outfile runs/s3-4b/s3-4b-bf16.gguf`
+   `llama.cpp/build/bin/llama-quantize runs/s3-4b/s3-4b-bf16.gguf /mnt/d/Projects/bye-kyrall/data/training/s3-4b/run/partwright-ir-4b-s3-q4_k_m.gguf Q4_K_M`
+4. Import (Windows, `training/wsl`): a `Modelfile.4b-s3` that is `Modelfile.4b-s2` with the `FROM` path pointing to the S3 GGUF, then `ollama create partwright-ir:4b-s3 -f Modelfile.4b-s3`.
+5. Gates in one session (D-028), as in `training/wsl/s2_gates.sh` with `4b-s3` against `4b-s2`: dev, M1 and grounded, plus `uv run partwright-parity M6-SHOWCASE --model partwright-ir:4b-s3` and the same for `partwright-ir:4b-s2`.

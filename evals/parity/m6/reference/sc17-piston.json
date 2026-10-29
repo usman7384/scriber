@@ -1,0 +1,108 @@
+{
+  "ir_version": 2,
+  "title": "Hydraulic piston",
+  "params": [
+    {
+      "name": "diameter",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "length",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "rod_bore",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_width",
+      "value": 3.6,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_depth",
+      "value": 2.5,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_inset",
+      "value": 6,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "piston",
+      "name": "Piston",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "body",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "body",
+          "distance": "length"
+        },
+        {
+          "kind": "hole",
+          "id": "rod_bore",
+          "name": "Rod bore",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "rod_bore"
+        },
+        {
+          "kind": "groove",
+          "id": "groove_1",
+          "name": "O-ring groove 1",
+          "of": "body",
+          "position": "groove_inset",
+          "width": "groove_width",
+          "depth": "groove_depth"
+        },
+        {
+          "kind": "groove",
+          "id": "groove_2",
+          "name": "O-ring groove 2",
+          "of": "body",
+          "position": "length - groove_inset - groove_width",
+          "width": "groove_width",
+          "depth": "groove_depth"
+        }
+      ]
+    }
+  ]
+}

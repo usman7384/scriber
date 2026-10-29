@@ -7,7 +7,22 @@ from pydantic import TypeAdapter
 from partwright_geometry.models import Bundle, FeatureEntry, SketchDof
 from partwright_geometry.sketcher import remaining_dof, sketch_dof
 from partwright_ir import Design, compile_design, design_hash
-from partwright_ir.model import Chamfer, Extrude, Feature, Fillet, Hole, Loft, Part, Pattern, Revolve, Shell
+from partwright_ir.model import (
+    Chamfer,
+    Extrude,
+    Feature,
+    Fillet,
+    Groove,
+    Hole,
+    Keyway,
+    Lid,
+    Loft,
+    Part,
+    Pattern,
+    Revolve,
+    Shell,
+    ShellWithLid,
+)
 
 FORMAT = "partwright-bundle"
 FEATURES = TypeAdapter(list[FeatureEntry])
@@ -69,5 +84,9 @@ def _depends(part: Part, f: Feature) -> list[str]:
             return [s.of for s in f.open]
         case Loft():
             return f.sections
+        case Keyway() | Groove() | Lid():
+            return [f.of]
+        case ShellWithLid():
+            return []
         case _:
             return [f.plane.ref]

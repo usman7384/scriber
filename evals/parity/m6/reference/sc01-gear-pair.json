@@ -1,0 +1,105 @@
+{
+  "ir_version": 2,
+  "title": "Spur gear pair",
+  "params": [
+    {
+      "name": "module",
+      "value": 2,
+      "unit": "mm",
+      "description": "gear module"
+    },
+    {
+      "name": "pinion_teeth",
+      "value": 20,
+      "unit": "",
+      "description": "pinion tooth count"
+    },
+    {
+      "name": "wheel_teeth",
+      "value": 40,
+      "unit": "",
+      "description": "wheel tooth count"
+    },
+    {
+      "name": "face_width",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 8,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "pinion",
+      "name": "Pinion",
+      "material": "steel",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "Gear",
+          "module": "module",
+          "teeth": "pinion_teeth",
+          "face_width": "face_width",
+          "bore": "bore"
+        }
+      ]
+    },
+    {
+      "id": "wheel",
+      "name": "Wheel",
+      "material": "steel",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "Gear",
+          "module": "module",
+          "teeth": "wheel_teeth",
+          "face_width": "face_width",
+          "bore": "bore"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "pinion_mesh",
+        "part": "pinion",
+        "origin": [
+          "module * (pinion_teeth + wheel_teeth) / 2",
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "wheel_axis",
+        "part": "wheel",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "mesh",
+        "parent": "pinion_mesh",
+        "child": "wheel_axis",
+        "kind": "revolute",
+        "angle": "180 / wheel_teeth * (1 - wheel_teeth % 2)"
+      }
+    ]
+  }
+}

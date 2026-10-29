@@ -1,0 +1,192 @@
+{
+  "ir_version": 2,
+  "title": "Gusseted angle bracket",
+  "params": [
+    {
+      "name": "width",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "leg_length",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "gusset_size",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "gusset_thickness",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_diameter",
+      "value": 9,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_spacing",
+      "value": 50,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "bracket",
+      "name": "Angle bracket",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "base",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "leg_length / 2"
+              ],
+              "width": "width",
+              "height": "leg_length"
+            }
+          ]
+        },
+        {
+          "id": "upright",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "leg_length / 2"
+              ],
+              "width": "width",
+              "height": "leg_length"
+            }
+          ]
+        },
+        {
+          "id": "gusset",
+          "plane": {
+            "ref": "YZ",
+            "offset": "width / 2 - gusset_thickness / 2"
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "thickness",
+                  "thickness"
+                ],
+                [
+                  "thickness + gusset_size",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "thickness + gusset_size"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "base",
+          "name": "Base leg",
+          "sketch": "base",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "upright",
+          "name": "Upright leg",
+          "sketch": "upright",
+          "distance": "-thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "gusset",
+          "name": "Gusset",
+          "sketch": "gusset",
+          "distance": "gusset_thickness",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "pattern",
+          "id": "gussets",
+          "name": "Gussets",
+          "features": [
+            "gusset"
+          ],
+          "type": "mirror",
+          "mirror_plane": "YZ"
+        },
+        {
+          "kind": "hole",
+          "id": "base_holes",
+          "name": "Base holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_spacing / 2",
+                "leg_length * 0.6"
+              ],
+              [
+                "hole_spacing / 2",
+                "leg_length * 0.6"
+              ]
+            ]
+          },
+          "diameter": "hole_diameter"
+        },
+        {
+          "kind": "hole",
+          "id": "upright_holes",
+          "name": "Upright holes",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_spacing / 2",
+                "leg_length * 0.6"
+              ],
+              [
+                "hole_spacing / 2",
+                "leg_length * 0.6"
+              ]
+            ]
+          },
+          "diameter": "hole_diameter"
+        }
+      ]
+    }
+  ]
+}

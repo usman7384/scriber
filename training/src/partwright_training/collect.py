@@ -11,7 +11,8 @@ from partwright_cli.config import llm_for, load
 from partwright_geometry import LocalGeometry
 from partwright_ir import Design, json_schema
 from partwright_training.context import RULES
-from partwright_training.families import FAMILIES
+from partwright_training.families import FAMILIES, S3_FAMILIES
+from partwright_training.intent import intended
 from partwright_training.names import renamed
 from partwright_training.render import render
 from partwright_training.samples import Sample, Task
@@ -21,11 +22,13 @@ from partwright_training.verify import failures
 ONPOLICY_OFFSET = 3_000_000
 
 
-def collect(seeds: range, llm: LLM, geometry: LocalGeometry, out_dir: Path) -> Iterator[Sample]:
+def collect(seeds: range, llm: LLM, geometry: LocalGeometry, out_dir: Path, s3: bool = False) -> Iterator[Sample]:
+    families = S3_FAMILIES if s3 else FAMILIES
     for seed in seeds:
         rng = random.Random(seed)
-        family = list(FAMILIES)[seed % len(FAMILIES)]
-        spec = renamed(FAMILIES[family](rng), rng)
+        family = list(families)[seed % len(families)]
+        spec = renamed(families[family](rng), rng)
+        spec = intended(spec) if s3 else spec
         prompt = render(spec, rng)
         if spec.exempt or failures(spec, geometry, out_dir / f"{seed}-verify"):
             continue
@@ -46,15 +49,16 @@ def main() -> None:
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
+    p.add_argument("--s3", action="store_true", help="prompts from the S3 families, targets with feature intents")
     args = p.parse_args()
     llm = llm_for(load(args.config), args.model)
     base = args.seed * 1_000_000 + ONPOLICY_OFFSET
-    geometry = LocalGeometry()
+    geometry = LocalGeometry(timeout_s=600)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     kept = 0
     try:
         with args.out.open("w", encoding="utf-8") as f, tempfile.TemporaryDirectory(prefix="pw-collect-") as tmp:
-            for sample in collect(range(base, base + args.specs), llm, geometry, Path(tmp)):
+            for sample in collect(range(base, base + args.specs), llm, geometry, Path(tmp), args.s3):
                 f.write(json.dumps(sample.record()) + "\n")
                 f.flush()
                 kept += 1
