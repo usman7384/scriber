@@ -1,0 +1,16 @@
+{
+  "row": "IN-11",
+  "passed": true,
+  "measured": {
+    "solids": 1,
+    "valid": true,
+    "span": 1000.0,
+    "root_chord": 250.036,
+    "tip_chord": 120.017,
+    "sweep_deg": 20.002,
+    "dihedral_deg": 5.0,
+    "twist_deg": 2.0,
+    "airfoil_deviation_pct_chord": 0.015
+  },
+  "note": "sections cut at the root and tip stations; sweep and dihedral at the leading edge"
+}

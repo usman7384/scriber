@@ -1,0 +1,11 @@
+{
+  "row": "CD-6",
+  "passed": true,
+  "measured": {
+    "changed": "wing_span: 1000 -> 1100",
+    "features_changed": 0,
+    "new_span": 1100.0,
+    "old_span": 1000.0
+  },
+  "note": "re-run is explicit; no file watcher yet"
+}

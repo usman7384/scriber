@@ -1,0 +1,18 @@
+{
+  "row": "DP-9",
+  "passed": true,
+  "measured": {
+    "solids": 1,
+    "valid": true,
+    "span": 1000.0,
+    "root_chord": 250.036,
+    "tip_chord": 120.017,
+    "sweep_deg": 20.002,
+    "dihedral_deg": 5.0,
+    "twist_deg": 0.0,
+    "airfoil_deviation_pct_chord": 0.015,
+    "bbox_cm": "46.6 / 100.0 / 18.4",
+    "tree": "root_airfoil, mid_airfoil, tip_airfoil, main_wing, winglet_root_airfoil, winglet_tip_airfoil, winglet, winglet_assembly, full_aircraft"
+  },
+  "note": "winglets sit inboard of the tips, so the bbox span is the wing span"
+}

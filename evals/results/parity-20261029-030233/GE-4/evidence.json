@@ -1,0 +1,10 @@
+{
+  "row": "GE-4",
+  "passed": true,
+  "measured": {
+    "features": "root_airfoil, mid_airfoil, tip_airfoil, main_wing, winglet_root_airfoil, winglet_tip_airfoil, winglet, winglet_assembly, full_aircraft",
+    "build_order": "root_airfoil, mid_airfoil, tip_airfoil, main_wing, winglet_root_airfoil, winglet_tip_airfoil, winglet, winglet_assembly, full_aircraft",
+    "solids": 1
+  },
+  "note": ""
+}
