@@ -1,0 +1,29 @@
+{"method": "POST", "path": "/projects", "status": 201, "ms": 16, "event": "request", "request_id": "r1c32f5fe2ba2", "level": "info", "timestamp": "2026-10-29T01:50:30.321019Z"}
+{"event": "job_started", "request_id": "rd07631d2ea54", "job_id": "j43cfead96ca0", "level": "info", "timestamp": "2026-10-29T01:50:30.341223Z"}
+{"method": "POST", "path": "/projects/p35204ed80e04/generate", "status": 202, "ms": 31, "event": "request", "request_id": "rd07631d2ea54", "level": "info", "timestamp": "2026-10-29T01:50:30.343784Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 30, "event": "request", "request_id": "r641f2f9f41ae", "level": "info", "timestamp": "2026-10-29T01:50:30.375498Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r9a3c19e04218", "level": "info", "timestamp": "2026-10-29T01:50:30.381945Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 16, "event": "request", "request_id": "r3977ee87828b", "level": "info", "timestamp": "2026-10-29T01:50:30.440357Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r6749ca710a38", "level": "info", "timestamp": "2026-10-29T01:50:30.492957Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r65d1095b64e5", "level": "info", "timestamp": "2026-10-29T01:50:30.553723Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 32, "event": "request", "request_id": "r3d568b41da6f", "level": "info", "timestamp": "2026-10-29T01:50:30.661904Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 15, "event": "request", "request_id": "r3288409de1eb", "level": "info", "timestamp": "2026-10-29T01:50:30.720550Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r37fbc787ed98", "level": "info", "timestamp": "2026-10-29T01:50:30.779695Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r7aebf2cc0bd1", "level": "info", "timestamp": "2026-10-29T01:50:30.835746Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 16, "event": "request", "request_id": "r8da5f3215110", "level": "info", "timestamp": "2026-10-29T01:50:30.891463Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "rec41250de46c", "level": "info", "timestamp": "2026-10-29T01:50:30.950678Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "rf3c65fd01f7f", "level": "info", "timestamp": "2026-10-29T01:50:31.010488Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r10b0a162e74f", "level": "info", "timestamp": "2026-10-29T01:50:31.070415Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r95b974009e8f", "level": "info", "timestamp": "2026-10-29T01:50:31.123126Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "re3c57e6c5498", "level": "info", "timestamp": "2026-10-29T01:50:31.186116Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r9c5855ed354b", "level": "info", "timestamp": "2026-10-29T01:50:31.244596Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "r59ebbdeb23a0", "level": "info", "timestamp": "2026-10-29T01:50:31.301632Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 0, "event": "request", "request_id": "re5990df12874", "level": "info", "timestamp": "2026-10-29T01:50:31.359207Z"}
+{"status": "done", "error": null, "version": 1, "event": "job_finished", "request_id": "rd07631d2ea54", "job_id": "j43cfead96ca0", "level": "info", "timestamp": "2026-10-29T01:50:31.416884Z"}
+{"method": "GET", "path": "/jobs/j43cfead96ca0", "status": 200, "ms": 15, "event": "request", "request_id": "rdfca705c49d1", "level": "info", "timestamp": "2026-10-29T01:50:31.424159Z"}
+{"event": "job_started", "request_id": "ra0f4222c6d12", "job_id": "jef39c18ba9e0", "level": "info", "timestamp": "2026-10-29T01:50:31.440528Z"}
+{"method": "POST", "path": "/projects/p35204ed80e04/generate", "status": 202, "ms": 16, "event": "request", "request_id": "ra0f4222c6d12", "level": "info", "timestamp": "2026-10-29T01:50:31.443623Z"}
+{"method": "GET", "path": "/jobs/jef39c18ba9e0", "status": 200, "ms": 16, "event": "request", "request_id": "r806b063947c2", "level": "info", "timestamp": "2026-10-29T01:50:31.459788Z"}
+{"method": "GET", "path": "/jobs/jef39c18ba9e0", "status": 200, "ms": 0, "event": "request", "request_id": "rb13382821f00", "level": "info", "timestamp": "2026-10-29T01:50:31.514625Z"}
+{"status": "failed", "error": "gave up after 6 attempts", "version": 1, "event": "job_finished", "request_id": "ra0f4222c6d12", "job_id": "jef39c18ba9e0", "level": "info", "timestamp": "2026-10-29T01:50:31.570480Z"}
+{"method": "GET", "path": "/jobs/jef39c18ba9e0", "status": 200, "ms": 0, "event": "request", "request_id": "r08fe1741551a", "level": "info", "timestamp": "2026-10-29T01:50:31.577775Z"}

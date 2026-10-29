@@ -1,0 +1,20 @@
+[
+  {
+    "kind": "requirements",
+    "message": "none found",
+    "attempt": 0,
+    "elapsed_ms": 0
+  },
+  {
+    "kind": "emit",
+    "message": "answer of 968 chars",
+    "attempt": 1,
+    "elapsed_ms": 32
+  },
+  {
+    "kind": "done",
+    "message": "Base plate: 0/0 requirement checks passed, 0 repairs",
+    "attempt": 1,
+    "elapsed_ms": 344
+  }
+]

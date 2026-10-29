@@ -1,0 +1,14 @@
+{
+  "row": "WP-7",
+  "passed": true,
+  "measured": {
+    "submitted": "queued",
+    "observed_running": true,
+    "done": "done",
+    "failed": "failed",
+    "error": "gave up after 6 attempts",
+    "log_job_id": "jef39c18ba9e0",
+    "log_request_id": "ra0f4222c6d12"
+  },
+  "note": ""
+}

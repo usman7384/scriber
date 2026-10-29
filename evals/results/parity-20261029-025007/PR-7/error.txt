@@ -1,0 +1,124 @@
+Traceback (most recent call last):
+  File "D:\Projects\bye-kyrall\evals\src\partwright_evals\parity.py", line 52, in run_row
+    ev = demo(Rig(out, rig.geometry, rig.llm, rig.config))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\evals\src\partwright_evals\parity_m3.py", line 515, in pr_7
+    made = api.ok("POST", f"/models/{model_id}/suggestions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\evals\src\partwright_evals\parity_api.py", line 84, in ok
+    response = self.call(method, path, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\evals\src\partwright_evals\parity_api.py", line 79, in call
+    response: Response = self.client.request(method, path, **kwargs)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\testclient.py", line 518, in request
+    return super().request(
+           ^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_client.py", line 796, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_client.py", line 993, in send
+    raise exc
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_client.py", line 987, in send
+    response.read()
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_models.py", line 877, in read
+    self._content = b"".join(self.iter_bytes())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_models.py", line 893, in iter_bytes
+    for raw_bytes in self.iter_raw():
+                     ^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_models.py", line 948, in iter_raw
+    for raw_stream_bytes in self.stream:
+                            ^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\httpx2\_client.py", line 143, in __iter__
+    yield from self._stream
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\testclient.py", line 384, in iter_body
+    exit_stack.close()
+  File "C:\Users\mu393\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\contextlib.py", line 618, in close
+    self.__exit__(None, None, None)
+  File "C:\Users\mu393\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\contextlib.py", line 610, in __exit__
+    raise exc_details[1]
+  File "C:\Users\mu393\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\contextlib.py", line 595, in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\testclient.py", line 399, in close_app
+    raise exception
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\anyio\from_thread.py", line 265, in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\testclient.py", line 366, in run_app
+    await self.app(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\applications.py", line 1194, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Projects\bye-kyrall\apps\api\src\partwright_api\logs.py", line 47, in __call__
+    await self.app(scope, receive, tagged)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\routing.py", line 683, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 2811, in app
+    await route.handle(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 1839, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 2894, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 1865, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 1328, in handle
+    await effective_context.app(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 166, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 152, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 745, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\fastapi\routing.py", line 372, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\apps\api\src\partwright_api\routes\suggestions.py", line 27, in create
+    found = await asyncio.to_thread(suggest, design, data.findings, d.llm, d.settings.seed)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mu393\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mu393\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\services\agent\src\partwright_agent\suggestions.py", line 26, in suggest
+    raw = llm.chat([Message(role="user", content=message)], SuggestionList.model_json_schema(), seed)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\evals\src\partwright_evals\parity_api.py", line 57, in chat
+    return self.then.chat(messages, schema, seed, temperature, think)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\services\agent\src\partwright_agent\ollama_llm.py", line 32, in chat
+    response = self._client.chat(
+               ^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\ollama\_client.py", line 391, in chat
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\ollama\_client.py", line 203, in _request
+    return cls(**self._request_raw(*args, **kwargs).json())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\bye-kyrall\.venv\Lib\site-packages\ollama\_client.py", line 149, in _request_raw
+    raise ConnectionError(CONNECTION_ERROR_MESSAGE) from None
+ConnectionError: Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download

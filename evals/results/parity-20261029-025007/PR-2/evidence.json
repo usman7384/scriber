@@ -1,0 +1,14 @@
+{
+  "row": "PR-2",
+  "passed": true,
+  "measured": {
+    "label": "Base Bolt Spacing X",
+    "spacing": 90.0,
+    "llm_calls": 0,
+    "edits": 5,
+    "rebuild_p50_ms": 234,
+    "rebuild_max_ms": 296,
+    "job_wall_p50_ms": 719
+  },
+  "note": "rebuild = kernel build and export; job wall adds thumbnail, shape descriptor and graph record"
+}

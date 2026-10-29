@@ -1,0 +1,86 @@
+[
+  {
+    "kind": "requirements",
+    "message": "none found",
+    "attempt": 0,
+    "elapsed_ms": 16
+  },
+  {
+    "kind": "emit",
+    "message": "answer of 10 chars",
+    "attempt": 1,
+    "elapsed_ms": 61
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 1,
+    "elapsed_ms": 61
+  },
+  {
+    "kind": "repair",
+    "message": "answer of 10 chars",
+    "attempt": 2,
+    "elapsed_ms": 77
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 2,
+    "elapsed_ms": 77
+  },
+  {
+    "kind": "repair",
+    "message": "answer of 10 chars",
+    "attempt": 3,
+    "elapsed_ms": 77
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 3,
+    "elapsed_ms": 93
+  },
+  {
+    "kind": "repair",
+    "message": "answer of 10 chars",
+    "attempt": 4,
+    "elapsed_ms": 93
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 4,
+    "elapsed_ms": 93
+  },
+  {
+    "kind": "repair",
+    "message": "answer of 10 chars",
+    "attempt": 5,
+    "elapsed_ms": 93
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 5,
+    "elapsed_ms": 93
+  },
+  {
+    "kind": "repair",
+    "message": "answer of 10 chars",
+    "attempt": 6,
+    "elapsed_ms": 108
+  },
+  {
+    "kind": "check",
+    "message": ": Invalid JSON: expected ident at line 1 column 2",
+    "attempt": 6,
+    "elapsed_ms": 108
+  },
+  {
+    "kind": "failed",
+    "message": "gave up after 6 attempts",
+    "attempt": 6,
+    "elapsed_ms": 108
+  }
+]

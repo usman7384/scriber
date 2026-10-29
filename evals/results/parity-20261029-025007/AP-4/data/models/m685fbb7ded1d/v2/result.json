@@ -1,0 +1,76 @@
+{
+  "artifact": {
+    "design_hash": "4ad2c2ceaba5bd68",
+    "files": {
+      "step": "evals\\results\\parity-20261029-025007\\AP-4\\data\\models\\m685fbb7ded1d\\v2\\model.step",
+      "stl": "evals\\results\\parity-20261029-025007\\AP-4\\data\\models\\m685fbb7ded1d\\v2\\model.stl",
+      "glb": "evals\\results\\parity-20261029-025007\\AP-4\\data\\models\\m685fbb7ded1d\\v2\\model.glb",
+      "py": "evals\\results\\parity-20261029-025007\\AP-4\\data\\models\\m685fbb7ded1d\\v2\\model.py",
+      "ir": "evals\\results\\parity-20261029-025007\\AP-4\\data\\models\\m685fbb7ded1d\\v2\\design.json"
+    },
+    "parts": [
+      {
+        "id": "base",
+        "name": "Base",
+        "volume": 12000.0,
+        "bbox_min": [
+          -30.0,
+          -20.0,
+          0.0
+        ],
+        "bbox_size": [
+          60.0,
+          40.0,
+          5.0
+        ],
+        "solids": 1,
+        "faces": 6,
+        "valid": true,
+        "holes": [],
+        "center_of_mass": [
+          -1.3877787807814457e-17,
+          -4.7369515717340015e-17,
+          2.5
+        ],
+        "mass_g": null
+      },
+      {
+        "id": "boss",
+        "name": "Boss",
+        "volume": 7068.583470577036,
+        "bbox_min": [
+          -15.0,
+          -15.0,
+          5.0
+        ],
+        "bbox_size": [
+          30.0,
+          30.0,
+          10.0
+        ],
+        "solids": 1,
+        "faces": 3,
+        "valid": true,
+        "holes": [],
+        "center_of_mass": [
+          -2.3160092400488112e-15,
+          1.395426983839974e-16,
+          9.999999999999998
+        ],
+        "mass_g": null
+      }
+    ],
+    "findings": [],
+    "elapsed_ms": 172
+  },
+  "checks": [],
+  "attempts": 1,
+  "repairs": 0,
+  "used": [
+    "min_hole_edge_ratio",
+    "min_wall_thickness",
+    "min_hole_diameter",
+    "min_internal_corner_radius@milling_3axis",
+    "max_overhang_angle@fdm"
+  ]
+}

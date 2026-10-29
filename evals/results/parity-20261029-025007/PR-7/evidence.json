@@ -1,0 +1,6 @@
+{
+  "row": "PR-7",
+  "passed": false,
+  "measured": {},
+  "note": "ConnectionError: Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download"
+}

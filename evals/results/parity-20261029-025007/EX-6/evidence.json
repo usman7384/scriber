@@ -1,0 +1,12 @@
+{
+  "row": "EX-6",
+  "passed": true,
+  "measured": {
+    "view": 200,
+    "glb_magic": "glTF",
+    "write": 401,
+    "revoke": 204,
+    "after_revoke": 404
+  },
+  "note": "API half; the read-only viewer page is the web suite's"
+}

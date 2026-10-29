@@ -1,0 +1,11 @@
+{
+  "row": "CD-2",
+  "passed": true,
+  "measured": {
+    "versions": 4,
+    "param_change": "[{\"name\": \"base_bolt_spacing_x\", \"old\": 85.0, \"new\": 90.0}]",
+    "features_added": "plate.fillet",
+    "sources": "params: base_bolt_spacing_x=90, refine: round the vertical edges with 1 mm fillets, restore: Base plate 120 x 80 x 5 mm with four 6.6 mm bolt holes"
+  },
+  "note": "seeded designs"
+}

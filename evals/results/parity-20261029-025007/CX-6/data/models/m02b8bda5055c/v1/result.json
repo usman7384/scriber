@@ -1,0 +1,141 @@
+{
+  "artifact": {
+    "design_hash": "a6460474a1c6c9ce",
+    "files": {
+      "step": "evals\\results\\parity-20261029-025007\\CX-6\\data\\models\\m02b8bda5055c\\v1\\attempt_1\\model.step",
+      "stl": "evals\\results\\parity-20261029-025007\\CX-6\\data\\models\\m02b8bda5055c\\v1\\attempt_1\\model.stl",
+      "glb": "evals\\results\\parity-20261029-025007\\CX-6\\data\\models\\m02b8bda5055c\\v1\\attempt_1\\model.glb",
+      "py": "evals\\results\\parity-20261029-025007\\CX-6\\data\\models\\m02b8bda5055c\\v1\\attempt_1\\model.py",
+      "ir": "evals\\results\\parity-20261029-025007\\CX-6\\data\\models\\m02b8bda5055c\\v1\\attempt_1\\design.json"
+    },
+    "parts": [
+      {
+        "id": "plate",
+        "name": "Plate",
+        "volume": 47315.76112004813,
+        "bbox_min": [
+          -60.0,
+          -40.0,
+          0.0
+        ],
+        "bbox_size": [
+          120.0,
+          80.0,
+          5.0
+        ],
+        "solids": 1,
+        "faces": 10,
+        "valid": true,
+        "holes": [
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              -42.5,
+              -25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              -42.5,
+              25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              42.5,
+              -25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              42.5,
+              25.0,
+              2.5
+            ],
+            "length": 5.0
+          }
+        ],
+        "center_of_mass": [
+          -1.9221812779580688e-16,
+          8.649815750811309e-17,
+          2.5000000000000004
+        ],
+        "mass_g": null
+      }
+    ],
+    "findings": [],
+    "elapsed_ms": 280
+  },
+  "checks": [
+    {
+      "requirement": {
+        "kind": "holes",
+        "description": "Mounting holes: 4 x M6 [d152b0c964aea:1.6.0]",
+        "value": null,
+        "tolerance": 0.1,
+        "count": 4,
+        "diameter_min": 6.4,
+        "diameter_max": 7.0,
+        "axis": null
+      },
+      "passed": true,
+      "actual": "4 matching holes; all hole diameters [6.6, 6.6, 6.6, 6.6]"
+    }
+  ],
+  "attempts": 1,
+  "repairs": 0,
+  "used": [
+    "d152b0c964aea",
+    "d8904824d0466",
+    "db7024bbdd8db",
+    "d152b0c964aea:1.3.0",
+    "d152b0c964aea:1.4.0",
+    "d152b0c964aea:1.5.0",
+    "d152b0c964aea:1.6.0",
+    "d8904824d0466:1.2.h1",
+    "d8904824d0466:1.3.h2",
+    "d8904824d0466:1.4.h3",
+    "d8904824d0466:1.5.h4",
+    "d8904824d0466:1.6.h5",
+    "d8904824d0466:1.7.h6",
+    "d8904824d0466:1.8.h7",
+    "d8904824d0466:1.9.h8",
+    "d8904824d0466:1.10.h9",
+    "d8904824d0466:1.11.h10",
+    "db7024bbdd8db:1.1.0",
+    "min_hole_edge_ratio",
+    "min_wall_thickness",
+    "min_hole_diameter",
+    "min_internal_corner_radius@milling_3axis",
+    "max_overhang_angle@fdm"
+  ]
+}

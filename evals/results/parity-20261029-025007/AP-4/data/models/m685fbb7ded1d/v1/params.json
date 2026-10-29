@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Plate T",
+    "name": "plate_t",
+    "value": 5.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Boss D",
+    "name": "boss_d",
+    "value": 20.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  }
+]

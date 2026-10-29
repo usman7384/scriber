@@ -1,0 +1,11 @@
+{
+  "row": "EX-7",
+  "passed": true,
+  "measured": {
+    "deliveries": 3,
+    "keys": "files, model_id, version",
+    "version": 1,
+    "step_bytes": 31652
+  },
+  "note": ""
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "kind": "requirements",
+    "message": "Mounting holes: 4 x M6 [d152b0c964aea:1.6.0]",
+    "attempt": 0,
+    "elapsed_ms": 0
+  },
+  {
+    "kind": "emit",
+    "message": "answer of 968 chars",
+    "attempt": 1,
+    "elapsed_ms": 31
+  },
+  {
+    "kind": "done",
+    "message": "Base plate: 1/1 requirement checks passed, 0 repairs",
+    "attempt": 1,
+    "elapsed_ms": 358
+  }
+]

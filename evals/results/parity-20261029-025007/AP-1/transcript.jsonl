@@ -1,0 +1,8 @@
+{"time": 1793238623.662, "method": "GET", "path": "/projects", "request": null, "status": 401, "response": {"detail": "missing or invalid API token"}}
+{"time": 1793238623.711, "method": "POST", "path": "/tokens", "request": {"name": "ci"}, "status": 201, "response": {"id": "t2a80e8cc501e", "name": "ci", "created": "2026-10-29T01:50:23.705Z", "token": "pw_yPY7C0iYtONTnbUsCf08QbcXnEk09R9-"}}
+{"time": 1793238623.72, "method": "GET", "path": "/projects", "request": null, "status": 200, "response": []}
+{"time": 1793238623.726, "method": "GET", "path": "/projects", "request": null, "status": 200, "response": []}
+{"time": 1793238623.734, "method": "POST", "path": "/tokens", "request": {"name": "temp"}, "status": 201, "response": {"id": "t51f15bc625b4", "name": "temp", "created": "2026-10-29T01:50:23.730Z", "token": "pw_ZJE69nfVk1pL1JtoPsG8MtfseUM34KHk"}}
+{"time": 1793238623.74, "method": "GET", "path": "/projects", "request": null, "status": 200, "response": []}
+{"time": 1793238623.748, "method": "DELETE", "path": "/tokens/t51f15bc625b4", "request": null, "status": 204, "bytes": 0, "content_type": null, "response": null}
+{"time": 1793238623.752, "method": "GET", "path": "/projects", "request": null, "status": 401, "response": {"detail": "missing or invalid API token"}}

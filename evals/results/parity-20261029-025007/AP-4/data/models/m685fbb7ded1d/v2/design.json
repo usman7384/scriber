@@ -1,0 +1,128 @@
+{
+  "ir_version": 2,
+  "title": "Base and boss",
+  "params": [
+    {
+      "name": "plate_t",
+      "value": 5.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "boss_d",
+      "value": 30.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "user_edit",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "base",
+      "name": "Base",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": 60.0,
+              "height": 40.0,
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "plate_t",
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    },
+    {
+      "id": "boss",
+      "name": "Boss",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XY",
+            "offset": 5.0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "diameter": "boss_d",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": 10.0,
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    }
+  ]
+}

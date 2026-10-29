@@ -1,0 +1,11 @@
+{
+  "row": "PR-10",
+  "passed": true,
+  "measured": {
+    "L": 120.0,
+    "W": 80.0,
+    "H": 5.0,
+    "step_sorted": "5, 80, 120"
+  },
+  "note": "API half (version metrics); the on-model labels are the web suite's"
+}

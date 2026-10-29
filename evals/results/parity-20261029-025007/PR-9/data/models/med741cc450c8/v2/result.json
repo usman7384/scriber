@@ -1,0 +1,108 @@
+{
+  "artifact": {
+    "design_hash": "45826658f18a73de",
+    "files": {
+      "step": "evals\\results\\parity-20261029-025007\\PR-9\\data\\models\\med741cc450c8\\v2\\model.step",
+      "stl": "evals\\results\\parity-20261029-025007\\PR-9\\data\\models\\med741cc450c8\\v2\\model.stl",
+      "glb": "evals\\results\\parity-20261029-025007\\PR-9\\data\\models\\med741cc450c8\\v2\\model.glb",
+      "py": "evals\\results\\parity-20261029-025007\\PR-9\\data\\models\\med741cc450c8\\v2\\model.py",
+      "ir": "evals\\results\\parity-20261029-025007\\PR-9\\data\\models\\med741cc450c8\\v2\\design.json"
+    },
+    "parts": [
+      {
+        "id": "plate",
+        "name": "Plate",
+        "volume": 53315.76112004813,
+        "bbox_min": [
+          -60.0,
+          -45.0,
+          0.0
+        ],
+        "bbox_size": [
+          120.0,
+          90.0,
+          5.0
+        ],
+        "solids": 1,
+        "faces": 10,
+        "valid": true,
+        "holes": [
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              -42.5,
+              -25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              -42.5,
+              25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              42.5,
+              -25.0,
+              2.5
+            ],
+            "length": 5.0
+          },
+          {
+            "diameter": 6.6,
+            "axis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "center": [
+              42.5,
+              25.0,
+              2.5
+            ],
+            "length": 5.0
+          }
+        ],
+        "center_of_mass": [
+          -1.7058646123893262e-16,
+          -4.605834453451181e-16,
+          2.5000000000000004
+        ],
+        "mass_g": null
+      }
+    ],
+    "findings": [],
+    "elapsed_ms": 281
+  },
+  "checks": [],
+  "attempts": 1,
+  "repairs": 0,
+  "used": [
+    "min_hole_edge_ratio",
+    "min_wall_thickness",
+    "min_hole_diameter",
+    "min_internal_corner_radius@milling_3axis",
+    "max_overhang_angle@fdm"
+  ]
+}

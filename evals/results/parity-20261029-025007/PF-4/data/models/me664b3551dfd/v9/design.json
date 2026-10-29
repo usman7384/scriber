@@ -1,0 +1,171 @@
+{
+  "ir_version": 2,
+  "title": "Base plate",
+  "params": [
+    {
+      "name": "length",
+      "value": 120.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "width",
+      "value": 80.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "thickness",
+      "value": 5.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "base_bolt_spacing_x",
+      "value": 93.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "user_edit",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "base_bolt_spacing_y",
+      "value": 50.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "plate",
+      "name": "Plate",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "s",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": "length",
+              "height": "width",
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Plate",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "s",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "thickness",
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "holes",
+          "name": "Bolt holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "center": [
+              0.0,
+              0.0
+            ],
+            "count_x": 2.0,
+            "count_y": 2.0,
+            "spacing_x": "base_bolt_spacing_x",
+            "spacing_y": "base_bolt_spacing_y"
+          },
+          "type": "simple",
+          "fastener": null,
+          "fit": "normal",
+          "diameter": "hole_d",
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

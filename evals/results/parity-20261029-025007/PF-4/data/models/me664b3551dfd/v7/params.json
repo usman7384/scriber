@@ -1,0 +1,86 @@
+[
+  {
+    "label": "Length",
+    "name": "length",
+    "value": 120.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Width",
+    "name": "width",
+    "value": 80.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Thickness",
+    "name": "thickness",
+    "value": 5.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Hole D",
+    "name": "hole_d",
+    "value": 6.6,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Base Bolt Spacing X",
+    "name": "base_bolt_spacing_x",
+    "value": 91.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "user_edit",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Base Bolt Spacing Y",
+    "name": "base_bolt_spacing_y",
+    "value": 50.0,
+    "unit": "mm",
+    "min": null,
+    "max": null,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  }
+]

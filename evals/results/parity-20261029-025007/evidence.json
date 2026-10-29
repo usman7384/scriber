@@ -1,0 +1,195 @@
+[
+  {
+    "row": "PR-2",
+    "passed": true,
+    "measured": {
+      "label": "Base Bolt Spacing X",
+      "spacing": 90.0,
+      "llm_calls": 0,
+      "edits": 5,
+      "rebuild_p50_ms": 234,
+      "rebuild_max_ms": 296,
+      "job_wall_p50_ms": 719
+    },
+    "note": "rebuild = kernel build and export; job wall adds thumbnail, shape descriptor and graph record"
+  },
+  {
+    "row": "PR-9",
+    "passed": true,
+    "measured": {
+      "versions": 4,
+      "with_prompt": 4,
+      "png_256": 4,
+      "restored_as": 5,
+      "params_equal_v1": true
+    },
+    "note": ""
+  },
+  {
+    "row": "EX-7",
+    "passed": true,
+    "measured": {
+      "deliveries": 3,
+      "keys": "files, model_id, version",
+      "version": 1,
+      "step_bytes": 31652
+    },
+    "note": ""
+  },
+  {
+    "row": "AP-1",
+    "passed": true,
+    "measured": {
+      "anonymous": 401,
+      "bearer": 200,
+      "x_api_token": 200,
+      "before_revoke": 200,
+      "revoke": 204,
+      "after_revoke": 401
+    },
+    "note": ""
+  },
+  {
+    "row": "AP-4",
+    "passed": true,
+    "measured": {
+      "job": "done",
+      "boss_x": 30.0,
+      "foreign_param": 400,
+      "params_changed": "boss_d",
+      "base_metrics_same": true,
+      "base_ir_same": true
+    },
+    "note": ""
+  },
+  {
+    "row": "AP-5",
+    "passed": true,
+    "measured": {
+      "step_schema": "AP214",
+      "step_solids": 1,
+      "volume_drift": 7.275957614183426e-12,
+      "stl_watertight": true,
+      "chordal_deviation_mm": 0.00103,
+      "gltf_errors": 0,
+      "mesh_nodes": "Plate"
+    },
+    "note": ""
+  },
+  {
+    "row": "CD-2",
+    "passed": true,
+    "measured": {
+      "versions": 4,
+      "param_change": "[{\"name\": \"base_bolt_spacing_x\", \"old\": 85.0, \"new\": 90.0}]",
+      "features_added": "plate.fillet",
+      "sources": "params: base_bolt_spacing_x=90, refine: round the vertical edges with 1 mm fillets, restore: Base plate 120 x 80 x 5 mm with four 6.6 mm bolt holes"
+    },
+    "note": "seeded designs"
+  },
+  {
+    "row": "WP-7",
+    "passed": true,
+    "measured": {
+      "submitted": "queued",
+      "observed_running": true,
+      "done": "done",
+      "failed": "failed",
+      "error": "gave up after 6 attempts",
+      "log_job_id": "jef39c18ba9e0",
+      "log_request_id": "ra0f4222c6d12"
+    },
+    "note": ""
+  },
+  {
+    "row": "PF-4",
+    "passed": true,
+    "measured": {
+      "label": "Base Bolt Spacing X",
+      "spacing": 90.0,
+      "llm_calls": 0,
+      "edits": 10,
+      "rebuild_p50_ms": 264.5,
+      "rebuild_max_ms": 531,
+      "job_wall_p50_ms": 703
+    },
+    "note": "rebuild = kernel build and export; job wall adds thumbnail, shape descriptor and graph record"
+  },
+  {
+    "row": "PR-7",
+    "passed": false,
+    "measured": {},
+    "note": "ConnectionError: Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download"
+  },
+  {
+    "row": "PR-10",
+    "passed": true,
+    "measured": {
+      "L": 120.0,
+      "W": 80.0,
+      "H": 5.0,
+      "step_sorted": "5, 80, 120"
+    },
+    "note": "API half (version metrics); the on-model labels are the web suite's"
+  },
+  {
+    "row": "EX-6",
+    "passed": true,
+    "measured": {
+      "view": 200,
+      "glb_magic": "glTF",
+      "write": 401,
+      "revoke": 204,
+      "after_revoke": 404
+    },
+    "note": "API half; the read-only viewer page is the web suite's"
+  },
+  {
+    "row": "WP-6",
+    "passed": false,
+    "measured": {
+      "step_events": 0,
+      "progress": "",
+      "final": "failed"
+    },
+    "note": "API half; the bar is the web suite's"
+  },
+  {
+    "row": "CX-1",
+    "passed": true,
+    "measured": {
+      "uploaded": 6,
+      "listed": 6,
+      "processed": 6,
+      "progress": "0/100 0/100 0/100 0/100 0/100 0/100",
+      "kinds": "pdf, md, txt, csv, image, step"
+    },
+    "note": "API half; per-file progress bars are the web suite's"
+  },
+  {
+    "row": "CX-3",
+    "passed": false,
+    "measured": {
+      "job": "failed",
+      "recorded": "",
+      "selected": "fef47d7f497a0, f8afe5740b9d1",
+      "used_in": "{\"fef47d7f497a0\": [], \"f8afe5740b9d1\": [], \"f3d5dcec6acf1\": []}"
+    },
+    "note": "API half; the 'Used in' column is the web suite's"
+  },
+  {
+    "row": "CX-6",
+    "passed": true,
+    "measured": {
+      "files": 3,
+      "facts": 15,
+      "rules": 0,
+      "generations": 2,
+      "used_in_generation": 3,
+      "score": 120,
+      "level": 1,
+      "next_level_score": 400
+    },
+    "note": "formula in docs/agents/context.md; UI half is web's"
+  }
+]

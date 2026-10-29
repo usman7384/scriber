@@ -1,0 +1,12 @@
+{
+  "row": "CX-1",
+  "passed": true,
+  "measured": {
+    "uploaded": 6,
+    "listed": 6,
+    "processed": 6,
+    "progress": "0/100 0/100 0/100 0/100 0/100 0/100",
+    "kinds": "pdf, md, txt, csv, image, step"
+  },
+  "note": "API half; per-file progress bars are the web suite's"
+}

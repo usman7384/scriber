@@ -1,0 +1,12 @@
+{
+  "row": "PR-9",
+  "passed": true,
+  "measured": {
+    "versions": 4,
+    "with_prompt": 4,
+    "png_256": 4,
+    "restored_as": 5,
+    "params_equal_v1": true
+  },
+  "note": ""
+}

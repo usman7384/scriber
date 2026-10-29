@@ -1,0 +1,13 @@
+{
+  "row": "AP-4",
+  "passed": true,
+  "measured": {
+    "job": "done",
+    "boss_x": 30.0,
+    "foreign_param": 400,
+    "params_changed": "boss_d",
+    "base_metrics_same": true,
+    "base_ir_same": true
+  },
+  "note": ""
+}

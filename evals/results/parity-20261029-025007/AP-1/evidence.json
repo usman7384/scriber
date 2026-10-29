@@ -1,0 +1,13 @@
+{
+  "row": "AP-1",
+  "passed": true,
+  "measured": {
+    "anonymous": 401,
+    "bearer": 200,
+    "x_api_token": 200,
+    "before_revoke": 200,
+    "revoke": 204,
+    "after_revoke": 401
+  },
+  "note": ""
+}

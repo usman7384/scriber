@@ -1,0 +1,14 @@
+{
+  "row": "AP-5",
+  "passed": true,
+  "measured": {
+    "step_schema": "AP214",
+    "step_solids": 1,
+    "volume_drift": 7.275957614183426e-12,
+    "stl_watertight": true,
+    "chordal_deviation_mm": 0.00103,
+    "gltf_errors": 0,
+    "mesh_nodes": "Plate"
+  },
+  "note": ""
+}

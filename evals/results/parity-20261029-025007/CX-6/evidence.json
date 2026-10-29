@@ -1,0 +1,15 @@
+{
+  "row": "CX-6",
+  "passed": true,
+  "measured": {
+    "files": 3,
+    "facts": 15,
+    "rules": 0,
+    "generations": 2,
+    "used_in_generation": 3,
+    "score": 120,
+    "level": 1,
+    "next_level_score": 400
+  },
+  "note": "formula in docs/agents/context.md; UI half is web's"
+}
