@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import { edgePlate, sensorPlate } from "../fixtures";
 import { MockApi } from "../mock-api";
 import { expect, test } from "./row";
+import { probe, type Vec } from "./viewer";
 
 const patches = (api: MockApi) => api.requests.filter((r) => r.method === "PATCH");
 
@@ -90,8 +91,10 @@ test("WP-3 editor header and target chip", async ({ page, row }) => {
   await openEditor(page, api);
   const title = api.models[0]?.title ?? "";
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
-  await expect(page.getByRole("link", { name: "← Project" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "New generation" })).toBeVisible();
+  const project = page
+    .getByRole("navigation", { name: "Location" })
+    .getByRole("link", { name: "Bracket lab" });
+  await expect(project).toBeVisible();
   const chip = page.getByRole("form", { name: "Refine" }).locator(".chip");
   const states: string[] = [];
   const note = async () => states.push((await chip.textContent())?.replace("Clear", "").trim() ?? "");
@@ -107,24 +110,29 @@ test("WP-3 editor header and target chip", async ({ page, row }) => {
   await note();
 
   await page.getByRole("button", { name: "Top" }).click();
-  const canvas = page.locator(".viewer canvas");
-  await canvas.click({ position: { x: 300, y: 260 } });
+  // a point on the plate's top face between its holes, and one on the ground beside it
+  const plate = Object.values((await probe(page)).parts)[0];
+  if (!plate) throw new Error("no plate");
+  const [min, max] = [plate.min, plate.max];
+  const points: Vec[] = [
+    [min[0] + (max[0] - min[0]) * 0.75, (min[1] + max[1]) / 2, max[2]],
+    [min[0] - 10, min[1] - 10, min[2]],
+  ];
+  const [onPart = [0, 0], offPart = [0, 0]] = (await probe(page, points)).screen;
+  await page.mouse.click(...onPart);
   await expect(chip).toContainText("Target: Sensor mounting plate");
   await note();
   await row.shot("2-picked-in-viewer");
-  await canvas.click({ position: { x: 20, y: 20 } });
+  await page.mouse.click(...offPart);
   await expect(chip).toHaveText("Target: Entire object");
   await note();
 
   row.measured.title = title;
   row.measured.chip_states = states.join(" | ");
-  await page.getByRole("link", { name: "New generation" }).click();
+  await project.click();
   await expect(page).toHaveURL(/\/p\/p1$/);
   await expect(page.getByLabel("Describe the part")).toBeVisible();
-  await page.goBack();
-  await page.getByRole("link", { name: "← Project" }).click();
-  await expect(page).toHaveURL(/\/p\/p1$/);
-  row.measured.back_and_new_generation = "both reach the project prompt";
+  row.measured.back_and_new_generation = "the breadcrumb's project link reaches the project prompt";
   row.note = "Title is the API model title (GE-10 makes it on the server; mocked here).";
 });
 

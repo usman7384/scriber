@@ -1,0 +1,1133 @@
+/* The workspace: a full-bleed viewport with floating panels (docs/design/UI_DIRECTION.md §2). */
+.ws {
+  --rail-w: 224px;
+  --insp-w: 324px;
+  --bottom: 112px;
+  --frame-t: 100px;
+  --frame-l: calc(var(--rail-w) + 24px);
+  --frame-r: calc(var(--insp-w) + 24px);
+  --frame-b: calc(var(--bottom) + 12px);
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  background: var(--viewport);
+  color: var(--text);
+  font-size: var(--t-md);
+}
+.ws[data-rail="collapsed"] {
+  --rail-w: 44px;
+}
+.ws[data-inspector="collapsed"] {
+  --insp-w: 32px;
+}
+.ws .viewer {
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  display: block;
+}
+
+.ws-float {
+  position: absolute;
+  z-index: 2;
+  border-radius: var(--r-2);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  box-shadow: var(--shadow-float);
+}
+
+.ws-muted {
+  color: var(--muted);
+}
+.ws-faint {
+  color: var(--faint);
+}
+.ws-error {
+  color: var(--fail);
+}
+.ws-pass {
+  color: var(--pass);
+}
+.ws-warn {
+  color: var(--warn);
+}
+.ws-fail {
+  color: var(--fail);
+}
+.ws-mobile {
+  display: none;
+}
+.ws-spacer {
+  flex: 1;
+}
+.ws-banner {
+  position: absolute;
+  top: var(--frame-t);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  padding: 6px 12px;
+  border-radius: var(--r-1);
+  background: var(--fail-soft);
+}
+.ws-blank {
+  max-width: 560px;
+  margin: 96px auto;
+  display: grid;
+  gap: var(--s-3);
+}
+
+/* Top bar */
+.ws-top.editor-head {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--s-3);
+  height: 40px;
+  min-width: 0;
+}
+.ws-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-1);
+  color: var(--text);
+}
+.ws-mark:hover {
+  background: var(--raised);
+}
+.ws-crumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--faint);
+  white-space: nowrap;
+}
+.ws-crumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.ws-crumbs a:hover {
+  color: var(--text);
+}
+.ws-title {
+  min-width: 0;
+  overflow: hidden;
+  margin: 0;
+  font-size: var(--t-md);
+  line-height: var(--lh-md);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ws-top .badge.ws-version {
+  flex: none;
+  padding: 3px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--raised);
+  color: var(--text-2);
+  font: 500 var(--t-xs) / 1 var(--mono);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.ws-tag {
+  flex: none;
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.ws-top .ghost {
+  min-height: var(--control);
+  padding: 0 10px;
+  border-radius: var(--r-1);
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.ws-top .ghost:hover {
+  background: var(--raised);
+  color: var(--text);
+}
+
+.ws-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  height: var(--control);
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  color: var(--text-2);
+  font-family: var(--mono);
+  cursor: pointer;
+}
+.ws-pill:hover {
+  background: var(--raised);
+}
+.ws-assumed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--warn);
+  font: var(--t-sm) var(--font);
+}
+
+/* Popover bodies */
+.ws-checks {
+  display: grid;
+  gap: var(--s-3);
+  width: min(340px, calc(100vw - 32px));
+  padding: var(--s-1);
+}
+.ws-check-group {
+  display: grid;
+  gap: var(--s-2);
+}
+.ws-check-group h3,
+.ws-insp-section h3 {
+  margin: 0;
+}
+.ws-check-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ws-check-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  min-height: 24px;
+  font-size: var(--t-sm);
+}
+.ws-check-list li .mono {
+  margin-left: auto;
+}
+.ws-row-button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 28px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--t-sm);
+  text-align: left;
+  white-space: normal;
+}
+.ws-row-button:hover {
+  background: var(--raised);
+}
+.ws-row-button .mono {
+  margin-left: auto;
+}
+.ws-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.ws-share {
+  display: grid;
+  gap: var(--s-2);
+  width: min(340px, calc(100vw - 32px));
+}
+.ws-share-row {
+  display: flex;
+  gap: 6px;
+}
+.ws-share input {
+  flex: 1;
+  min-width: 0;
+  height: var(--control);
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  background: var(--field);
+  font-size: var(--t-xs);
+}
+
+.ws-source {
+  display: grid;
+  gap: 6px;
+  max-width: 300px;
+  font-size: var(--t-sm);
+}
+.ws-source q {
+  color: var(--text-2);
+}
+.ws-source code {
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+
+/* Deliver menu */
+.ws-deliver {
+  position: relative;
+  flex: none;
+}
+.ws-deliver summary {
+  list-style: none;
+}
+.ws-deliver summary::-webkit-details-marker {
+  display: none;
+}
+.ws-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  width: 260px;
+  padding: var(--s-2);
+  border-radius: var(--r-2);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow-float);
+  font-size: var(--t-sm);
+}
+.ws-menu h3 {
+  margin: 4px 8px 6px;
+}
+.ws-menu ul {
+  position: static;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+  list-style: none;
+}
+.ws-menu hr {
+  margin: 6px 4px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.ws-menu a,
+.ws-menu button {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--t-sm);
+  text-decoration: none;
+}
+.ws-menu a:hover,
+.ws-menu button:hover:not(:disabled) {
+  background: var(--raised);
+  color: var(--text);
+}
+.ws-menu-note {
+  display: block;
+  padding: 2px 8px 6px 32px;
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.ws-menu p {
+  padding: 4px 8px;
+}
+
+/* Structure rail */
+.ws-rail {
+  top: 60px;
+  left: 12px;
+  width: var(--rail-w);
+  max-height: calc(100% - 60px - var(--frame-b));
+  overflow: auto;
+  padding: 8px 6px 10px;
+  transition: width var(--d-slow) var(--ease-in);
+}
+.ws-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 8px;
+}
+.ws-rail-head h2 {
+  flex: 1;
+  margin: 0;
+}
+.ws-tree,
+.ws-rail-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ws-tree li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+.ws-tree .ws-tree {
+  grid-column: 1 / -1;
+  padding-left: 14px;
+}
+.ws-tree button,
+.ws-rail-links button,
+.ws-rail-links a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--t-md);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ws-tree button:hover,
+.ws-rail-links button:hover,
+.ws-rail-links a:hover {
+  background: var(--raised);
+  color: var(--text);
+}
+.ws-tree button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text);
+}
+.ws-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-id,
+.ws-count {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: var(--t-xs);
+}
+.ws-count {
+  color: var(--muted);
+}
+.ws-eye {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-1);
+  color: var(--faint);
+  cursor: pointer;
+}
+.ws-eye:hover,
+.ws-eye:has(:focus-visible) {
+  color: var(--text);
+}
+.ws-eye:has(:focus-visible) {
+  outline: 2px solid var(--accent);
+}
+.ws-eye input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ws-tree-face {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 28px;
+  padding: 0 8px 0 22px;
+  color: var(--text-2);
+}
+.ws-rail-links {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.ws[data-rail="collapsed"] .ws-rail .ws-label,
+.ws[data-rail="collapsed"] .ws-rail .ws-id,
+.ws[data-rail="collapsed"] .ws-rail .ws-count,
+.ws[data-rail="collapsed"] .ws-eye,
+.ws[data-rail="collapsed"] .ws-tree-face {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.ws[data-rail="collapsed"] .ws-rail-head {
+  padding: 0;
+}
+.ws[data-rail="collapsed"] .ws-tree .ws-tree {
+  padding-left: 0;
+}
+
+/* Inspector, stream, command bar and versions; on desktop the dock is not a box, its children float. */
+.ws-dock {
+  display: contents;
+}
+.ws-sheet-head {
+  display: none;
+}
+.ws-inspector {
+  top: 60px;
+  right: 12px;
+  bottom: var(--bottom);
+  width: var(--insp-w);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--d-slow) var(--ease-in);
+}
+.ws-inspector-body {
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.ws-inspector .ws-collapse {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  z-index: 1;
+}
+.ws[data-inspector="collapsed"] .ws-inspector-body {
+  display: none;
+}
+.ws[data-inspector="collapsed"] .ws-inspector .ws-collapse {
+  right: 2px;
+}
+.ws-insp-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 12px 48px 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.ws-insp-name {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--t-lg);
+  line-height: var(--lh-lg);
+  font-weight: 600;
+}
+.ws-insp-section {
+  display: grid;
+  gap: var(--s-2);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.ws-insp-section:empty {
+  display: none;
+}
+.ws-insp-section:last-child {
+  border-bottom: 0;
+}
+.ws-insp-section > .ui-button {
+  justify-self: start;
+}
+
+.ws-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2) var(--s-3);
+  margin: 0;
+}
+.ws-facts dt,
+.ws-dl dt {
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.ws-facts dd,
+.ws-dl dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ws-facts dd {
+  font-weight: 500;
+}
+.ws-dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.ws-face {
+  display: grid;
+  gap: var(--s-2);
+}
+.ws-face p {
+  font-size: var(--t-sm);
+}
+.ws-face-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ws-face-row label {
+  color: var(--muted);
+  font-size: var(--t-sm);
+  white-space: nowrap;
+}
+.ws-face-row input {
+  width: 72px;
+  height: var(--control);
+  padding: 0 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  background: var(--field);
+  text-align: right;
+}
+
+.ws-ptable {
+  width: 100%;
+  border-collapse: collapse;
+  background: none;
+  font-size: var(--t-md);
+}
+.ws-ptable th,
+.ws-ptable td {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--line);
+  color: var(--text-2);
+  font-size: var(--t-md);
+  font-weight: 400;
+  text-transform: none;
+  vertical-align: middle;
+}
+.ws-ptable td {
+  padding-left: var(--s-2);
+  text-align: right;
+}
+.ws-ptable tr[data-changed] td:nth-child(2) {
+  color: var(--accent);
+}
+.ws-ptable td.ws-muted {
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+
+/* Parameter rows */
+.ws-params {
+  display: grid;
+  gap: 0;
+}
+.ws-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--t-sm);
+  cursor: pointer;
+}
+.ws-live input {
+  appearance: none;
+  position: relative;
+  width: 26px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: var(--line-strong);
+  cursor: pointer;
+}
+.ws-live input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-2);
+  transition: left var(--d-fast) var(--ease-in);
+}
+.ws-live input:checked {
+  background: var(--accent);
+}
+.ws-live input:checked::after {
+  left: 14px;
+  background: var(--accent-ink);
+}
+.ws-param {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-areas: "label prov value" "track track track" "meta meta meta";
+  align-items: center;
+  column-gap: 6px;
+  padding: 8px 0 4px;
+}
+.ws-param + .ws-param {
+  border-top: 1px dashed var(--line);
+}
+.ws-param label {
+  grid-area: label;
+  min-width: 0;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+.ws-param[data-pinned] label {
+  color: var(--text);
+  font-weight: 500;
+}
+.ws-param[data-edited] label::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.ws-prov {
+  grid-area: prov;
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ws-param-value {
+  grid-area: value;
+  justify-self: end;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  width: 104px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: var(--field);
+  font-family: var(--mono);
+}
+.ws-param-value:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.ws-param-value input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 var(--t-md) var(--mono);
+  text-align: right;
+  appearance: textfield;
+}
+.ws-param-value input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.ws-param-value input::-webkit-inner-spin-button {
+  appearance: none;
+}
+.ws-param-value .unit {
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.ws-param[data-edited] .ws-param-value {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.ws-param[data-edited] .ws-param-value input {
+  color: var(--accent);
+}
+.ws-param[data-invalid] .ws-param-value {
+  box-shadow: inset 0 0 0 1px var(--fail);
+}
+.ws-param[data-invalid] .ws-param-value input,
+.ws-param[data-invalid] .ws-param-note {
+  color: var(--fail);
+}
+/* input.class beats app.css's ".param input[type=range]" placement. */
+.ws-param input.ws-param-track {
+  grid-area: track;
+  width: 100%;
+  height: 14px;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  cursor: ew-resize;
+}
+.ws-param-track::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--line-strong);
+}
+.ws-param-track::-moz-range-track {
+  height: 1px;
+  background: var(--line-strong);
+}
+.ws-param-track::-webkit-slider-thumb {
+  width: 3px;
+  height: 11px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 1px;
+  background: var(--text-2);
+  appearance: none;
+}
+.ws-param-track::-moz-range-thumb {
+  width: 3px;
+  height: 11px;
+  border: 0;
+  border-radius: 1px;
+  background: var(--text-2);
+}
+.ws-param[data-edited] .ws-param-track::-webkit-slider-thumb {
+  background: var(--accent);
+}
+.ws-param-meta {
+  grid-area: meta;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  color: var(--faint);
+  font-size: 10px;
+}
+.ws-param-note {
+  min-width: 0;
+  color: var(--muted);
+  font: var(--t-xs) var(--font);
+  text-align: center;
+}
+.ws-params-foot {
+  display: flex;
+  gap: 6px;
+  padding-top: var(--s-2);
+}
+
+/* Slots for the agent I/O package, styled until it brings its own components. */
+.ws-stream {
+  position: absolute;
+  left: 12px;
+  bottom: calc(var(--frame-b) + 8px);
+  z-index: 2;
+  display: grid;
+  gap: var(--s-2);
+  width: min(380px, calc(100% - var(--frame-r) - 24px));
+  max-height: 46%;
+  overflow: auto;
+}
+.ws-stream:not(:has(> :not(.ws-mobile))) {
+  display: none;
+}
+.ws-stream > .ws-error {
+  padding: 8px 12px;
+}
+.ws-stream .panel {
+  border: 0;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  box-shadow: var(--shadow-float);
+}
+.ws-stream .timeline {
+  max-height: 220px;
+}
+.ws-command {
+  left: calc(var(--frame-l) + 12px);
+  right: calc(var(--frame-r) + 12px);
+  bottom: 62px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 6px;
+}
+.ws-command .refine {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.ws-command .chip {
+  flex: none;
+  max-width: 45%;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--t-sm);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ws-command .chip .link {
+  color: var(--muted);
+}
+.ws-command input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  font-size: var(--t-lg);
+}
+.ws-command input:focus-visible {
+  outline-offset: 0;
+}
+.ws-command button[type="submit"] {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--r-1);
+  font-size: var(--t-sm);
+}
+.ws-versions {
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  height: 44px;
+  padding: 0 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.ws-versions .versions {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+.ws-versions .versions li {
+  flex-direction: row;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  padding: 2px 4px;
+  border-radius: var(--r-1);
+}
+.ws-versions .version {
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+.ws-versions .version img {
+  width: 28px;
+  height: 28px;
+}
+.ws-versions .version > span {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+.ws-versions .version strong {
+  font: 500 var(--t-sm) var(--mono);
+}
+.ws-versions .version .clamp,
+.ws-versions .version .muted {
+  display: none;
+}
+.ws-versions .versions li .secondary {
+  padding: 2px 8px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.ws-versions .versions li.selected {
+  background: var(--accent-soft);
+}
+.ws-insp-section .stack {
+  gap: var(--s-2);
+}
+.ws-insp-section .stack h2 {
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Below 1100 px the rail is an icon strip. */
+@media (max-width: 1100px) {
+  .ws {
+    --rail-w: 44px;
+  }
+  .ws .ws-rail .ws-label,
+  .ws .ws-rail .ws-id,
+  .ws .ws-rail .ws-count,
+  .ws .ws-eye,
+  .ws .ws-tree-face {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .ws-rail-head .ui-tip-anchor {
+    display: none;
+  }
+}
+
+/* Under 768 px: top bar, the viewport's top half, and a bottom sheet with Inspect / Activity / Versions. */
+@media (max-width: 767px) {
+  .ws {
+    --frame-t: 100px;
+    --frame-l: 0px;
+    --frame-r: 0px;
+    --frame-b: 44dvh;
+    --hud-t: 54px;
+  }
+  .ws-wide {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .ws-mobile {
+    display: block;
+  }
+  .ws-desktop {
+    display: none;
+  }
+  .ws-top.editor-head {
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    gap: var(--s-2);
+  }
+  .ws-rail,
+  .ws-hud .ws-hud-bbox {
+    display: none;
+  }
+  .ws-triad {
+    display: none;
+  }
+  .ws-dock {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    height: 44dvh;
+    border-radius: var(--r-3) var(--r-3) 0 0;
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-float);
+    transition: height var(--d-slow) var(--ease-in);
+  }
+  .ws[data-snap="half"] .ws-dock {
+    height: 64dvh;
+  }
+  .ws[data-snap="full"] .ws-dock {
+    height: calc(100dvh - 52px);
+  }
+  .ws-dock > .ws-float,
+  .ws-dock > .ws-stream {
+    position: static;
+    inset: auto;
+    width: auto;
+    max-height: none;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .ws-sheet-head {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 6px 12px 0;
+  }
+  .ws-handle {
+    width: 64px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+  }
+  .ws-handle::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: auto;
+    border-radius: 2px;
+    background: var(--line-strong);
+  }
+  .ws-tabs {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+    border-bottom: 1px solid var(--line);
+  }
+  .ws-tabs button {
+    flex: 1;
+    min-height: 36px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: var(--t-sm);
+  }
+  .ws-tabs [aria-selected="true"] {
+    border-bottom-color: var(--accent);
+    background: transparent;
+    color: var(--text);
+  }
+  .ws-dock > [data-pane] {
+    display: none;
+  }
+  .ws[data-tab="inspect"] .ws-dock > [data-pane="inspect"],
+  .ws[data-tab="activity"] .ws-dock > [data-pane="activity"],
+  .ws[data-tab="versions"] .ws-dock > [data-pane="versions"] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: auto;
+    padding: 0 4px;
+  }
+  .ws-inspector .ws-collapse,
+  .ws-inspector .ui-tip-anchor {
+    display: none;
+  }
+  .ws[data-inspector="collapsed"] .ws-inspector-body {
+    display: block;
+  }
+  .ws-insp-head {
+    padding-right: 14px;
+  }
+  .ws-versions {
+    height: auto;
+  }
+  .ws-versions .versions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ws-command {
+    margin: 0;
+    max-width: none;
+    padding: 8px;
+    border-top: 1px solid var(--line);
+  }
+}
