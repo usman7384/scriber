@@ -60,7 +60,7 @@ def features(g: Any, fact_ids: Sequence[str]) -> list[str]:
 def side_walls(stl: Path) -> list[float]:
     mesh = trimesh.load_mesh(stl)
     mid = mesh.bounds.mean(axis=0)
-    segments: np.ndarray = trimesh.intersections.mesh_plane(mesh, [0, 0, 1], mid)  # type: ignore[no-untyped-call]
+    segments: np.ndarray = trimesh.intersections.mesh_plane(mesh, [0, 0, 1], mid)
     return [*_outer_spans(segments, 0, mid[1]), *_outer_spans(segments, 1, mid[0])]
 
 

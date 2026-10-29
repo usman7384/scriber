@@ -157,10 +157,10 @@ def missing_hole(design: Design) -> Design:
 
 def views(rig: Rig, art: Artifact, name: str) -> list[bytes]:
     scene = trimesh.load_scene(art.files["glb"])
-    turn = trimesh.geometry.align_vectors([0.0, 1.0, 0.0], CAMERA)  # type: ignore[no-untyped-call]
-    scene.apply_transform(turn)  # type: ignore[no-untyped-call]
+    turn = trimesh.geometry.align_vectors([0.0, 1.0, 0.0], CAMERA)
+    scene.apply_transform(turn)
     plan = rig.out / f"{name}_plan.glb"
-    scene.export(plan)  # type: ignore[no-untyped-call]
+    scene.export(plan)
     pngs = [rig.geometry.thumbnail(glb, rig.out / f"{name}_{view}.png", 512) for view, glb in (("iso", art.files["glb"]), ("plan", plan))]
     return [p.read_bytes() for p in pngs]
 

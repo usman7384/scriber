@@ -42,9 +42,10 @@ plugins = ["pydantic.mypy"]
 mypy_path = ["services/ir/src", "services/geometry/src", "services/context/src", "services/agent/src", "apps/api/src", "apps/cli/src", "evals/src", "training/src"]
 explicit_package_bases = true
 exclude = ["evals/results/", "out/"]
+untyped_calls_exclude = ["trimesh"]
 
 [[tool.mypy.overrides]]
-module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*", "pypdfium2.*", "openpyxl.*", "networkx.*", "sqlite_vec.*", "pyrender.*"]
+module = ["build123d.*", "OCP.*", "trimesh.*", "ollama.*", "pypdfium2.*", "openpyxl.*", "networkx.*", "sqlite_vec.*", "pyrender.*", "scipy.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
