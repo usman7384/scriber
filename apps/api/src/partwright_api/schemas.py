@@ -138,6 +138,14 @@ class ModelDetail(Model):
     version: Version | None
 
 
+class Component(Frozen):
+    id: str
+    name: str
+    material: str | None
+    parent: str | None
+    joint: str | None
+
+
 class Step(Frozen):
     kind: str
     message: str
