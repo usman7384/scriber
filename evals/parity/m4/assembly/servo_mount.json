@@ -1,0 +1,190 @@
+{
+  "title": "Servo mount",
+  "params": [
+    {
+      "name": "base_length",
+      "value": 70,
+      "unit": "mm",
+      "description": "base plate length"
+    },
+    {
+      "name": "base_width",
+      "value": 40,
+      "unit": "mm",
+      "description": "base plate width"
+    },
+    {
+      "name": "base_thickness",
+      "value": 4,
+      "unit": "mm",
+      "description": "base plate thickness"
+    },
+    {
+      "name": "deck_length",
+      "value": 50,
+      "unit": "mm",
+      "description": "deck length"
+    },
+    {
+      "name": "deck_width",
+      "value": 30,
+      "unit": "mm",
+      "description": "deck width"
+    },
+    {
+      "name": "deck_height",
+      "value": 20,
+      "unit": "mm",
+      "description": "deck height"
+    },
+    {
+      "name": "pocket_length",
+      "value": 23,
+      "unit": "mm",
+      "description": "servo pocket length"
+    },
+    {
+      "name": "pocket_width",
+      "value": 12.6,
+      "unit": "mm",
+      "description": "servo pocket width"
+    },
+    {
+      "name": "pocket_depth",
+      "value": 18,
+      "unit": "mm",
+      "description": "servo pocket depth"
+    }
+  ],
+  "parts": [
+    {
+      "id": "base",
+      "name": "Base plate",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "base_length",
+              "height": "base_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Plate",
+          "sketch": "outline",
+          "distance": "base_thickness"
+        }
+      ]
+    },
+    {
+      "id": "deck",
+      "name": "Deck",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "deck_length",
+              "height": "deck_width"
+            }
+          ]
+        },
+        {
+          "id": "pocket",
+          "plane": {
+            "ref": "body.end"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "pocket_length",
+              "height": "pocket_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "deck_height"
+        },
+        {
+          "kind": "extrude",
+          "id": "servo_pocket",
+          "name": "Servo pocket",
+          "sketch": "pocket",
+          "distance": "pocket_depth",
+          "mode": "cut"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "deck_seat",
+        "part": "base",
+        "origin": [
+          0,
+          0,
+          "base_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "deck_bottom",
+        "part": "deck",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "servo_pocket",
+        "part": "deck",
+        "origin": [
+          0,
+          0,
+          "deck_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "deck_on_base",
+        "parent": "deck_seat",
+        "child": "deck_bottom"
+      }
+    ]
+  }
+}
