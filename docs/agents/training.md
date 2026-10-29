@@ -232,6 +232,17 @@ On-policy collection (200 specs each, temperature 0): `qwen3.5:4b` failed its fi
 
 Full S2 set (`partwright-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...`, `data/training/s2`): 2,845 of 2,900 specs verified, 5,034 samples (2,834 generate, 1,534 repair, 666 requirement); S1 had 4,898. Repairs include 163 and 90 on-policy ones. 173 edits, 1,432 paraphrased or vague prompts, 0 eval sizes. Holes by stated diameter 2,138 against 1,475 by fastener; through-all cuts 11. The first attempt ran out of memory beside another process; it was rerun with `--workers 4` and `OPENBLAS_NUM_THREADS=1`, which does not change the data.
 
-Next:
-1. One night of QLoRA training on the 4B, then export.
-2. Gates: dev for the checkpoint; M1 and grounded against the default in the same session (D-028).
+## S2 on the 4B (2026-10-29, D-036)
+
+Run: `training/wsl/s2.sh`, same flags as S1-4B (QLoRA, 4,096 tokens, batch 1 x 8): 626 steps in 7 h 24 min, mean loss 0.027, peak 6.07 GB reserved; merge, bf16 GGUF and Q4_K_M took 13 min (2.8 GB). Only the final checkpoint was exported: exporting each checkpoint costs about 15 min and the night had no room, so the dev set compared the final S2 with the default instead of choosing a checkpoint.
+
+Gates, one run per model in the same session (D-028), `training/wsl/s2_gates.sh`:
+
+| Gate | `partwright-ir:4b-s1` | `partwright-ir:4b-s2` |
+|---|---|---|
+| Dev (`dev-20261029-095455`) | 8/20, 44/95 checks, 12/20 built, 37 repairs, median 71 s | **14/20, 70/95**, 16/20 built, 17 repairs, median 22 s |
+| M1 (`m1-20261029-102900`) | 5/10, 16/35, 7/10 built, median 66 s | **6/10, 22/35**, 6/10 built, median 27 s |
+| Grounded, grounded mode | 4/10, 29/45, 30/41 citations correct, median 108 s (`grounded-20261029-110032`) | **5/10, 38/45**, 38/50 citations correct, median 30 s (`grounded-20261029-104645`) |
+| Grounded, prompt mode | 5/10, 35/45 | **6/10, 39/45** |
+
+S2 wins every gate, so it becomes the default (D-036). It is not better everywhere: grounded mode shows 4 project-rule errors in final designs against 0 for S1, and on M1 one more case fails to build (6 against 7) while more checks pass. The dev cases it fixed are the S2 targets: stated hole diameters kept (d19 7/7, NEMA 17 5/5).

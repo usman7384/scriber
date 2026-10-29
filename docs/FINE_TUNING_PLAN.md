@@ -1,6 +1,6 @@
 # Fine-tuning plan: teaching a Qwen model our IR
 
-Status: stopped after S1 by the stop rule (2026-10-26): the tuned 0.8B did not beat the prompted 4B on M1. S1 on the 4B with QLoRA (2026-10-27) first won the grounded set but not M1 (D-025); with the agent fixes it beat the prompted 4B on both in three runs each and became the default (D-027). Next: S2, broader data outside the generator families. The data pipeline is built (below and `docs/agents/training.md`); collection and training are next. Results: `docs/agents/training.md`. The original plan follows.
+Status: stopped after S1 by the stop rule (2026-10-26): the tuned 0.8B did not beat the prompted 4B on M1. S1 on the 4B with QLoRA (2026-10-27) first won the grounded set but not M1 (D-025); with the agent fixes it beat the prompted 4B on both in three runs each and became the default (D-027). S2 (broader data, real repairs, honest provenance) beat S1 on dev, M1 and grounded in the same session and became the default (D-036, 2026-10-29). Results: `docs/agents/training.md`. The original plan follows.
 
 ## Why fine-tune
 
