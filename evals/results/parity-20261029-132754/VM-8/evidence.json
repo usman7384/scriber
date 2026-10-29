@@ -1,0 +1,12 @@
+{
+  "row": "VM-8",
+  "passed": true,
+  "measured": {
+    "reference_parts": 30,
+    "references_failing_spec": "",
+    "cases_scored": "20/30",
+    "mean_param_accuracy": 0.9174,
+    "median_hausdorff_mm": 0.0
+  },
+  "note": "per-case param accuracy and Hausdorff in ../benchmark.json; a case whose generation did not build has no Hausdorff"
+}

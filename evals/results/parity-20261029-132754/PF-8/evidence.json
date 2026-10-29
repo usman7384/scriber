@@ -1,0 +1,11 @@
+{
+  "row": "PF-8",
+  "passed": true,
+  "measured": {
+    "model": "partwright-ir:4b-s2",
+    "eval_tokens": 256,
+    "tokens_per_s": 20.4,
+    "loaded_size_gib": 2.76
+  },
+  "note": "Ollama eval counters on this machine, not the reference laptop"
+}

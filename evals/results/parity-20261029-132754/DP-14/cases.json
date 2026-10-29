@@ -1,0 +1,133 @@
+[
+  {
+    "id": "dp14-equal-angle",
+    "checks": "4/4",
+    "valid": true,
+    "failed": "",
+    "seconds": 35.9,
+    "passed": true
+  },
+  {
+    "id": "dp14-long-angle",
+    "checks": "0/5",
+    "valid": false,
+    "failed": "",
+    "seconds": 307.7,
+    "passed": false
+  },
+  {
+    "id": "dp14-u-channel",
+    "checks": "4/4",
+    "valid": true,
+    "failed": "",
+    "seconds": 65.3,
+    "passed": true
+  },
+  {
+    "id": "dp14-t-plate",
+    "checks": "0/4",
+    "valid": false,
+    "failed": "",
+    "seconds": 249.9,
+    "passed": false
+  },
+  {
+    "id": "dp14-single-gusset",
+    "checks": "4/4",
+    "valid": true,
+    "failed": "",
+    "seconds": 28.6,
+    "gussets": 0,
+    "passed": false
+  },
+  {
+    "id": "dp14-double-gusset",
+    "checks": "0/4",
+    "valid": false,
+    "failed": "",
+    "seconds": 218.6,
+    "gussets": 0,
+    "passed": false
+  },
+  {
+    "id": "dp14-ring-tabs",
+    "checks": "0/4",
+    "valid": false,
+    "failed": "",
+    "seconds": 232.4,
+    "passed": false
+  },
+  {
+    "id": "dp14-pedestal",
+    "checks": "4/5",
+    "valid": true,
+    "failed": "height 58: bounding box 80.00 x 90.00 x 30.00 mm",
+    "seconds": 36.5,
+    "passed": false
+  },
+  {
+    "id": "dp14-lifting-lug",
+    "checks": "4/4",
+    "valid": true,
+    "failed": "",
+    "seconds": 24.7,
+    "passed": true
+  },
+  {
+    "id": "dp14-z-bracket",
+    "checks": "0/3",
+    "valid": false,
+    "failed": "",
+    "seconds": 153.4,
+    "passed": false
+  },
+  {
+    "id": "dp14-corner-plate",
+    "checks": "0/3",
+    "valid": false,
+    "failed": "",
+    "seconds": 164.7,
+    "passed": false
+  },
+  {
+    "id": "dp14-mending-plate",
+    "checks": "6/6",
+    "valid": true,
+    "failed": "",
+    "seconds": 31.5,
+    "passed": true
+  },
+  {
+    "id": "dp14-clevis",
+    "checks": "0/5",
+    "valid": false,
+    "failed": "",
+    "seconds": 240.8,
+    "passed": false
+  },
+  {
+    "id": "dp14-shelf-bracket",
+    "checks": "5/5",
+    "valid": true,
+    "failed": "",
+    "seconds": 148.9,
+    "gussets": 0,
+    "passed": false
+  },
+  {
+    "id": "dp14-pipe-saddle",
+    "checks": "0/3",
+    "valid": false,
+    "failed": "",
+    "seconds": 277.3,
+    "passed": false
+  },
+  {
+    "id": "dp14-hat-bracket",
+    "checks": "2/5",
+    "valid": true,
+    "failed": "overall width 60: bounding box 30.00 x 40.00 x 25.00 mm; two 5.5 holes: 1 matching holes; all hole diameters [5.5]; holes 45 apart: hole centre distances []",
+    "seconds": 193.5,
+    "passed": false
+  }
+]

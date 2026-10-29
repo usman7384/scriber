@@ -1,0 +1,11 @@
+{
+  "row": "AP-7",
+  "passed": false,
+  "measured": {
+    "jobs": 10,
+    "done": 8,
+    "listed": 10,
+    "failed": "gave up after 6 attempts, gave up after 6 attempts"
+  },
+  "note": ""
+}

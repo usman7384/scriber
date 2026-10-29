@@ -1,0 +1,10 @@
+{
+  "row": "DP-14",
+  "passed": false,
+  "measured": {
+    "cases": 16,
+    "passed": 4,
+    "failed": "dp14-long-angle, dp14-t-plate, dp14-single-gusset, dp14-double-gusset, dp14-ring-tabs, dp14-pedestal, dp14-z-bracket, dp14-corner-plate, dp14-clevis, dp14-shelf-bracket, dp14-pipe-saddle, dp14-hat-bracket"
+  },
+  "note": "per-case checks in cases.json"
+}

@@ -1,0 +1,10 @@
+{
+  "row": "PF-1",
+  "passed": true,
+  "measured": {
+    "cases": 30,
+    "median_s": 33.45,
+    "max_s": 239.8
+  },
+  "note": "measured on this machine, not the reference laptop of docs/HARDWARE.md"
+}

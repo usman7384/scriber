@@ -1,0 +1,17 @@
+{
+  "row": "GE-11",
+  "passed": false,
+  "measured": {
+    "plate_a": "0/6",
+    "plate_b": "4/6",
+    "plate_c": "0/6",
+    "plate_d": "5/6",
+    "flange_a": "0/6",
+    "flange_b": "5/6",
+    "flange_c": "0/6",
+    "flange_d": "5/6",
+    "recovered": "19/48",
+    "share": 0.3958
+  },
+  "note": ""
+}

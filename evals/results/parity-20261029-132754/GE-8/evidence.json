@@ -1,0 +1,10 @@
+{
+  "row": "GE-8",
+  "passed": false,
+  "measured": {
+    "parts": 30,
+    "dims_within_tolerance": "98/152",
+    "share": 0.6447
+  },
+  "note": "dims of parts that failed to build count as missed"
+}

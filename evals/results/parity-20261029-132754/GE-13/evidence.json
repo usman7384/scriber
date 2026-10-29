@@ -1,0 +1,11 @@
+{
+  "row": "GE-13",
+  "passed": false,
+  "measured": {
+    "low_valid": 3,
+    "high_valid": 3,
+    "low_log": "low with a 0 token reasoning budget | low with a 0 token reasoning budget, re-sampled because it repeated an earlier answer",
+    "high_log": "high with a 8192 token reasoning budget | high with a 8192 token reasoning budget, re-sampled because it repeated an earlier answer"
+  },
+  "note": ""
+}

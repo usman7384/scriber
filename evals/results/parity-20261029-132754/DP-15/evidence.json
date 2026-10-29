@@ -1,0 +1,10 @@
+{
+  "row": "DP-15",
+  "passed": false,
+  "measured": {
+    "cases": 16,
+    "passed": 13,
+    "failed": "dp15-weld-neck-dn50, dp15-weld-neck-dn80, dp15-iec-ff165"
+  },
+  "note": "per-case checks in cases.json"
+}

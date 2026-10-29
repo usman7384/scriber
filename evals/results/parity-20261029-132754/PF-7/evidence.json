@@ -1,0 +1,9 @@
+{
+  "row": "PF-7",
+  "passed": true,
+  "measured": {
+    "p50_s": 33.45,
+    "seconds_claim": "met"
+  },
+  "note": "single-part benchmark prompts; the 'seconds' claim (p50 under 60 s) is met"
+}

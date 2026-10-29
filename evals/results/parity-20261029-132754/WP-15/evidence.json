@@ -1,0 +1,12 @@
+{
+  "row": "WP-15",
+  "passed": false,
+  "measured": {
+    "prompts": 10,
+    "completed": 9,
+    "errors": "b17-cup: gave up after 6 attempts",
+    "blocked": "",
+    "model_host": "127.0.0.1"
+  },
+  "note": "outbound sockets and name lookups to anything but loopback raise inside the run"
+}
