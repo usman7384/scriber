@@ -38,7 +38,8 @@ def compile_design(design: Design) -> str:
     table = ", ".join(f"{p.id!r}: part_{i}()" for i, p in enumerate(design.parts))
     airfoils = any(isinstance(f, AirfoilSection) for p in design.parts for f in p.features)
     prelude = PRELUDE + AIRFOIL_PRELUDE if airfoils else PRELUDE
-    return f"{prelude}\n\nP = {{\n{params}\n}}\n\n\n{parts}\n\n\ndef build():\n    return {{{table}}}\n"
+    faces = "\nFACES = {}\n" if any(p.face_groups for p in design.parts) else ""
+    return f"{prelude}\n\nP = {{\n{params}\n}}\n{faces}\n\n{parts}\n\n\ndef build():\n    return {{{table}}}\n"
 
 
 def _part(index: int, part: Part, values: dict[str, float]) -> str:
@@ -46,7 +47,9 @@ def _part(index: int, part: Part, values: dict[str, float]) -> str:
     datums = ", ".join(_datum(d) for d in part.datums)
     body = [line for f in part.features for line in _feature(f, sketches, values)]
     head = [f"def part_{index}():", "    part = None", "    T = {}", f"    D = {{{datums}}}"]
-    return "\n".join([*head, *body, f"    part.label = {part.name!r}", "    return part"])
+    groups = ", ".join(f"{g.name!r}: {_select('faces', g.faces)}" for g in part.face_groups)
+    faces = [f"    FACES[{part.id!r}] = {{{groups}}}"] if groups else []
+    return "\n".join([*head, *body, *faces, f"    part.label = {part.name!r}", "    return part"])
 
 
 def _datum(d: Datum) -> str:

@@ -103,6 +103,7 @@ def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
         yield from _feature_errors(f, sketches, datums, seen, values, where)
         yield from _exprs(f, values, where)
         seen[f.id] = f
+    yield from _face_group_errors(part, seen, path)
     used = {f.sketch for f in part.features if isinstance(f, Extrude | Revolve)}
     for sid in sketches:
         if sid not in used:
@@ -259,6 +260,14 @@ def _selector_errors(s: Selector, seen: dict[str, Feature], path: str) -> Iterat
         yield IrError(path=path, message=f"selector refers to {s.of!r}, which is not an earlier feature")
     elif isinstance(seen.get(s.of), AirfoilSection):
         yield IrError(path=path, message=f"selector refers to the airfoil section {s.of!r}; select from the loft through it")
+
+
+def _face_group_errors(part: Part, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+    given = [g.name for g in part.face_groups]
+    if len(set(given)) != len(given):
+        yield IrError(path=f"{path}.face_groups", message="duplicate face group name")
+    for g in part.face_groups:
+        yield from _selector_errors(g.faces, seen, f"{path}.face_groups.{g.name}")
 
 
 def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
