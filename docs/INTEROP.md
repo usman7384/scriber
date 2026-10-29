@@ -13,6 +13,14 @@ What goes in and out of Partwright, and what does not. Everything here runs offl
 | IR bundle (`.zip`) | out and in | `design.json` (the IR), `model.py`, `params.json`, `features.json` (ordered tree with dependencies), `sketches.json` (geometry, constraints and DOF per sketch), `model.step`. Reopening checks the hash, that `model.py` replays from `design.json`, and recounts every sketch's DOF | EX-4 (bundle half), GE-3 |
 | Onshape part studio | in | feature list (id, name, type, suppression), part names and materials, a STEP translation; sketches on the default planes (lines, circles) and solid extrudes (new, add, remove; blind or through all) become IR | IN-10, against a recorded mock |
 
+## Export to other CAD systems
+
+CATIA, NX, SolidWorks and Creo all import STEP, so STEP is the export path to them: AP242 (product structure, part names, named face groups, materials) when the design has face groups or materials, AP214 otherwise. Download it from `GET /models/{id}/export?fmt=step` or the IR bundle.
+
+- Tested: an OCCT round trip (EX-5): write the STEP, read it back, compare volume and bounding box (drift below 1e-6), solid count, validity, schema and material.
+- Not tested: opening the STEP in another CAD system. FreeCAD (open source, OCCT-based) is the planned check and is not installed on the build machine; none of the proprietary systems are available.
+- Gaps: no PMI (GD&T, dimensions, tolerances), no feature history (other systems get a dumb solid), no native formats, no assembly constraints (mates travel only in our IR bundle), and colours are not written.
+
 ## Not yet built
 
 - **FreeCAD `.FCStd`** (D-007): needs FreeCAD 1.1 installed (about 1 GB, LGPL, run as a subprocess with `FreeCADCmd`). Not installed on the build machine, so the emitter has not been written; an untested emitter would be a stub.

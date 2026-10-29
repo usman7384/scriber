@@ -63,6 +63,21 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | DELETE | /shares/{id} | | 204 |
 | POST | /hooks | {url, events: ["version.created", "job.failed"]} | {id, url, events} |
 | DELETE | /hooks/{id} | | 204 |
+| POST | /projects/{id}/designs | {design: Design IR, prompt?} | Job (kind `build`, origin `design`; no LLM; 400 on IR errors) |
+| POST | /projects/{id}/sizing?name=sizing.xml | raw sizing XML (D-031 `XmlSizing`) | Job (kind `build`, origin `sizing`; no LLM; 400 on a bad file) |
+| GET | /materials?q=text | | [Material {name, density_g_cm3, youngs_modulus_gpa, yield_mpa, source}] (all, or the best match) |
+| PUT | /models/{id}/material | {material, part?} | Job (rebuild with the material on that part or all parts, origin `material`; 400 when unknown) |
+| GET | /models/{id}/sensitivities?version=n&params=a&params=b | | {model_id, version, metrics, params: [{name, value, unit, step, d: {volume, mass_g, bbox_x, bbox_y, bbox_z}, error?}]} |
+| POST | /models/{id}/simulation | {solver?, load_case?, results: [{face_group, max_stress_mpa, allowable_mpa}]} | [Suggestion] for the groups over the limit ([] when none); accept with the suggestion route |
+| POST | /bugs | {model_id, version, text, screenshot?: data URL (PNG/JPEG)} | 201 Bug {id, model_id, version, text, user, created, screenshot_url} |
+| GET | /bugs?model_id= | | [Bug] |
+| GET | /bugs/{id}/screenshot | | image |
+| GET | /usage | | {user, generations, limit} |
+| POST | /community | {model_id, version?} | 201 Publication {id, model_id, version, title, author, created, thumbnail_url} |
+| GET | /community | | [Publication] newest first, every user |
+| GET | /community/{id} | | Publication |
+| DELETE | /community/{id} | | 204 (author only, else 403) |
+| POST | /community/{id}/fork | {project_id} | 201 Model + Version: an editable copy, `forked_from {publication, model_id, version, title, author}`, origin `fork` |
 
 Process = `any | milling_3axis | fdm | sla | sls`.
 
@@ -76,4 +91,7 @@ Under `/api/v1`, with the same token auth: `POST /api/v1/generate {prompt, image
 - `PATCH /models/{id}/params` rebuilds without the LLM and should finish in about a second for small parts once the CAD worker is warm.
 - Successful versions are recorded in the project knowledge graph. A context file change that makes models stale emits `version.stale` on hooks and starts a regeneration job per stale model: parameters that cite the changed fact take the new value without the LLM, otherwise the model refines the design with the change described (circular design).
 - `Step.progress` is a percentage, monotonic per job. `Version.inputs` lists the prompt and each file with role `used` or `unused`. PNG and JPG attachments are sent to the model as images on generate and refine; `context_ids` pass the selected files' facts.
-- Errors: `{"detail": "..."}` with 400 (bad input), 404, 409 (job still running), 422 (validation), 503 (Ollama unreachable).
+- Users: with `auth: tokens` a user is the token's name (two tokens with one name are one user); without auth every request is user `local`. Projects and models are not user-scoped; the community listing is the shared space.
+- Generation limit: `generation_limit` in the API settings (default unset, unlimited) caps generate, refine, batch, `/api/v1/generate` and `/api/v1/modify` requests per user; past it they return 429. A batch is charged per prompt, all or nothing. Context-triggered regenerations are not charged.
+- Sensitivities are central finite differences (step 1e-3 of the value, at least 1e-3 mm or deg, one-sided at a bound) over `mm` and `deg` parameters, each a kernel rebuild without exports; mass needs a material on every part.
+- Errors: `{"detail": "..."}` with 400 (bad input), 403 (not yours), 404, 409 (job still running), 422 (validation), 429 (generation limit), 503 (Ollama unreachable).

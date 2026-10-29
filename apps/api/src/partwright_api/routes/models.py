@@ -1,11 +1,12 @@
 import asyncio
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from partwright_agent import VariantPlan, plan_variants
-from partwright_api import disk, repo, views, work
-from partwright_api.auth import require_token
+from partwright_api import disk, repo, sensitivity, views, work
+from partwright_api.auth import User, require_token
 from partwright_api.deps import Deps, DepsDep
 from partwright_api.repo import Row
 from partwright_api.routes.common import (
@@ -19,9 +20,21 @@ from partwright_api.routes.common import (
     start_refine,
     start_variant,
 )
-from partwright_api.schemas import Batch, Component, FileKind, Job, ModelDetail, ParamsIn, RefineIn, VariantsIn, Version
+from partwright_api.schemas import (
+    Batch,
+    Component,
+    FileKind,
+    Job,
+    MaterialOut,
+    ModelDetail,
+    ParamsIn,
+    RefineIn,
+    Sensitivities,
+    VariantsIn,
+    Version,
+)
 from partwright_api.work import Rebuild
-from partwright_ir import ParamError, apply_params, diff, joint_tree
+from partwright_ir import ParamError, apply_params, diff, joint_tree, material
 
 router = APIRouter(prefix="/models/{model_id}", dependencies=[Depends(require_token)])
 
@@ -62,10 +75,10 @@ async def restore(model_id: str, number: int, d: DepsDep) -> Version:
 
 
 @router.post("/refine", status_code=202)
-async def refine(model_id: str, body: RefineIn, d: DepsDep) -> Job:
+async def refine(model_id: str, body: RefineIn, d: DepsDep, user: User) -> Job:
     model = need_model(d, model_id)
     await need_ollama(d)
-    return start_refine(d, model, body)
+    return start_refine(d, model, body, user=user)
 
 
 @router.patch("/params", status_code=202)
@@ -110,7 +123,31 @@ def components(model_id: str, d: DepsDep, version: int | None = None) -> list[Co
     design = disk.design(disk.version_dir(d.settings.data_dir, model_id, n))
     placed = {child: (joint.id, parent) for child, (joint, parent) in joint_tree(design).items()}
     rows = [(p, *placed.get(p.id, (None, None))) for p in design.parts]
-    return [Component(id=p.id, name=p.name, material=p.material, joint=joint, parent=parent) for p, joint, parent in rows]
+    return [
+        Component(id=p.id, name=p.name, material=p.material, properties=_properties(p.material), joint=joint, parent=parent)
+        for p, joint, parent in rows
+    ]
+
+
+@router.get("/sensitivities")
+async def sensitivities(
+    model_id: str, d: DepsDep, version: int | None = None, params: Annotated[list[str] | None, Query()] = None
+) -> Sensitivities:
+    need_model(d, model_id)
+    n, data = need_version(d, model_id, version)
+    if data.status != "ok":
+        raise HTTPException(400, f"version {n} of model {model_id} failed")
+    design = disk.design(disk.version_dir(d.settings.data_dir, model_id, n))
+    unknown = set(params or []) - {p.name for p in design.params}
+    if unknown:
+        raise HTTPException(400, f"unknown parameters {sorted(unknown)}")
+    base, rows = await asyncio.to_thread(sensitivity.sensitivities, design, d.geometry.measure, params)
+    return Sensitivities(model_id=model_id, version=n, metrics=base, params=rows)
+
+
+def _properties(name: str | None) -> MaterialOut | None:
+    found = material(name) if name else None
+    return views.material(found) if found else None
 
 
 def detail(d: Deps, model: Row) -> ModelDetail:

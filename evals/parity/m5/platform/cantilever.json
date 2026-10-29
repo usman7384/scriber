@@ -1,0 +1,18 @@
+{
+  "title": "Cantilever mounting tab",
+  "params": [
+    {"name": "length", "value": 80, "unit": "mm", "description": "from the mount face to the load point"},
+    {"name": "width", "value": 30, "unit": "mm"},
+    {"name": "thickness", "value": 4, "unit": "mm", "min": 2, "max": 12}
+  ],
+  "parts": [
+    {
+      "id": "tab",
+      "name": "Tab",
+      "material": "Aluminum 6061-T6",
+      "sketches": [{"id": "s", "entities": [{"kind": "rect", "center": ["length / 2", 0], "width": "length", "height": "width"}]}],
+      "features": [{"kind": "extrude", "id": "body", "name": "Tab", "sketch": "s", "distance": "thickness"}],
+      "face_groups": [{"name": "mount_face", "faces": {"normal": "-x"}}, {"name": "load_face", "faces": {"normal": "+x"}}]
+    }
+  ]
+}

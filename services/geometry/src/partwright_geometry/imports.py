@@ -14,6 +14,8 @@ def describe(path: Path) -> ShapeDescriptor:
     if path.suffix.lower() in MESH_SUFFIXES:
         return _describe_mesh(path)
     shape = import_step(path)
+    if not shape.faces():
+        raise ValueError(f"{path.name}: the STEP file holds no geometry")
     a, b, c = sorted(shape.bounding_box().size)
     return ShapeDescriptor(
         bbox_sorted=(a, b, c),

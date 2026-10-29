@@ -27,6 +27,7 @@ models = Table(
     Column("title", String, nullable=False),
     Column("created", String, nullable=False),
     Column("stale", Boolean, nullable=False, default=False),
+    Column("forked_from", JSON),
 )
 versions = Table(
     "versions",
@@ -79,6 +80,36 @@ hooks = Table(
     Column("id", String, primary_key=True),
     Column("url", String, nullable=False),
     Column("events", JSON, nullable=False),
+    Column("created", String, nullable=False),
+)
+
+usage = Table(
+    "usage",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("user", String, nullable=False, index=True),
+    Column("kind", String, nullable=False),
+    Column("created", String, nullable=False),
+)
+bugs = Table(
+    "bugs",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("model_id", String, nullable=False, index=True),
+    Column("version", Integer, nullable=False),
+    Column("text", String, nullable=False),
+    Column("user", String, nullable=False),
+    Column("screenshot", Boolean, nullable=False),
+    Column("created", String, nullable=False),
+)
+publications = Table(
+    "publications",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("model_id", String, nullable=False),
+    Column("version", Integer, nullable=False),
+    Column("title", String, nullable=False),
+    Column("author", String, nullable=False),
     Column("created", String, nullable=False),
 )
 

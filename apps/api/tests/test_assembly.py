@@ -32,6 +32,7 @@ def test_assembly_components_are_listed_with_ids_and_joints(api: Api) -> None:
     job = api.generate(api.project(), NO_REQS, STACK, prompt="a cube on a plate")
     assert job["status"] == "done", job
     listed = api.ok(api.client.get(f"/models/{job['model_id']}/components"))
+    assert {c.pop("properties")["density_g_cm3"] for c in listed} == {1.24}
     assert listed == [
         {"id": "plate", "name": "Plate", "material": "PLA", "parent": None, "joint": None},
         {"id": "cube", "name": "Cube", "material": "PLA", "parent": "plate", "joint": "cube_on_plate"},
