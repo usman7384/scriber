@@ -52,7 +52,8 @@ Training uses the same chat format as inference, but with the short v2 rules onl
 | S0 | Generators for 4 families, renderer, repair mutator; 2k samples; Qwen3.5-0.8B LoRA, 1 epoch (~10 min, estimate); GGUF → Ollama | laptop | free | synthetic held-out validity and build rate beat the prompted 0.8B; the pipeline runs end to end (also closes the M5 fine-tune row) |
 | S1 | All families, 15–25k samples; 0.8B, 2–3 epochs overnight (several hours, estimate) | laptop | free | M1 and synthetic gates; challenge reported |
 | S2 | Breadth outside the generator families, QLoRA on the 4B (section below) | laptop | one night | beat the prompted 4B on M1 and grounded |
-| S3 | Preference step using our checks as reward (repair outcomes as chosen/rejected), on the 0.8B | laptop | free | only if S1 misses the challenge gate |
+| S3 | High-level features, assemblies, hole tables and feature intent, QLoRA on the 4B (section below) | laptop | one night | beat S2 on dev, M1, grounded and the showcase set |
+| S4 | Preference step using our checks as reward (repair outcomes as chosen/rejected); was S3 before the M6 data round took the name | laptop | free | only if the gates stall |
 
 Each stage records its data card (counts per family and type, licence: all ours), training config, and scorecards in `docs/agents/training.md`, and the served model tag goes into `config.yaml` (`partwright-ir:0.8b`, `partwright-ir:4b`) beside the base model so either can be selected.
 
@@ -135,6 +136,23 @@ Agent fixes found on the way. These are not data work; they get their own change
 Gate protocol (D-028): one run of each gate for the candidate and for the current default in the same session; the 20-case dev set (`evals/cases/dev.yaml`) picks the checkpoint.
 
 Rough cost: generator and pipeline code over a few sessions, one night of on-policy collection, one night of training, about an hour for export and gates.
+
+## S3: high-level features, assemblies, hole tables and intent (generators built 2026-10-29, not trained)
+
+S2 (D-036) fails what M6 needs (`docs/agents/integration-2026-10-29.md`, `docs/M6_SHOWCASE_PLAN.md`): 4 of 16 bracket variants (DP-14), hole positions from spec tables 25 mm off (IN-2, IN-3), no assemblies (GE-5, GE-6, AS-3, PR-5), no design intent on features (CX-10), and nothing that uses the new IR features (`spur_gear`, `rib`, `boss_pattern`, `shell_with_lid` and `lid`, `keyway`, `groove`).
+
+Data, behind `--s3` on `partwright-dataset` and `partwright-collect` (without it the S1/S2 data is unchanged):
+
+1. **Families on the high-level features**: spur gears and meshing pairs, V-belt pulleys, stepped shafts with keyways and circlip grooves, ribbed housings with screw-boss patterns, pillow blocks, enclosures with a mated lid.
+2. **Assemblies of 2-6 parts** (D-033 connectors and joints): standoff stacks, split clamps, a servo on its mounting plate, hinges, flange couplings; the enclosure lid through its implied mate.
+3. **Multi-feature brackets** on the DP-14 themes in our own wording: gusseted angles, Z and hat sections, clevises, pedestals, lifting lugs.
+4. **Hole tables**: coordinates as a table, CSV, list or grouped by size, from a corner or the centre; 40 % arrive as uploaded hole-table facts, as IN-3 sends them. Verification checks every centre against the table from the part's corner.
+5. **Design intent** on every feature of every target, and some requests that name parameters to expose, as the showcase prompts do.
+6. **On-policy repairs** from the S2 default and the prompted 4B on S3 prompts.
+
+The S1/S2 families stay in the rotation (7 of 15), so S3 keeps what S2 learned; mix, leak guard (now including the showcase set) and gates as in D-028 and D-029. Commands for the full build, the dry-run card and the generator limits found on the way: `docs/agents/training.md` (S3 data).
+
+Gate: the same-session protocol (D-028) against `partwright-ir:4b-s2` on dev, M1 and grounded, plus the showcase set (`partwright-parity M6-SHOWCASE`); S3 must not lose dev, M1 or grounded and must gain on the showcase.
 
 ## Risks
 

@@ -4,6 +4,7 @@ import re
 from partwright_agent import Grounding, Requirement
 from partwright_context import DEFAULT_RULES, ContextPack, Fact, PartRef
 from partwright_ir import Design, Provenance, RuleSet
+from partwright_ir.model import Hole, PointList
 from partwright_training.render import Prompt
 from partwright_training.spec import Spec, num
 
@@ -20,6 +21,12 @@ DOC_REQUESTS = (
     "{title} as specified in the documents",
     "Please model the {title} described in the spec sheet",
     "{title}, see the drawing notes for sizes",
+)
+TABLE_REQUESTS = (
+    "{title} {size} with the holes from the attached hole table",
+    "{title}, {size}, drilled per the uploaded hole list",
+    "Make the {title} {size}; hole positions and sizes are in the hole table document",
+    "{title} {size}, holes as given in the hole chart (coordinates from the lower-left corner)",
 )
 
 
@@ -99,6 +106,36 @@ def documented(spec: Spec, rng: random.Random) -> tuple[Prompt, Grounding, Desig
     request = rng.choice(DOC_REQUESTS).format(title=spec.title.lower())
     design = spec.design.model_copy(update={"params": params})
     return Prompt("documented", request[0].upper() + request[1:]), Grounding(pack=pack, rules=RULES), design
+
+
+def tabled(spec: Spec, rng: random.Random) -> tuple[Prompt, Grounding, Design] | None:
+    holes = [f for p in spec.design.parts for f in p.features if isinstance(f, Hole) and isinstance(f.at, PointList)]
+    placed = {tuple(pt) for f in holes if isinstance(f.at, PointList) for pt in f.at.points}
+    if not spec.positions or placed != {(x, y) for x, y, _ in spec.positions}:
+        return None  # only tables measured from the lower-left corner, as an uploaded hole table is read
+    doc = f"d{rng.getrandbits(48):012x}"
+    facts = [_hole(doc, i, x, y, d) for i, (x, y, d) in enumerate(spec.positions, 1)]
+    first = {f.value: f for f in reversed(facts)}
+    sized = {f.diameter for f in holes}
+    params = [
+        p.model_copy(update={"provenance": Provenance(source="document", ref=first[p.value].id, quote=first[p.value].text)})
+        if p.name in sized
+        else p
+        for p in spec.design.params
+    ]
+    pack = ContextPack(query=spec.title, chunks=[], facts=facts, rules=list(RULES.rules), similar_parts=[], conventions=[])
+    request = rng.choice(TABLE_REQUESTS).format(title=spec.title.lower(), size=spec.design.params[0].provenance.quote)
+    design = spec.design.model_copy(update={"params": params})
+    return Prompt("documented-table", request[0].upper() + request[1:]), Grounding(pack=pack, rules=RULES), design
+
+
+def _hole(doc: str, i: int, x: float, y: float, d: float) -> Fact:
+    text = " | ".join((f"H{i}", num(x), num(y), num(d)))
+    source = Provenance(source="document", ref=f"{doc}#p1:l{i + 1}", quote=text)
+    fid = f"{doc}:1.{i + 1}.h{i}"
+    return Fact(
+        id=fid, doc_id=doc, kind="hole", name=f"hole_h{i}", value=d, unit="mm", at=(x, y), page=1, line=i + 1, text=text, source=source
+    )
 
 
 def _fact(doc: str, i: int, kind: str, name: str, value: float, text: str, count: int | None = None, unit: str = "mm") -> Fact:

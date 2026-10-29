@@ -51,6 +51,10 @@ def renamed(spec: Spec, rng: random.Random, rate: float = 0.4) -> Spec:
     for part in data["parts"]:
         part["sketches"] = [_swap(s, mapping) for s in part["sketches"]]
         part["features"] = [_swap(f, mapping) for f in part["features"]]
+    for c in (data.get("assembly") or {}).get("connectors", []):
+        c["origin"] = _swap(c["origin"], mapping)
+    for j in (data.get("assembly") or {}).get("joints", []):
+        j["angle"], j["offset"] = _swap(j["angle"], mapping), _swap(j["offset"], mapping)
     return replace(spec, design=Design.model_validate(data))
 
 
