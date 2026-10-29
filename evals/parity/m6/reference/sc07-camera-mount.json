@@ -1,0 +1,122 @@
+{
+  "ir_version": 2,
+  "title": "Camera mount",
+  "params": [
+    {
+      "name": "length",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "tap_drill",
+      "value": 5.1,
+      "unit": "mm",
+      "description": "1/4-20 UNC tap drill"
+    },
+    {
+      "name": "thread_depth",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "mount_hole",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "mount_hole_spacing",
+      "value": 48,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "mount",
+      "name": "Camera mount",
+      "material": "aluminium",
+      "sketches": [
+        {
+          "id": "block",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "block",
+          "name": "Block",
+          "sketch": "block",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "tripod",
+          "name": "Tripod thread",
+          "plane": {
+            "ref": "part.bottom",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "tap_drill",
+          "depth": "thread_depth",
+          "thread": "1/4-20 UNC"
+        },
+        {
+          "kind": "hole",
+          "id": "mount_holes",
+          "name": "Mount holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-mount_hole_spacing / 2",
+                0
+              ],
+              [
+                "mount_hole_spacing / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "mount_hole"
+        }
+      ]
+    }
+  ]
+}

@@ -55,6 +55,7 @@ def registry() -> dict[str, Demo]:
         parity_m5_onshape,
         parity_m5_parts,
         parity_m5_platform,
+        parity_m6,
     )
 
     modules = (
@@ -71,6 +72,7 @@ def registry() -> dict[str, Demo]:
         parity_m5_onshape,
         parity_m5_parts,
         parity_m5_platform,
+        parity_m6,
     )
     return {row: demo for m in modules for row, demo in m.ROWS.items()}
 

@@ -1,0 +1,64 @@
+{
+  "ir_version": 2,
+  "title": "Hub spur gear",
+  "params": [
+    {
+      "name": "module",
+      "value": 1.5,
+      "unit": "mm"
+    },
+    {
+      "name": "teeth",
+      "value": 36,
+      "unit": ""
+    },
+    {
+      "name": "face_width",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_diameter",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_length",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 10,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "gear",
+      "name": "Spur gear",
+      "material": "steel",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "Gear",
+          "module": "module",
+          "teeth": "teeth",
+          "face_width": "face_width",
+          "bore": "bore",
+          "hub_diameter": "hub_diameter",
+          "hub_length": "hub_length"
+        },
+        {
+          "kind": "keyway",
+          "id": "keyway",
+          "name": "Keyway",
+          "of": "gear",
+          "on": "bore"
+        }
+      ]
+    }
+  ]
+}

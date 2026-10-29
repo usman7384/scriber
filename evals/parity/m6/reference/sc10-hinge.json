@@ -1,0 +1,448 @@
+{
+  "ir_version": 2,
+  "title": "Butt hinge",
+  "params": [
+    {
+      "name": "leaf_length",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "leaf_width",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "leaf_thickness",
+      "value": 3,
+      "unit": "mm"
+    },
+    {
+      "name": "knuckle_diameter",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "pin_diameter",
+      "value": 4,
+      "unit": "mm"
+    },
+    {
+      "name": "screw_hole",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "countersink",
+      "value": 8.5,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "leaf_a",
+      "name": "Leaf A",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "plate",
+          "plane": {
+            "ref": "XY",
+            "offset": "-leaf_thickness / 2"
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "-leaf_length / 2",
+                  0
+                ],
+                [
+                  "-leaf_length / 6",
+                  0
+                ],
+                [
+                  "-leaf_length / 6",
+                  "knuckle_diameter / 2 + 0.5"
+                ],
+                [
+                  "leaf_length / 6",
+                  "knuckle_diameter / 2 + 0.5"
+                ],
+                [
+                  "leaf_length / 6",
+                  0
+                ],
+                [
+                  "leaf_length / 2",
+                  0
+                ],
+                [
+                  "leaf_length / 2",
+                  "leaf_width"
+                ],
+                [
+                  "-leaf_length / 2",
+                  "leaf_width"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "k1",
+          "plane": {
+            "ref": "YZ",
+            "offset": "-leaf_length / 2"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "knuckle_diameter"
+            }
+          ]
+        },
+        {
+          "id": "k2",
+          "plane": {
+            "ref": "YZ",
+            "offset": "leaf_length / 6"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "knuckle_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Leaf",
+          "sketch": "plate",
+          "distance": "leaf_thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "knuckle_1",
+          "name": "Knuckle 1",
+          "sketch": "k1",
+          "distance": "leaf_length / 3"
+        },
+        {
+          "kind": "extrude",
+          "id": "knuckle_2",
+          "name": "Knuckle 2",
+          "sketch": "k2",
+          "distance": "leaf_length / 3"
+        },
+        {
+          "kind": "hole",
+          "id": "pin_hole",
+          "name": "Pin hole",
+          "plane": {
+            "ref": "YZ",
+            "offset": "-leaf_length / 2"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "pin_diameter + 0.2"
+        },
+        {
+          "kind": "hole",
+          "id": "screw_holes",
+          "name": "Screw holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "leaf_thickness / 2"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-leaf_length * 0.3",
+                "leaf_width * 0.6"
+              ],
+              [
+                "leaf_length * 0.3",
+                "leaf_width * 0.6"
+              ]
+            ]
+          },
+          "diameter": "screw_hole",
+          "type": "countersink",
+          "cs_diameter": "countersink"
+        }
+      ]
+    },
+    {
+      "id": "leaf_b",
+      "name": "Leaf B",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "plate",
+          "plane": {
+            "ref": "XY",
+            "offset": "-leaf_thickness / 2"
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "-leaf_length / 2",
+                  "-leaf_width"
+                ],
+                [
+                  "leaf_length / 2",
+                  "-leaf_width"
+                ],
+                [
+                  "leaf_length / 2",
+                  "-(knuckle_diameter / 2 + 0.5)"
+                ],
+                [
+                  "leaf_length / 6",
+                  "-(knuckle_diameter / 2 + 0.5)"
+                ],
+                [
+                  "leaf_length / 6",
+                  0
+                ],
+                [
+                  "-leaf_length / 6",
+                  0
+                ],
+                [
+                  "-leaf_length / 6",
+                  "-(knuckle_diameter / 2 + 0.5)"
+                ],
+                [
+                  "-leaf_length / 2",
+                  "-(knuckle_diameter / 2 + 0.5)"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "k1",
+          "plane": {
+            "ref": "YZ",
+            "offset": "-leaf_length / 6"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "knuckle_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Leaf",
+          "sketch": "plate",
+          "distance": "leaf_thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "knuckle_1",
+          "name": "Knuckle 1",
+          "sketch": "k1",
+          "distance": "leaf_length / 3"
+        },
+        {
+          "kind": "hole",
+          "id": "pin_hole",
+          "name": "Pin hole",
+          "plane": {
+            "ref": "YZ",
+            "offset": "-leaf_length / 2"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "pin_diameter + 0.2"
+        },
+        {
+          "kind": "hole",
+          "id": "screw_holes",
+          "name": "Screw holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "leaf_thickness / 2"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-leaf_length * 0.3",
+                "-leaf_width * 0.6"
+              ],
+              [
+                "leaf_length * 0.3",
+                "-leaf_width * 0.6"
+              ]
+            ]
+          },
+          "diameter": "screw_hole",
+          "type": "countersink",
+          "cs_diameter": "countersink"
+        }
+      ]
+    },
+    {
+      "id": "pin",
+      "name": "Pin",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "head",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "pin_diameter + 3"
+            }
+          ]
+        },
+        {
+          "id": "shank",
+          "plane": {
+            "ref": "XY",
+            "offset": 1.5
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "pin_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "head",
+          "name": "Head",
+          "sketch": "head",
+          "distance": 1.5
+        },
+        {
+          "kind": "extrude",
+          "id": "shank",
+          "name": "Shank",
+          "sketch": "shank",
+          "distance": "leaf_length"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "axis_a",
+        "part": "leaf_a",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "axis_b",
+        "part": "leaf_b",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "pin_seat",
+        "part": "leaf_a",
+        "origin": [
+          "-leaf_length / 2",
+          0,
+          0
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "pin_head",
+        "part": "pin",
+        "origin": [
+          0,
+          0,
+          1.5
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "swing",
+        "parent": "axis_a",
+        "child": "axis_b",
+        "kind": "revolute",
+        "angle": 0
+      },
+      {
+        "id": "pin_in",
+        "parent": "pin_seat",
+        "child": "pin_head",
+        "kind": "fastened",
+        "angle": 0
+      }
+    ]
+  }
+}

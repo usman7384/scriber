@@ -1,0 +1,142 @@
+{
+  "ir_version": 2,
+  "title": "Pillow block housing",
+  "params": [
+    {
+      "name": "base_length",
+      "value": 130,
+      "unit": "mm"
+    },
+    {
+      "name": "base_width",
+      "value": 38,
+      "unit": "mm"
+    },
+    {
+      "name": "base_thickness",
+      "value": 15,
+      "unit": "mm"
+    },
+    {
+      "name": "centre_height",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "housing_diameter",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "bearing_diameter",
+      "value": 52,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_spacing",
+      "value": 100,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_hole",
+      "value": 11,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "housing",
+      "name": "Pillow block",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "front",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "base_thickness / 2"
+              ],
+              "width": "base_length",
+              "height": "base_thickness"
+            },
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                "centre_height / 2"
+              ],
+              "width": "housing_diameter",
+              "height": "centre_height"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                "centre_height"
+              ],
+              "diameter": "housing_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "front",
+          "distance": "base_width",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "hole",
+          "id": "bearing_bore",
+          "name": "Bearing bore",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                "centre_height"
+              ]
+            ]
+          },
+          "diameter": "bearing_diameter"
+        },
+        {
+          "kind": "hole",
+          "id": "bolt_holes",
+          "name": "Bolt holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "base_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-bolt_spacing / 2",
+                0
+              ],
+              [
+                "bolt_spacing / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "bolt_hole"
+        }
+      ]
+    }
+  ]
+}

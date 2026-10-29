@@ -29,3 +29,10 @@ def test_scorecard_summarises_per_model() -> None:
     )
     card = scorecard([r, r.model_copy(update={"id": "b", "checks_passed": 3})])
     assert "| m | 2/2 | 2/2 | 5/6 | 1/2 | 2 | 10.0 |" in card
+
+
+def test_showcase_cases_check_twenty_parts_and_name_their_parameters() -> None:
+    cases = load_cases(CASES.parent / "showcase.yaml")
+    assert len({c.id for c in cases}) == len(cases) == 20
+    assert all(c.checks and c.params and all(p in c.prompt for p in c.params) for c in cases)
+    assert sum(any(s.kind == "mates" for s in c.shape) for c in cases) >= 6
