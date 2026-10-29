@@ -1,0 +1,11 @@
+# Runs inside FreeCAD (see freecad.py): read a STEP file, report its solids, write it back out as STEP.
+import json
+
+import Part
+
+shape = Part.read(ARGS["step"])
+solids = shape.Solids
+shape.exportStep(ARGS["out"])
+valid = bool(solids) and shape.isValid() and all(s.isValid() for s in solids)
+with open(ARGS["result"], "w", encoding="utf-8") as out:
+    json.dump({"solids": len(solids), "valid": valid, "volume": shape.Volume}, out)

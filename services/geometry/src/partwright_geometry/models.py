@@ -167,6 +167,15 @@ class SketchDof(Frozen):
     note: str = ""
 
 
+class SketchFrame(Frozen):
+    ref: str
+    origin: Vec
+    x_dir: Vec
+    z_dir: Vec
+    out: int
+    normal: int = 1
+
+
 class FeatureEntry(Frozen):
     part: str
     id: str
