@@ -1,0 +1,17 @@
+{
+  "row": "CD-4",
+  "passed": true,
+  "measured": {
+    "to_valid": true,
+    "to_hausdorff_mm": 0.4974,
+    "to_hausdorff_pct_diag": 0.3653,
+    "to_hole_fit_mm": 0.0,
+    "mates": 1,
+    "broken_mates": 0,
+    "interference_mm3": 0.0,
+    "placement_shift_mm": 0.0,
+    "mount_hole_shift_mm": 0.0,
+    "replaced_valid": true
+  },
+  "note": ""
+}
