@@ -6,13 +6,7 @@ const src = join(__dirname, "..");
 const colour = /#[0-9a-f]{3,8}\b|\b(rgba?|hsla?)\(/i;
 
 // Screens not yet moved onto tokens; each package deletes its entry when it does.
-const legacy = [
-  "styles/tokens.css",
-  "styles/app.css",
-  "context/GraphPanel.tsx",
-  "viewer/Measurements.tsx",
-  "viewer/Model.tsx",
-];
+const legacy = ["styles/tokens.css", "styles/app.css", "context/GraphPanel.tsx"];
 
 it("keeps colour literals in tokens.css only", () => {
   const files = readdirSync(src, { recursive: true, encoding: "utf8" })
