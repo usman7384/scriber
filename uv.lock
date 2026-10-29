@@ -1088,6 +1088,7 @@ name = "partwright-cli"
 version = "0.1.0"
 source = { editable = "apps/cli" }
 dependencies = [
+    { name = "httpx" },
     { name = "partwright-agent" },
     { name = "partwright-api" },
     { name = "partwright-context" },
@@ -1099,6 +1100,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = "==0.28.1" },
     { name = "partwright-agent", editable = "services/agent" },
     { name = "partwright-api", editable = "apps/api" },
     { name = "partwright-context", editable = "services/context" },
