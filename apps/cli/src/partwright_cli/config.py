@@ -21,6 +21,7 @@ class LLMConfig(BaseModel):
     host: str
     default: str
     ci: str
+    vision: str = "qwen3.5:4b"
     models: dict[str, ModelOptions]
 
 

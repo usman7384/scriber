@@ -1,4 +1,5 @@
 from partwright_agent.anthropic_llm import AnthropicLLM
+from partwright_agent.critic import Critique, critique
 from partwright_agent.fake_llm import FakeLLM
 from partwright_agent.grounding import misquoted
 from partwright_agent.llm import LLM, Message, Thinking
@@ -18,6 +19,7 @@ __all__ = [
     "NEMA",
     "AnthropicLLM",
     "CheckResult",
+    "Critique",
     "FakeLLM",
     "Grounding",
     "Message",
@@ -30,6 +32,7 @@ __all__ = [
     "VariantPlan",
     "check",
     "context_block",
+    "critique",
     "design_messages",
     "dump_steps",
     "evaluate",

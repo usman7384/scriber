@@ -1,0 +1,350 @@
+[
+  {
+    "request": "Mounting plate 80 x 60 x 5 mm with four 6.6 mm holes, one near each corner.",
+    "design": {
+      "title": "Part",
+      "params": [],
+      "parts": [
+        {
+          "id": "part",
+          "name": "Part",
+          "sketches": [
+            {
+              "id": "s",
+              "entities": [
+                {
+                  "kind": "rect",
+                  "width": 80,
+                  "height": 60
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "kind": "extrude",
+              "id": "s_body",
+              "name": "Body",
+              "sketch": "s",
+              "distance": 5
+            },
+            {
+              "kind": "hole",
+              "id": "h",
+              "name": "Holes",
+              "plane": {
+                "offset": 5
+              },
+              "at": {
+                "kind": "points",
+                "points": [
+                  [
+                    -30,
+                    -20
+                  ],
+                  [
+                    30,
+                    -20
+                  ],
+                  [
+                    -30,
+                    20
+                  ],
+                  [
+                    30,
+                    20
+                  ]
+                ]
+              },
+              "diameter": 6.6
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Round flange plate, 100 mm diameter, 8 mm thick, six 9 mm bolt holes evenly spaced on an 80 mm circle.",
+    "design": {
+      "title": "Part",
+      "params": [],
+      "parts": [
+        {
+          "id": "part",
+          "name": "Part",
+          "sketches": [
+            {
+              "id": "s",
+              "entities": [
+                {
+                  "kind": "circle",
+                  "diameter": 100
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "kind": "extrude",
+              "id": "s_body",
+              "name": "Body",
+              "sketch": "s",
+              "distance": 8
+            },
+            {
+              "kind": "hole",
+              "id": "h",
+              "name": "Holes",
+              "plane": {
+                "offset": 8
+              },
+              "at": {
+                "kind": "points",
+                "points": [
+                  [
+                    40.0,
+                    0.0
+                  ],
+                  [
+                    20.0,
+                    34.641
+                  ],
+                  [
+                    -20.0,
+                    34.641
+                  ],
+                  [
+                    -40.0,
+                    0.0
+                  ],
+                  [
+                    -20.0,
+                    -34.641
+                  ],
+                  [
+                    20.0,
+                    -34.641
+                  ]
+                ]
+              },
+              "diameter": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Flat bar 120 x 20 x 6 mm with three 8 mm holes in a row along its length, 45 mm apart.",
+    "design": {
+      "title": "Part",
+      "params": [],
+      "parts": [
+        {
+          "id": "part",
+          "name": "Part",
+          "sketches": [
+            {
+              "id": "s",
+              "entities": [
+                {
+                  "kind": "rect",
+                  "width": 120,
+                  "height": 20
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "kind": "extrude",
+              "id": "s_body",
+              "name": "Body",
+              "sketch": "s",
+              "distance": 6
+            },
+            {
+              "kind": "hole",
+              "id": "h",
+              "name": "Holes",
+              "plane": {
+                "offset": 6
+              },
+              "at": {
+                "kind": "points",
+                "points": [
+                  [
+                    -45,
+                    0
+                  ],
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    45,
+                    0
+                  ]
+                ]
+              },
+              "diameter": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "L-bracket, 5 mm thick, 30 mm wide, base leg 60 mm, upright leg 40 mm, two 6.5 mm holes side by side in the base.",
+    "design": {
+      "title": "Part",
+      "params": [],
+      "parts": [
+        {
+          "id": "part",
+          "name": "Part",
+          "sketches": [
+            {
+              "id": "s",
+              "plane": {
+                "ref": "XZ"
+              },
+              "entities": [
+                {
+                  "kind": "polygon",
+                  "points": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      60,
+                      0
+                    ],
+                    [
+                      60,
+                      5
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      5,
+                      40
+                    ],
+                    [
+                      0,
+                      40
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "kind": "extrude",
+              "id": "s_body",
+              "name": "Body",
+              "sketch": "s",
+              "distance": 30,
+              "extent": "symmetric"
+            },
+            {
+              "kind": "hole",
+              "id": "h",
+              "name": "Holes",
+              "plane": {
+                "offset": 0
+              },
+              "at": {
+                "kind": "points",
+                "points": [
+                  [
+                    35,
+                    -8
+                  ],
+                  [
+                    35,
+                    8
+                  ]
+                ]
+              },
+              "diameter": 6.5
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "NEMA 17 motor plate 60 x 60 x 6 mm with a 22 mm centre bore and four 3.4 mm screw holes on a 31 mm square.",
+    "design": {
+      "title": "Part",
+      "params": [],
+      "parts": [
+        {
+          "id": "part",
+          "name": "Part",
+          "sketches": [
+            {
+              "id": "s",
+              "entities": [
+                {
+                  "kind": "rect",
+                  "width": 60,
+                  "height": 60
+                },
+                {
+                  "kind": "circle",
+                  "diameter": 22,
+                  "subtract": true
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "kind": "extrude",
+              "id": "s_body",
+              "name": "Body",
+              "sketch": "s",
+              "distance": 6
+            },
+            {
+              "kind": "hole",
+              "id": "h",
+              "name": "Holes",
+              "plane": {
+                "offset": 6
+              },
+              "at": {
+                "kind": "points",
+                "points": [
+                  [
+                    -15.5,
+                    -15.5
+                  ],
+                  [
+                    15.5,
+                    -15.5
+                  ],
+                  [
+                    -15.5,
+                    15.5
+                  ],
+                  [
+                    15.5,
+                    15.5
+                  ]
+                ]
+              },
+              "diameter": 3.4
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

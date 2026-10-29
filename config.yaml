@@ -3,6 +3,8 @@ llm:
   # built locally, not pulled (D-027; rebuild steps in docs/agents/training.md); without it use --model qwen3.5:4b
   default: partwright-ir:4b-s1
   ci: qwen3.5:0.8b-q8_0
+  # requests with images (sketch, photo, drawing, critic) go here; the default has no vision projector (D-027)
+  vision: qwen3.5:4b
   models:
     qwen3.5:4b: {num_ctx: 16384, think: false}
     qwen3.5:0.8b-q8_0: {num_ctx: 8192, think: false}

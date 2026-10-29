@@ -306,3 +306,16 @@ def refine_message(design_json: str, instruction: str) -> str:
         'If the change only needs new parameter values, answer {"updates": [{"name": ..., "value": ...}], "design": null}. '
         'Otherwise answer {"updates": [], "design": <the complete new design>}. Keep every parameter and feature the request does not mention.'
     )
+
+
+IMAGE_NOTE = """
+
+The attached image shows the part: a sketch, a photo or a drawing. Take its shape and features from the image, and every dimension written on it as a parameter with provenance {"source": "vision", "quote": "<the label as written>"}. Text in this message wins over the image where they differ."""
+
+CRITIC_RULES = """You review rendered views of a CAD part against the request it was made for.
+Count the holes, slots, bosses, ribs, legs and other features you can see and compare each with what the request asks for, then check the overall shape and proportions.
+In "findings" write one short sentence for every feature that is missing, extra or clearly wrong. "matches" is true only when findings is empty. Answer with JSON only."""
+
+
+def critic_message(request: str) -> str:
+    return f"Request: {request}\n\nThe attached images are rendered views of the part made for this request. Does the part match it?"
