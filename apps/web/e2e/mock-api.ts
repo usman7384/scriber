@@ -1,7 +1,8 @@
 import type { Page, Request, Route } from "@playwright/test";
-import type { BugReport, ContextFile, Job, Model, Step, Suggestion, Vec3, Version } from "../src/api";
+import type { BugReport, ContextFile, Health, Job, Model, Step, Suggestion, Vec3, Version } from "../src/api";
 import {
   alicePart,
+  type Built,
   contextFiles,
   firstVersion,
   graphOf,
@@ -17,7 +18,7 @@ import {
   type Scenario,
 } from "./fixtures";
 
-const apiPath = /^\/(projects|models|jobs|shares|s|bugs|community)(\/|$)/;
+const apiPath = /^\/(health|projects|models|jobs|shares|s|bugs|community)(\/|$)/;
 
 type Reply = Parameters<Route["fulfill"]>[0];
 type Handler = (m: RegExpMatchArray, req: Request) => Reply;
@@ -61,6 +62,7 @@ export class MockApi {
   forks: Fork[] = [];
   requests: { method: string; path: string; body: unknown; at: number }[] = [];
   drip?: number;
+  tools: Health["tools"] = { freecad: true, prusaslicer: true };
   jobs = new Map<string, { run: () => Event[]; events?: Event[]; sent: number }>();
 
   constructor(private scenario: Scenario = sensorPlate) {}
@@ -290,7 +292,42 @@ export class MockApi {
     return found ? json(body(found)) : missing("model");
   }
 
+  // Status codes and wording of apps/api tools.py and routes/models.py
+  private fcstd(n: string | null, built: Built | undefined): Reply {
+    if (!this.tools.freecad)
+      return json({ detail: "FreeCAD is not configured: set PARTWRIGHT_FREECAD to its executable" }, 503);
+    if (built?.fcstdError)
+      return json({ detail: `this design has no FreeCAD export: ${built.fcstdError}` }, 422);
+    if (!built?.fcstd) return missing("FreeCAD file");
+    return {
+      status: 200,
+      contentType: "application/x-freecad",
+      headers: { "Content-Disposition": `attachment; filename="${this.fileName(n)}.FCStd"` },
+      body: built.fcstd,
+    };
+  }
+
+  private slice(req: Request): Reply {
+    if (!this.tools.prusaslicer)
+      return json(
+        { detail: "PrusaSlicer is not configured: set PARTWRIGHT_PRUSASLICER to its executable" },
+        503,
+      );
+    const n = new URL(req.url()).searchParams.get("version");
+    const v = n === null ? this.versions.at(-1) : this.version(n);
+    if (!v) return json({ detail: `model m1 has no version ${n ?? ""}`.trimEnd() }, 404);
+    const report = this.build(v)?.slice;
+    if (!report) return missing("slice report");
+    const ok = report.exit_code === 0 && report.manifold && report.layers > 0 && report.errors.length === 0;
+    return json({ model_id: "m1", version: v.number, ok, ...report });
+  }
+
+  private fileName(n: string | null) {
+    return `${this.scenario.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-v${n}`;
+  }
+
   private routes: [string, RegExp, Handler][] = [
+    ["GET", /^\/health$/, () => json({ status: "ok", model: "qwen3.5:9b", ollama: true, tools: this.tools })],
     ["GET", /^\/projects$/, () => json([{ ...project, model_count: this.models.length }, shop])],
     ["GET", /^\/projects\/p1$/, () => json(project)],
     ["GET", /^\/projects\/p2$/, () => json(shop)],
@@ -309,10 +346,11 @@ export class MockApi {
         const n = query.get("version");
         const built = this.build(this.version(n));
         const fmt = query.get("fmt");
+        if (fmt === "fcstd") return this.fcstd(n, built);
         const body = fmt === "stl" ? built?.stl : fmt === "glb" ? built?.glb : undefined;
         if (!body) return missing("geometry");
         // Same name and media type as apps/api routes/common.export
-        const name = `${this.scenario.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-v${n}.${fmt}`;
+        const name = `${this.fileName(n)}.${fmt}`;
         return {
           status: 200,
           contentType: fmt === "stl" ? "model/stl" : "model/gltf-binary",
@@ -356,6 +394,7 @@ export class MockApi {
       (_, req) =>
         json(this.rebuild("params", (req.postDataJSON() as { values: Record<string, number> }).values)),
     ],
+    ["POST", /^\/models\/m1\/slice$/, (_, req) => this.slice(req)],
     ["GET", /^\/models\/m1\/suggestions$/, () => json(this.suggestions)],
     [
       "POST",

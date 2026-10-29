@@ -13,7 +13,7 @@ The run stamp is set once in the runner process (`PARITY_RUN`) and inherited by 
 
 ## Rows
 
-Latest run: `evals/results/parity-web-20261029-054713/`, 25/25 pass (the 13 M3 rows plus the 12 M5 rows below; M3 run `parity-web-20261029-021647`).
+Latest run: `evals/results/parity-web-20261029-191556/`, 27/27 pass (adds EX-4 and VM-9 web halves; earlier `parity-web-20261029-054713` 25/25, M3 run `parity-web-20261029-021647`).
 
 | Row | Test | Measured | Status |
 |---|---|---|---|
@@ -42,6 +42,8 @@ Latest run: `evals/results/parity-web-20261029-054713/`, 25/25 pass (the 13 M3 r
 | CX-3 | `context.spec.ts` CX-3 | chosen `nema17-motor.step`, `plate-design-rules.md`; generate sends `context_ids` f2, f3 exactly; both show Used in "Sensor plate", others unchanged; the link opens the model | web half; recording the ids on the generation is apps/api |
 | CX-6 | `context.spec.ts` CX-6 | before: 6 files, 21 facts, 2 rules, 1 used, score 132/400, level 1; after 2 uploads and 1 generation: 8, 23, 2, 2, score 176/400, level 1; delta 44 = 10·2 + 2·2 + 20·1; UI equals the formula both times | web half; API half is `parity-20261029-025007` |
 | WP-14 | `project.spec.ts` WP-14 | 3 UI steps (type the prompt, Generate, Download STL); `motor-holder-v1.stl`, 2036 triangles, 60 x 40 x 24 mm, 15481 mm³, watertight and consistently oriented | web half; generation is mocked and VM-9 (slicer) is not run |
+| EX-4 | `tools.spec.ts` EX-4 | Export, FreeCAD (.FCStd) on the base plate saves `base-plate-v1.FCStd`, 15265 bytes, identical to FreeCAD 1.1.4's output, a zip with `Document.xml`; on the stack assembly the editor shows "this design has no FreeCAD export: assembly joints and placements have no FreeCAD export yet"; with `tools.freecad` false the item is absent | web half; the route is real in `apps/api/tests/test_tools.py` (FreeCAD faked, plus a real run when `PARTWRIGHT_FREECAD` is set) |
+| VM-9 | `tools.spec.ts` VM-9 | Check printability on the motor holder: 1 `POST /models/m1/slice`, shows PASS "80 layers, 1.98 MB of G-code", watertight, 0 warnings, 0 errors, placed after the findings; with `tools.prusaslicer` false the button is absent | web half; report is PrusaSlicer 2.9.6 output, the route is real in `apps/api/tests/test_tools.py` |
 
 ## How the mock stays honest
 
@@ -52,6 +54,7 @@ Latest run: `evals/results/parity-web-20261029-054713/`, 25/25 pass (the 13 M3 r
 - **Mocked routes follow apps/api.** Components, face-driver, suggestions (ignore returns the suggestion, as the route does; `docs/API.md` says 204), shares with `/s/{id}` and `/s/{id}/files/{kind}` and revoke, export with the API's attachment file name, ingest and generate steps with `progress` from `work.PROGRESS`, KB stats counted like `store.counts` and scored with the `LocalContext.stats` formula.
 - **Streaming.** With `api.drip` set, each SSE response carries the next event and `retry: drip`, so the browser reconnects and the bar is sampled while events arrive. Chromium's request interception does not show `Last-Event-ID`, so the mock keeps the position per job.
 - **Scene probe.** `viewer.ts` `probe` reads part boxes by glTF node name and projects CAD points to the page through the live camera; AS-1 clicks the projected part centres and PR-6 the plate top.
+- **External tools.** `GET /health` reports `tools` (both on by default in the mock, off per test). The FCStd export and the slice route answer with the API's status codes and wording (503 unconfigured, 422 `this design has no FreeCAD export: ...`); the bytes and the report are real FreeCAD and PrusaSlicer output written by `make_fixtures.py` (`base-plate-t5.FCStd`, `external-tools.json`; needs both variables).
 - **Downloads.** A browser download bypasses Playwright's interception, so WP-14 fetches the downloaded URL through the mock after clicking the link (the Vite proxy logs one refused connection for the browser's own attempt).
 
 ## Product changes

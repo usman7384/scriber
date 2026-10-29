@@ -158,5 +158,8 @@ def export(d: Deps, model: Row, fmt: FileKind, number: int | None) -> FileRespon
     path = disk.version_dir(d.settings.data_dir, model["id"], n) / disk.FILE_NAMES[fmt]
     if data.metrics is None or not path.exists():
         raise HTTPException(404, f"version {n} of model {model['id']} has no {fmt} file")
-    name = f"{re.sub(r'[^a-z0-9]+', '-', model['title'].lower()).strip('-') or 'model'}-v{n}{path.suffix}"
-    return FileResponse(path, media_type=disk.MEDIA_TYPES[fmt], filename=name)
+    return FileResponse(path, media_type=disk.MEDIA_TYPES[fmt], filename=download_name(model, n, path.suffix))
+
+
+def download_name(model: Row, n: int, suffix: str) -> str:
+    return f"{re.sub(r'[^a-z0-9]+', '-', model['title'].lower()).strip('-') or 'model'}-v{n}{suffix}"

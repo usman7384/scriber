@@ -1,0 +1,14 @@
+{
+  "row": "PR-7",
+  "passed": true,
+  "measured": {
+    "suggestion_calls": "GET /models/m1/suggestions, GET /models/m1/suggestions, POST /models/m1/suggestions, GET /models/m1/suggestions, POST /models/m1/suggestions/g2/ignore, GET /models/m1/suggestions, POST /models/m1/suggestions/g1/accept, GET /models/m1/suggestions, GET /models/m1/suggestions",
+    "versions_after_ignore": 1,
+    "param_patches_after_ignore": 0,
+    "accepted_origin": "suggestion",
+    "hole_x": "20 -> 15",
+    "findings": "1 -> 0",
+    "statuses": "g1 accepted, g2 ignored"
+  },
+  "note": "Suggestion routes are mocked in the apps/api shapes (ignore returns the suggestion); accepting rebuilds through the mocked job stream with real geometry for hole x = 15. Bubbles anchored in the 3D view are not built; suggestions are a panel."
+}

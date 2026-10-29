@@ -15,3 +15,5 @@ class Settings(BaseModel):
     hook_attempts: int = 4
     hook_backoff_s: float = 0.5
     generation_limit: int | None = None
+    freecad: Path | None = None
+    prusaslicer: Path | None = None

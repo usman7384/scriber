@@ -1,7 +1,14 @@
-import { exportUrl, type ExportFormat } from "../api";
+import { api, exportUrl, type ExportFormat } from "../api";
 import { useT } from "../i18n";
 
-export function ExportMenu({ modelId, version }: { modelId: string; version: number }) {
+interface Props {
+  modelId: string;
+  version: number;
+  freecad: boolean;
+  onError: (e: Error) => void;
+}
+
+export function ExportMenu({ modelId, version, freecad, onError }: Props) {
   const t = useT().exportMenu;
   const formats: [ExportFormat, string][] = [
     ["step", "STEP"],
@@ -9,6 +16,15 @@ export function ExportMenu({ modelId, version }: { modelId: string; version: num
     ["glb", "GLB"],
     ["py", t.script],
   ];
+  // a plain download link cannot show why the API refused, so the FreeCAD file is fetched first
+  const downloadFcstd = () =>
+    api.exportFile(modelId, "fcstd", version).then(({ blob, name }) => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }, onError);
   return (
     <details className="menu">
       <summary className="button secondary">{t.export}</summary>
@@ -20,6 +36,13 @@ export function ExportMenu({ modelId, version }: { modelId: string; version: num
             </a>
           </li>
         ))}
+        {freecad && (
+          <li>
+            <button type="button" className="link" onClick={() => void downloadFcstd()}>
+              {t.freecad}
+            </button>
+          </li>
+        )}
       </ul>
     </details>
   );

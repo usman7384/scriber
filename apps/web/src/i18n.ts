@@ -138,7 +138,16 @@ const en = {
     forkedFrom: (title: string, version: number, author: string) =>
       `Forked from ${title} v${version} by ${author}`,
   },
-  exportMenu: { export: "Export", script: "Script" },
+  exportMenu: { export: "Export", script: "Script", freecad: "FreeCAD (.FCStd)" },
+  printability: {
+    region: "Printability",
+    title: "Printability (FDM)",
+    check: "Check printability",
+    running: "Slicing…",
+    summary: (layers: number, mb: string) => `${layers} layers, ${mb} MB of G-code`,
+    manifold: "Watertight mesh",
+    notManifold: "Mesh is not watertight",
+  },
   bug: {
     open: "Report a bug",
     question: "What went wrong?",
@@ -400,7 +409,16 @@ const de: Messages = {
     published: "In der Community veröffentlicht",
     forkedFrom: (title, version, author) => `Kopie von ${title} v${version} von ${author}`,
   },
-  exportMenu: { export: "Exportieren", script: "Skript" },
+  exportMenu: { export: "Exportieren", script: "Skript", freecad: "FreeCAD (.FCStd)" },
+  printability: {
+    region: "Druckbarkeit",
+    title: "Druckbarkeit (FDM)",
+    check: "Druckbarkeit prüfen",
+    running: "Wird gesliced…",
+    summary: (layers, mb) => `${layers} Schichten, ${mb} MB G-Code`,
+    manifold: "Geschlossenes Netz",
+    notManifold: "Netz ist nicht geschlossen",
+  },
   bug: {
     open: "Fehler melden",
     question: "Was ist schiefgelaufen?",

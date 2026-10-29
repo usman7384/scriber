@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Literal
 
@@ -66,3 +67,8 @@ def llm_for(config: Config, model: str | None) -> LLM:
     return OllamaLLM(
         name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens, few_shot=options.few_shot
     )
+
+
+def tool_path(variable: str) -> Path | None:
+    value = os.environ.get(variable)
+    return Path(value) if value else None

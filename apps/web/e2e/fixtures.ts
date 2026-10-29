@@ -7,6 +7,7 @@ import type {
   GraphView,
   Model,
   Param,
+  Printability,
   Project,
   Publication,
   Suggestion,
@@ -62,12 +63,17 @@ export const shopThumbnails: Record<string, Buffer> = {
 
 type Metrics = NonNullable<Version["metrics"]>;
 
+type SliceReport = Omit<Printability, "model_id" | "version" | "ok">;
+
 export interface Built {
   glb: Buffer;
   thumbnail: Buffer;
   findings: Finding[];
   metrics?: Metrics;
   stl?: Buffer;
+  fcstd?: Buffer;
+  fcstdError?: string;
+  slice?: SliceReport;
 }
 
 // A scenario stands in for the geometry service: each parameter set maps to prebuilt real output.
@@ -190,7 +196,13 @@ const made = (name: string) => ({
   thumbnail: asset(`${name}.png`),
 });
 
-const plates = [made("base-plate-t5"), made("base-plate-t7")];
+// FreeCAD and PrusaSlicer output for these fixtures, also written by fixtures/make_fixtures.py.
+const tools = JSON.parse(asset("external-tools.json").toString("utf8")) as {
+  stack_fcstd_error: string;
+  motor_holder_slice: SliceReport;
+};
+
+const plates = [{ ...made("base-plate-t5"), fcstd: asset("base-plate-t5.FCStd") }, made("base-plate-t7")];
 
 export const basePlate: Scenario = {
   title: "Base plate",
@@ -206,7 +218,7 @@ export const basePlate: Scenario = {
       : undefined,
 };
 
-const stack = made("stack");
+const stack = { ...made("stack"), fcstdError: tools.stack_fcstd_error };
 
 export const stackScenario: Scenario = {
   title: stack.title,
@@ -221,7 +233,7 @@ export const stackScenario: Scenario = {
   build: () => stack,
 };
 
-const holder = { ...made("motor-holder"), stl: asset("motor-holder.stl") };
+const holder = { ...made("motor-holder"), stl: asset("motor-holder.stl"), slice: tools.motor_holder_slice };
 
 export const motorHolder: Scenario = {
   title: holder.title,

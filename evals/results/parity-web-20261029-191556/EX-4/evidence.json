@@ -1,0 +1,13 @@
+{
+  "row": "EX-4",
+  "passed": true,
+  "measured": {
+    "file": "base-plate-v1.FCStd",
+    "bytes": 15265,
+    "same_bytes_as_freecad_output": true,
+    "zip_with_document_xml": true,
+    "unsupported_message": "this design has no FreeCAD export: assembly joints and placements have no FreeCAD export yet",
+    "hidden_without_freecad": true
+  },
+  "note": "Export route mocked with the API's status codes and wording (apps/api tools.py); the .FCStd bytes and the unsupported message are FreeCAD 1.1.4 and fcstd_plan output written by e2e/fixtures/make_fixtures.py. The real route is apps/api tests/test_tools.py."
+}

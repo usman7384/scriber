@@ -1,0 +1,10 @@
+{
+  "row": "WP-6",
+  "passed": true,
+  "measured": {
+    "sse_progress_events": "10, 40, 60, 70, 100",
+    "bar_values_seen": "10, 40, 60, 70, 100",
+    "event_spacing_ms": 150
+  },
+  "note": "The mock stream sends one event per response and the browser reconnects for the next (EventSource retry), so the bar is sampled while events arrive; progress values are apps/api work.PROGRESS."
+}

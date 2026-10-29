@@ -1,0 +1,11 @@
+{
+  "stack_fcstd_error": "assembly joints and placements have no FreeCAD export yet",
+  "motor_holder_slice": {
+    "exit_code": 0,
+    "manifold": true,
+    "layers": 80,
+    "gcode_bytes": 1979921,
+    "warnings": [],
+    "errors": []
+  }
+}

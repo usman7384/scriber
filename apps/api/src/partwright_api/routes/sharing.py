@@ -3,7 +3,7 @@ from typing import cast
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import FileResponse
 
-from partwright_api import access, repo, views
+from partwright_api import access, repo, tools, views
 from partwright_api.auth import User, require_token, require_token_unless_first
 from partwright_api.deps import Deps, DepsDep
 from partwright_api.disk import FILE_NAMES
@@ -63,7 +63,7 @@ def delete_token(token_id: str, d: DepsDep) -> Response:
 
 @public.get("/health")
 async def health(d: DepsDep) -> Health:
-    return Health(status="ok", model=d.llm.name, ollama=await ollama_up(d))
+    return Health(status="ok", model=d.llm.name, ollama=await ollama_up(d), tools=tools.available(d))
 
 
 @public.get("/s/{share_id}")

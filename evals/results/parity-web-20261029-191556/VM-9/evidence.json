@@ -1,0 +1,17 @@
+{
+  "row": "VM-9",
+  "passed": true,
+  "measured": {
+    "slice_requests": 1,
+    "shown": "80 layers, 1.98 MB of G-code",
+    "verdict": true,
+    "layers": 80,
+    "gcode_bytes": 1979921,
+    "manifold": true,
+    "warnings": 0,
+    "errors": 0,
+    "below_findings": true,
+    "hidden_without_prusaslicer": true
+  },
+  "note": "Slice route mocked with the API's response shape; the report is PrusaSlicer 2.9.6 on the motor holder STL (e2e/fixtures/external-tools.json from make_fixtures.py). The real route is apps/api tests/test_tools.py."
+}

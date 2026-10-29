@@ -1,0 +1,14 @@
+{
+  "row": "WP-10",
+  "passed": true,
+  "measured": {
+    "publish_request": "{\"model_id\":\"m1\",\"version\":1}",
+    "listed": "v1 · by local · Oct 26, 2026, 11:51 AM | v2 · by alice · Oct 26, 2026, 11:04 AM",
+    "thumbnail_widths_px": "256, 256",
+    "fork_request": "/community/c5e1a9b3d7f2/fork {\"project_id\":\"p1\"}",
+    "forked_from": "{\"publication\":\"c5e1a9b3d7f2\",\"model_id\":\"m2\",\"version\":2,\"title\":\"Edge test plate\",\"author\":\"alice\"}",
+    "fork_version": "fork v1: forked from 'Edge test plate' v2 by alice (c5e1a9b3d7f2)",
+    "project_card": "Edge test platev1 · Oct 26, 2026, 11:55 AMForked from Edge test plate v2 by alice"
+  },
+  "note": "Community page /explore over GET /community and POST /community/{id}/fork, Publish in the editor; routes mocked in the apps/api shape (routes/community.py). The API half (alice publishes, bob forks, original unchanged) is parity-20261029-052939."
+}
