@@ -1,0 +1,609 @@
+{
+  "title": "Enclosure with lid",
+  "params": [
+    {
+      "name": "box_length",
+      "value": 80,
+      "unit": "mm",
+      "description": "outer length"
+    },
+    {
+      "name": "box_width",
+      "value": 60,
+      "unit": "mm",
+      "description": "outer width"
+    },
+    {
+      "name": "box_height",
+      "value": 30,
+      "unit": "mm",
+      "description": "base height"
+    },
+    {
+      "name": "wall",
+      "value": 2,
+      "unit": "mm",
+      "description": "wall and floor thickness"
+    },
+    {
+      "name": "lid_thickness",
+      "value": 3,
+      "unit": "mm",
+      "description": "lid thickness"
+    },
+    {
+      "name": "boss_diameter",
+      "value": 7,
+      "unit": "mm",
+      "description": "screw boss diameter"
+    },
+    {
+      "name": "boss_inset",
+      "value": 7,
+      "unit": "mm",
+      "description": "screw axis distance from the outer edges"
+    },
+    {
+      "name": "thread_d",
+      "value": 3,
+      "unit": "mm",
+      "description": "M3 internal thread, modelled at its major diameter",
+      "provenance": {
+        "source": "standard",
+        "ref": "ISO 965-2 M3-6g"
+      }
+    },
+    {
+      "name": "thread_depth",
+      "value": 10,
+      "unit": "mm",
+      "description": "thread depth in the bosses"
+    },
+    {
+      "name": "screw_thread_d",
+      "value": 2.98,
+      "unit": "mm",
+      "description": "M3 external thread, modelled at its largest 6g major diameter",
+      "provenance": {
+        "source": "standard",
+        "ref": "ISO 965-2 M3-6g"
+      }
+    },
+    {
+      "name": "screw_length",
+      "value": 10,
+      "unit": "mm",
+      "description": "screw length under the head"
+    },
+    {
+      "name": "screw_head_d",
+      "value": 5.5,
+      "unit": "mm",
+      "description": "ISO 4762 head diameter"
+    },
+    {
+      "name": "screw_head_h",
+      "value": 3,
+      "unit": "mm",
+      "description": "head height"
+    }
+  ],
+  "parts": [
+    {
+      "id": "base",
+      "name": "Base",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "box_length",
+              "height": "box_width"
+            }
+          ]
+        },
+        {
+          "id": "cavity",
+          "plane": {
+            "ref": "body.end"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "box_length - 2 * wall",
+              "height": "box_width - 2 * wall"
+            }
+          ]
+        },
+        {
+          "id": "bosses",
+          "plane": {
+            "offset": "wall"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                "(box_length / 2 - boss_inset)",
+                "(box_width / 2 - boss_inset)"
+              ],
+              "diameter": "boss_diameter"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "-(box_length / 2 - boss_inset)",
+                "(box_width / 2 - boss_inset)"
+              ],
+              "diameter": "boss_diameter"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "(box_length / 2 - boss_inset)",
+                "-(box_width / 2 - boss_inset)"
+              ],
+              "diameter": "boss_diameter"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "-(box_length / 2 - boss_inset)",
+                "-(box_width / 2 - boss_inset)"
+              ],
+              "diameter": "boss_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "box_height"
+        },
+        {
+          "kind": "extrude",
+          "id": "pocket",
+          "name": "Cavity",
+          "sketch": "cavity",
+          "distance": "box_height - wall",
+          "mode": "cut"
+        },
+        {
+          "kind": "extrude",
+          "id": "boss",
+          "name": "Screw bosses",
+          "sketch": "bosses",
+          "distance": "box_height - wall"
+        },
+        {
+          "kind": "hole",
+          "id": "threads",
+          "name": "M3 threads",
+          "plane": {
+            "ref": "body.end"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "box_length - 2 * boss_inset",
+            "spacing_y": "box_width - 2 * boss_inset"
+          },
+          "type": "tapped",
+          "fastener": "M3",
+          "diameter": "thread_d",
+          "depth": "thread_depth"
+        }
+      ]
+    },
+    {
+      "id": "lid",
+      "name": "Lid",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "box_length",
+              "height": "box_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Plate",
+          "sketch": "outline",
+          "distance": "lid_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "clearance",
+          "name": "Screw clearance",
+          "plane": {
+            "offset": "lid_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "box_length - 2 * boss_inset",
+            "spacing_y": "box_width - 2 * boss_inset"
+          },
+          "fastener": "M3"
+        }
+      ]
+    },
+    {
+      "id": "screw_1",
+      "name": "Screw 1",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "shank",
+          "plane": {
+            "offset": "-screw_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_thread_d"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_head_d"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "shank",
+          "name": "Shank",
+          "sketch": "shank",
+          "distance": "screw_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "head",
+          "name": "Head",
+          "sketch": "head",
+          "distance": "screw_head_h"
+        }
+      ]
+    },
+    {
+      "id": "screw_2",
+      "name": "Screw 2",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "shank",
+          "plane": {
+            "offset": "-screw_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_thread_d"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_head_d"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "shank",
+          "name": "Shank",
+          "sketch": "shank",
+          "distance": "screw_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "head",
+          "name": "Head",
+          "sketch": "head",
+          "distance": "screw_head_h"
+        }
+      ]
+    },
+    {
+      "id": "screw_3",
+      "name": "Screw 3",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "shank",
+          "plane": {
+            "offset": "-screw_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_thread_d"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_head_d"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "shank",
+          "name": "Shank",
+          "sketch": "shank",
+          "distance": "screw_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "head",
+          "name": "Head",
+          "sketch": "head",
+          "distance": "screw_head_h"
+        }
+      ]
+    },
+    {
+      "id": "screw_4",
+      "name": "Screw 4",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "shank",
+          "plane": {
+            "offset": "-screw_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_thread_d"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "screw_head_d"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "shank",
+          "name": "Shank",
+          "sketch": "shank",
+          "distance": "screw_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "head",
+          "name": "Head",
+          "sketch": "head",
+          "distance": "screw_head_h"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "lid_seat",
+        "part": "base",
+        "origin": [
+          0,
+          0,
+          "box_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "lid_bottom",
+        "part": "lid",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_seat_1",
+        "part": "lid",
+        "origin": [
+          "(box_length / 2 - boss_inset)",
+          "(box_width / 2 - boss_inset)",
+          "lid_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_seat_2",
+        "part": "lid",
+        "origin": [
+          "-(box_length / 2 - boss_inset)",
+          "(box_width / 2 - boss_inset)",
+          "lid_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_seat_3",
+        "part": "lid",
+        "origin": [
+          "(box_length / 2 - boss_inset)",
+          "-(box_width / 2 - boss_inset)",
+          "lid_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_seat_4",
+        "part": "lid",
+        "origin": [
+          "-(box_length / 2 - boss_inset)",
+          "-(box_width / 2 - boss_inset)",
+          "lid_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_1_head",
+        "part": "screw_1",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_2_head",
+        "part": "screw_2",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_3_head",
+        "part": "screw_3",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "screw_4_head",
+        "part": "screw_4",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "lid_on_base",
+        "parent": "lid_seat",
+        "child": "lid_bottom"
+      },
+      {
+        "id": "screw_1_in_lid",
+        "parent": "screw_seat_1",
+        "child": "screw_1_head"
+      },
+      {
+        "id": "screw_2_in_lid",
+        "parent": "screw_seat_2",
+        "child": "screw_2_head"
+      },
+      {
+        "id": "screw_3_in_lid",
+        "parent": "screw_seat_3",
+        "child": "screw_3_head"
+      },
+      {
+        "id": "screw_4_in_lid",
+        "parent": "screw_seat_4",
+        "child": "screw_4_head"
+      }
+    ]
+  }
+}

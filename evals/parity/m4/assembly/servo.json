@@ -1,0 +1,145 @@
+{
+  "title": "Micro servo",
+  "params": [
+    {
+      "name": "servo_length",
+      "value": 22.5,
+      "unit": "mm",
+      "description": "body length"
+    },
+    {
+      "name": "servo_width",
+      "value": 12.2,
+      "unit": "mm",
+      "description": "body width"
+    },
+    {
+      "name": "servo_height",
+      "value": 22.7,
+      "unit": "mm",
+      "description": "body height"
+    },
+    {
+      "name": "servo_drop",
+      "value": 16,
+      "unit": "mm",
+      "description": "body depth below the flange"
+    },
+    {
+      "name": "flange_length",
+      "value": 32.2,
+      "unit": "mm",
+      "description": "mounting flange length"
+    },
+    {
+      "name": "flange_thickness",
+      "value": 2.5,
+      "unit": "mm",
+      "description": "mounting flange thickness"
+    },
+    {
+      "name": "flange_hole_spacing",
+      "value": 27.8,
+      "unit": "mm",
+      "description": "flange hole spacing"
+    },
+    {
+      "name": "flange_hole_d",
+      "value": 2,
+      "unit": "mm",
+      "description": "flange hole diameter"
+    }
+  ],
+  "parts": [
+    {
+      "id": "servo",
+      "name": "Servo",
+      "sketches": [
+        {
+          "id": "body",
+          "plane": {
+            "offset": "-servo_drop"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "servo_length",
+              "height": "servo_width"
+            }
+          ]
+        },
+        {
+          "id": "flange",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "flange_length",
+              "height": "servo_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "case",
+          "name": "Case",
+          "sketch": "body",
+          "distance": "servo_height"
+        },
+        {
+          "kind": "extrude",
+          "id": "tabs",
+          "name": "Flange",
+          "sketch": "flange",
+          "distance": "flange_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "flange_holes",
+          "name": "Flange holes",
+          "plane": {
+            "offset": "flange_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-flange_hole_spacing / 2",
+                0
+              ],
+              [
+                "flange_hole_spacing / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "flange_hole_d"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "flange_seat",
+        "part": "servo",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ]
+  }
+}
