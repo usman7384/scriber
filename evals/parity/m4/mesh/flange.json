@@ -1,0 +1,37 @@
+{
+  "title": "Pipe flange",
+  "params": [
+    {"name": "outer_diameter", "value": 120, "unit": "mm", "min": 100, "max": 160},
+    {"name": "thickness", "value": 12, "unit": "mm"},
+    {"name": "hub_diameter", "value": 60, "unit": "mm"},
+    {"name": "hub_height", "value": 18, "unit": "mm"},
+    {"name": "bore_diameter", "value": 40, "unit": "mm"},
+    {"name": "bolt_diameter", "value": 11, "unit": "mm"},
+    {"name": "bolt_pcd", "value": 92, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "flange",
+      "name": "Flange",
+      "material": "steel",
+      "sketches": [
+        {"id": "disc", "entities": [{"kind": "circle", "diameter": "outer_diameter"}]},
+        {"id": "hub", "plane": {"offset": "thickness"}, "entities": [{"kind": "circle", "diameter": "hub_diameter"}]},
+        {"id": "bore", "entities": [{"kind": "circle", "diameter": "bore_diameter"}]}
+      ],
+      "features": [
+        {"kind": "extrude", "id": "body", "name": "Body", "sketch": "disc", "distance": "thickness"},
+        {"kind": "extrude", "id": "hub", "name": "Hub", "sketch": "hub", "distance": "hub_height"},
+        {"kind": "extrude", "id": "bore", "name": "Bore", "sketch": "bore", "mode": "cut", "extent": "through_all"},
+        {
+          "kind": "hole",
+          "id": "bolts",
+          "name": "Bolt holes",
+          "plane": {"offset": "thickness"},
+          "at": {"kind": "polar", "count": 6, "diameter": "bolt_pcd", "start_angle": 30},
+          "diameter": "bolt_diameter"
+        }
+      ]
+    }
+  ]
+}
