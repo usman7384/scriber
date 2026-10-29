@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aircraft name="Sizing wing">
+  <wing>
+    <airfoil>NACA 2412</airfoil>
+    <span unit="mm">1000</span>
+    <root_chord unit="mm">250</root_chord>
+    <tip_chord unit="mm">120</tip_chord>
+    <sweep unit="deg">20</sweep>
+    <dihedral unit="deg">5</dihedral>
+    <twist unit="deg">2</twist>
+  </wing>
+</aircraft>

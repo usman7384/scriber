@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aircraft name="Blended wing body aircraft">
+  <wing>
+    <airfoil>NACA 2412</airfoil>
+    <span unit="mm">1000</span>
+    <root_chord unit="mm">250</root_chord>
+    <tip_chord unit="mm">120</tip_chord>
+    <sweep unit="deg">20</sweep>
+    <dihedral unit="deg">5</dihedral>
+    <twist unit="deg">2</twist>
+  </wing>
+  <body>
+    <airfoil>NACA 0018</airfoil>
+    <chord unit="mm">420</chord>
+    <width unit="mm">180</width>
+  </body>
+  <tail>
+    <airfoil>NACA 0010</airfoil>
+    <span unit="mm">110</span>
+    <tip_chord unit="mm">70</tip_chord>
+    <sweep unit="deg">35</sweep>
+  </tail>
+  <control_surfaces>
+    <elevon chord_fraction="0.25" span_start_mm="150" span_end_mm="470"/>
+  </control_surfaces>
+  <requirements>
+    <inner_volume unit="l">1.8</inner_volume>
+  </requirements>
+  <performance>
+    <static_margin unit="%">8</static_margin>
+    <cog_x unit="mm">145</cog_x>
+    <mtom unit="kg">2.4</mtom>
+    <battery energy_density_wh_per_kg="250" power_density_w_per_kg="1500"/>
+    <motor power_w="400"/>
+    <propeller diameter_in="9" pitch_in="6" blades="2"/>
+  </performance>
+</aircraft>
