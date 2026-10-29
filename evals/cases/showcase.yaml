@@ -34,9 +34,9 @@
 
 - id: sc04-pillow-block
   rows: [M6-SHOWCASE]
-  prompt: "Pillow block housing for a 52 mm bearing: a 130 x 38 x 15 mm base with two 11 mm bolt holes 100 mm apart, an 80 mm round housing on a 40 mm shaft centre height, and a 52 mm bore through it; expose centre_height, bearing_diameter and bolt_spacing as parameters."
+  prompt: "Pillow block housing for a 52 mm bearing: a 140 x 38 x 15 mm base with two 11 mm bolt holes 100 mm apart, an 80 mm round housing on a 40 mm shaft centre height, and a 52 mm bore through it; expose centre_height, bearing_diameter and bolt_spacing as parameters."
   checks:
-    - {kind: extent, description: base length 130, value: 130}
+    - {kind: extent, description: base length 140, value: 140}
     - {kind: extent, description: width 38, value: 38}
     - {kind: extent, description: height 80, value: 80}
     - {kind: holes, description: one 52 mm bearing bore, count: 1, diameter_min: 51.9, diameter_max: 52.1}
@@ -73,14 +73,14 @@
 
 - id: sc07-camera-mount
   rows: [M6-SHOWCASE]
-  prompt: "Camera mount block 60 x 40 x 12 mm with a 1/4-20 tripod thread in the centre of the bottom (5.1 mm tap drill, 10 mm deep) and two 4.5 mm clearance holes 48 mm apart through the top; expose thickness, thread_depth and mount_hole_spacing as parameters."
+  prompt: "Camera mount block 60 x 40 x 12 mm with a 1/4-20 tripod thread in the centre of the bottom (5.1 mm tap drill, 10 mm deep) and two 4.5 mm clearance holes 44 mm apart through the top; expose thickness, thread_depth and mount_hole_spacing as parameters."
   checks:
     - {kind: extent, description: length 60, value: 60}
     - {kind: extent, description: width 40, value: 40}
     - {kind: extent, description: thickness 12, value: 12}
     - {kind: holes, description: one tripod tap drill, count: 1, diameter_min: 5.0, diameter_max: 5.2}
     - {kind: holes, description: two clearance holes, count: 2, diameter_min: 4.4, diameter_max: 4.6}
-    - {kind: hole_spacing, description: clearance holes 48 apart, value: 48, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: clearance holes 44 apart, value: 44, diameter_min: 4.4, diameter_max: 4.6}
   params: [thickness, thread_depth, mount_hole_spacing]
 
 - id: sc08-gripper-finger
@@ -110,10 +110,10 @@
 
 - id: sc10-hinge
   rows: [M6-SHOWCASE]
-  prompt: "Butt hinge: two 40 x 30 x 3 mm leaves joined by three 8 mm knuckles on a 4 mm pin with a 7 mm head, 4.2 mm pin holes, and two 4.5 mm countersunk screw holes in each leaf; expose leaf_length, knuckle_diameter and pin_diameter as parameters."
+  prompt: "Butt hinge: two 40 x 30 x 3 mm leaves joined by three 14 mm knuckles on a 4 mm pin with a 7 mm head, 4.2 mm pin holes, and two 4.5 mm countersunk screw holes in each leaf; expose leaf_length, knuckle_diameter and pin_diameter as parameters."
   checks:
     - {kind: extent, description: open width 60, value: 60}
-    - {kind: extent, description: knuckle diameter 8, value: 8}
+    - {kind: extent, description: knuckle diameter 14, value: 14}
     - {kind: holes, description: four countersunk screw holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
     - {kind: min_holes, description: pin holes in the knuckles, count: 1, diameter_min: 4.1, diameter_max: 4.3}
   shape:
@@ -123,9 +123,9 @@
 
 - id: sc11-shaft-clamp
   rows: [M6-SHOWCASE]
-  prompt: "Two-piece clamp for a 20 mm shaft: two 50 x 20 x 15 mm halves, each with a half bore, held by two M5 screws 35 mm apart, with 5.5 mm clearance holes in the top half and 4.2 mm tapping holes in the bottom half; expose shaft_diameter, screw_spacing and half_height as parameters."
+  prompt: "Two-piece clamp for a 20 mm shaft: two 55 x 20 x 15 mm halves, each with a half bore, held by two M5 screws 35 mm apart, with 5.5 mm clearance holes in the top half and 4.2 mm tapping holes in the bottom half; expose shaft_diameter, screw_spacing and half_height as parameters."
   checks:
-    - {kind: extent, description: length 50, value: 50}
+    - {kind: extent, description: length 55, value: 55}
     - {kind: extent, description: width 20, value: 20}
     - {kind: extent, description: height 30, value: 30}
     - {kind: holes, description: two clearance holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
@@ -153,9 +153,9 @@
 
 - id: sc13-flange-coupling
   rows: [M6-SHOWCASE]
-  prompt: "Rigid flange coupling for 20 mm shafts: two identical halves bolted face to face, each a 90 mm flange 12 mm thick with a 40 mm hub 30 mm long, a 20 mm bore with a DIN 6885 keyway, and four 9 mm bolt holes on a 65 mm circle; expose flange_diameter, bolt_circle and hub_length as parameters."
+  prompt: "Rigid flange coupling for 20 mm shafts: two identical halves bolted face to face, each a 100 mm flange 12 mm thick with a 40 mm hub 30 mm long, a 20 mm bore with a DIN 6885 keyway, and four 9 mm bolt holes on a 65 mm circle; expose flange_diameter, bolt_circle and hub_length as parameters."
   checks:
-    - {kind: extent, description: flange diameter 90, value: 90}
+    - {kind: extent, description: flange diameter 100, value: 100}
     - {kind: extent, description: overall length 84, value: 84}
     - {kind: holes, description: eight bolt holes in the two halves, count: 8, diameter_min: 8.9, diameter_max: 9.1}
     - {kind: hole_spacing, description: bolt circle 65, value: 65, diameter_min: 8.9, diameter_max: 9.1}
@@ -225,9 +225,9 @@
 
 - id: sc20-flange-bearing
   rows: [M6-SHOWCASE]
-  prompt: "Square flange bearing housing: an 86 x 86 x 12 mm flange with four 11 mm holes on a 64 mm square, a 72 mm boss 20 mm tall on one face, and a stepped bore with a 62 mm bearing seat 16 mm deep from the boss end and a 50 mm through hole; expose flange_thickness, bolt_spacing and seat_depth as parameters."
+  prompt: "Square flange bearing housing: a 105 x 105 x 12 mm flange with four 11 mm holes on a 64 mm square, a 72 mm boss 20 mm tall on one face, and a stepped bore with a 62 mm bearing seat 16 mm deep from the boss end and a 50 mm through hole; expose flange_thickness, bolt_spacing and seat_depth as parameters."
   checks:
-    - {kind: extent, description: flange 86, value: 86}
+    - {kind: extent, description: flange 105, value: 105}
     - {kind: extent, description: height 32, value: 32}
     - {kind: holes, description: four 11 mm holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
     - {kind: hole_spacing, description: bolt square 64, value: 64, diameter_min: 10.9, diameter_max: 11.1}

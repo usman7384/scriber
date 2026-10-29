@@ -7,6 +7,8 @@ from partwright_training.spec import Draft, Spec, finish, num, pick
 Point = tuple[Any, Any]
 # DIN 471 external retaining rings: shaft d -> (groove width m, groove diameter d2)
 CIRCLIP = {
+    8: (0.9, 7.6),
+    10: (1.1, 9.6),
     12: (1.1, 11.5),
     15: (1.1, 14.3),
     17: (1.1, 16.2),
@@ -46,8 +48,7 @@ def shaft(rng: random.Random) -> Spec:
     d.sketches.append(section)
     body = {"kind": "revolve", "id": "body", "name": "Shaft", "sketch": "half_section", "axis": "Y", "angle": 360}
     d.features.append(body | {"intent": "carries the parts mounted on each step"})
-    _keyway(d, rng, steps)
-    _circlip(d, rng, steps)
+    _circlip(d, rng, steps, _keyway(d, rng, steps))
     d.need("extent", f"diameter {num(max(dias))}", value=max(dias))
     d.need("extent", f"length {num(sum(s[2] for s in steps))}", value=sum(s[2] for s in steps))
     finish(d, rng, "turning")
@@ -59,15 +60,16 @@ def _start(steps: list[tuple[str, float, float]], i: int) -> tuple[str, float]:
     return " + ".join(names) or "0", sum(s[2] for s in steps[:i])
 
 
-def _keyway(d: Draft, rng: random.Random, steps: list[tuple[str, float, float]]) -> None:
-    # the default wall rule's probe reads the edge of a small keyway as a thin wall, so keys go on 20 mm and up
-    seats = [i for i, (_, dia, length) in enumerate(steps) if dia >= 20 and length >= 20]
+def _keyway(d: Draft, rng: random.Random, steps: list[tuple[str, float, float]]) -> int | None:
+    # keys at least twice their width long: a shorter slot is a round pocket that reads as a hole, or fails to build
+    seats = [i for i, (_, dia, length) in enumerate(steps) if length >= max(20, 2 * din6885(dia)[0] + 6)]
     if not seats or rng.random() < 0.2:
-        return
+        return None
     i = rng.choice(seats)
     role, dia, length = steps[i]
     start, _ = _start(steps, i)
-    key_l = pick(rng, 10, length - 6, 1)
+    width, depth, _ = din6885(dia)
+    key_l = pick(rng, max(10, 2 * width), length - 6, 1)
     inset = pick(rng, 2, max(2, (length - key_l) / 2), 0.5)
     d.param("keyway_length", key_l, "mm", "keyway length", f"{num(key_l)} mm long keyway")
     d.param("keyway_inset", inset, "mm", "keyway start from the step's lower end", f"{num(inset)} mm from the lower end of that step")
@@ -78,18 +80,19 @@ def _keyway(d: Draft, rng: random.Random, steps: list[tuple[str, float, float]])
     if rng.random() < 0.5:
         d.say("Features", f"a DIN 6885 {where}")
     else:
-        width, depth, _ = din6885(dia)
         d.param("keyway_width", width, "mm", "keyway width", f"{num(width)} mm wide")
         d.param("keyway_depth", depth, "mm", "keyway depth", f"{num(depth)} mm deep")
         d.say("Features", f"a {where}, {num(width)} mm wide and {num(depth)} mm deep")
         key |= {"width": "keyway_width", "depth": "keyway_depth"}
     d.features.append(key)
+    return i
 
 
-def _circlip(d: Draft, rng: random.Random, steps: list[tuple[str, float, float]]) -> None:
+def _circlip(d: Draft, rng: random.Random, steps: list[tuple[str, float, float]], keyed: int | None) -> None:
     i = rng.randrange(len(steps))
     role, dia, length = steps[i]
-    if length < 15 or rng.random() < 0.3:
+    # a groove beside a keyway on the same step can leave a sliver between them
+    if length < 15 or i == keyed or rng.random() < 0.3:
         return
     width, d2 = CIRCLIP[int(dia)]
     depth = round((dia - d2) / 2, 3)

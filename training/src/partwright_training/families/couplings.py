@@ -43,6 +43,8 @@ def coupling(rng: random.Random) -> Spec:
     ]
     d.assembly = {"connectors": connectors, "joints": [{"id": "bolted_faces", "parent": "face_a", "child": "face_b"}]}
     need_bores(d, b, 2 * n, "bolt holes")
+    if shaft - 0.1 > b.hi or shaft + 0.1 < b.lo:
+        d.need("holes", f"two keyed {num(shaft)} mm bores", count=2, diameter_min=shaft - 0.1, diameter_max=shaft + 0.1)
     if n % 2 == 0:
         d.need("hole_spacing", f"bolt circle {num(pcd)}", value=pcd, diameter_min=b.lo, diameter_max=b.hi)
     d.need("extent", f"flange {num(dia)}", value=dia)

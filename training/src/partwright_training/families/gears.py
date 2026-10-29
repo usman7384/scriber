@@ -57,12 +57,10 @@ def _single(rng: random.Random) -> Spec:
         feature |= {"hub_diameter": "hub_diameter", "hub_length": "hub_length"}
         height += hub_l
     d.features.append(feature)
-    if bore >= 10 and rng.random() < 0.4:
+    if bore > 6 and rng.random() < 0.4:
         d.say("Holes and ports", rng.choice(("a DIN 6885 keyway in the bore", "keyway in the bore to DIN 6885")))
         key = {"kind": "keyway", "id": "bore_key", "name": "Bore keyway", "of": "gear", "on": "bore"}
         d.features.append(key | {"intent": "locks the gear to the shaft with a parallel key"})
-        # a keyed bore is not a plain cylinder, so it is no longer measured as a hole
-        d.checks = [c for c in d.checks if c.kind != "holes"]
     d.need("extent", f"tip diameter {num(m * (z + 2))}", value=round(m * (z + 2), 3))
     d.need("extent", f"height {num(height)}", value=height)
     finish(d, rng, "milling_3axis")
@@ -91,6 +89,11 @@ def _pair(rng: random.Random) -> Spec:
         d.say("Features", rng.choice((f"meshing at {num(a)} mm centre distance", f"mounted {num(a)} mm apart, centre to centre")))
     else:
         d.say("Features", "meshing at the standard centre distance")
+    if rng.random() < 0.3:
+        backlash = rng.choice((0.05, 0.1, 0.15))
+        d.param("backlash", backlash, "mm", "circular backlash of the pair", f"{num(backlash)} mm backlash")
+        d.say("Features", f"{num(backlash)} mm backlash between the teeth")
+        pinion["backlash"] = wheel["backlash"] = "backlash"
     joint: dict[str, Any] = {"id": "mesh", "parent": "pinion_axis", "child": "wheel_axis", "kind": "revolute"}
     if z2 % 2 == 0:
         # a wheel with an even tooth count faces the pinion's tooth with a tooth unless turned half a pitch

@@ -1,22 +1,20 @@
 import random
 from typing import Any
 
-from partwright_ir.fasteners import screw_holes
+from partwright_ir.fasteners import boss_diameter, screw_holes
 from partwright_training.spec import Draft, Spec, finish, num, pick
 
 TITLES = ("Electronics enclosure", "Enclosure", "Project box", "Junction box", "Sensor housing", "Controller box")
 FLOOR = {"ref": "XY", "offset": "floor"}
-# walls that pass the default rules with the default corner bosses: thinner walls leave slivers in the lid's lip
-# beside the boss cut-outs, or lid screw holes too close to the edge
-WALLS = {None: (2.0, 2.5, 3.0), "M2.5": (4.0, 4.5, 5.0), "M3": (3.5, 5.0), "M4": (4.5, 5.0)}
+WALLS = (2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
 
 
 def enclosure(rng: random.Random) -> Spec:
     d = Draft(rng.choice(TITLES), "enclosure")
     screw = rng.choice(("M2.5", "M3", "M3", "M4", None))
-    nominal, pilot, clear = screw_holes(screw) if screw else (0.0, 0.0, 0.0)
-    boss = 2.5 * nominal
-    wall = rng.choice(WALLS[screw])
+    _, pilot, clear = screw_holes(screw) if screw else (0.0, 0.0, 0.0)
+    boss = boss_diameter(screw) if screw else 0.0
+    wall = rng.choice(WALLS)
     w, dep, h = pick(rng, 60, 200, 5), pick(rng, 40, 150, 5), pick(rng, 25, 80, 5)
     floor, lid_t, lip = pick(rng, 2, 4, 0.5), pick(rng, 2, 4, 0.5), pick(rng, 3, 8)
     size = f"{num(w)} x {num(dep)} x {num(h)} mm"
@@ -38,7 +36,9 @@ def enclosure(rng: random.Random) -> Spec:
         shell["clearance"] = "lid_clearance"
     box_features = [shell | {"intent": "the body that holds the electronics"}]
     if screw:
-        spacing = (w - wall - boss, dep - wall - boss)
+        # where the shell sets the screws: (wall + boss) / 2 in, and at least 1.5 clearance diameters
+        inset = max((wall + boss) / 2, 1.5 * clear)
+        spacing = (w - 2 * inset, dep - 2 * inset)
         d.say("Holes and ports", f"four {screw} screws through the lid into corner bosses")
         d.need("holes", f"four {screw} lid holes", count=4, diameter_min=clear - 0.1, diameter_max=clear + 0.1)
         d.need("holes", f"four {screw} pilot holes", count=4, diameter_min=pilot - 0.05, diameter_max=pilot + 0.05)

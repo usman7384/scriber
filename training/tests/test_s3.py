@@ -13,6 +13,7 @@ from partwright_training.families import FAMILIES, S3_FAMILIES
 from partwright_training.intent import intended
 from partwright_training.names import renamed
 from partwright_training.render import STYLES, render
+from partwright_training.spec import Spec
 from partwright_training.verify import failures
 
 NEW = {k: v for k, v in S3_FAMILIES.items() if k not in FAMILIES}
@@ -99,3 +100,19 @@ def test_s3_prompts_share_no_eight_words_with_the_eval_cases() -> None:
                 if _ngrams(text) & leaks:
                     hits.append((family, seed, style))
     assert len(hits) <= 2, hits
+
+
+def _keyed(spec: Spec) -> bool:
+    return any(f.kind == "keyway" for p in spec.design.parts for f in p.features)
+
+
+def test_small_shafts_take_keyways_and_keyed_bores_keep_their_hole_checks(geometry: LocalGeometry, tmp_path: Path) -> None:
+    small = [
+        s
+        for s in (NEW["shaft"](random.Random(n)) for n in range(40))
+        if _keyed(s) and max(v for k, v in s.design.param_values().items() if k.endswith("_diameter")) < 20
+    ]
+    assert small
+    assert failures(small[0], geometry, tmp_path) == []
+    bored = [NEW[f](random.Random(n)) for f in ("gear", "pulley") for n in range(40)]
+    assert all(any(c.kind == "holes" for c in s.checks) for s in bored if _keyed(s))

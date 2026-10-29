@@ -35,7 +35,7 @@
     },
     {
       "name": "mount_hole_spacing",
-      "value": 48,
+      "value": 44,
       "unit": "mm"
     }
   ],
