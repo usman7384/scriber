@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
 import { api } from "../api";
+import { useT } from "../i18n";
 
 interface Props {
   modelId: string;
@@ -12,6 +13,7 @@ export function BugDialog({ modelId, version, screenshot }: Props) {
   const [text, setText] = useState("");
   const [attach, setAttach] = useState(true);
   const [result, setResult] = useState<string>();
+  const t = useT();
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -19,33 +21,33 @@ export function BugDialog({ modelId, version, screenshot }: Props) {
     api.reportBug({ model_id: modelId, version, text, ...(shot && { screenshot: shot }) }).then(
       () => {
         setText("");
-        setResult("Thanks, the report was saved.");
+        setResult(t.bug.saved);
       },
-      (err: Error) => setResult(`Could not send the report: ${err.message}`),
+      (err: Error) => setResult(t.bug.failed(err.message)),
     );
   };
 
   return (
     <>
       <button type="button" className="ghost" onClick={() => dialog.current?.showModal()}>
-        Report a bug
+        {t.bug.open}
       </button>
       <dialog ref={dialog} aria-labelledby="bug-title">
         <form onSubmit={submit} className="stack">
-          <h2 id="bug-title">Report a bug</h2>
-          <label htmlFor="bug-text">What went wrong?</label>
+          <h2 id="bug-title">{t.bug.open}</h2>
+          <label htmlFor="bug-text">{t.bug.question}</label>
           <textarea id="bug-text" rows={5} value={text} onChange={(e) => setText(e.target.value)} required />
           <label className="toggle">
             <input type="checkbox" checked={attach} onChange={(e) => setAttach(e.target.checked)} />
-            Attach a screenshot of the viewer
+            {t.bug.attach}
           </label>
           {result && <p role="status">{result}</p>}
           <div className="row">
             <button type="button" className="secondary" onClick={() => dialog.current?.close()}>
-              Close
+              {t.close}
             </button>
             <button type="submit" className="primary push">
-              Send
+              {t.bug.send}
             </button>
           </div>
         </form>

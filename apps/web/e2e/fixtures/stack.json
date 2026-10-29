@@ -1,0 +1,15 @@
+{
+  "title": "Stack",
+  "params": [],
+  "metrics": {
+    "bbox": [
+      40.0,
+      40.0,
+      50.0
+    ],
+    "volume": 65000.0,
+    "mass_g": null,
+    "holes": 0
+  },
+  "findings": []
+}
