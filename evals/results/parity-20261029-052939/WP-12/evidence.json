@@ -1,0 +1,14 @@
+{
+  "row": "WP-12",
+  "passed": true,
+  "measured": {
+    "limit": 3,
+    "alice_codes": "202, 202, 202, 429",
+    "bob_code": 202,
+    "alice_usage": 3,
+    "default_limit": null,
+    "default_generations": 11,
+    "default_done": 11
+  },
+  "note": "a user is the token's name; 11 > the reference's 10 free generations with no limit set"
+}

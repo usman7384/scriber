@@ -1,0 +1,15 @@
+{
+  "row": "CX-12",
+  "passed": true,
+  "measured": {
+    "files": 70,
+    "step": 50,
+    "pdf": 20,
+    "parsed": 68,
+    "rate": 0.9714,
+    "facts": 95,
+    "failed": "part-049.step: BuildError: part-049.step: ValueError: part-049.step: the STEP file holds no geometry; spec-019.pdf: PdfiumError: Failed to load document (PDFium: Data format error).",
+    "seconds": 3.8
+  },
+  "note": "one damaged STEP and one damaged PDF on purpose; report in ingest_report.json"
+}

@@ -1,0 +1,14 @@
+{
+  "row": "WP-10",
+  "passed": true,
+  "measured": {
+    "author": "alice",
+    "visible_to_bob": true,
+    "fork_project": true,
+    "forked_from": "m72bbc5195572 v1 by alice",
+    "fork_versions": 2,
+    "fork_thickness": 8.0,
+    "original_thickness": 5.0
+  },
+  "note": "API half; the web Community tab is not built"
+}

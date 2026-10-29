@@ -1,0 +1,15 @@
+{
+  "row": "EX-5",
+  "passed": false,
+  "measured": {
+    "schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF",
+    "volume_drift": 1.537745022366455e-16,
+    "bbox_drift": 0.0,
+    "solids": 1,
+    "valid": true,
+    "material": "Aluminum 6061-T6",
+    "documented": true,
+    "freecad": "not installed"
+  },
+  "note": "OCCT round trip only; the FreeCAD half needs FreeCAD installed"
+}

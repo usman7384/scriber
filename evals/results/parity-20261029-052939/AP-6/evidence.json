@@ -1,0 +1,14 @@
+{
+  "row": "AP-6",
+  "passed": true,
+  "measured": {
+    "tool_vertices": 12,
+    "tool_thickness": 6.0,
+    "pocket_samples": 1074,
+    "offset_min": 0.9997,
+    "offset_max": 1.0,
+    "job": "done",
+    "documented": true
+  },
+  "note": "pocket section at half depth of the exported STL, vertices and chord midpoints, distance to the tool's mid-height outline"
+}

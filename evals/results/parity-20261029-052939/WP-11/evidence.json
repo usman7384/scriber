@@ -1,0 +1,13 @@
+{
+  "row": "WP-11",
+  "passed": true,
+  "measured": {
+    "model_id": "ma277bcd79171",
+    "version": 1,
+    "text": "the left hole is off by 2 mm",
+    "user": "local",
+    "screenshot_bytes": 1539,
+    "screenshot_matches": true
+  },
+  "note": "API half: the web dialog posts this shape (apps/web BugReport); no end-to-end browser run against the live API"
+}

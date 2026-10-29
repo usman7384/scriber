@@ -1,0 +1,14 @@
+{
+  "row": "CX-14",
+  "passed": true,
+  "measured": {
+    "material": "Aluminum 6061-T6",
+    "density_g_cm3": 2.7,
+    "youngs_modulus_gpa": 68.9,
+    "source": "ASM Aerospace Specification Metals datasheet MA6061T6 (asm.matweb.com)",
+    "mass_g": 127.753,
+    "reference_mass_g": 127.753,
+    "error_pct": 0.0
+  },
+  "note": "reference = analytic plate volume x 2.70 g/cm3 (ASM MA6061T6)"
+}

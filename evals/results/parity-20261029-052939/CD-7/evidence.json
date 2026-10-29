@@ -1,0 +1,17 @@
+{
+  "row": "CD-7",
+  "passed": true,
+  "measured": {
+    "plate dV/dthickness": 9463.15222,
+    "plate dm/dthickness": 74.28574,
+    "plate dV/dlength": 400.0,
+    "plate dV/dhole_d": -207.34512,
+    "plate dbbox_x/dlength": 1.0,
+    "plate dbbox_z/dthickness": 1.0,
+    "tab dm/dthickness": 6.48,
+    "tab dbbox_y/dwidth": 1.0,
+    "max_rel_error": "8.69e-12",
+    "unchanged dbbox_y/dlength": 0.0
+  },
+  "note": "central differences, 1e-3 relative step"
+}
