@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Link, useMatch, useNavigate, useParams, useSearchParams } from "react-router";
 import { api, exportUrl, type Model, type Project } from "../api";
 import { Pending } from "../components/Pending";
@@ -7,10 +7,12 @@ import { JobTimeline } from "../components/Timeline";
 import { byNewest, date } from "../format";
 import { useResource } from "../hooks";
 import { useT } from "../i18n";
-import { SourcesSheet } from "../sources/SourcesSheet";
 import { HomeLayout } from "./HomeLayout";
 import { PartsGrid, type Part } from "./PartsGrid";
 import { NewProject } from "./ProjectList";
+
+// The sheet and its graph layout load only when Sources opens.
+const SourcesSheet = lazy(() => import("../sources/SourcesSheet").then((m) => ({ default: m.SourcesSheet })));
 
 const allModels = async () => (await Promise.all((await api.projects()).map((p) => api.models(p.id)))).flat();
 
@@ -55,11 +57,13 @@ export function HomePage() {
         <Pending error={models.error} />
       )}
       {sources && current && (
-        <SourcesSheet
-          projectId={current.id}
-          onClose={() => navigate(`/p/${current.id}`)}
-          onUse={(ids) => navigate(`/p/${current.id}?context=${ids.join(",")}`)}
-        />
+        <Suspense>
+          <SourcesSheet
+            projectId={current.id}
+            onClose={() => navigate(`/p/${current.id}`)}
+            onUse={(ids) => navigate(`/p/${current.id}?context=${ids.join(",")}`)}
+          />
+        </Suspense>
       )}
     </HomeLayout>
   );
