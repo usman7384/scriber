@@ -9,13 +9,17 @@ from partwright_ir.fasteners import hole_size, parse
 from partwright_ir.model import (
     FACE_NAMES,
     AirfoilSection,
+    BossPattern,
     Circle,
     Design,
     Entity,
     Expr,
     Extrude,
     Feature,
+    Groove,
     Hole,
+    Keyway,
+    Lid,
     Loft,
     Part,
     Path,
@@ -25,23 +29,30 @@ from partwright_ir.model import (
     Provenance,
     Rect,
     Revolve,
+    Rib,
     Selector,
+    ShellWithLid,
     Sketch,
     Slot,
+    SpurGear,
 )
 from partwright_ir.placement import hole_centres
+from partwright_ir.validate_features import high_level_errors
 
 BASE_PLANES = ("XY", "XZ", "YZ")
 DRILL_AXIS = {"XY": "Z", "XZ": "Y", "YZ": "X"}
 NON_EXPR_FIELDS = {
     *("id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "base", "ref", "of", "normal", "parallel"),
     *("convexity", "extreme", "type", "fastener", "fit", "drill_point", "thread", "extent", "arc", "direction"),
-    *("rotate_about", "process", "features", "mirror_plane", "material", "naca", "sections"),
+    *("rotate_about", "process", "features", "mirror_plane", "material", "naca", "sections", "on", "screw"),
 }
 POSITIVE_FIELDS = {
     *("width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"),
     *("cb_diameter", "cb_depth", "cs_diameter", "cs_angle", "depth", "chord"),
+    *("module", "teeth", "face_width", "pressure_angle", "bore", "hub_diameter", "hub_length", "hole_diameter", "hole_depth"),
+    *("wall", "floor", "lid_thickness", "lip_height", "clearance", "boss_diameter"),
 }
+STARTERS = (Loft, SpurGear, ShellWithLid, Lid)
 PATTERNABLE = (Extrude, Revolve, Hole, Loft)
 
 
@@ -98,8 +109,10 @@ def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
     for s in part.sketches:
         yield from _exprs(s, values, f"{path}.sketches.{s.id}")
     first = next((f for f in part.features if not isinstance(f, AirfoilSection)), part.features[0])
-    if not (isinstance(first, Loft) or (isinstance(first, Extrude | Revolve) and first.mode == "add")):
-        yield IrError(path=f"{path}.features[0]", message="first feature must be an additive extrude or revolve")
+    if not (isinstance(first, STARTERS) or (isinstance(first, Extrude | Revolve) and first.mode == "add")):
+        message = "first feature must be an additive extrude or revolve (or a spur_gear, shell_with_lid or lid)"
+        yield IrError(path=f"{path}.features[0]", message=message)
+    yield from _lid_errors(design, part, path)
     seen: dict[str, Feature] = {}
     for f in part.features:
         where = f"{path}.features.{f.id}"
@@ -138,6 +151,13 @@ def _feature_errors(
             yield from _naca_errors(f.naca, path)
         case Loft():
             yield from _loft_errors(f, seen, path)
+        case SpurGear() | Rib() | BossPattern():
+            yield from _ref_errors(f.plane, datums, seen, path)
+            yield from (IrError(path=path, message=f"{f.kind}: {m}") for m in high_level_errors(f, seen, values))
+        case ShellWithLid() | Keyway() | Groove():
+            yield from (IrError(path=path, message=f"{f.kind}: {m}") for m in high_level_errors(f, seen, values))
+        case Lid():
+            pass
         case _:
             selectors = [f.edges] if hasattr(f, "edges") else list(getattr(f, "open", []))
             yield from (e for s in selectors for e in _selector_errors(s, seen, path))
@@ -205,6 +225,19 @@ def _pattern_errors(p: Pattern, seen: dict[str, Feature], sketches: dict[str, Sk
             )
     if p.type == "linear" and p.spacing is None:
         yield IrError(path=path, message="a linear pattern needs a spacing")
+
+
+def _lid_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
+    boxes = [p.id for p in design.parts if p.id != part.id and any(isinstance(f, ShellWithLid) for f in p.features)]
+    others = [f.of for p in design.parts if p.id != part.id for f in p.features if isinstance(f, Lid)]
+    for f in part.features:
+        if isinstance(f, Lid) and f.of not in boxes:
+            message = f"lid: {f.of!r} is not another part with a shell_with_lid; such parts: {boxes}"
+            yield IrError(path=f"{path}.features.{f.id}", message=message)
+        elif isinstance(f, Lid) and f.of in others:
+            yield IrError(path=f"{path}.features.{f.id}", message=f"lid: part {f.of!r} already has a lid")
+    if len([f for f in part.features if isinstance(f, ShellWithLid | Lid)]) > 1:
+        yield IrError(path=path, message="a part holds at most one shell_with_lid or lid")
 
 
 def _naca_errors(code: str, path: str) -> Iterator[IrError]:
