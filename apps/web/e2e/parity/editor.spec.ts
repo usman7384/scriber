@@ -199,11 +199,11 @@ test("PR-7 suggestions with accept and ignore in the editor", async ({ page, row
   await expect(panel).toContainText("No open suggestions.");
   await panel.getByRole("button", { name: "Suggest changes" }).click();
   await expect(items).toHaveCount(2);
-  await expect(items.first()).toContainText("Hole X 20 → 15 mm");
+  await expect(items.first()).toContainText("Hole X 20.00 → 15.00 mm");
   await expect(items.first()).toContainText("1.5 x its diameter");
   await row.shot("1-suggestions");
 
-  await items.nth(1).getByRole("button", { name: "Ignore" }).click();
+  await items.nth(1).getByRole("button", { name: "Dismiss" }).click();
   await expect(items).toHaveCount(1);
   await page.waitForTimeout(500);
   const afterIgnore = { versions: api.versions.length, patches: patches(api).length };
@@ -211,7 +211,7 @@ test("PR-7 suggestions with accept and ignore in the editor", async ({ page, row
   await row.shot("2-ignored");
 
   await expect(page.getByLabel(/^Finding: /)).toHaveCount(1);
-  await items.first().getByRole("button", { name: "Accept" }).click();
+  await items.first().getByRole("button", { name: "Apply" }).click();
   await expect(history.locator("strong")).toHaveText(["v2", "v1"]);
   await expect(history.locator("li").first()).toContainText("suggestion");
   await expect(page.getByLabel("Hole X", { exact: true })).toHaveValue("15");

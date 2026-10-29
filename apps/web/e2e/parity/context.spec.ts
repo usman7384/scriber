@@ -143,7 +143,7 @@ async function generateWithContext(page: Page, names: string[]) {
   for (const name of names) await page.getByLabel(`Use ${name} as context`).check();
   await page.getByRole("button", { name: `Use ${names.length} in the next generation` }).click();
   await expect(page.getByRole("list", { name: "Context files" }).getByRole("listitem")).toHaveCount(
-    names.length + 1,
+    names.length,
   );
   await page.getByLabel("Describe the part").fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
   await page.getByRole("button", { name: "Generate" }).click();

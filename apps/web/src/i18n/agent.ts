@@ -6,16 +6,13 @@ export const en = {
     examples: "Example prompts",
     attachments: "Attachments",
     remove: "Remove",
-    kinds: { image: "Image", mesh: "Mesh", spec: "Spec file" },
     process: "Process",
     starting: "Starting…",
     generate: "Generate",
     context: "Context files",
-    clearContext: "Clear context",
   },
   timeline: {
     region: "Generation timeline",
-    title: "Timeline",
     progress: "Progress",
     attempt: (n: number) => `attempt ${n}`,
     preview: (kind: string) => `${kind} step preview`,
@@ -35,8 +32,6 @@ export const en = {
     ask: "Suggest changes",
     thinking: "Thinking…",
     none: "No open suggestions.",
-    accept: "Accept",
-    ignore: "Ignore",
   },
   agent: {
     command: {
@@ -116,16 +111,13 @@ export const de: typeof en = {
     examples: "Beispieleingaben",
     attachments: "Anhänge",
     remove: "Entfernen",
-    kinds: { image: "Bild", mesh: "Netz", spec: "Spezifikation" },
     process: "Verfahren",
     starting: "Wird gestartet…",
     generate: "Generieren",
     context: "Kontextdateien",
-    clearContext: "Kontext entfernen",
   },
   timeline: {
     region: "Ablauf der Generierung",
-    title: "Ablauf",
     progress: "Fortschritt",
     attempt: (n) => `Versuch ${n}`,
     preview: (kind) => `Vorschau Schritt ${kind}`,
@@ -145,8 +137,6 @@ export const de: typeof en = {
     ask: "Änderungen vorschlagen",
     thinking: "Denkt nach…",
     none: "Keine offenen Vorschläge.",
-    accept: "Annehmen",
-    ignore: "Ignorieren",
   },
   agent: {
     command: {

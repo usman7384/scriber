@@ -1,12 +1,13 @@
 import { lazy, Suspense, useState } from "react";
-import { Link, useMatch, useNavigate, useParams, useSearchParams } from "react-router";
-import { api, exportUrl, type Model, type Project } from "../api";
+import { useMatch, useNavigate, useParams, useSearchParams } from "react-router";
+import { AgentStream } from "../agent/AgentStream";
+import { CommandBar } from "../agent/CommandBar";
+import { api, type Job, type Model, type Project } from "../api";
 import { Pending } from "../components/Pending";
-import { PromptPanel } from "../components/PromptPanel";
-import { JobTimeline } from "../components/Timeline";
 import { byNewest, date } from "../format";
 import { useResource } from "../hooks";
 import { useT } from "../i18n";
+import { useShell } from "../shell/context";
 import { HomeLayout } from "./HomeLayout";
 import { PartsGrid, type Part } from "./PartsGrid";
 import { NewProject } from "./ProjectList";
@@ -28,9 +29,19 @@ export function HomePage() {
   const navigate = useNavigate();
   const t = useT();
 
-  if (!projects.data) return <Pending error={projects.error} />;
+  if (!projects.data)
+    return (
+      <HomeLayout>
+        <Pending error={projects.error} />
+      </HomeLayout>
+    );
   const current = projects.data.find((p) => p.id === projectId);
-  if (projectId && !current) return <p className="home-empty">{t.notFound}</p>;
+  if (projectId && !current)
+    return (
+      <HomeLayout projects={projects.data}>
+        <p className="home-empty">{t.notFound}</p>
+      </HomeLayout>
+    );
   const target = current ?? byNewest(projects.data)[0];
   const title = current?.name ?? (library ? t.home.allParts : t.home.projects);
   const names = Object.fromEntries(projects.data.map((p) => [p.id, p.name]));
@@ -40,7 +51,7 @@ export function HomePage() {
   };
 
   return (
-    <HomeLayout projects={projects.data} current={current} allCurrent={!projectId}>
+    <HomeLayout projects={projects.data} current={current} allCurrent={library}>
       <div className="eyebrow home-eyebrow">
         <h1>{title}</h1>
         {target && <span>· {current ? t.home.newPart : t.home.newPartIn(target.name)}</span>}
@@ -104,43 +115,36 @@ const modelPart = (m: Model, project: string | undefined): Part => ({
   meta: <ModelMeta model={m} project={project} />,
 });
 
-// C's command bar and agent stream replace PromptPanel and JobTimeline in this slot.
+interface Run {
+  id: string;
+  resend?: () => Promise<Job>;
+}
+
 function Composer({ project, onEnd }: { project: Project; onEnd: () => void }) {
   const active = useResource(`active-jobs:${project.id}`, () => api.activeJobs(project.id));
-  const [search, setSearch] = useSearchParams();
-  const ids = search.get("context")?.split(",") ?? [];
-  const context = useResource(`context:${project.id}:${ids.join()}`, () =>
-    ids.length ? api.context(project.id) : Promise.resolve(undefined),
-  );
-  const [started, setStarted] = useState<string>();
-  const t = useT();
-  const jobId = started ?? active.data?.[0]?.id;
+  const [search] = useSearchParams();
+  const contextIds = search.get("context")?.split(",").filter(Boolean) ?? [];
+  const [run, setRun] = useState<Run>();
+  const { openPalette } = useShell();
+  const jobId = run?.id ?? active.data?.[0]?.id;
+  const resend = run?.resend;
   return (
     <div className="home-composer">
-      <PromptPanel
+      <CommandBar
+        mode="generate"
         projectId={project.id}
-        context={context.data?.files.filter((f) => ids.includes(f.id)) ?? []}
-        onClearContext={() => setSearch({})}
-        onJob={(job) => setStarted(job.id)}
+        contextIds={contextIds}
+        onJob={(job, again) => setRun({ id: job.id, resend: again })}
+        onCommand={openPalette}
       />
       {jobId && (
-        <JobTimeline key={jobId} jobId={jobId} onEnd={onEnd}>
-          {(job) =>
-            job.status === "done" &&
-            job.model_id && (
-              <div className="home-done">
-                <Link className="ui-button" data-variant="primary" to={`/m/${job.model_id}`}>
-                  {t.timeline.open}
-                </Link>
-                {job.version && (
-                  <a className="ui-button" href={exportUrl(job.model_id, "stl", job.version)} download>
-                    {t.timeline.stl}
-                  </a>
-                )}
-              </div>
-            )
-          }
-        </JobTimeline>
+        <AgentStream
+          key={jobId}
+          jobId={jobId}
+          variant="card"
+          onDone={onEnd}
+          onRetry={resend && (() => void resend().then((job) => setRun({ id: job.id, resend })))}
+        />
       )}
     </div>
   );

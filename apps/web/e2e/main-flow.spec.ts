@@ -27,11 +27,11 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   const timeline = page.getByRole("region", { name: "Generation timeline" });
   await expect(timeline.getByRole("status")).toHaveText("done");
   await expect(timeline.locator(".step-kind")).toHaveText([
-    "requirements",
-    "emit",
-    "check",
-    "repair",
-    "done",
+    "Requirements",
+    "Model written",
+    "Check",
+    "Repair",
+    "Done",
   ]);
   await expect(timeline.getByText("attempt 2").first()).toBeVisible();
   await expect(timeline.getByRole("img", { name: "done step preview" })).toBeVisible();
@@ -65,7 +65,8 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await expect(history.locator("strong")).toHaveText(["v2", "v1"]);
   await expect(page.getByLabel("Plate Length", { exact: true })).toHaveValue("130");
 
-  await history.getByRole("button", { name: "Restore v1" }).click();
+  await history.getByRole("button", { name: "v1", exact: true }).click();
+  await page.getByRole("button", { name: "Restore v1" }).click();
   await expect(history.locator("strong")).toHaveText(["v3", "v2", "v1"]);
   await expect(history.locator("li").first()).toContainText("restore");
   await expect(page.locator(".editor-head .badge")).toHaveText("v3");
@@ -82,6 +83,7 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
     target: "plate",
   });
 
+  await page.locator("details.menu summary").click();
   await page.getByRole("button", { name: "Share" }).click();
   await expect(page.getByLabel("Share link")).toHaveValue(`${baseURL}/shared/s1`);
   expect(offsite).toEqual([]);

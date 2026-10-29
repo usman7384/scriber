@@ -1,14 +1,14 @@
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Vector3 } from "three";
 import type { Finding } from "../api";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { mm } from "../format";
 import { useT } from "../i18n";
+import { useRegisterActions, type Action } from "../shell/actions";
 import { Button } from "../ui/Button";
 import { IconButton } from "../ui/IconButton";
-import { useShortcuts } from "../workspace/shortcuts";
 import type { Driving } from "./DrivingChip";
 import type { PinActions } from "./FindingPins";
 import { usePalette } from "./palette";
@@ -82,13 +82,50 @@ export function Viewer({
   const palette = usePalette();
   const t = useT();
   const v = t.viewer;
-  const pickFace = onPickFace && (() => setFaceMode((on) => !on));
-  useShortcuts({
-    ...Object.fromEntries(views.map(([name, key]) => [key, () => setView({ name })])),
-    e: () => setEdges((on) => !on),
-    m: () => setDims((on) => !on),
-    p: pickFace,
-  });
+  const canPick = onPickFace !== undefined;
+  const pickFace = () => setFaceMode((on) => !on);
+  const actions = useMemo<Action[]>(
+    () => [
+      ...views.map(([name, key]): Action => ({
+        id: `view.${name}`,
+        group: "view",
+        icon: "eye",
+        shortcut: key,
+        label: (t) => t.viewer.views[name],
+        run: () => setView({ name }),
+      })),
+      {
+        id: "view.edges",
+        group: "view",
+        icon: "edges",
+        shortcut: "e",
+        label: (t) => t.viewer.edges,
+        run: () => setEdges((on) => !on),
+      },
+      {
+        id: "view.dims",
+        group: "view",
+        icon: "dimension",
+        shortcut: "m",
+        label: (t) => t.viewer.measure,
+        run: () => setDims((on) => !on),
+      },
+      ...(canPick
+        ? [
+            {
+              id: "view.face",
+              group: "view",
+              icon: "face",
+              shortcut: "p",
+              label: (t) => t.viewer.face,
+              run: () => setFaceMode((on) => !on),
+            } satisfies Action,
+          ]
+        : []),
+    ],
+    [canPick],
+  );
+  useRegisterActions(actions);
   const pinText = {
     name: (f: Finding) => v.finding(f.message, t.status[f.severity] ?? f.severity),
     detail: (f: Finding) =>
@@ -130,7 +167,7 @@ export function Viewer({
             aria-keyshortcuts="M"
             onClick={() => setDims(!dims)}
           />
-          {pickFace && (
+          {canPick && (
             <IconButton
               icon="face"
               label={v.face}
