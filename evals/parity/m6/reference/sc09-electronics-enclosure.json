@@ -1,0 +1,139 @@
+{
+  "ir_version": 2,
+  "title": "Electronics enclosure",
+  "params": [
+    {
+      "name": "length",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "wall",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "lid_thickness",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "lip_height",
+      "value": 4,
+      "unit": "mm"
+    },
+    {
+      "name": "clearance",
+      "value": 0.2,
+      "unit": "mm"
+    },
+    {
+      "name": "vent_count",
+      "value": 6,
+      "unit": ""
+    },
+    {
+      "name": "vent_pitch",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "vent_length",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "vent_width",
+      "value": 3,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "box",
+      "name": "Box",
+      "material": "PETG",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "shell_with_lid",
+          "id": "shell",
+          "name": "Box",
+          "width": "length",
+          "depth": "width",
+          "height": "height",
+          "wall": "wall",
+          "floor": "wall",
+          "lid_thickness": "lid_thickness",
+          "lip_height": "lip_height",
+          "clearance": "clearance",
+          "screw": "M3"
+        }
+      ]
+    },
+    {
+      "id": "lid",
+      "name": "Lid",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "vent",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "slot",
+              "center": [
+                "-(vent_count - 1) * vent_pitch / 2",
+                0
+              ],
+              "length": "vent_length",
+              "width": "vent_width",
+              "angle": 90
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "lid",
+          "id": "lid",
+          "name": "Lid",
+          "of": "box"
+        },
+        {
+          "kind": "extrude",
+          "id": "vent",
+          "name": "Vent",
+          "sketch": "vent",
+          "distance": "lid_thickness",
+          "mode": "cut"
+        },
+        {
+          "kind": "pattern",
+          "id": "vents",
+          "name": "Vents",
+          "features": [
+            "vent"
+          ],
+          "type": "linear",
+          "count": "vent_count",
+          "direction": "x",
+          "spacing": "vent_pitch"
+        }
+      ]
+    }
+  ]
+}

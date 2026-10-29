@@ -1,0 +1,169 @@
+{
+  "ir_version": 2,
+  "title": "Handwheel",
+  "params": [
+    {
+      "name": "diameter",
+      "value": 125,
+      "unit": "mm"
+    },
+    {
+      "name": "rim_width",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "rim_thickness",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "spoke_count",
+      "value": 5,
+      "unit": ""
+    },
+    {
+      "name": "spoke_width",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_diameter",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_length",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 10,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "wheel",
+      "name": "Handwheel",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "rim",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "diameter"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "diameter - 2 * rim_width",
+              "subtract": true
+            }
+          ]
+        },
+        {
+          "id": "hub",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "hub_diameter"
+            }
+          ]
+        },
+        {
+          "id": "spoke",
+          "plane": {
+            "ref": "XY",
+            "offset": "rim_thickness / 2 - spoke_width / 2"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "(diameter / 2 - rim_width + hub_diameter / 2) / 2",
+                0
+              ],
+              "width": "diameter / 2 - rim_width - hub_diameter / 2 + 2",
+              "height": "spoke_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "rim",
+          "name": "Rim",
+          "sketch": "rim",
+          "distance": "rim_thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "hub",
+          "name": "Hub",
+          "sketch": "hub",
+          "distance": "hub_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "spoke",
+          "name": "Spoke",
+          "sketch": "spoke",
+          "distance": "spoke_width"
+        },
+        {
+          "kind": "pattern",
+          "id": "spokes",
+          "name": "Spokes",
+          "features": [
+            "spoke"
+          ],
+          "type": "polar",
+          "count": "spoke_count",
+          "axis": "z"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        }
+      ]
+    }
+  ]
+}

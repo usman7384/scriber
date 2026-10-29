@@ -1,0 +1,236 @@
+{
+  "ir_version": 2,
+  "title": "Servo pan bracket",
+  "params": [
+    {
+      "name": "horn_diameter",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "horn_thickness",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "centre_hole",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_circle",
+      "value": 14,
+      "unit": "mm"
+    },
+    {
+      "name": "horn_hole",
+      "value": 1.5,
+      "unit": "mm"
+    },
+    {
+      "name": "plate_length",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "plate_width",
+      "value": 25,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "plate_hole",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "upright_height",
+      "value": 25,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "horn",
+      "name": "Servo horn",
+      "material": "PA12",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "horn_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "disc",
+          "name": "Disc",
+          "sketch": "disc",
+          "distance": "horn_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "centre_hole",
+          "name": "Centre hole",
+          "plane": {
+            "ref": "XY",
+            "offset": "horn_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "centre_hole"
+        },
+        {
+          "kind": "hole",
+          "id": "horn_holes",
+          "name": "Horn holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "horn_thickness"
+          },
+          "at": {
+            "kind": "polar",
+            "count": 4,
+            "diameter": "hole_circle",
+            "start_angle": 45
+          },
+          "diameter": "horn_hole"
+        }
+      ]
+    },
+    {
+      "id": "bracket",
+      "name": "Pan bracket",
+      "material": "aluminium",
+      "sketches": [
+        {
+          "id": "plate",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "plate_length",
+              "height": "plate_width"
+            }
+          ]
+        },
+        {
+          "id": "upright",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "plate_length / 2 - thickness / 2",
+                0
+              ],
+              "width": "thickness",
+              "height": "plate_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Plate",
+          "sketch": "plate",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "upright",
+          "name": "Upright",
+          "sketch": "upright",
+          "distance": "upright_height - thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "plate_holes",
+          "name": "Plate holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "polar",
+            "count": 4,
+            "diameter": "hole_circle",
+            "start_angle": 45
+          },
+          "diameter": "plate_hole"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "horn_top",
+        "part": "horn",
+        "origin": [
+          0,
+          0,
+          "horn_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "plate_bottom",
+        "part": "bracket",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "on_horn",
+        "parent": "horn_top",
+        "child": "plate_bottom",
+        "kind": "fastened",
+        "angle": 0
+      }
+    ]
+  }
+}

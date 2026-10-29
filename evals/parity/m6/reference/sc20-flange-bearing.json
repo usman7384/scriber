@@ -1,0 +1,150 @@
+{
+  "ir_version": 2,
+  "title": "Flange bearing housing",
+  "params": [
+    {
+      "name": "flange_size",
+      "value": 86,
+      "unit": "mm"
+    },
+    {
+      "name": "flange_thickness",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_hole",
+      "value": 11,
+      "unit": "mm"
+    },
+    {
+      "name": "bolt_spacing",
+      "value": 64,
+      "unit": "mm"
+    },
+    {
+      "name": "boss_diameter",
+      "value": 72,
+      "unit": "mm"
+    },
+    {
+      "name": "boss_height",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "seat_diameter",
+      "value": 62,
+      "unit": "mm"
+    },
+    {
+      "name": "seat_depth",
+      "value": 16,
+      "unit": "mm"
+    },
+    {
+      "name": "through_bore",
+      "value": 50,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "housing",
+      "name": "Flange housing",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "flange",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "flange_size",
+              "height": "flange_size"
+            }
+          ]
+        },
+        {
+          "id": "boss",
+          "plane": {
+            "ref": "XY",
+            "offset": "flange_thickness"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "boss_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "flange",
+          "name": "Flange",
+          "sketch": "flange",
+          "distance": "flange_thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "boss",
+          "name": "Boss",
+          "sketch": "boss",
+          "distance": "boss_height"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Stepped bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "flange_thickness + boss_height"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "through_bore",
+          "type": "counterbore",
+          "cb_diameter": "seat_diameter",
+          "cb_depth": "seat_depth"
+        },
+        {
+          "kind": "hole",
+          "id": "bolt_holes",
+          "name": "Bolt holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "flange_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "bolt_spacing",
+            "spacing_y": "bolt_spacing"
+          },
+          "diameter": "bolt_hole"
+        }
+      ]
+    }
+  ]
+}
