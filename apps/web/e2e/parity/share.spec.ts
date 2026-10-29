@@ -7,6 +7,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   await api.install(page);
   await page.goto("/m/m1");
   await expect(page.getByLabel("Bounding box")).toBeVisible();
+  await page.locator("details.menu summary").click();
   await page.getByRole("button", { name: "Share" }).click();
   const link = await page.getByLabel("Share link").inputValue();
   await row.shot("1-link");
@@ -29,7 +30,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   const visits = api.requests.slice(before).map((r) => `${r.method} ${r.path}`);
 
   await page.getByRole("button", { name: "Revoke" }).click();
-  await expect(page.getByRole("status")).toHaveText("Link revoked");
+  await expect(page.locator("details.menu").getByRole("status")).toHaveText("Link revoked");
   await visitor.reload();
   await expect(visitor.getByRole("alert")).toHaveText("share link not found or revoked");
   await visitor.screenshot({ path: `${row.dir}/3-revoked.png` });
