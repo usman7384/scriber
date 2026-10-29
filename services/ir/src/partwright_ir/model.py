@@ -208,7 +208,22 @@ class Shell(FeatureBase):
     open: list[Selector] = []
 
 
-Feature = Annotated[Extrude | Revolve | Hole | Pattern | Fillet | Chamfer | Shell, Field(discriminator="kind")]
+class AirfoilSection(FeatureBase):
+    kind: Literal["airfoil_section"]
+    plane: PlaneRef
+    naca: str = Field(pattern=r"^\d{4}$", description="NACA 4-digit code, e.g. 2412")
+    chord: Expr
+    leading_edge: Point = (0.0, 0.0)
+    twist: Expr = Field(default=0.0, description="degrees, leading edge up, about the leading edge")
+
+
+class Loft(FeatureBase):
+    kind: Literal["loft"]
+    sections: list[str] = Field(min_length=2, description="airfoil_section ids in order")
+    ruled: bool = False
+
+
+Feature = Annotated[Extrude | Revolve | Hole | Pattern | Fillet | Chamfer | Shell | AirfoilSection | Loft, Field(discriminator="kind")]
 
 
 class Part(Frozen):
@@ -217,7 +232,7 @@ class Part(Frozen):
     material: str | None = None
     process: Process = "any"
     datums: list[Datum] = []
-    sketches: list[Sketch] = Field(min_length=1)
+    sketches: list[Sketch]
     features: list[Feature] = Field(min_length=1)
 
 

@@ -7,6 +7,7 @@ from partwright_ir.expr import ExprError, evaluate, names
 from partwright_ir.fasteners import hole_size, parse
 from partwright_ir.model import (
     FACE_NAMES,
+    AirfoilSection,
     Circle,
     Design,
     Entity,
@@ -14,6 +15,7 @@ from partwright_ir.model import (
     Extrude,
     Feature,
     Hole,
+    Loft,
     Part,
     Path,
     Pattern,
@@ -33,13 +35,13 @@ DRILL_AXIS = {"XY": "Z", "XZ": "Y", "YZ": "X"}
 NON_EXPR_FIELDS = {
     *("id", "name", "intent", "sketch", "kind", "mode", "axis", "edges", "base", "ref", "of", "normal", "parallel"),
     *("convexity", "extreme", "type", "fastener", "fit", "drill_point", "thread", "extent", "arc", "direction"),
-    *("rotate_about", "process", "features", "mirror_plane", "material"),
+    *("rotate_about", "process", "features", "mirror_plane", "material", "naca", "sections"),
 }
 POSITIVE_FIELDS = {
     *("width", "height", "diameter", "length", "radius", "thickness", "count", "count_x", "count_y"),
-    *("cb_diameter", "cb_depth", "cs_diameter", "cs_angle", "depth"),
+    *("cb_diameter", "cb_depth", "cs_diameter", "cs_angle", "depth", "chord"),
 }
-PATTERNABLE = (Extrude, Revolve, Hole)
+PATTERNABLE = (Extrude, Revolve, Hole, Loft)
 
 
 class IrError(BaseModel):
@@ -92,8 +94,8 @@ def _part_errors(design: Design, part: Part, path: str) -> Iterator[IrError]:
         yield from _exprs(d, values, f"{path}.datums.{d.id}")
     for s in part.sketches:
         yield from _exprs(s, values, f"{path}.sketches.{s.id}")
-    first = part.features[0]
-    if not isinstance(first, Extrude | Revolve) or first.mode != "add":
+    first = next((f for f in part.features if not isinstance(f, AirfoilSection)), part.features[0])
+    if not (isinstance(first, Loft) or (isinstance(first, Extrude | Revolve) and first.mode == "add")):
         yield IrError(path=f"{path}.features[0]", message="first feature must be an additive extrude or revolve")
     seen: dict[str, Feature] = {}
     for f in part.features:
@@ -127,6 +129,11 @@ def _feature_errors(
             yield from _hole_errors(f, path)
         case Pattern():
             yield from _pattern_errors(f, seen, sketches, path)
+        case AirfoilSection():
+            yield from _ref_errors(f.plane, datums, seen, path)
+            yield from _naca_errors(f.naca, path)
+        case Loft():
+            yield from _loft_errors(f, seen, path)
         case _:
             selectors = [f.edges] if hasattr(f, "edges") else list(getattr(f, "open", []))
             yield from (e for s in selectors for e in _selector_errors(s, seen, path))
@@ -141,6 +148,8 @@ def _ref_errors(plane: PlaneRef, datums: list[str], seen: dict[str, Feature], pa
         yield IrError(path=path, message=f"unknown plane {ref!r}; use XY, XZ, YZ, a datum id {datums} or '<feature>.<face>'")
     elif owner != "part" and owner not in seen:
         yield IrError(path=path, message=f"plane {ref!r} refers to {owner!r}, which is not an earlier feature")
+    elif isinstance(seen.get(owner), AirfoilSection):
+        yield IrError(path=path, message=f"plane {ref!r} refers to an airfoil section; use the loft through it")
     elif face not in FACE_NAMES:
         yield IrError(path=path, message=f"unknown face {face!r} in {ref!r}; use one of {', '.join(FACE_NAMES)}")
     elif face in ("start", "end") and not isinstance(seen.get(owner), Extrude):
@@ -194,6 +203,20 @@ def _pattern_errors(p: Pattern, seen: dict[str, Feature], sketches: dict[str, Sk
         yield IrError(path=path, message="a linear pattern needs a spacing")
 
 
+def _naca_errors(code: str, path: str) -> Iterator[IrError]:
+    if code[2:] == "00":
+        yield IrError(path=path, message=f"NACA {code} has zero thickness")
+    if (code[0] == "0") != (code[1] == "0"):
+        yield IrError(path=path, message=f"NACA {code}: camber and its position must both be zero or both be set")
+
+
+def _loft_errors(f: Loft, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
+    sections = [fid for fid, s in seen.items() if isinstance(s, AirfoilSection)]
+    for sid in f.sections:
+        if sid not in sections:
+            yield IrError(path=path, message=f"loft section {sid!r} is not an earlier airfoil_section; sections so far: {sections}")
+
+
 def _revolve_errors(f: Revolve, sketch: Sketch, values: dict[str, float], path: str) -> Iterator[IrError]:
     axis = 0 if f.axis == "Y" else 1
     try:
@@ -234,6 +257,8 @@ def _half(e: Circle | Rect | Slot, axis: int, values: dict[str, float]) -> float
 def _selector_errors(s: Selector, seen: dict[str, Feature], path: str) -> Iterator[IrError]:
     if s.of != "part" and s.of not in seen:
         yield IrError(path=path, message=f"selector refers to {s.of!r}, which is not an earlier feature")
+    elif isinstance(seen.get(s.of), AirfoilSection):
+        yield IrError(path=path, message=f"selector refers to the airfoil section {s.of!r}; select from the loft through it")
 
 
 def _overlapping_holes(design: Design, part: Part, path: str) -> Iterator[IrError]:
