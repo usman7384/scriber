@@ -12,7 +12,9 @@ def json_schema() -> dict[str, Any]:
 
 
 def design_hash(design: Design) -> str:
-    return hashlib.sha256(design.model_dump_json().encode()).hexdigest()[:16]
+    # a design without an assembly keeps the hash it had before assemblies existed
+    exclude = {"assembly"} if design.assembly is None else None
+    return hashlib.sha256(design.model_dump_json(exclude=exclude).encode()).hexdigest()[:16]
 
 
 def answer_json(model: BaseModel) -> str:

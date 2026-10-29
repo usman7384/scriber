@@ -1,0 +1,738 @@
+{
+  "title": "Quadcopter frame",
+  "params": [
+    {
+      "name": "frame_length",
+      "value": 120,
+      "unit": "mm",
+      "description": "centre plate length"
+    },
+    {
+      "name": "frame_width",
+      "value": 60,
+      "unit": "mm",
+      "description": "centre plate width"
+    },
+    {
+      "name": "frame_thickness",
+      "value": 4,
+      "unit": "mm",
+      "description": "plate and arm thickness"
+    },
+    {
+      "name": "arm_length",
+      "value": 100,
+      "unit": "mm",
+      "description": "arm length from the plate edge"
+    },
+    {
+      "name": "arm_width",
+      "value": 16,
+      "unit": "mm",
+      "description": "arm width"
+    },
+    {
+      "name": "motor_inset",
+      "value": 14,
+      "unit": "mm",
+      "description": "motor axis distance from the arm tip"
+    },
+    {
+      "name": "motor_mount_diameter",
+      "value": 28,
+      "unit": "mm",
+      "description": "motor mount disc diameter"
+    },
+    {
+      "name": "motor_mount_thickness",
+      "value": 4,
+      "unit": "mm",
+      "description": "motor mount thickness"
+    },
+    {
+      "name": "motor_bore",
+      "value": 8,
+      "unit": "mm",
+      "description": "motor shaft clearance bore"
+    },
+    {
+      "name": "battery_x",
+      "value": 10,
+      "unit": "mm",
+      "description": "battery mount position along the frame, moved to trim the CoG"
+    },
+    {
+      "name": "battery_length",
+      "value": 60,
+      "unit": "mm",
+      "description": "battery mount length"
+    },
+    {
+      "name": "battery_width",
+      "value": 40,
+      "unit": "mm",
+      "description": "battery mount width"
+    },
+    {
+      "name": "battery_thickness",
+      "value": 6,
+      "unit": "mm",
+      "description": "battery mount thickness"
+    },
+    {
+      "name": "battery_hole_dx",
+      "value": 48,
+      "unit": "mm",
+      "description": "battery mount bolt spacing along x"
+    },
+    {
+      "name": "battery_hole_dy",
+      "value": 30,
+      "unit": "mm",
+      "description": "battery mount bolt spacing along y"
+    }
+  ],
+  "parts": [
+    {
+      "id": "frame",
+      "name": "Frame",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "frame_length",
+              "height": "frame_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "frame_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Mounting holes",
+          "plane": {
+            "offset": "frame_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "center": [
+              "battery_x",
+              0
+            ],
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "battery_hole_dx",
+            "spacing_y": "battery_hole_dy"
+          },
+          "fastener": "M3"
+        }
+      ]
+    },
+    {
+      "id": "arm_px",
+      "name": "Arm px",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "arm_length / 2",
+                0
+              ],
+              "width": "arm_length",
+              "height": "arm_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "frame_thickness"
+        }
+      ]
+    },
+    {
+      "id": "arm_nx",
+      "name": "Arm nx",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "arm_length / 2",
+                0
+              ],
+              "width": "arm_length",
+              "height": "arm_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "frame_thickness"
+        }
+      ]
+    },
+    {
+      "id": "arm_py",
+      "name": "Arm py",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "arm_length / 2",
+                0
+              ],
+              "width": "arm_length",
+              "height": "arm_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "frame_thickness"
+        }
+      ]
+    },
+    {
+      "id": "arm_ny",
+      "name": "Arm ny",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "arm_length / 2",
+                0
+              ],
+              "width": "arm_length",
+              "height": "arm_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "frame_thickness"
+        }
+      ]
+    },
+    {
+      "id": "motor_mount_px",
+      "name": "Motor mount px",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "disc",
+          "entities": [
+            {
+              "kind": "circle",
+              "diameter": "motor_mount_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "motor_mount_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Shaft bore",
+          "plane": {
+            "offset": "motor_mount_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "motor_bore"
+        }
+      ]
+    },
+    {
+      "id": "motor_mount_nx",
+      "name": "Motor mount nx",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "disc",
+          "entities": [
+            {
+              "kind": "circle",
+              "diameter": "motor_mount_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "motor_mount_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Shaft bore",
+          "plane": {
+            "offset": "motor_mount_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "motor_bore"
+        }
+      ]
+    },
+    {
+      "id": "motor_mount_py",
+      "name": "Motor mount py",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "disc",
+          "entities": [
+            {
+              "kind": "circle",
+              "diameter": "motor_mount_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "motor_mount_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Shaft bore",
+          "plane": {
+            "offset": "motor_mount_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "motor_bore"
+        }
+      ]
+    },
+    {
+      "id": "motor_mount_ny",
+      "name": "Motor mount ny",
+      "material": "PETG",
+      "sketches": [
+        {
+          "id": "disc",
+          "entities": [
+            {
+              "kind": "circle",
+              "diameter": "motor_mount_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "motor_mount_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Shaft bore",
+          "plane": {
+            "offset": "motor_mount_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "motor_bore"
+        }
+      ]
+    },
+    {
+      "id": "battery_mount",
+      "name": "Battery mount",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "battery_length",
+              "height": "battery_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "battery_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Mounting holes",
+          "plane": {
+            "offset": "battery_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "center": [
+              0,
+              0
+            ],
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "battery_hole_dx",
+            "spacing_y": "battery_hole_dy"
+          },
+          "fastener": "M3"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "frame_px",
+        "part": "frame",
+        "origin": [
+          "frame_length / 2",
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "frame_nx",
+        "part": "frame",
+        "origin": [
+          "-frame_length / 2",
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "-x",
+        "x": "-y"
+      },
+      {
+        "id": "frame_py",
+        "part": "frame",
+        "origin": [
+          0,
+          "frame_width / 2",
+          "frame_thickness / 2"
+        ],
+        "z": "+y",
+        "x": "-x"
+      },
+      {
+        "id": "frame_ny",
+        "part": "frame",
+        "origin": [
+          0,
+          "-frame_width / 2",
+          "frame_thickness / 2"
+        ],
+        "z": "-y",
+        "x": "+x"
+      },
+      {
+        "id": "battery_seat",
+        "part": "frame",
+        "origin": [
+          "battery_x",
+          0,
+          "frame_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "arm_px_root",
+        "part": "arm_px",
+        "origin": [
+          0,
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "arm_px_tip",
+        "part": "arm_px",
+        "origin": [
+          "arm_length - motor_inset",
+          0,
+          "frame_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "motor_mount_px_base",
+        "part": "motor_mount_px",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "arm_nx_root",
+        "part": "arm_nx",
+        "origin": [
+          0,
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "arm_nx_tip",
+        "part": "arm_nx",
+        "origin": [
+          "arm_length - motor_inset",
+          0,
+          "frame_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "motor_mount_nx_base",
+        "part": "motor_mount_nx",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "arm_py_root",
+        "part": "arm_py",
+        "origin": [
+          0,
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "arm_py_tip",
+        "part": "arm_py",
+        "origin": [
+          "arm_length - motor_inset",
+          0,
+          "frame_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "motor_mount_py_base",
+        "part": "motor_mount_py",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "arm_ny_root",
+        "part": "arm_ny",
+        "origin": [
+          0,
+          0,
+          "frame_thickness / 2"
+        ],
+        "z": "+x",
+        "x": "+y"
+      },
+      {
+        "id": "arm_ny_tip",
+        "part": "arm_ny",
+        "origin": [
+          "arm_length - motor_inset",
+          0,
+          "frame_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "motor_mount_ny_base",
+        "part": "motor_mount_ny",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "battery_mount_base",
+        "part": "battery_mount",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "arm_px_to_frame",
+        "parent": "frame_px",
+        "child": "arm_px_root"
+      },
+      {
+        "id": "arm_nx_to_frame",
+        "parent": "frame_nx",
+        "child": "arm_nx_root"
+      },
+      {
+        "id": "arm_py_to_frame",
+        "parent": "frame_py",
+        "child": "arm_py_root"
+      },
+      {
+        "id": "arm_ny_to_frame",
+        "parent": "frame_ny",
+        "child": "arm_ny_root"
+      },
+      {
+        "id": "motor_px_to_arm",
+        "parent": "arm_px_tip",
+        "child": "motor_mount_px_base"
+      },
+      {
+        "id": "motor_nx_to_arm",
+        "parent": "arm_nx_tip",
+        "child": "motor_mount_nx_base"
+      },
+      {
+        "id": "motor_py_to_arm",
+        "parent": "arm_py_tip",
+        "child": "motor_mount_py_base"
+      },
+      {
+        "id": "motor_ny_to_arm",
+        "parent": "arm_ny_tip",
+        "child": "motor_mount_ny_base"
+      },
+      {
+        "id": "battery_to_frame",
+        "parent": "battery_seat",
+        "child": "battery_mount_base"
+      }
+    ]
+  }
+}

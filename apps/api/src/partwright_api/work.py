@@ -58,14 +58,13 @@ def generate(d: Deps, project_id: str, model_id: str, req: GenerateIn, emit: Emi
 def refine(d: Deps, project_id: str, model_id: str, req: RefineIn, emit: Emit, origin: Origin = "refine") -> Outcome:
     base_number, base = latest_ok(d, model_id)
     design = disk.design(disk.version_dir(d.settings.data_dir, model_id, base_number))
-    instruction = req.instruction if req.target is None else f"Change only part {req.target!r}: {req.instruction}"
     process = req.process or base.process
-    context = ground(d, project_id, instruction, process, None, docs(d, req.attachments))
+    context = ground(d, project_id, req.instruction, process, None, docs(d, req.attachments))
     images = image_files(d, project_id, req.attachments)
     number, out = allocate(d, model_id)
     images_sent = tuple(images.values())
     steps = agent_refine(
-        design, instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, images_sent, vision=d.vision
+        design, req.instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, images_sent, d.vision, req.target
     )
     meta = Meta(origin, req.instruction, process, req.attachments, list(images), design)
     return finish(d, project_id, model_id, number, relay(steps, emit), meta)

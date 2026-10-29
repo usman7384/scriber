@@ -3,7 +3,7 @@ from partwright_agent.critic import Critique, critique
 from partwright_agent.fake_llm import FakeLLM
 from partwright_agent.grounding import misquoted
 from partwright_agent.llm import LLM, Message, Thinking
-from partwright_agent.loop import Result, Step, dump_steps, evaluate, extract_requirements, generate, refine
+from partwright_agent.loop import Result, Step, dump_steps, evaluate, extract_requirements, generate, place, refine
 from partwright_agent.ollama_llm import OllamaLLM
 from partwright_agent.project_context import Grounding, context_block
 from partwright_agent.prompts import design_messages, repair_message, requirement_messages
@@ -40,6 +40,7 @@ __all__ = [
     "generate",
     "misquoted",
     "overall_size",
+    "place",
     "plan_variants",
     "reference_data",
     "refine",

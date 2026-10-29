@@ -8,9 +8,9 @@ import time
 from pathlib import Path
 from typing import IO, Any
 
-from partwright_geometry.checks import validity_findings
-from partwright_geometry.mass import with_mass
-from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, BuildError, Finding, PartMetrics, Vec
+from partwright_geometry.checks import assembly_findings, validity_findings
+from partwright_geometry.mass import assembly_mass, with_mass
+from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, AssemblyReport, BuildError, Finding, PartMetrics, Vec
 from partwright_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
@@ -36,12 +36,15 @@ class LocalGeometry:
         materials = {p.id: p.material for p in design.parts}
         parts = [with_mass(m, materials[m.id]) for m in map(PartMetrics.model_validate, reply["parts"])]
         files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
+        assembly = _assembly(reply.get("assembly"), parts)
+        findings = validity_findings(parts) + [Finding.model_validate(f) for f in reply["findings"]]
         return Artifact(
             design_hash=design_hash(design),
             files=files,
             parts=parts,
-            findings=validity_findings(parts) + [Finding.model_validate(f) for f in reply["findings"]],
+            findings=findings + (assembly_findings(assembly) if assembly else []),
             elapsed_ms=int((time.monotonic() - start) * 1000),
+            assembly=assembly,
         )
 
     def describe(self, path: Path) -> ShapeDescriptor:
@@ -106,6 +109,13 @@ class LocalGeometry:
         assert self._proc.stdout
         threading.Thread(target=_pump, args=(self._proc.stdout, self._lines), daemon=True).start()
         return self._proc
+
+
+def _assembly(raw: dict[str, Any] | None, parts: list[PartMetrics]) -> AssemblyReport | None:
+    if raw is None:
+        return None
+    mass, cog = assembly_mass(parts) if all(p.mass_g is not None for p in parts) else (None, None)
+    return AssemblyReport.model_validate({**raw, "mass_g": mass, "center_of_mass": cog})
 
 
 def failing_feature(source: str, lines: list[int]) -> str | None:
