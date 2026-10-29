@@ -173,8 +173,7 @@
   overflow: auto;
   padding: var(--s-2);
   border-radius: var(--r-2);
-  background: var(--surface);
-  backdrop-filter: var(--blur);
+  background: var(--surface-solid);
   box-shadow: var(--shadow-float);
   opacity: 1;
   transition: opacity var(--d-mid) var(--ease-in);
@@ -254,12 +253,6 @@
   .ui-icon-button {
     min-height: var(--touch);
     min-width: var(--touch);
-  }
-}
-
-@media (prefers-contrast: more) {
-  .ui-popover {
-    background: var(--surface-solid);
   }
 }
 
