@@ -10,6 +10,7 @@ from partwright_ir import (
     insert,
     joint_tree,
     part_hash,
+    replace,
     scope,
     splice,
     validate,
@@ -136,3 +137,22 @@ def test_insert_mates_the_new_part_at_the_named_connector() -> None:
         insert(stack(), peg.model_copy(update={"assembly": None}), "seat")
     with pytest.raises(ComponentError, match="already used"):
         insert(placed, peg, "seat")
+
+
+def test_replace_swaps_a_part_and_keeps_its_joints_through_matching_connectors() -> None:
+    ball = {
+        "title": "Ball",
+        "params": [{"name": "ball", "value": 12, "unit": "mm"}],
+        "parts": [block("rebuilt", "ball")],
+        "assembly": {"connectors": [connector("foot", "rebuilt", "-ball / 2")]},
+    }
+    swapped = replace(stack(), Design.model_validate(ball), "cube")
+    assert validate(swapped) == []
+    assert [p.name for p in swapped.params] == ["base", "ball"]
+    assert [p.id for p in swapped.parts] == ["plate", "cube"] and swapped.assembly is not None
+    assert [j.id for j in swapped.assembly.joints] == ["cube_on_plate"]
+    assert swapped.assembly.connectors[1].origin == (0, 0, "-ball / 2") and swapped.assembly.connectors[1].part == "cube"
+    with pytest.raises(ComponentError, match=r"connectors \['foot'\]"):
+        replace(stack(), Design.model_validate({**ball, "assembly": None}), "cube")
+    with pytest.raises(ComponentError, match="other values"):
+        replace(stack(), Design.model_validate({**ball, "params": [{"name": "base", "value": 1, "unit": "mm"}, *ball["params"]]}), "cube")

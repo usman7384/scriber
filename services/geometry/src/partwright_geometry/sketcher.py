@@ -82,10 +82,13 @@ def _analyse(part: str, sketch: Sketch, values: dict[str, float], seed: int) -> 
     x0 = np.array(b.x0)
     chosen, rows = [], np.zeros((0, len(x0)))
     for c in b.wanted:
-        stacked = np.vstack([rows, _jacobian(_bound(c, b.geos), x0)])
-        if np.linalg.matrix_rank(stacked, tol=RANK_TOL) == len(stacked):
-            chosen.append(c)
-            rows = stacked
+        for option in [c, *_axes(c)]:
+            stacked = np.vstack([rows, _jacobian(_bound(option, b.geos), x0)])
+            if np.linalg.matrix_rank(stacked, tol=RANK_TOL) == len(stacked):
+                chosen.append(option)
+                rows = stacked
+                if option is c:
+                    break
     return SketchDof(
         part=part,
         sketch=sketch.id,
@@ -96,6 +99,13 @@ def _analyse(part: str, sketch: Sketch, values: dict[str, float], seed: int) -> 
         dof=len(x0) - len(rows),
         solve_error=_solve_error(chosen, b.geos, x0, seed),
     )
+
+
+def _axes(c: Constraint) -> list[Constraint]:
+    # a coincidence that is only half redundant (a closed chain of collinear lines) still pins the other axis
+    if c.kind != "coincident":
+        return []
+    return [c.model_copy(update={"kind": kind, "value": 0.0}) for kind in ("distance_x", "distance_y")]
 
 
 def _bound(c: Constraint, geos: dict[str, Geo]) -> Callable[[Array], Array]:

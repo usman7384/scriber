@@ -53,6 +53,24 @@ def insert(design: Design, new: Design, mate: str) -> Design:
     return design.model_copy(update={"parts": [*design.parts, added], "params": params, "assembly": assembly})
 
 
+def replace(design: Design, new: Design, part_id: str) -> Design:
+    part(design, part_id)
+    if len(new.parts) != 1:
+        raise ComponentError(f"the replacement must be one part, got {len(new.parts)}")
+    host = design.assembly or Assembly()
+    wanted = {c.id for c in host.connectors if c.part == part_id}
+    own = {c.id: c.model_copy(update={"part": part_id}) for c in (new.assembly.connectors if new.assembly else [])}
+    if set(own) != wanted:
+        raise ComponentError(f"give the replacement the connectors {sorted(wanted)} so its mates resolve, got {sorted(own)}")
+    others = [p for p in design.parts if p.id != part_id]
+    kept = Assembly(connectors=[c for c in host.connectors if c.part != part_id], joints=host.joints)
+    rest = drop_unused_params(design.model_copy(update={"parts": others, "assembly": kept}))
+    parts = [new.parts[0].model_copy(update={"id": part_id}) if p.id == part_id else p for p in design.parts]
+    assembly = design.assembly and host.model_copy(update={"connectors": [own.get(c.id, c) for c in host.connectors]})
+    params = _merge(rest.params, new.params, strict=True)
+    return design.model_copy(update={"parts": parts, "params": params, "assembly": assembly})
+
+
 def _merge(base: list[Param], extra: list[Param], strict: bool = False) -> list[Param]:
     known = {p.name: p for p in base}
     clash = [p.name for p in extra if p.name in known and known[p.name].value != p.value]

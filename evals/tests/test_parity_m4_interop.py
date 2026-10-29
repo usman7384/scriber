@@ -23,11 +23,7 @@ def run(row: str, geometry: LocalGeometry, out: Path) -> Evidence:
     return run_row(row, ROWS[row], Rig(out, geometry, FakeLLM([]), load(ROOT / "config.yaml")))
 
 
-# a recorded stepped-shaft polygon keeps 1 DOF under the derived constraints (KNOWN_ISSUES)
-GE_3 = pytest.param("GE-3", marks=pytest.mark.xfail(strict=True, reason="one recorded polygon keeps 1 DOF"))
-
-
-@pytest.mark.parametrize("row", ["GE-12", GE_3, "IN-10"])
+@pytest.mark.parametrize("row", ["GE-12", "GE-3", "IN-10"])
 def test_interop_row_demo_passes(row: str, geometry: LocalGeometry, tmp_path: Path) -> None:
     ev = run(row, geometry, tmp_path)
     assert ev.passed, ev

@@ -1,4 +1,5 @@
 import json
+import math
 import shutil
 import time
 from dataclasses import dataclass
@@ -8,14 +9,17 @@ import numpy as np
 import trimesh
 
 from partwright_evals.parity import Demo, Evidence, Measured, Rig, evidence
-from partwright_geometry import Artifact, HoleInfo, hausdorff, reconstruct_mesh
-from partwright_ir import Design, apply_params
+from partwright_geometry import Artifact, HoleInfo, PartMetrics, Placement, hausdorff, reconstruct_mesh
+from partwright_ir import Assembly, Connector, Design, apply_params, replace
 
 FIXTURES = Path(__file__).parents[2] / "parity" / "m4" / "mesh"
 SKETCHED = {"extrude", "revolve"}
 SCAN_SIGMA = 0.1
 SCAN_EDGE = 2.0
 SEED = 0
+EXACT = 1e-6
+FIT_MM = 0.05
+Vec = tuple[float, float, float]
 
 
 @dataclass(frozen=True)
@@ -107,7 +111,7 @@ def pf_5(rig: Rig) -> Evidence:
     return evidence("PF-5", m, rt.valid, rt.seconds < 300, note="reconstruct + rebuild of the IN-7 flange STL")
 
 
-def _to_bracket(rig: Rig, prefix: str) -> tuple[Measured, bool]:
+def _to_bracket(rig: Rig, prefix: str) -> tuple[Measured, bool, RoundTrip]:
     truth = [
         TrueHole(h["center"][0], h["center"][1], h["diameter"])
         for h in json.loads((FIXTURES / "to_bracket.json").read_text(encoding="utf-8"))["holes"]
@@ -120,7 +124,7 @@ def _to_bracket(rig: Rig, prefix: str) -> tuple[Measured, bool]:
         f"{prefix}_hausdorff_pct_diag": round(rt.deviation_pct, 4),
         f"{prefix}_hole_fit_mm": round(err, 4),
     }
-    return m, rt.valid and rt.deviation_pct <= 1 and err <= 0.05
+    return m, rt.valid and rt.deviation_pct <= 1 and err <= FIT_MM, rt
 
 
 def _scanned_mount(rig: Rig) -> tuple[Measured, bool]:
@@ -144,14 +148,59 @@ def _scanned_mount(rig: Rig) -> tuple[Measured, bool]:
 
 
 def in_8(rig: Rig) -> Evidence:
-    (to, to_ok), (sc, sc_ok) = _to_bracket(rig, "to"), _scanned_mount(rig)
+    (to, to_ok, _), (sc, sc_ok) = _to_bracket(rig, "to"), _scanned_mount(rig)
     return evidence("IN-8", {**to, **sc}, to_ok, sc_ok)
 
 
+def mounted(rebuilt: Design) -> Design:
+    # the connector sits on a recovered feature (the -x -y mount hole, bottom face) so it follows the fitted params
+    mount = Connector(id="bracket_mount", part=rebuilt.parts[0].id, origin=("-hole_spacing_x / 2", "-hole_spacing_y / 2", 0.0))
+    return rebuilt.model_copy(update={"assembly": Assembly(connectors=[mount])})
+
+
+def _bracket(art: Artifact) -> PartMetrics:
+    return next(p for p in art.parts if p.id == "bracket")
+
+
+def _translation(p: Placement | None) -> Vec:
+    return (0.0, 0.0, 0.0) if p is None else (p[0][3], p[1][3], p[2][3])
+
+
+def _mount_holes(p: PartMetrics, diameter: float) -> list[Vec]:
+    return [h.center for h in p.holes if abs(h.diameter - diameter) <= FIT_MM]
+
+
+def _hole_shift(before: list[Vec], after: list[Vec]) -> float:
+    if not before or len(before) != len(after):
+        return math.inf
+    return max(min(math.dist(a, b) for b in after) for a in before)
+
+
 def cd_4(rig: Rig) -> Evidence:
-    m, ok = _to_bracket(rig, "to")
-    note = "reconstruction half only; replacing the part in an assembly with its mates kept needs the M4 assembly IR, not on this branch"
-    return evidence("CD-4", {**m, "reconstruction_passed": ok, "assembly": "pending"}, ok, False, note=note)
+    m, ok, rt = _to_bracket(rig, "to")
+    original = Design.model_validate_json((FIXTURES / "to_assembly.json").read_text(encoding="utf-8"))
+    swapped = replace(original, mounted(rt.design), "bracket")
+    (rig.out / "replaced.json").write_text(swapped.model_dump_json(indent=2), encoding="utf-8")
+    before, after = rig.geometry.build(original, rig.out / "original"), rig.geometry.build(swapped, rig.out / "replaced")
+    if not (before.assembly and after.assembly):
+        return evidence("CD-4", {**m, "assembly_reported": False}, False)
+    old, new = _bracket(before), _bracket(after)
+    d = original.param_values()["mount_diameter"]
+    shift = math.dist(_translation(old.placement), _translation(new.placement))
+    holes = _hole_shift(_mount_holes(old, d), _mount_holes(new, d))
+    worst = max((i.volume for i in after.assembly.interferences), default=0.0)
+    broken = after.assembly.broken_mates()
+    valid = (new.solids, new.valid) == (1, True)
+    a: Measured = {
+        "mates": len(after.assembly.mates),
+        "broken_mates": len(broken),
+        "interference_mm3": worst,
+        "placement_shift_mm": round(shift, 6),
+        "mount_hole_shift_mm": round(holes, 6),
+        "replaced_valid": valid,
+    }
+    placed = shift <= FIT_MM and holes <= FIT_MM
+    return evidence("CD-4", {**m, **a}, ok, after.ok, valid, len(after.assembly.mates) == 1, not broken, worst <= EXACT, placed)
 
 
 ROWS: dict[str, Demo] = {"IN-7": in_7, "IN-8": in_8, "CD-4": cd_4, "PF-5": pf_5}
