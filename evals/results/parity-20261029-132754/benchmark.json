@@ -1,0 +1,272 @@
+[
+  {
+    "id": "b01-cover-plate",
+    "valid": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "seconds": 31.5,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b02-round-spacer",
+    "valid": true,
+    "checks_passed": 4,
+    "checks_total": 4,
+    "seconds": 16.5,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b03-square-tube",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "seconds": 147.2,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b04-bolt-disc",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 26.4,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b05-shaft-collar",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 5,
+    "seconds": 153.2,
+    "param_accuracy": 0.8,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b06-bearing-block",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 7,
+    "seconds": 189.0,
+    "param_accuracy": 0.8571,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b07-counterbored-plate",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 6,
+    "seconds": 153.5,
+    "param_accuracy": 0.75,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b08-unequal-angle",
+    "valid": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "seconds": 31.8,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 2.4992
+  },
+  {
+    "id": "b09-u-channel",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 32.7,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.001
+  },
+  {
+    "id": "b10-stepped-pin",
+    "valid": true,
+    "checks_passed": 3,
+    "checks_total": 3,
+    "seconds": 22.6,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b11-lightened-disc",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 27.2,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b12-machine-base",
+    "valid": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "seconds": 34.2,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b13-standoff",
+    "valid": true,
+    "checks_passed": 4,
+    "checks_total": 4,
+    "seconds": 18.0,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b14-bearing-housing",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 6,
+    "seconds": 204.8,
+    "param_accuracy": 0.8571,
+    "hausdorff_mm": 9.8089
+  },
+  {
+    "id": "b15-nema23-plate",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 25.9,
+    "param_accuracy": 0.8,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b16-hinge-leaf",
+    "valid": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "seconds": 26.2,
+    "param_accuracy": 0.8333,
+    "hausdorff_mm": 1.59
+  },
+  {
+    "id": "b17-cup",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "seconds": 124.3,
+    "param_accuracy": 0.75,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b18-m16-washer",
+    "valid": true,
+    "checks_passed": 4,
+    "checks_total": 4,
+    "seconds": 17.0,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b19-window-frame",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 6,
+    "seconds": 190.9,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b20-lifting-lug",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 6,
+    "seconds": 239.8,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b21-gear-blank",
+    "valid": true,
+    "checks_passed": 2,
+    "checks_total": 3,
+    "seconds": 22.1,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 4.0
+  },
+  {
+    "id": "b22-cross-drilled-cube",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 4,
+    "seconds": 134.3,
+    "param_accuracy": 0.0,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b23-flat-bar",
+    "valid": true,
+    "checks_passed": 6,
+    "checks_total": 6,
+    "seconds": 32.4,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b24-dn32-flange",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 31.1,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b25-spigot-adapter",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 5,
+    "seconds": 232.3,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b26-square-panel",
+    "valid": true,
+    "checks_passed": 5,
+    "checks_total": 5,
+    "seconds": 51.2,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b27-control-knob",
+    "valid": true,
+    "checks_passed": 3,
+    "checks_total": 3,
+    "seconds": 49.1,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 2.8921
+  },
+  {
+    "id": "b28-thin-tube",
+    "valid": true,
+    "checks_passed": 4,
+    "checks_total": 4,
+    "seconds": 19.2,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  },
+  {
+    "id": "b29-gusseted-angle",
+    "valid": false,
+    "checks_passed": 0,
+    "checks_total": 5,
+    "seconds": 219.2,
+    "param_accuracy": 0.875,
+    "hausdorff_mm": null
+  },
+  {
+    "id": "b30-sensor-plate",
+    "valid": true,
+    "checks_passed": 9,
+    "checks_total": 9,
+    "seconds": 144.5,
+    "param_accuracy": 1.0,
+    "hausdorff_mm": 0.0
+  }
+]
