@@ -104,7 +104,7 @@ def _serve(args: argparse.Namespace, config: Config, geometry: LocalGeometry) ->
     )
     embedder = OllamaEmbedder(config.embeddings.model, host=config.llm.host)
     with LocalContext(config.data_dir / "context", embedder, describe=serial.describe) as ctx:
-        app = create_app(settings, llm_for(config, args.model), serial, ctx)
+        app = create_app(settings, llm_for(config, args.model), serial, ctx, vision=llm_for(config, config.llm.vision))
         print(f"serving the API at http://{api.host}:{api.port}/ (docs at /docs, auth: {api.auth})", flush=True)
         uvicorn.run(app, host=api.host, port=api.port, access_log=False)
     return 0

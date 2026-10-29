@@ -134,7 +134,12 @@ class Api:
 
 @contextmanager
 def serve(
-    rig: Rig, llm: LLM, transport: httpx.AsyncBaseTransport | None = None, data: Path | None = None, **settings: Any
+    rig: Rig,
+    llm: LLM,
+    transport: httpx.AsyncBaseTransport | None = None,
+    data: Path | None = None,
+    vision: LLM | None = None,
+    **settings: Any,
 ) -> Iterator[Api]:
     data = data or rig.out / "data"
     geometry = SerialGeometry(rig.geometry)
@@ -146,7 +151,7 @@ def serve(
             LocalContext(data / "context", HashEmbedder(), describe=geometry.describe) as context,
         ):
             settings = {"hook_backoff_s": 0.01, "seed": rig.config.agent.seed, "max_repairs": rig.config.agent.max_repairs, **settings}
-            app = create_app(Settings(data_dir=data, **settings), llm, geometry, context, transport)
+            app = create_app(Settings(data_dir=data, **settings), llm, geometry, context, transport, vision)
             with TestClient(app) as client:
                 yield Api(client, data, transcript)
     finally:
