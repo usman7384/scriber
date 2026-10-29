@@ -1,7 +1,7 @@
 import re
 from functools import cache
 
-from pint import UnitRegistry
+from pint import PintError, UnitRegistry
 
 NUM = r"\d+(?:[.,]\d+)?"
 TIMES = chr(0xD7)
@@ -50,6 +50,13 @@ def normalise(value: float, unit: str) -> tuple[float, str]:
         if quantity.is_compatible_with(name):
             return round(float(quantity.to(name).magnitude), 6), short
     raise ValueError(f"no target unit for {unit}")
+
+
+def to_unit(text: str, unit: str) -> float:
+    try:
+        return float(_registry().Quantity(text).to(unit).magnitude)
+    except PintError as e:
+        raise ValueError(f"{text!r} is not a quantity in {unit}: {e}") from e
 
 
 def quantities(text: str) -> list[tuple[float, str]]:
