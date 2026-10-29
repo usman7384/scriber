@@ -10,7 +10,17 @@ from typing import IO, Any
 
 from partwright_geometry.checks import assembly_findings, validity_findings
 from partwright_geometry.mass import assembly_mass, with_mass
-from partwright_geometry.models import MESH_SUFFIXES, STEP_SUFFIXES, Artifact, AssemblyReport, BuildError, Finding, PartMetrics, Vec
+from partwright_geometry.models import (
+    MESH_SUFFIXES,
+    STEP_SUFFIXES,
+    Artifact,
+    AssemblyReport,
+    BuildError,
+    Finding,
+    PartMetrics,
+    StepMetadata,
+    Vec,
+)
 from partwright_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
@@ -30,10 +40,11 @@ class LocalGeometry:
         (out_dir / "model.py").write_text(source, encoding="utf-8")
         (out_dir / "design.json").write_text(design.model_dump_json(indent=2), encoding="utf-8")
         rules_json = rules.for_process(process).model_dump(mode="json")
-        reply = self._call({"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json})
+        materials = {p.id: p.material for p in design.parts}
+        request = {"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json}
+        reply = self._call(request | {"materials": materials})
         if not reply["ok"]:
             raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
-        materials = {p.id: p.material for p in design.parts}
         parts = [with_mass(m, materials[m.id]) for m in map(PartMetrics.model_validate, reply["parts"])]
         files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
         assembly = _assembly(reply.get("assembly"), parts)
@@ -59,6 +70,9 @@ class LocalGeometry:
 
     def import_step(self, path: Path) -> list[PartMetrics]:
         return [PartMetrics.model_validate(p) for p in self._read("import_step", path, STEP_SUFFIXES)["parts"]]
+
+    def step_metadata(self, path: Path) -> StepMetadata:
+        return StepMetadata.model_validate(self._read("step_metadata", path, STEP_SUFFIXES)["metadata"])
 
     def sections(self, step: Path, ys: list[float]) -> list[list[Vec]]:
         reply = self._call({"op": "sections", "path": str(step), "ys": ys})

@@ -1,0 +1,40 @@
+{
+  "title": "Load bracket",
+  "params": [
+    {"name": "plate_length", "value": 80, "unit": "mm"},
+    {"name": "plate_width", "value": 60, "unit": "mm"},
+    {"name": "plate_thickness", "value": 6, "unit": "mm"},
+    {"name": "hole_spacing_x", "value": 60, "unit": "mm"},
+    {"name": "hole_spacing_y", "value": 40, "unit": "mm"},
+    {"name": "boss_diameter", "value": 20, "unit": "mm"},
+    {"name": "boss_height", "value": 15, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "bracket",
+      "name": "Bracket",
+      "material": "6061 aluminium",
+      "sketches": [
+        {"id": "plate_sketch", "entities": [{"kind": "rect", "width": "plate_length", "height": "plate_width", "corner_radius": 5}]},
+        {"id": "boss_sketch", "plane": {"ref": "plate.end"}, "entities": [{"kind": "circle", "diameter": "boss_diameter"}]}
+      ],
+      "features": [
+        {"kind": "extrude", "id": "plate", "name": "Base plate", "sketch": "plate_sketch", "distance": "plate_thickness"},
+        {"kind": "extrude", "id": "boss", "name": "Load boss", "sketch": "boss_sketch", "distance": "boss_height"},
+        {
+          "kind": "hole",
+          "id": "mount_holes",
+          "name": "Mounting holes",
+          "plane": {"ref": "plate.end"},
+          "at": {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": "hole_spacing_x", "spacing_y": "hole_spacing_y"},
+          "fastener": "M6"
+        }
+      ],
+      "face_groups": [
+        {"name": "mount_face", "faces": {"of": "plate", "normal": "-z"}},
+        {"name": "load_face", "faces": {"of": "boss", "normal": "+z", "extreme": "max"}},
+        {"name": "bolt_bores", "faces": {"of": "mount_holes"}}
+      ]
+    }
+  ]
+}

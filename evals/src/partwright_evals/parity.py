@@ -47,12 +47,23 @@ def registry() -> dict[str, Demo]:
         parity_m3,
         parity_m4_aircraft,
         parity_m4_assembly,
+        parity_m4_interop,
         parity_m4_mesh,
         parity_m4_mission,
         parity_m4_vision,
     )
 
-    modules = (parity_m1, parity_m2, parity_m3, parity_m4_aircraft, parity_m4_assembly, parity_m4_mesh, parity_m4_mission, parity_m4_vision)
+    modules = (
+        parity_m1,
+        parity_m2,
+        parity_m3,
+        parity_m4_aircraft,
+        parity_m4_assembly,
+        parity_m4_interop,
+        parity_m4_mesh,
+        parity_m4_mission,
+        parity_m4_vision,
+    )
     return {row: demo for m in modules for row, demo in m.ROWS.items()}
 
 

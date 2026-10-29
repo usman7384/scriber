@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Bracket",
+    "partId": "JHD",
+    "bodyType": "solid",
+    "elementId": "3a9d2c1b0e8f7a6b5c4d3e2f",
+    "isHidden": false,
+    "material": {
+      "id": "Aluminum - 6061",
+      "displayName": "Aluminum - 6061",
+      "libraryName": "Onshape Material Library",
+      "properties": [{"name": "DENSITY", "value": 2700, "units": "kg/m^3"}]
+    }
+  },
+  {
+    "name": "Pin",
+    "partId": "JLD",
+    "bodyType": "solid",
+    "elementId": "3a9d2c1b0e8f7a6b5c4d3e2f",
+    "isHidden": false,
+    "material": {
+      "id": "Steel",
+      "displayName": "Steel",
+      "libraryName": "Onshape Material Library",
+      "properties": [{"name": "DENSITY", "value": 7850, "units": "kg/m^3"}]
+    }
+  }
+]

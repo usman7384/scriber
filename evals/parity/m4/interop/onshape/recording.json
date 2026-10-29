@@ -1,0 +1,7 @@
+{
+  "GET /api/v10/partstudios/d/5f1c2a9e0b7d4e3a8c6f1b2d/w/8e4b7c1d2a3f4e5b6c7d8e9f/e/3a9d2c1b0e8f7a6b5c4d3e2f/features": "features.json",
+  "GET /api/v10/parts/d/5f1c2a9e0b7d4e3a8c6f1b2d/w/8e4b7c1d2a3f4e5b6c7d8e9f/e/3a9d2c1b0e8f7a6b5c4d3e2f": "parts.json",
+  "POST /api/v10/partstudios/d/5f1c2a9e0b7d4e3a8c6f1b2d/w/8e4b7c1d2a3f4e5b6c7d8e9f/e/3a9d2c1b0e8f7a6b5c4d3e2f/translations": "translation_requested.json",
+  "GET /api/v10/translations/7c2e9a4b1d3f5e6a8b0c2d4e": "translation_done.json",
+  "GET /api/v10/documents/d/5f1c2a9e0b7d4e3a8c6f1b2d/externaldata/2b4d6f8a0c1e3a5b7d9f1e3c": "part_studio.step"
+}
