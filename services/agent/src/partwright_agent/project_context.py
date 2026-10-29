@@ -3,12 +3,13 @@ from collections.abc import Sequence
 
 from pydantic import BaseModel, ConfigDict
 
-from partwright_agent.requirements import Requirement
+from partwright_agent.requirements import CheckResult, Requirement
 from partwright_agent.standards import ISO273_RANGE
 from partwright_context import ContextPack, Fact
 from partwright_ir import Design, Param, Process, RuleSet, answer_json
 
 MAX_FACTS = 24
+HELD = re.compile(r"insert|heat-?set|tapped|thread", re.IGNORECASE)
 
 
 class Grounding(BaseModel):
@@ -68,8 +69,17 @@ def fact_requirements(facts: list[Fact]) -> list[Requirement]:
     for f in facts:
         r = _requirement(f)
         if r is not None:
-            out.setdefault((r.kind, r.value, r.count, r.diameter_min, r.diameter_max), r)
+            out.setdefault(_key(r), r)
     return list(out.values())
+
+
+def coverage(facts: Sequence[Fact], checks: Sequence[CheckResult]) -> list[tuple[Fact, CheckResult | None]]:
+    by_key = {_key(c.requirement): c for c in checks}
+    return [(f, by_key.get(_key(r)) if (r := _requirement(f)) else None) for f in facts if isinstance(f.value, float)]
+
+
+def _key(r: Requirement) -> tuple[object, ...]:
+    return (r.kind, r.value, r.tolerance, r.count, r.diameter_min, r.diameter_max)
 
 
 def cite(design: Design, pack: ContextPack) -> Design:
@@ -88,6 +98,9 @@ def _requirement(f: Fact) -> Requirement | None:
         thread = f"M{f.value:g}"
         is_thread = re.search(rf"\b{re.escape(thread)}\b", f.text) is not None
         lo, hi = ISO273_RANGE[thread] if is_thread and thread in ISO273_RANGE else (f.value - 0.1, f.value + 0.1)
+        if is_thread and HELD.search(f.text):
+            # tapped or insert holes: from the tap drill (about 0.8 d) to a heat-set insert bore (about 1.4 d)
+            lo, hi = 0.75 * f.value, 1.45 * f.value
         return Requirement(kind="holes", description=label, count=f.count, diameter_min=lo, diameter_max=hi)
     if f.kind == "tolerance" and isinstance(f.value, float) and f.tol and f.unit == "mm":
         lo, hi = f.value + f.tol[0], f.value + f.tol[1]
@@ -103,7 +116,8 @@ def _requirement(f: Fact) -> Requirement | None:
 def _describe(f: Fact) -> str:
     tol = f" ({f.tol[0]:+g}/{f.tol[1]:+g})" if f.tol else ""
     count = f"{f.count} x " if f.count else ""
-    return f"{f.name} = {count}{f.value}{f.unit}{tol}"
+    at = f" at x={f.at[0]:g}, y={f.at[1]:g}" if f.at else ""
+    return f"{f.name} = {count}{f.value}{f.unit}{tol}{at}"
 
 
 def _prior(pack: ContextPack) -> str | None:

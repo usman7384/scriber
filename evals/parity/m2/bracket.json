@@ -1,0 +1,22 @@
+{
+  "ir_version": 2,
+  "title": "Sensor bracket",
+  "params": [
+    {"name": "length", "value": 80, "unit": "mm", "min": 40, "max": 200, "description": "bracket length", "provenance": {"source": "document", "ref": "spec#p1:l2", "quote": "length 80 mm"}},
+    {"name": "width", "value": 40, "unit": "mm", "description": "bracket width", "provenance": {"source": "prompt", "quote": "40 mm wide"}},
+    {"name": "thickness", "value": 5, "unit": "mm", "min": 3, "description": "plate thickness", "provenance": {"source": "prompt", "quote": "5 mm plate"}},
+    {"name": "hole_spacing", "value": 50, "unit": "mm", "description": "bolt spacing", "provenance": {"source": "rule", "ref": "min_hole_edge_ratio"}}
+  ],
+  "parts": [
+    {
+      "id": "bracket",
+      "name": "Bracket",
+      "material": "6061 aluminium",
+      "sketches": [{"id": "outline", "entities": [{"kind": "rect", "width": "length", "height": "width"}]}],
+      "features": [
+        {"kind": "extrude", "id": "plate", "name": "Plate", "intent": "flat base that carries the sensor", "provenance": {"source": "document", "ref": "spec#p1:l2"}, "sketch": "outline", "distance": "thickness"},
+        {"kind": "hole", "id": "mount", "name": "M6 mounting holes", "intent": "clearance for the two M6 frame bolts", "provenance": {"source": "prompt", "quote": "two M6 bolts"}, "plane": {"ref": "plate.top"}, "at": {"kind": "points", "points": [["-hole_spacing / 2", 0], ["hole_spacing / 2", 0]]}, "fastener": "M6"}
+      ]
+    }
+  ]
+}

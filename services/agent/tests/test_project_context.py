@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
 
-from partwright_agent import FakeLLM, Grounding, generate
-from partwright_agent.project_context import fact_requirements, overridden
-from partwright_agent.requirements import Requirement
+import pytest
+
+from partwright_agent import FakeLLM, Grounding, context_block, generate
+from partwright_agent.project_context import coverage, fact_requirements, overridden
+from partwright_agent.requirements import CheckResult, Requirement
 from partwright_context import ContextPack, Fact
 from partwright_geometry import Artifact, HoleInfo, PartMetrics
 from partwright_ir import Design, Process, Provenance, Rule, RuleSet
@@ -126,3 +128,27 @@ def test_overridden_facts_leave_the_checks_and_the_prompt(tmp_path: Path) -> Non
     assert "the request overrides the project documents on: REQ-2 Mounting: 4 x M6 through holes" in steps[0].message
     assert f"[{HOLES.id}]" not in llm.calls[1][-1].content
     assert f"[{BORE.id}]" in llm.calls[1][-1].content
+
+
+def test_coverage_maps_each_numeric_fact_to_its_check_or_none() -> None:
+    wall = fact("d1:1.6.0", "parameter", "wall_thickness", 2.0)
+    tight = fact("d1:1.7.0", "tolerance", "length", 80.0, tol=(-0.05, 0.05), text="length 80 ±0.05 mm")
+    material = fact("d1:1.8.0", "material", "material", 0.0).model_copy(update={"value": "PETG"})
+    reqs = fact_requirements([HOLES, LENGTH, tight])
+    checks = [CheckResult(requirement=r, passed=r.kind == "holes", actual="") for r in reqs]
+    covered = {f.id: c and c.passed for f, c in coverage([HOLES, LENGTH, tight, wall, material], checks)}
+    assert len(reqs) == 3
+    assert covered == {HOLES.id: True, LENGTH.id: False, tight.id: False, wall.id: None}
+
+
+def test_hole_table_rows_reach_the_prompt_with_their_position() -> None:
+    row = fact("d1:1.9.h1", "hole", "hole_h1", 6.6, at=(20.0, 15.0), text="H1 | 20 | 15 | 6.6")
+    pack = ContextPack(query="plate", chunks=[], facts=[row], rules=[], similar_parts=[], conventions=[])
+    assert "[d1:1.9.h1] hole_h1 = 6.6mm at x=20, y=15: H1 | 20 | 15 | 6.6" in context_block(Grounding(pack=pack, rules=NO_RULES))
+
+
+def test_threads_held_by_inserts_or_taps_accept_tap_drill_to_insert_bore() -> None:
+    bosses = fact("d1:1.4.0", "holes", "bosses", 3.0, count=4, text="Bosses: 4×M3 heat-set inserts")  # noqa: RUF001
+    [r] = fact_requirements([bosses])
+    assert r.count == 4
+    assert (r.diameter_min, r.diameter_max) == pytest.approx((2.25, 4.35))
