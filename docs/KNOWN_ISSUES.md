@@ -21,3 +21,6 @@
 - A clockwise IR `polygon` extrudes toward −Z: build123d takes the face normal from the winding, so `extrude` goes the other way (checked 2026-10-29: a CW square with distance 5 spans z −5…0). The mesh reconstructor emits counter-clockwise polygons; the compiler does not normalise winding.
 - Mesh reconstruction (`reconstruct_mesh`) handles only Z-stacked prismatic meshes and rebuilds fillets and chamfers as sharp edges; see `docs/agents/parity-m4-mesh.md`.
 - GE-3: derived sketch constraints leave 1 DOF on one recorded polygon ("Stepped shaft", `turning_section`, re-solve error 0.04 mm); 893 of 895 recorded sketches are fully constrained. The GE-3 offline test is a strict xfail until the derivation handles it.
+- API users are token names and projects are not user-scoped: any valid token reads and edits every project. The community space and the generation limit are per user, nothing else is.
+- `examples/shadow_box.py` takes the tool outline from the mid-height section of the STL, so tools whose outline changes with height get a pocket that fits only that section.
+- EX-5 is checked by an OCCT round trip only; no other CAD system (FreeCAD included) has opened our STEP on the build machine.
