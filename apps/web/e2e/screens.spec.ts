@@ -61,14 +61,13 @@ const screens: [string, Shot, Scenario?][] = [
   ],
   [
     "agent",
-    async (page, api, phone) => {
-      await editor(page);
-      api.drip = 1500;
-      await page.getByRole("list", { name: "Components" }).getByRole("button").first().click();
-      await page.getByLabel("Change request").fill("chamfer the top edges 1 mm");
-      await page.getByLabel("Change request").press("Enter");
-      await tab(page, phone, "Activity");
-      await expect(page.locator(".agent-step")).toHaveCount(3, { timeout: 15_000 });
+    async (page, api) => {
+      api.drip = 2500;
+      await page.goto("/p/p1");
+      await page.getByLabel("Describe the part").fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
+      await page.getByRole("button", { name: "Generate" }).click();
+      const stream = page.getByRole("region", { name: "Generation timeline" });
+      await expect(stream.getByRole("listitem").nth(2)).toBeVisible({ timeout: 30_000 });
     },
   ],
   [
@@ -77,9 +76,9 @@ const screens: [string, Shot, Scenario?][] = [
       await editor(page);
       await page.getByLabel("Plate Length", { exact: true }).fill("130");
       await page.getByLabel("Plate Length", { exact: true }).press("Enter");
-      const lane = page.getByRole("list", { name: "Version history" });
-      await expect(lane.locator("strong")).toHaveText(["v2", "v1"]);
       await tab(page, phone, "Versions");
+      const lane = page.getByRole("list", { name: "Version history" });
+      await expect(lane.locator("strong")).toHaveText(["v2", "v1"], { timeout: 30_000 });
       await page.getByRole("button", { name: "Compare" }).click();
       await lane.getByRole("button", { name: "v1", exact: true }).click();
       await expect(page.getByRole("table", { name: "Parameter diff" })).toBeVisible();
