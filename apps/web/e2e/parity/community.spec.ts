@@ -15,6 +15,8 @@ test("WP-10 community tab lists published parts, publishes from the editor and f
   await expect(page.getByText("Published to the community")).toBeVisible();
   await row.shot("1-published");
 
+  // The workspace has no main navigation; its mark leads home.
+  await page.getByRole("link", { name: "Partwright home" }).click();
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Community" }).click();
   await expect(page).toHaveURL(/\/explore$/);
   const cards = page.getByRole("list", { name: "Published parts" }).getByRole("listitem");

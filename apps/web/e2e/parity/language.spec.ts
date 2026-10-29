@@ -46,6 +46,11 @@ async function tour(page: Page, row: { shot: (n: string) => Promise<void> }, lan
     await expect(page.locator("main")).not.toContainText(t.loading);
     await grab(path === "/" ? "projects" : path.slice(1));
   }
+  await page.goto("/");
+  await page.keyboard.press("Control+k");
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await grab("palette");
+  await page.keyboard.press("Escape");
   await page.goto("/p/p1?context=f1");
   await page.getByLabel(t.prompt.label).fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
   await page.getByRole("button", { name: t.prompt.generate }).click();
@@ -88,13 +93,13 @@ test("WP-13 language selector switches every UI label between EN and DE and pers
   const api = new MockApi();
   api.seed();
   await api.install(page);
-  await page.goto("/");
+  await page.goto("/settings");
   await expect(page.getByLabel("Language")).toHaveValue("en");
   const english = await tour(page, row, "en");
 
-  await page.goto("/");
+  await page.goto("/settings");
   await page.getByLabel("Language").selectOption("de");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Projekte");
+  await expect(page.getByRole("dialog", { name: "Einstellungen" })).toBeVisible();
   await page.reload();
   const persisted = {
     select: await page.getByLabel("Sprache").inputValue(),
@@ -123,5 +128,5 @@ test("WP-13 language selector switches every UI label between EN and DE and pers
   expect(missingInDe).toEqual([]);
   expect(persisted).toEqual({ select: "de", html_lang: "de", stored: "de" });
   row.note =
-    "Own typed message table (src/i18n.ts, DE typed as EN so no key can be missing). The check walks every text node and aria-label, placeholder, title and alt on ten pages, hidden dialogs and tooltips included. API content (titles, findings, file names, example prompts) is not translated.";
+    "Own typed message table (src/i18n.ts, DE typed as EN so no key can be missing). The check walks every text node and aria-label, placeholder, title and alt on eleven pages and the command palette, hidden dialogs and tooltips included. API content (titles, findings, file names, example prompts) is not translated.";
 });
