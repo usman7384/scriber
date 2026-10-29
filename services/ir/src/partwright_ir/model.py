@@ -267,7 +267,7 @@ class ShellWithLid(FeatureBase):
     lip_height: Expr
     clearance: Expr = 0.2
     screw: str | None = Field(default="M3", description="corner screws, e.g. M3; null for no bosses")
-    boss_diameter: Expr | None = Field(default=None, description="defaults to 2.5 x the screw size")
+    boss_diameter: Expr | None = Field(default=None, description="defaults to 2.5 x the screw size, or 3 x its pilot hole if larger")
 
 
 class Lid(FeatureBase):

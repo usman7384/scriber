@@ -58,7 +58,7 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet, materials: dict[
         "findings": [f.model_dump() for pid, s in parts.items() for f in dfm_findings(s, metrics[pid], rules)],
     }
     if mates is not None:
-        checks, overlaps = mate_checks(parts, mates), interferences(parts)
+        checks, overlaps = mate_checks(parts, mates, namespace.get("SLACK", {})), interferences(parts)
         reply["assembly"] = {"mates": [m.model_dump() for m in checks], "interferences": [i.model_dump() for i in overlaps]}
     return reply
 

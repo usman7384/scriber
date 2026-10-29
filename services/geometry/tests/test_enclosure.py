@@ -4,12 +4,18 @@ from typing import Any
 import pytest
 
 from partwright_geometry import LocalGeometry
-from partwright_ir import Design, validate
+from partwright_ir import Design, Rule, RuleSet, validate
 
 W, D, WALL, FLOOR, LID_T, LIP, GAP = 80.0, 60.0, 2.0, 2.0, 2.0, 4.0, 0.2
+RULES = RuleSet(
+    rules=[
+        Rule(id="min_hole_edge_ratio", kind="min_hole_edge_ratio", value=1.5, unit=""),
+        Rule(id="min_wall_thickness", kind="min_wall_thickness", value=0.8, unit="mm"),
+    ]
+)
 
 
-def enclosure(height: float, screw: str | None) -> Design:
+def enclosure(height: float, screw: str | None, wall: float = WALL) -> Design:
     shell = {
         "kind": "shell_with_lid",
         "id": "shell",
@@ -17,7 +23,7 @@ def enclosure(height: float, screw: str | None) -> Design:
         "width": W,
         "depth": D,
         "height": "h",
-        "wall": WALL,
+        "wall": wall,
         "floor": FLOOR,
         "lid_thickness": LID_T,
         "lip_height": LIP,
@@ -49,10 +55,17 @@ def test_box_and_lid_volumes_and_the_lid_sits_on_the_rim(geometry: LocalGeometry
 def test_corner_bosses_take_screws_through_the_lid(geometry: LocalGeometry, tmp_path: Path) -> None:
     art = geometry.build(enclosure(30, "M3"), tmp_path)
     box, lid = art.parts
-    x, y = (W - WALL - 7.5) / 2, (D - WALL - 7.5) / 2
+    # M3 clearance 3.4 sets the inset: 1.5 x 3.4 from the outer edge beats half the wall plus the 7.5 boss radius
+    x, y = W / 2 - 1.5 * 3.4, D / 2 - 1.5 * 3.4
     corners = sorted((sx * x, sy * y) for sx in (-1, 1) for sy in (-1, 1))
     assert [h.diameter for h in box.holes] == pytest.approx([2.5] * 4)
     assert sorted(h.center[:2] for h in box.holes) == pytest.approx(corners)
     assert [h.diameter for h in lid.holes] == pytest.approx([3.4] * 4)
     assert sorted(h.center[:2] for h in lid.holes) == pytest.approx(corners)
     assert art.assembly is not None and art.assembly.overlaps() == [] and art.assembly.broken_mates() == []
+
+
+@pytest.mark.parametrize(("screw", "wall"), [("M3", 2.0), ("M3", 2.5), ("M3", 3.0), ("M2.5", 2.0), ("M4", 2.5)])
+def test_screwed_lid_meets_wall_and_edge_rules_at_common_walls(geometry: LocalGeometry, tmp_path: Path, screw: str, wall: float) -> None:
+    art = geometry.build(enclosure(30, screw, wall), tmp_path, rules=RULES)
+    assert art.ok, art.findings

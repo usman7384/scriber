@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from partwright_ir import Design
 
@@ -12,7 +12,8 @@ FileKind = Literal["step", "stl", "glb", "py", "ir"]
 STEP_SUFFIXES = frozenset({".step", ".stp"})
 MESH_SUFFIXES = frozenset({".stl", ".obj"})
 INTERFERENCE_MM3 = 1e-6
-TOUCH_MM = 1e-6
+# one length tolerance for contact and overlap: spline-fitted flanks touch to ~0.1 um, a real overlap is far deeper than 1 um
+TOUCH_MM = 1e-3
 
 
 class Frozen(BaseModel):
@@ -62,6 +63,11 @@ class Interference(Frozen):
     a: str
     b: str
     volume: float
+    depth: float | None = Field(default=None, description="mean thickness of the common solid, 2 x volume / area")
+
+    @property
+    def overlapping(self) -> bool:
+        return self.volume > INTERFERENCE_MM3 and (self.depth is None or self.depth > TOUCH_MM)
 
 
 class MateCheck(Frozen):
@@ -69,6 +75,11 @@ class MateCheck(Frozen):
     parent: str
     child: str
     gap: float
+    slack: float = Field(default=0.0, description="gap the joint allows, e.g. a gear mesh's backlash")
+
+    @property
+    def touching(self) -> bool:
+        return self.gap <= TOUCH_MM + self.slack
 
 
 class AssemblyReport(Frozen):
@@ -78,11 +89,11 @@ class AssemblyReport(Frozen):
     center_of_mass: Vec | None = None
 
     def overlaps(self) -> list[Interference]:
-        return [i for i in self.interferences if i.volume > INTERFERENCE_MM3]
+        return [i for i in self.interferences if i.overlapping]
 
     def broken_mates(self) -> list[str]:
         overlapping = {frozenset((i.a, i.b)) for i in self.overlaps()}
-        return [m.joint for m in self.mates if m.gap > TOUCH_MM or frozenset((m.parent, m.child)) in overlapping]
+        return [m.joint for m in self.mates if not m.touching or frozenset((m.parent, m.child)) in overlapping]
 
 
 class Artifact(Frozen):

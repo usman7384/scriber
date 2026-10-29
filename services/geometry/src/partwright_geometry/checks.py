@@ -1,4 +1,4 @@
-from partwright_geometry.models import TOUCH_MM, AssemblyReport, Finding, PartMetrics
+from partwright_geometry.models import AssemblyReport, Finding, PartMetrics
 
 
 def validity_findings(parts: list[PartMetrics]) -> list[Finding]:
@@ -38,6 +38,6 @@ def assembly_findings(report: AssemblyReport) -> list[Finding]:
             suggestion="put both connectors on the faces that meet",
         )
         for m in report.mates
-        if m.gap > TOUCH_MM
+        if not m.touching
     ]
     return out

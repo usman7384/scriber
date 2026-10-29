@@ -1,5 +1,5 @@
 from partwright_ir.expr import to_python
-from partwright_ir.fasteners import screw_holes
+from partwright_ir.fasteners import boss_diameter, screw_holes
 from partwright_ir.model import BossPattern, Expr, Groove, Keyway, Lid, Rib, ShellWithLid, SpurGear
 
 HighLevel = SpurGear | Rib | BossPattern | ShellWithLid | Lid | Keyway | Groove
@@ -23,7 +23,7 @@ def high_level(f: HighLevel, on: list[str], at: str, enclosures: dict[str, Shell
         case ShellWithLid():
             bosses = _bosses_args(f)
             size = f"{_x(f.width)}, {_x(f.depth)}, {_x(f.height)}, {_x(f.wall)}, {_x(f.floor)}"
-            return [f"    tool = _enclosure({size}, {bosses[0]}, {bosses[1]})", *_add(f.id)]
+            return [f"    tool = _enclosure({size}, {bosses[0]}, {bosses[1]}, {bosses[2]})", *_add(f.id)]
         case Lid():
             box = enclosures[f.of]
             bosses = _bosses_args(box)
@@ -40,8 +40,8 @@ def high_level(f: HighLevel, on: list[str], at: str, enclosures: dict[str, Shell
 def _bosses_args(f: ShellWithLid) -> tuple[str, str, str]:
     if f.screw is None:
         return "None", "None", "None"
-    nominal, pilot, clearance = screw_holes(f.screw)
-    diameter = repr(2.5 * nominal) if f.boss_diameter is None else _x(f.boss_diameter)
+    _, pilot, clearance = screw_holes(f.screw)
+    diameter = repr(boss_diameter(f.screw)) if f.boss_diameter is None else _x(f.boss_diameter)
     return diameter, repr(pilot), repr(clearance)
 
 

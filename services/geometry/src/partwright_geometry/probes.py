@@ -4,16 +4,18 @@ from typing import Any
 from build123d import Convexity, Face, GeomType, Plane, Shape, Vector
 from OCP.BRepClass import BRepClass_FaceClassifier
 from OCP.BRepGProp import BRepGProp_Face
-from OCP.BRepIntCurveSurface import BRepIntCurveSurface_Inter
 from OCP.BRepTools import BRepTools
 from OCP.gp import gp_Lin, gp_Pnt, gp_Pnt2d, gp_Vec
+from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
 from OCP.TopAbs import TopAbs_IN
 
-from partwright_geometry.metrics import FULL_TURN, concave_cylinders
+from partwright_geometry.metrics import concave_cylinders
 from partwright_geometry.models import HoleInfo
 
 GRID = 5
 RAY_START = 1e-3
+# the two sides of a wall face apart within 45 deg; a ray leaving through a neighbouring face turned further is crossing their corner
+CORNER_COS = math.cos(math.radians(45))
 Sample = tuple[Vector, Vector]
 Probe = tuple[float, Vector, str]
 
@@ -48,20 +50,29 @@ def edge_distance(shape: Shape[Any], hole: HoleInfo) -> float | None:
     return None
 
 
-def thinnest(shape: Shape[Any]) -> Probe | None:
-    probes = [(t, p, _describe(f)) for f in shape.faces() for p, n in samples(f) if (t := thickness(shape, p, n)) is not None]
+def thinnest(shape: Shape[Any], limit: float) -> Probe | None:
+    # rays stop at the limit since only nearer exits can fail the rule; one intersector keeps each face's search structure
+    rays = IntCurvesFace_ShapeIntersector()
+    rays.Load(shape.wrapped, 1e-7)
+    probes = [(t, p, _describe(f)) for f in shape.faces() for p, n in samples(f) if (t := thickness(rays, f, p, n, limit)) is not None]
     return min(probes, key=lambda x: x[0], default=None)
 
 
-def thickness(shape: Shape[Any], point: Vector, normal: Vector) -> float | None:
-    rays = BRepIntCurveSurface_Inter()
-    rays.Init(shape.wrapped, gp_Lin(point.to_pnt(), (-normal).to_dir()), 1e-7)
-    hits = []
-    while rays.More():
-        if rays.W() > RAY_START:
-            hits.append(rays.W())
-        rays.Next()
-    return min(hits, default=None)
+def thickness(rays: IntCurvesFace_ShapeIntersector, face: Face, point: Vector, normal: Vector, limit: float) -> float | None:
+    rays.Perform(gp_Lin(point.to_pnt(), (-normal).to_dir()), RAY_START, limit)
+    if rays.NbPnt() == 0:
+        return None
+    i = min(range(1, rays.NbPnt() + 1), key=rays.WParameter)
+    hit = Face(rays.Face(i))
+    if _normal(hit, rays.UParameter(i), rays.VParameter(i)).dot(normal) > -CORNER_COS and set(hit.edges()) & set(face.edges()):
+        return None
+    return float(rays.WParameter(i))
+
+
+def _normal(face: Face, u: float, v: float) -> Vector:
+    p, normal = gp_Pnt(), gp_Vec()
+    BRepGProp_Face(face.wrapped).Normal(u, v, p, normal)
+    return Vector(normal).normalized()
 
 
 def internal_corners(shape: Shape[Any]) -> list[Probe]:
@@ -73,7 +84,7 @@ def internal_corners(shape: Shape[Any]) -> list[Probe]:
     fillets = [
         (c.radius, c.point, f"vertical internal fillet R{c.radius:g}")
         for c in concave_cylinders(shape)
-        if c.span < FULL_TURN and abs(c.axis.Z) > 1 - 1e-6
+        if not c.bore and abs(c.axis.Z) > 1 - 1e-6
     ]
     return sharp + fillets
 

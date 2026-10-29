@@ -68,16 +68,18 @@ def _bosses(pl, out, points, d, h, hole_d, hole_depth):
     return tool, holes
 
 
-def _corners(w, d, wall, bd):
-    x, y = (w - wall - bd) / 2, (d - wall - bd) / 2
+def _corners(w, d, wall, bd, clear):
+    # screw centres keep 1.5 clearance diameters from the outer edge, the usual fastener edge distance
+    inset = max((wall + bd) / 2, 1.5 * clear)
+    x, y = w / 2 - inset, d / 2 - inset
     return [(sx * x, sy * y) for sx in (-1, 1) for sy in (-1, 1)]
 
 
-def _enclosure(w, d, h, wall, floor, bd, pilot):
+def _enclosure(w, d, h, wall, floor, bd, pilot, clear):
     box = Box(w, d, h, align=UP) - Pos(0, 0, floor) * Box(w - 2 * wall, d - 2 * wall, h, align=UP)
     if bd is None:
         return box
-    for x, y in _corners(w, d, wall, bd):
+    for x, y in _corners(w, d, wall, bd, clear):
         box = box + Pos(x, y, floor) * Cylinder(bd / 2, h - floor, align=UP)
         box = box - Pos(x, y, h + 1) * Cylinder(pilot / 2, h - floor + 1, align=DOWN)
     return box
@@ -89,8 +91,10 @@ def _lid(w, d, wall, t, lip, gap, bd, clear):
     lid = Box(w, d, t, align=UP) + Pos(0, 0, -lip) * ring
     if bd is None:
         return lid
-    for x, y in _corners(w, d, wall, bd):
-        lid = lid - Pos(x, y, -lip) * Cylinder(bd / 2 + gap, lip, align=UP)
+    for x, y in _corners(w, d, wall, bd, clear):
+        # the lip stops short of each boss across its full width, so its ends are square and leave no sliver
+        nx, ny = min(abs(x) - bd / 2 - gap, iw / 2 - wall), min(abs(y) - bd / 2 - gap, idp / 2 - wall)
+        lid = lid - Pos(math.copysign(nx + w / 2, x), math.copysign(ny + d / 2, y), -lip) * Box(w, d, lip, align=UP)
         lid = lid - Pos(x, y, t / 2) * Cylinder(clear / 2, 3 * t)
     return lid
 
