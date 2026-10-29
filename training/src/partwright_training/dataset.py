@@ -16,11 +16,12 @@ import yaml
 
 from partwright_agent import OllamaLLM, misquoted
 from partwright_geometry import LocalGeometry
-from partwright_training.context import documented, edited, grounding
-from partwright_training.families import FAMILIES
+from partwright_training.context import documented, edited, grounding, tabled
+from partwright_training.families import FAMILIES, S3_FAMILIES
+from partwright_training.intent import intended
 from partwright_training.names import renamed
 from partwright_training.paraphrase import REGISTERS, Paraphraser, defaults, requote
-from partwright_training.render import Prompt, render
+from partwright_training.render import Prompt, exposing, render
 from partwright_training.samples import Sample, Task, generate_sample, repair_sample, requirement_sample
 from partwright_training.spec import Spec
 from partwright_training.verify import design_failures, failures
@@ -28,6 +29,10 @@ from partwright_training.verify import design_failures, failures
 HELDOUT_OFFSET = 500_000
 PRIOR_OFFSET = 7_000_000
 DOCUMENTED, VAGUE, PARAPHRASED, EDIT = 0.15, 0.15, 0.45, 0.08
+# share of hole-table parts asked for with the table in the project documents instead of the request
+TABLED = 0.4
+# S3 requests that name a few parameters to expose, as the showcase prompts do
+EXPOSED = 0.3
 EVAL_CASES = (
     "evals/cases/m1.yaml",
     "evals/cases/challenge.yaml",
@@ -36,6 +41,7 @@ EVAL_CASES = (
     "evals/cases/parts.yaml",
     "evals/cases/benchmark.yaml",
     "evals/cases/conventions.yaml",
+    "evals/cases/showcase.yaml",
 )
 
 
@@ -51,7 +57,8 @@ class Pool:
     def __init__(self, size: int) -> None:
         self._free: queue.Queue[LocalGeometry] = queue.Queue()
         for _ in range(size):
-            self._free.put(LocalGeometry())
+            # gear pairs spend a minute in the default wall-thickness probe; more under a full pool
+            self._free.put(LocalGeometry(timeout_s=600))
 
     @contextmanager
     def geometry(self) -> Iterator[LocalGeometry]:
@@ -66,19 +73,26 @@ class Pool:
             self._free.get().close()
 
 
-def make(seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_rate: float, requirement_rate: float) -> Outcome:
+def make(
+    seed: int, pool: Pool, para: Paraphraser | None, samples: bool, repair_rate: float, requirement_rate: float, s3: bool = False
+) -> Outcome:
     rng = random.Random(seed)
-    family = list(FAMILIES)[seed % len(FAMILIES)]
-    spec = renamed(FAMILIES[family](rng), rng)
+    families = S3_FAMILIES if s3 else FAMILIES
+    family = list(families)[seed % len(families)]
+    spec = renamed(families[family](rng), rng)
+    spec = intended(spec) if s3 else spec
     prompt = render(spec, rng)
+    if s3 and prompt.style != "spec" and rng.random() < EXPOSED:
+        prompt = exposing(prompt, spec, rng)
     out = Path(tempfile.mkdtemp(prefix="pw-ft-"))
     try:
         with pool.geometry() as g:
             problems = failures(spec, g, out / "verify")
             made: list[Sample] = []
             if samples and not problems:
-                edit = edit_task(spec, rng, g, out) if not spec.exempt and rng.random() < EDIT else None
-                task = edit or variant(spec, prompt, rng, para, FAMILIES[family](random.Random(seed + PRIOR_OFFSET)), seed)
+                edit = edit_task(spec, rng, g, out) if not spec.exempt and not spec.positions and rng.random() < EDIT else None
+                prior = families[family](random.Random(seed + PRIOR_OFFSET))
+                task = edit or variant(spec, prompt, rng, para, intended(prior) if s3 else prior, seed)
                 prompt = task.prompt
                 if bad := misquoted(task.design, prompt.text):
                     return Outcome(spec, prompt, [f"misquoted: {bad[0][:100]}"], [])
@@ -106,6 +120,10 @@ def variant(spec: Spec, prompt: Prompt, rng: random.Random, para: Paraphraser | 
     if spec.exempt:
         # a standard part that breaks a default rule must not meet that rule in a project context
         return Task(prompt, None, spec.design)
+    if spec.positions:
+        # a hole table is never paraphrased or reduced to facts one value at a time
+        table = tabled(spec, rng) if roll < TABLED else None
+        return Task(*table) if table else Task(prompt, grounding(spec, rng, prior), spec.design)
     if roll < DOCUMENTED:
         return Task(*documented(spec, rng))
     context = grounding(spec, rng, prior)
@@ -155,6 +173,9 @@ def main() -> None:
     p.add_argument("--cases", type=Path, help="write the held-out cases here (evals/cases/synthetic.yaml)")
     p.add_argument("--paraphrase-model", help="local Ollama model that rewrites prompts, e.g. qwen3.5:4b")
     p.add_argument("--onpolicy", type=Path, nargs="*", default=[], help="repair samples from partwright-collect to merge in")
+    p.add_argument(
+        "--s3", action="store_true", help="add the S3 families (gears, shafts, housings, assemblies, hole tables) and feature intents"
+    )
     args = p.parse_args()
     base = args.seed * 1_000_000
     pool = Pool(args.workers)
@@ -166,9 +187,9 @@ def main() -> None:
     try:
         with ThreadPoolExecutor(args.workers) as ex:
             seeds = range(base, base + args.specs)
-            train = list(ex.map(lambda s: make(s, pool, para, True, args.repair_rate, args.requirement_rate), seeds))
+            train = list(ex.map(lambda s: make(s, pool, para, True, args.repair_rate, args.requirement_rate, args.s3), seeds))
             held_seeds = range(base + HELDOUT_OFFSET, base + HELDOUT_OFFSET + args.heldout * 2) if args.cases else range(0)
-            held = [o for o in ex.map(lambda s: make(s, pool, None, False, 0, 0), held_seeds) if not o.problems][: args.heldout]
+            held = [o for o in ex.map(lambda s: make(s, pool, None, False, 0, 0, args.s3), held_seeds) if not o.problems][: args.heldout]
     finally:
         pool.close()
     leaks = eval_ngrams(Path.cwd())
@@ -184,6 +205,8 @@ def main() -> None:
             encoding="utf-8",
         )
     card = _card(train, kept, len(held))
+    if args.s3:
+        card["s3"] = _s3_coverage(kept)
     (args.out / "card.json").write_text(json.dumps(card, indent=2), encoding="utf-8")
     print(json.dumps(card, indent=2))
 
@@ -204,6 +227,24 @@ def _card(train: list[Outcome], kept: list[Sample], heldout: int) -> dict[str, A
         "coverage": _coverage(kept),
         "licence": "all generated by partwright-training; no third-party data",
     }
+
+
+def _s3_coverage(kept: list[Sample]) -> dict[str, int]:
+    c: Counter[str] = Counter()
+    for s in kept:
+        if s.kind != "generate":
+            continue
+        design = json.loads(s.messages[-1][1])
+        features = [f for part in design["parts"] for f in part["features"]]
+        c["features"] += len(features)
+        c["features with intent"] += sum(bool(f.get("intent")) for f in features)
+        c["lid mates (implied joints)"] += sum(f["kind"] == "lid" for f in features)
+        if len(design["parts"]) > 1:
+            c[f"assemblies of {len(design['parts'])} parts"] += 1
+        c.update(f"joint {j.get('kind', 'fastened')}" for j in (design.get("assembly") or {}).get("joints", []))
+        if s.family == "table":
+            c["hole table in the project documents" if s.style == "documented-table" else "hole table in the request"] += 1
+    return dict(sorted(c.items()))
 
 
 def _load(path: Path) -> list[Sample]:

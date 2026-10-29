@@ -1,0 +1,236 @@
+# M6 showcase benchmark: one-line prompts for recognisable parts and small assemblies. Our own wording.
+# Reference designs: evals/parity/m6/reference/<id>.json; the gate is partwright_evals.parity_m6 (M6-SHOWCASE).
+- id: sc01-gear-pair
+  rows: [M6-SHOWCASE]
+  prompt: "Spur gear pair, module 2: a 20-tooth pinion and a 40-tooth wheel, both 12 mm wide with 8 mm bores, meshing at the correct centre distance; expose module, pinion_teeth and wheel_teeth as parameters."
+  checks:
+    - {kind: holes, description: two 8 mm bores, count: 2, diameter_min: 7.9, diameter_max: 8.1}
+    - {kind: hole_spacing, description: centre distance 60, value: 60, diameter_min: 7.9, diameter_max: 8.1}
+    - {kind: extent, description: face width 12, value: 12}
+    - {kind: extent, description: overall length 124, value: 124}
+  shape:
+    - {kind: teeth, description: 20-tooth pinion with a 44 tip diameter, count: 20, value: 44}
+    - {kind: teeth, description: 40-tooth wheel with an 84 tip diameter, count: 40, value: 84}
+    - {kind: parts, description: two gears, count: 2}
+    - {kind: mates, description: one mesh joint without interference, count: 1}
+  params: [module, pinion_teeth, wheel_teeth]
+
+- id: sc02-vbelt-pulley
+  rows: [M6-SHOWCASE]
+  prompt: "V-belt pulley, 90 mm outside diameter and 28 mm wide, with two 38 degree V grooves 12 mm apart, each 9.7 mm wide at the rim and 11 mm deep, a 16 mm bore and a 32 mm hub standing 10 mm off one face; expose outside_diameter, groove_angle and bore as parameters."
+  checks:
+    - {kind: extent, description: outside diameter 90, value: 90}
+    - {kind: extent, description: length over the hub 38, value: 38}
+    - {kind: holes, description: one 16 mm bore, count: 1, diameter_min: 15.9, diameter_max: 16.1}
+  params: [outside_diameter, groove_angle, bore]
+
+- id: sc03-keyed-shaft
+  rows: [M6-SHOWCASE]
+  prompt: "Stepped shaft 180 mm long: a 25 mm middle section 120 mm long between two 20 mm journals 30 mm long, a DIN 6885 keyway 40 mm long centred on the middle section, and a 1.3 mm wide, 0.5 mm deep circlip groove 5 mm from each end; expose shaft_diameter, journal_diameter and keyway_length as parameters."
+  checks:
+    - {kind: extent, description: length 180, value: 180}
+    - {kind: extent, description: middle diameter 25, value: 25}
+  params: [shaft_diameter, journal_diameter, keyway_length]
+
+- id: sc04-pillow-block
+  rows: [M6-SHOWCASE]
+  prompt: "Pillow block housing for a 52 mm bearing: a 130 x 38 x 15 mm base with two 11 mm bolt holes 100 mm apart, an 80 mm round housing on a 40 mm shaft centre height, and a 52 mm bore through it; expose centre_height, bearing_diameter and bolt_spacing as parameters."
+  checks:
+    - {kind: extent, description: base length 130, value: 130}
+    - {kind: extent, description: width 38, value: 38}
+    - {kind: extent, description: height 80, value: 80}
+    - {kind: holes, description: one 52 mm bearing bore, count: 1, diameter_min: 51.9, diameter_max: 52.1}
+    - {kind: holes, description: two 11 mm bolt holes, count: 2, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: bolt holes 100 apart, value: 100, diameter_min: 10.9, diameter_max: 11.1}
+  params: [centre_height, bearing_diameter, bolt_spacing]
+
+- id: sc05-gearbox-housing
+  rows: [M6-SHOWCASE]
+  prompt: "Gearbox housing with a bolted lid: a 160 x 120 x 80 mm open box with 6 mm walls and floor, M5 screw bosses in the four corners, a 6 mm lid with a 5 mm locating lip, two 60 mm bearing bosses standing 10 mm out of the front wall at 70 mm centres with 47 mm bores, and a 6 mm rib under each boss; expose wall, boss_spacing and bearing_bore as parameters."
+  checks:
+    - {kind: extent, description: length 160, value: 160}
+    - {kind: extent, description: height with the lid 86, value: 86}
+    - {kind: holes, description: two 47 mm bearing bores, count: 2, diameter_min: 46.9, diameter_max: 47.1}
+    - {kind: hole_spacing, description: bearing centres 70 apart, value: 70, diameter_min: 46.9, diameter_max: 47.1}
+    - {kind: holes, description: four M5 clearance holes in the lid, count: 4, diameter_min: 5.3, diameter_max: 5.8}
+  shape:
+    - {kind: parts, description: box and lid, count: 2}
+    - {kind: mates, description: lid seated on the box, count: 1}
+  params: [wall, boss_spacing, bearing_bore]
+
+- id: sc06-nema17-mount
+  rows: [M6-SHOWCASE]
+  prompt: "NEMA 17 motor mount, a 5 mm thick L bracket: a 60 x 60 mm upright face with a 23 mm pilot hole and four 3.4 mm holes on a 31 mm square, and a 60 x 50 mm base with two 5.5 mm holes 40 mm apart and a 30 x 8 mm belt slot; expose thickness, motor_hole_spacing and slot_length as parameters."
+  checks:
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: extent, description: base depth 50, value: 50}
+    - {kind: holes, description: one 23 mm pilot hole, count: 1, diameter_min: 22.9, diameter_max: 23.1}
+    - {kind: holes, description: four motor holes, count: 4, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: hole_spacing, description: motor square 31, value: 31, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: holes, description: two base holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: base holes 40 apart, value: 40, diameter_min: 5.4, diameter_max: 5.6}
+  params: [thickness, motor_hole_spacing, slot_length]
+
+- id: sc07-camera-mount
+  rows: [M6-SHOWCASE]
+  prompt: "Camera mount block 60 x 40 x 12 mm with a 1/4-20 tripod thread in the centre of the bottom (5.1 mm tap drill, 10 mm deep) and two 4.5 mm clearance holes 48 mm apart through the top; expose thickness, thread_depth and mount_hole_spacing as parameters."
+  checks:
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: thickness 12, value: 12}
+    - {kind: holes, description: one tripod tap drill, count: 1, diameter_min: 5.0, diameter_max: 5.2}
+    - {kind: holes, description: two clearance holes, count: 2, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: clearance holes 48 apart, value: 48, diameter_min: 4.4, diameter_max: 4.6}
+  params: [thickness, thread_depth, mount_hole_spacing]
+
+- id: sc08-gripper-finger
+  rows: [M6-SHOWCASE]
+  prompt: "Robot gripper finger 80 mm long and 20 mm wide, 10 mm thick at the root tapering to 6 mm at the tip, with two 3.4 mm mounting holes 12 mm apart near the root and five 1 mm deep grip grooves across the inner face near the tip at 4 mm pitch; expose length, tip_thickness and groove_count as parameters."
+  checks:
+    - {kind: extent, description: length 80, value: 80}
+    - {kind: extent, description: width 20, value: 20}
+    - {kind: extent, description: root thickness 10, value: 10}
+    - {kind: holes, description: two mounting holes, count: 2, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: hole_spacing, description: mounting holes 12 apart, value: 12, diameter_min: 3.3, diameter_max: 3.5}
+  params: [length, tip_thickness, groove_count]
+
+- id: sc09-electronics-enclosure
+  rows: [M6-SHOWCASE]
+  prompt: "Electronics enclosure, box and lid: 120 x 80 x 40 mm with 2 mm walls and floor, M3 screw bosses in the four corners, a 2 mm lid with a 4 mm locating lip and 0.2 mm clearance, and six 3 x 20 mm vent slots in the lid at 8 mm pitch; expose height, wall and vent_count as parameters."
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: height with the lid 42, value: 42}
+    - {kind: holes, description: four M3 pilot holes in the bosses, count: 4, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: holes, description: four M3 clearance holes in the lid, count: 4, diameter_min: 3.3, diameter_max: 3.5}
+  shape:
+    - {kind: parts, description: box and lid, count: 2}
+    - {kind: mates, description: lid seated on the box, count: 1}
+  params: [height, wall, vent_count]
+
+- id: sc10-hinge
+  rows: [M6-SHOWCASE]
+  prompt: "Butt hinge: two 40 x 30 x 3 mm leaves joined by three 8 mm knuckles on a 4 mm pin with a 7 mm head, 4.2 mm pin holes, and two 4.5 mm countersunk screw holes in each leaf; expose leaf_length, knuckle_diameter and pin_diameter as parameters."
+  checks:
+    - {kind: extent, description: open width 60, value: 60}
+    - {kind: extent, description: knuckle diameter 8, value: 8}
+    - {kind: holes, description: four countersunk screw holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: min_holes, description: pin holes in the knuckles, count: 1, diameter_min: 4.1, diameter_max: 4.3}
+  shape:
+    - {kind: parts, description: two leaves and a pin, count: 3}
+    - {kind: mates, description: leaf on leaf and pin in the knuckles, count: 2}
+  params: [leaf_length, knuckle_diameter, pin_diameter]
+
+- id: sc11-shaft-clamp
+  rows: [M6-SHOWCASE]
+  prompt: "Two-piece clamp for a 20 mm shaft: two 50 x 20 x 15 mm halves, each with a half bore, held by two M5 screws 35 mm apart, with 5.5 mm clearance holes in the top half and 4.2 mm tapping holes in the bottom half; expose shaft_diameter, screw_spacing and half_height as parameters."
+  checks:
+    - {kind: extent, description: length 50, value: 50}
+    - {kind: extent, description: width 20, value: 20}
+    - {kind: extent, description: height 30, value: 30}
+    - {kind: holes, description: two clearance holes, count: 2, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: holes, description: two tapping holes, count: 2, diameter_min: 4.1, diameter_max: 4.3}
+    - {kind: hole_spacing, description: screws 35 apart, value: 35, diameter_min: 5.4, diameter_max: 5.6}
+  shape:
+    - {kind: parts, description: two halves, count: 2}
+    - {kind: mates, description: halves face to face, count: 1}
+  params: [shaft_diameter, screw_spacing, half_height]
+
+- id: sc12-servo-horn-bracket
+  rows: [M6-SHOWCASE]
+  prompt: "Servo pan bracket on a round horn: a 20 mm disc horn 2 mm thick with a 5 mm centre hole and four 1.5 mm holes on a 14 mm circle, carrying a 40 x 25 x 2 mm plate with four matching 2 mm holes and a 25 mm tall, 2 mm thick upright along one short edge; expose horn_diameter, hole_circle and upright_height as parameters."
+  checks:
+    - {kind: extent, description: plate length 40, value: 40}
+    - {kind: extent, description: plate width 25, value: 25}
+    - {kind: holes, description: one horn centre hole, count: 1, diameter_min: 4.9, diameter_max: 5.1}
+    - {kind: holes, description: four horn holes, count: 4, diameter_min: 1.4, diameter_max: 1.6}
+    - {kind: holes, description: four plate holes, count: 4, diameter_min: 1.9, diameter_max: 2.1}
+    - {kind: hole_spacing, description: plate holes on a 14 circle, value: 14, diameter_min: 1.9, diameter_max: 2.1}
+  shape:
+    - {kind: parts, description: horn and bracket, count: 2}
+    - {kind: mates, description: bracket on the horn, count: 1}
+  params: [horn_diameter, hole_circle, upright_height]
+
+- id: sc13-flange-coupling
+  rows: [M6-SHOWCASE]
+  prompt: "Rigid flange coupling for 20 mm shafts: two identical halves bolted face to face, each a 90 mm flange 12 mm thick with a 40 mm hub 30 mm long, a 20 mm bore with a DIN 6885 keyway, and four 9 mm bolt holes on a 65 mm circle; expose flange_diameter, bolt_circle and hub_length as parameters."
+  checks:
+    - {kind: extent, description: flange diameter 90, value: 90}
+    - {kind: extent, description: overall length 84, value: 84}
+    - {kind: holes, description: eight bolt holes in the two halves, count: 8, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: bolt circle 65, value: 65, diameter_min: 8.9, diameter_max: 9.1}
+  shape:
+    - {kind: parts, description: two halves, count: 2}
+    - {kind: mates, description: halves face to face, count: 1}
+  params: [flange_diameter, bolt_circle, hub_length]
+
+- id: sc14-angle-bracket
+  rows: [M6-SHOWCASE]
+  prompt: "Heavy angle bracket: two 60 mm legs 80 mm wide and 8 mm thick at right angles, two 6 mm triangular gussets with 40 mm sides in the inside corner, and two 9 mm holes 50 mm apart in each leg; expose thickness, gusset_size and hole_spacing as parameters."
+  checks:
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: leg 60, value: 60}
+    - {kind: holes, description: four 9 mm holes, count: 4, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: holes 50 apart, value: 50, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_axes, description: holes in both legs, count: 2, diameter_min: 8.9, diameter_max: 9.1}
+  params: [thickness, gusset_size, hole_spacing]
+
+- id: sc15-hub-gear
+  rows: [M6-SHOWCASE]
+  prompt: "Spur gear, module 1.5 with 36 teeth and a 12 mm face width, a 30 mm hub 10 mm long on one side, and a 10 mm bore with a DIN 6885 keyway; expose module, teeth and hub_length as parameters."
+  checks:
+    - {kind: extent, description: tip diameter 57, value: 57}
+    - {kind: extent, description: length over the hub 22, value: 22}
+  shape:
+    - {kind: teeth, description: 36 teeth with a 57 tip diameter, count: 36, value: 57}
+  params: [module, teeth, hub_length]
+
+- id: sc16-heat-sink
+  rows: [M6-SHOWCASE]
+  prompt: "Heat sink: a 60 x 60 mm base 5 mm thick with fifteen 1.5 mm fins 20 mm tall running its full length; expose fin_count, fin_height and base_thickness as parameters."
+  checks:
+    - {kind: extent, description: base 60, value: 60}
+    - {kind: extent, description: height 25, value: 25}
+  params: [fin_count, fin_height, base_thickness]
+
+- id: sc17-piston
+  rows: [M6-SHOWCASE]
+  prompt: "Hydraulic piston 40 mm in diameter and 30 mm long with a 12 mm rod bore through the centre and two O-ring grooves 3.6 mm wide and 2.5 mm deep, 6 mm in from each end; expose diameter, groove_width and groove_depth as parameters."
+  checks:
+    - {kind: extent, description: diameter 40, value: 40}
+    - {kind: extent, description: length 30, value: 30}
+    - {kind: holes, description: one 12 mm rod bore, count: 1, diameter_min: 11.9, diameter_max: 12.1}
+  params: [diameter, groove_width, groove_depth]
+
+- id: sc18-pi-tray
+  rows: [M6-SHOWCASE]
+  prompt: "Raspberry Pi 4 tray: an open box 95 x 66 x 14 mm with 2 mm walls and floor, four 6 mm standoffs 5 mm tall with 2.5 mm holes on the board's 58 x 49 mm pattern, and a 2 mm rib 6 mm tall across the floor between them; expose standoff_height, wall and rib_height as parameters."
+  checks:
+    - {kind: extent, description: length 95, value: 95}
+    - {kind: extent, description: width 66, value: 66}
+    - {kind: extent, description: height 14, value: 14}
+    - {kind: holes, description: four standoff holes, count: 4, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: hole_spacing, description: board holes 58 apart, value: 58, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: hole_spacing, description: board holes 49 apart, value: 49, diameter_min: 2.4, diameter_max: 2.6}
+  params: [standoff_height, wall, rib_height]
+
+- id: sc19-handwheel
+  rows: [M6-SHOWCASE]
+  prompt: "Handwheel 125 mm in diameter: a rim 10 mm wide and 12 mm thick, five 8 mm wide spokes, and a 30 mm hub 20 mm long with a 10 mm bore; expose diameter, spoke_count and hub_length as parameters."
+  checks:
+    - {kind: extent, description: diameter 125, value: 125}
+    - {kind: extent, description: hub length 20, value: 20}
+    - {kind: holes, description: one 10 mm bore, count: 1, diameter_min: 9.9, diameter_max: 10.1}
+  params: [diameter, spoke_count, hub_length]
+
+- id: sc20-flange-bearing
+  rows: [M6-SHOWCASE]
+  prompt: "Square flange bearing housing: an 86 x 86 x 12 mm flange with four 11 mm holes on a 64 mm square, a 72 mm boss 20 mm tall on one face, and a stepped bore with a 62 mm bearing seat 16 mm deep from the boss end and a 50 mm through hole; expose flange_thickness, bolt_spacing and seat_depth as parameters."
+  checks:
+    - {kind: extent, description: flange 86, value: 86}
+    - {kind: extent, description: height 32, value: 32}
+    - {kind: holes, description: four 11 mm holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: hole_spacing, description: bolt square 64, value: 64, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: holes, description: one 62 mm bearing seat, count: 1, diameter_min: 61.9, diameter_max: 62.1}
+    - {kind: counterbores, description: stepped bore, count: 1}
+  params: [flange_thickness, bolt_spacing, seat_depth]

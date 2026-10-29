@@ -1,0 +1,140 @@
+{
+  "ir_version": 2,
+  "title": "V-belt pulley",
+  "params": [
+    {
+      "name": "outside_diameter",
+      "value": 90,
+      "unit": "mm"
+    },
+    {
+      "name": "rim_width",
+      "value": 28,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_pitch",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_angle",
+      "value": 38,
+      "unit": "deg"
+    },
+    {
+      "name": "groove_width",
+      "value": 9.7,
+      "unit": "mm",
+      "description": "groove width at the rim"
+    },
+    {
+      "name": "groove_depth",
+      "value": 11,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 16,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_diameter",
+      "value": 32,
+      "unit": "mm"
+    },
+    {
+      "name": "hub_length",
+      "value": 10,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "pulley",
+      "name": "Pulley",
+      "material": "aluminium",
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "bore / 2",
+                  0
+                ],
+                [
+                  "outside_diameter / 2",
+                  0
+                ],
+                [
+                  "outside_diameter / 2",
+                  "rim_width / 2 - groove_pitch / 2 - groove_width / 2"
+                ],
+                [
+                  "outside_diameter / 2 - groove_depth",
+                  "rim_width / 2 - groove_pitch / 2 - groove_width / 2 + groove_depth * tan(groove_angle / 2)"
+                ],
+                [
+                  "outside_diameter / 2 - groove_depth",
+                  "rim_width / 2 - groove_pitch / 2 + groove_width / 2 - groove_depth * tan(groove_angle / 2)"
+                ],
+                [
+                  "outside_diameter / 2",
+                  "rim_width / 2 - groove_pitch / 2 + groove_width / 2"
+                ],
+                [
+                  "outside_diameter / 2",
+                  "rim_width / 2 + groove_pitch / 2 - groove_width / 2"
+                ],
+                [
+                  "outside_diameter / 2 - groove_depth",
+                  "rim_width / 2 + groove_pitch / 2 - groove_width / 2 + groove_depth * tan(groove_angle / 2)"
+                ],
+                [
+                  "outside_diameter / 2 - groove_depth",
+                  "rim_width / 2 + groove_pitch / 2 + groove_width / 2 - groove_depth * tan(groove_angle / 2)"
+                ],
+                [
+                  "outside_diameter / 2",
+                  "rim_width / 2 + groove_pitch / 2 + groove_width / 2"
+                ],
+                [
+                  "outside_diameter / 2",
+                  "rim_width"
+                ],
+                [
+                  "hub_diameter / 2",
+                  "rim_width"
+                ],
+                [
+                  "hub_diameter / 2",
+                  "rim_width + hub_length"
+                ],
+                [
+                  "bore / 2",
+                  "rim_width + hub_length"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "revolve",
+          "id": "body",
+          "name": "Body",
+          "sketch": "profile",
+          "axis": "Y"
+        }
+      ]
+    }
+  ]
+}

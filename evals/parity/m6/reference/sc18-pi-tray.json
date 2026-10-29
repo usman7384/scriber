@@ -1,0 +1,146 @@
+{
+  "ir_version": 2,
+  "title": "Raspberry Pi 4 tray",
+  "params": [
+    {
+      "name": "length",
+      "value": 95,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 66,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 14,
+      "unit": "mm"
+    },
+    {
+      "name": "wall",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "standoff_diameter",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "standoff_height",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "standoff_hole",
+      "value": 2.5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_spacing_x",
+      "value": 58,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_spacing_y",
+      "value": 49,
+      "unit": "mm"
+    },
+    {
+      "name": "rib_thickness",
+      "value": 2,
+      "unit": "mm"
+    },
+    {
+      "name": "rib_height",
+      "value": 6,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "tray",
+      "name": "Pi tray",
+      "material": "PLA",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "tray",
+          "name": "Tray",
+          "sketch": "outline",
+          "distance": "height"
+        },
+        {
+          "kind": "shell",
+          "id": "hollow",
+          "name": "Hollow",
+          "thickness": "wall",
+          "open": [
+            {
+              "normal": "+z"
+            }
+          ]
+        },
+        {
+          "kind": "boss_pattern",
+          "id": "standoffs",
+          "name": "Standoffs",
+          "plane": {
+            "ref": "XY",
+            "offset": "wall"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "hole_spacing_x",
+            "spacing_y": "hole_spacing_y"
+          },
+          "diameter": "standoff_diameter",
+          "height": "standoff_height",
+          "hole_diameter": "standoff_hole"
+        },
+        {
+          "kind": "rib",
+          "id": "rib",
+          "name": "Floor rib",
+          "plane": {
+            "ref": "XY",
+            "offset": "wall"
+          },
+          "start": [
+            "-length / 2",
+            0
+          ],
+          "end": [
+            "length / 2",
+            0
+          ],
+          "thickness": "rib_thickness",
+          "height": "rib_height"
+        }
+      ]
+    }
+  ]
+}

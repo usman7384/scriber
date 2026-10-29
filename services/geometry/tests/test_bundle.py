@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry, export_bundle, open_bundle
+from partwright_geometry import LocalGeometry, export_bundle, feature_tree, open_bundle
 from partwright_ir import Design
 
 
@@ -29,3 +29,12 @@ def test_edited_design_without_a_new_hash_is_rejected(geometry: LocalGeometry, p
             dst.writestr(item, data.replace(b'"value": 10.0', b'"value": 12.0') if item == "design.json" else data)
     with pytest.raises(ValueError, match="does not match the manifest hash"):
         open_bundle(bad)
+
+
+def test_feature_tree_links_high_level_features_to_what_they_cut() -> None:
+    shaft = {"kind": "extrude", "id": "shaft", "name": "Shaft", "sketch": "s", "distance": 60}
+    key = {"kind": "keyway", "id": "key", "name": "Keyway", "of": "shaft"}
+    sketch = {"id": "s", "entities": [{"kind": "circle", "diameter": 25}]}
+    part = {"id": "p", "name": "P", "sketches": [sketch], "features": [shaft, key]}
+    tree = feature_tree(Design.model_validate({"title": "t", "params": [], "parts": [part]}))
+    assert [e.depends_on for e in tree if e.id == "key"] == [["shaft"]]

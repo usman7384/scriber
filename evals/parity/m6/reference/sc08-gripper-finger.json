@@ -1,0 +1,166 @@
+{
+  "ir_version": 2,
+  "title": "Gripper finger",
+  "params": [
+    {
+      "name": "length",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "root_thickness",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "tip_thickness",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "mount_hole",
+      "value": 3.4,
+      "unit": "mm"
+    },
+    {
+      "name": "mount_hole_spacing",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_count",
+      "value": 5,
+      "unit": ""
+    },
+    {
+      "name": "groove_pitch",
+      "value": 4,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_depth",
+      "value": 1,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_width",
+      "value": 1.5,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "finger",
+      "name": "Gripper finger",
+      "material": "PLA",
+      "sketches": [
+        {
+          "id": "side",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  "length",
+                  0
+                ],
+                [
+                  "length",
+                  "tip_thickness"
+                ],
+                [
+                  0,
+                  "root_thickness"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "groove",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "length - 28",
+                0
+              ],
+              "width": "groove_width",
+              "height": "width + 2"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "side",
+          "distance": "width",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "hole",
+          "id": "mount_holes",
+          "name": "Mount holes",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                6,
+                0
+              ],
+              [
+                "6 + mount_hole_spacing",
+                0
+              ]
+            ]
+          },
+          "diameter": "mount_hole"
+        },
+        {
+          "kind": "extrude",
+          "id": "groove",
+          "name": "Grip groove",
+          "sketch": "groove",
+          "distance": "groove_depth",
+          "mode": "cut"
+        },
+        {
+          "kind": "pattern",
+          "id": "grooves",
+          "name": "Grip grooves",
+          "features": [
+            "groove"
+          ],
+          "type": "linear",
+          "count": "groove_count",
+          "direction": "x",
+          "spacing": "groove_pitch"
+        }
+      ]
+    }
+  ]
+}

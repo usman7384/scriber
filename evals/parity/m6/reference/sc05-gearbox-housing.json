@@ -1,0 +1,165 @@
+{
+  "ir_version": 2,
+  "title": "Gearbox housing",
+  "params": [
+    {
+      "name": "length",
+      "value": 160,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "name": "height",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "wall",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "lid_thickness",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "lip_height",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "boss_spacing",
+      "value": 70,
+      "unit": "mm"
+    },
+    {
+      "name": "boss_diameter",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "boss_height",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "bearing_bore",
+      "value": 47,
+      "unit": "mm"
+    },
+    {
+      "name": "bearing_height",
+      "value": 45,
+      "unit": "mm",
+      "description": "bearing centre above the floor underside"
+    },
+    {
+      "name": "rib_thickness",
+      "value": 6,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "box",
+      "name": "Box",
+      "material": "aluminium",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "shell_with_lid",
+          "id": "shell",
+          "name": "Housing",
+          "width": "length",
+          "depth": "width",
+          "height": "height",
+          "wall": "wall",
+          "floor": "wall",
+          "lid_thickness": "lid_thickness",
+          "lip_height": "lip_height",
+          "screw": "M5"
+        },
+        {
+          "kind": "boss_pattern",
+          "id": "bearing_bosses",
+          "name": "Bearing bosses",
+          "plane": {
+            "ref": "shell.front"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-boss_spacing / 2",
+                "bearing_height"
+              ],
+              [
+                "boss_spacing / 2",
+                "bearing_height"
+              ]
+            ]
+          },
+          "diameter": "boss_diameter",
+          "height": "boss_height",
+          "hole_diameter": "bearing_bore",
+          "hole_depth": "boss_height + wall"
+        },
+        {
+          "kind": "rib",
+          "id": "rib_1",
+          "name": "Rib 1",
+          "plane": {
+            "ref": "shell.front"
+          },
+          "start": [
+            "-boss_spacing / 2",
+            0
+          ],
+          "end": [
+            "-boss_spacing / 2",
+            "bearing_height - boss_diameter / 2 + 10"
+          ],
+          "thickness": "rib_thickness",
+          "height": "boss_height"
+        },
+        {
+          "kind": "rib",
+          "id": "rib_2",
+          "name": "Rib 2",
+          "plane": {
+            "ref": "shell.front"
+          },
+          "start": [
+            "boss_spacing / 2",
+            0
+          ],
+          "end": [
+            "boss_spacing / 2",
+            "bearing_height - boss_diameter / 2 + 10"
+          ],
+          "thickness": "rib_thickness",
+          "height": "boss_height"
+        }
+      ]
+    },
+    {
+      "id": "lid",
+      "name": "Lid",
+      "material": "aluminium",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "lid",
+          "id": "lid",
+          "name": "Lid",
+          "of": "box"
+        }
+      ]
+    }
+  ]
+}

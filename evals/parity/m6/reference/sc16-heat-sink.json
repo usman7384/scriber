@@ -1,0 +1,104 @@
+{
+  "ir_version": 2,
+  "title": "Heat sink",
+  "params": [
+    {
+      "name": "size",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "base_thickness",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "fin_count",
+      "value": 15,
+      "unit": ""
+    },
+    {
+      "name": "fin_thickness",
+      "value": 1.5,
+      "unit": "mm"
+    },
+    {
+      "name": "fin_height",
+      "value": 20,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "sink",
+      "name": "Heat sink",
+      "material": "aluminium",
+      "sketches": [
+        {
+          "id": "base",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size"
+            }
+          ]
+        },
+        {
+          "id": "fin",
+          "plane": {
+            "ref": "XY",
+            "offset": "base_thickness"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "-size / 2 + fin_thickness / 2",
+                0
+              ],
+              "width": "fin_thickness",
+              "height": "size"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "base",
+          "name": "Base",
+          "sketch": "base",
+          "distance": "base_thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "fin",
+          "name": "Fin",
+          "sketch": "fin",
+          "distance": "fin_height"
+        },
+        {
+          "kind": "pattern",
+          "id": "fins",
+          "name": "Fins",
+          "features": [
+            "fin"
+          ],
+          "type": "linear",
+          "count": "fin_count",
+          "direction": "x",
+          "spacing": "(size - fin_thickness) / (fin_count - 1)"
+        }
+      ]
+    }
+  ]
+}

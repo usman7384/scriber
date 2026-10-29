@@ -1,0 +1,156 @@
+{
+  "ir_version": 2,
+  "title": "Keyed stepped shaft",
+  "params": [
+    {
+      "name": "shaft_diameter",
+      "value": 25,
+      "unit": "mm"
+    },
+    {
+      "name": "journal_diameter",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "body_length",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "name": "journal_length",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "keyway_length",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_width",
+      "value": 1.3,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_depth",
+      "value": 0.5,
+      "unit": "mm"
+    },
+    {
+      "name": "groove_inset",
+      "value": 5,
+      "unit": "mm",
+      "description": "groove distance from the shaft end"
+    }
+  ],
+  "parts": [
+    {
+      "id": "shaft",
+      "name": "Shaft",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "j1",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter"
+            }
+          ]
+        },
+        {
+          "id": "mid",
+          "plane": {
+            "ref": "XY",
+            "offset": "journal_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "shaft_diameter"
+            }
+          ]
+        },
+        {
+          "id": "j2",
+          "plane": {
+            "ref": "XY",
+            "offset": "journal_length + body_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "journal_1",
+          "name": "Journal 1",
+          "sketch": "j1",
+          "distance": "journal_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "mid",
+          "distance": "body_length"
+        },
+        {
+          "kind": "extrude",
+          "id": "journal_2",
+          "name": "Journal 2",
+          "sketch": "j2",
+          "distance": "journal_length"
+        },
+        {
+          "kind": "keyway",
+          "id": "keyway",
+          "name": "Keyway",
+          "of": "body",
+          "position": "(body_length - keyway_length) / 2",
+          "length": "keyway_length"
+        },
+        {
+          "kind": "groove",
+          "id": "groove_1",
+          "name": "Circlip groove 1",
+          "of": "journal_1",
+          "position": "groove_inset",
+          "width": "groove_width",
+          "depth": "groove_depth"
+        },
+        {
+          "kind": "groove",
+          "id": "groove_2",
+          "name": "Circlip groove 2",
+          "of": "journal_2",
+          "position": "journal_length - groove_inset - groove_width",
+          "width": "groove_width",
+          "depth": "groove_depth"
+        }
+      ]
+    }
+  ]
+}
