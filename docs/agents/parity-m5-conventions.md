@@ -51,3 +51,7 @@ Before step 3, two one-line registrations are needed. This change leaves both fi
 
 - The adapter learns only the HS-1 families. It is a demonstration of the habit-learning path, not a replacement for the default model.
 - A request that names a value should override the profile. The corpus never shows such a request, so the benchmark does not test it.
+
+## Result (2026-10-29)
+
+`training/wsl/cx13.sh`: 186 steps in 49 min, export 5 min, `partwright-ir:0.8b-cx13` (Q8_0, 834 MB). On the 20 held-out cases the adapter scores 60.3 against 2.5 for the base `qwen3.5:0.8b-q8_0` (`evals/results/parity-20261029-171950`), so CX-13 passes. It learned the house style for enclosures and plates only; it is a demonstration, not a default model.

@@ -1,0 +1,454 @@
+{
+  "candidate": [
+    {
+      "id": "c01-pcb-enclosure",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 40.0
+    },
+    {
+      "id": "c02-battery-housing",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": true,
+        "edge": true,
+        "names": true
+      },
+      "score": 60.0
+    },
+    {
+      "id": "c03-tray",
+      "built": true,
+      "followed": {
+        "wall": true,
+        "fillet": true,
+        "names": true
+      },
+      "score": 100.0
+    },
+    {
+      "id": "c04-sensor-box",
+      "built": false,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 40.0
+    },
+    {
+      "id": "c05-keypad-case",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 40.0
+    },
+    {
+      "id": "c06-junction-box",
+      "built": true,
+      "followed": {
+        "wall": true,
+        "fillet": true,
+        "names": true
+      },
+      "score": 100.0
+    },
+    {
+      "id": "c07-desk-bin",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "fillet": true,
+        "names": true
+      },
+      "score": 66.7
+    },
+    {
+      "id": "c08-driver-enclosure",
+      "built": true,
+      "followed": {
+        "wall": true,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 60.0
+    },
+    {
+      "id": "c09-small-housing",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 40.0
+    },
+    {
+      "id": "c10-electronics-enclosure",
+      "built": true,
+      "followed": {
+        "wall": true,
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 60.0
+    },
+    {
+      "id": "p01-mounting-plate",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p02-pump-base",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": true,
+        "names": true
+      },
+      "score": 75.0
+    },
+    {
+      "id": "p03-fixing-bar",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p04-sensor-plate",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": true,
+        "names": true
+      },
+      "score": 75.0
+    },
+    {
+      "id": "p05-adapter-plate",
+      "built": true,
+      "followed": {
+        "insert": true,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 75.0
+    },
+    {
+      "id": "p06-strip",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p07-display-mount",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p08-small-plate",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p09-rail-clamp",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": false,
+        "names": true
+      },
+      "score": 50.0
+    },
+    {
+      "id": "p10-cover-plate",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": true,
+        "edge": true,
+        "names": true
+      },
+      "score": 75.0
+    }
+  ],
+  "base": [
+    {
+      "id": "c01-pcb-enclosure",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c02-battery-housing",
+      "built": false,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c03-tray",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "fillet": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c04-sensor-box",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c05-keypad-case",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c06-junction-box",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "fillet": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c07-desk-bin",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "fillet": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c08-driver-enclosure",
+      "built": true,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c09-small-housing",
+      "built": false,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "c10-electronics-enclosure",
+      "built": false,
+      "followed": {
+        "wall": false,
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p01-mounting-plate",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p02-pump-base",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p03-fixing-bar",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": true,
+        "names": false
+      },
+      "score": 25.0
+    },
+    {
+      "id": "p04-sensor-plate",
+      "built": true,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": true,
+        "names": false
+      },
+      "score": 25.0
+    },
+    {
+      "id": "p05-adapter-plate",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p06-strip",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p07-display-mount",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p08-small-plate",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p09-rail-clamp",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    },
+    {
+      "id": "p10-cover-plate",
+      "built": false,
+      "followed": {
+        "insert": false,
+        "fillet": false,
+        "edge": false,
+        "names": false
+      },
+      "score": 0.0
+    }
+  ]
+}

@@ -3,12 +3,12 @@
 Generated from `docs/reference/PARITY_CHECKLIST.md` by `partwright-parity-report`; a row is done only with a passing
 acceptance test and a recorded demo (D-030). Evidence paths are in each row's status.
 
-**77 done, 58 in progress, 3 open, of 138 rows.**
+**78 done, 58 in progress, 2 open, of 138 rows.**
 
 | Area | done | in progress | open |
 |---|---|---|---|
 | Inputs | 9 | 8 | 0 |
-| Context Manager / knowledge | 6 | 7 | 1 |
+| Context Manager / knowledge | 7 | 7 | 0 |
 | Generation & output | 8 | 5 | 0 |
 | Parameters & refinement | 6 | 4 | 0 |
 | Verification & manufacturability | 7 | 2 | 1 |
@@ -87,6 +87,5 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 
 | Row | Capability | Status |
 |---|---|---|
-| CX-13 | Fine-tuning on company CAD/design habits (local) | open |
 | VM-9 | "Ready to manufacture" output (printable/machinable as exported) | open |
 | EX-8 | Implicit/field geometry → B-rep connection | open |

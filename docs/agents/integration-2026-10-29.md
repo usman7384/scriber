@@ -25,4 +25,4 @@ These are the inputs to the next data round: assemblies, design intent, table-dr
 
 - VM-9, EX-4 (FCStd half), EX-5 (FreeCAD half): need PrusaSlicer or FreeCAD, which are not installed.
 - EX-8: no marching-cubes or surface-nets dependency.
-- CX-13: adapter trained this session; result recorded in the checklist when its benchmark finishes.
+- CX-13 passed late in the session: the house-style adapter scores 60.3 vs 2.5 for its base (`parity-20261029-171950`).
