@@ -1,0 +1,22 @@
+{
+  "title": "Open-end spanner",
+  "params": [{"name": "thickness", "value": 6, "unit": "mm"}],
+  "parts": [
+    {
+      "id": "spanner",
+      "name": "Spanner",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [[0, -7], [110, -7], [110, -16], [140, -16], [140, -6], [125, -6], [125, 6], [140, 6], [140, 16], [110, 16], [110, 7], [0, 7]]
+            }
+          ]
+        }
+      ],
+      "features": [{"kind": "extrude", "id": "body", "name": "Spanner", "sketch": "outline", "distance": "thickness"}]
+    }
+  ]
+}
