@@ -174,7 +174,7 @@ Conventions:
 | PF-3 | Asset from drawing/photo, up to 90 % accurate, in < 1 min | S20 slide | evals | IN-5/IN-6 fixtures complete < 60 s each | open |
 | PF-4 | Parameter edit update < 1 s | S21 | evals | PR-2 latency check | done (M3): 10 parameter edits, rebuild p50 264 ms, max 531 ms on the RTX 3060 laptop (`parity-20261029-025007`) |
 | PF-5 | Mesh → parametric CAD in minutes | S28 | evals | IN-7 fixture < 5 min | done (M4): STL to valid parametric part in 0.23 s (`parity-20261029-041904`) |
-| PF-6 | Variant exploration in minutes instead of weeks (hundreds/thousands of variants) | S21; S28; S20 | evals | 1,000 parameter variants of the BWB recompile (no LLM) in ≤ 10 min | open |
+| PF-6 | Variant exploration in minutes instead of weeks (hundreds/thousands of variants) | S21; S28; S20 | evals | 1,000 parameter variants of the BWB recompile (no LLM) in ≤ 10 min | done (M4): 1,000 seeded BWB variants rebuilt and checked without the model in 488 s on 8 workers (budget 600 s), all valid (`parity-20261029-034025`, `test_parity_m4_mission` runs a 16-variant slice) |
 | PF-7 | "Seconds" claims (intro post, job ads) | S7, S31 | evals, docs | Record measured p50 for single-part prompts; docs state honestly whether "seconds" is met | open |
 | PF-8 | Local small model on a standard laptop | S20 10:00 | training, evals | Model fits in 16 GB RAM, ≥ 10 tok/s on reference laptop | open |
 

@@ -1,0 +1,14 @@
+{
+  "row": "PF-6",
+  "passed": true,
+  "measured": {
+    "variants": 1000,
+    "valid_single_solids": 1000,
+    "distinct_volumes": 1000,
+    "workers": 8,
+    "elapsed_s": 488.2,
+    "rebuild_p50_s": 3.672,
+    "budget_s": 600.0
+  },
+  "note": "seeded +-10 % on every BWB param; compile and rebuild with validity and mass checks, no exports"
+}
