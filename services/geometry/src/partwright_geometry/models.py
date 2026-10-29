@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from partwright_ir import Design
+
 Vec = tuple[float, float, float]
 Row = tuple[float, float, float, float]
 Placement = tuple[Row, Row, Row]
@@ -101,3 +103,82 @@ class BuildError(RuntimeError):
         super().__init__(message)
         self.kind = kind
         self.feature = feature
+
+
+class FaceGroupInfo(Frozen):
+    name: str
+    faces: int
+    area: float
+    center: Vec
+    normal: Vec | None
+
+
+class StepBody(Frozen):
+    name: str
+    path: str
+    material: str | None
+    density_g_cm3: float | None
+    face_groups: list[FaceGroupInfo]
+
+
+class StepMetadata(Frozen):
+    schema_name: str
+    bodies: list[StepBody]
+
+
+GeoKind = Literal["point", "line", "arc", "circle"]
+ConstraintKind = Literal[
+    "coincident",
+    "horizontal",
+    "vertical",
+    "tangent",
+    "point_on_object",
+    "radius",
+    "diameter",
+    "distance",
+    "distance_x",
+    "distance_y",
+    "angle",
+]
+
+
+class Constraint(Frozen):
+    kind: ConstraintKind
+    refs: list[str]
+    value: float | None = None
+    expr: str | None = None
+
+
+class SketchGeo(Frozen):
+    name: str
+    kind: GeoKind
+    values: list[float]
+
+
+class SketchDof(Frozen):
+    part: str
+    sketch: str
+    geometry: list[SketchGeo]
+    unknowns: int
+    constraints: list[Constraint]
+    redundant: int
+    dof: int | None
+    solve_error: float = 0.0
+    note: str = ""
+
+
+class FeatureEntry(Frozen):
+    part: str
+    id: str
+    name: str
+    kind: str
+    depends_on: list[str]
+
+
+class Bundle(Frozen):
+    title: str
+    design_hash: str
+    design: Design
+    features: list[FeatureEntry]
+    sketches: list[SketchDof]
+    files: list[str]

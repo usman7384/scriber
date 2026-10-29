@@ -226,6 +226,11 @@ class Loft(FeatureBase):
 Feature = Annotated[Extrude | Revolve | Hole | Pattern | Fillet | Chamfer | Shell | AirfoilSection | Loft, Field(discriminator="kind")]
 
 
+class FaceGroup(Frozen):
+    name: str = Field(pattern=r"^[a-z][a-z0-9_]*$", description="e.g. mount_face, load_face")
+    faces: Selector
+
+
 class Part(Frozen):
     id: str
     name: str
@@ -234,6 +239,7 @@ class Part(Frozen):
     datums: list[Datum] = []
     sketches: list[Sketch]
     features: list[Feature] = Field(min_length=1)
+    face_groups: list[FaceGroup] = Field(default=[], description="named faces for simulation and downstream tools")
 
 
 class Connector(Frozen):

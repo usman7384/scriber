@@ -12,8 +12,10 @@ def json_schema() -> dict[str, Any]:
 
 
 def design_hash(design: Design) -> str:
-    # a design without an assembly keeps the hash it had before assemblies existed
-    exclude = {"assembly"} if design.assembly is None else None
+    # a design without an assembly or face groups keeps the hash it had before those existed
+    exclude: dict[str, Any] = {"parts": {i: {"face_groups"} for i, p in enumerate(design.parts) if not p.face_groups}}
+    if design.assembly is None:
+        exclude["assembly"] = True
     return hashlib.sha256(design.model_dump_json(exclude=exclude).encode()).hexdigest()[:16]
 
 

@@ -20,3 +20,4 @@
 - The default model `partwright-ir:4b-s1` is not published: a fresh clone has to build it (`docs/agents/training.md`, about 9 h on the laptop) or pass `--model qwen3.5:4b`. Its GGUF has no vision projector, so it cannot take images (D-027).
 - A clockwise IR `polygon` extrudes toward −Z: build123d takes the face normal from the winding, so `extrude` goes the other way (checked 2026-10-29: a CW square with distance 5 spans z −5…0). The mesh reconstructor emits counter-clockwise polygons; the compiler does not normalise winding.
 - Mesh reconstruction (`reconstruct_mesh`) handles only Z-stacked prismatic meshes and rebuilds fillets and chamfers as sharp edges; see `docs/agents/parity-m4-mesh.md`.
+- GE-3: derived sketch constraints leave 1 DOF on one recorded polygon ("Stepped shaft", `turning_section`, re-solve error 0.04 mm); 893 of 895 recorded sketches are fully constrained. The GE-3 offline test is a strict xfail until the derivation handles it.
