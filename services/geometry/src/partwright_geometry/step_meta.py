@@ -65,7 +65,7 @@ def read_step(path: Path) -> StepMetadata:
         if reader.ReadFile(str(path)) != IFSelect_ReturnStatus.IFSelect_RetDone or not reader.Transfer(doc):
             raise ValueError(f"{path.name} is not a readable STEP file")
     shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
-    bodies = [b for label in _labels(shapes.GetFreeShapes) for b in _bodies(label, TopLoc_Location())]
+    bodies = [b for label in _labels(shapes.GetFreeShapes) for b in _bodies(label, TopLoc_Location(), [])]
     header = path.read_text(encoding="utf-8", errors="replace")[:4000]
     match = SCHEMA.search(header)
     return StepMetadata(schema_name=match.group(1).split()[0] if match else "", bodies=bodies)
@@ -98,15 +98,16 @@ def _set_material(doc: TDocStd_Document, label: TDF_Label, material: str) -> Non
     tool.SetMaterial(label, h(material), h(""), rho or 0.0, h("g/cm3" if rho else ""), h("POSITIVE_RATIO"))
 
 
-def _bodies(label: TDF_Label, loc: TopLoc_Location) -> Iterator[StepBody]:
+def _bodies(label: TDF_Label, loc: TopLoc_Location, path: list[str]) -> Iterator[StepBody]:
+    path = [*path, _get_name(label)]
     if XCAFDoc_ShapeTool.IsAssembly_s(label):
         for component in _labels(lambda seq: XCAFDoc_ShapeTool.GetComponents_s(label, seq, False)):
             referred = TDF_Label()
             XCAFDoc_ShapeTool.GetReferredShape_s(component, referred)
-            yield from _bodies(referred, loc * XCAFDoc_ShapeTool.GetLocation_s(component))
+            yield from _bodies(referred, loc * XCAFDoc_ShapeTool.GetLocation_s(component), path)
         return
     material, rho = _material(label)
-    yield StepBody(name=_get_name(label), material=material, density_g_cm3=rho, face_groups=_face_groups(label, loc))
+    yield StepBody(name=path[-1], path="/".join(path), material=material, density_g_cm3=rho, face_groups=_face_groups(label, loc))
 
 
 def _face_groups(label: TDF_Label, loc: TopLoc_Location) -> list[FaceGroupInfo]:
