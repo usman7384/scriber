@@ -5,6 +5,7 @@
 }
 
 body {
+  min-height: 100dvh;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -20,6 +21,22 @@ textarea {
   font: inherit;
   font-feature-settings: inherit;
   color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+table {
+  border-collapse: collapse;
 }
 
 code,
@@ -44,4 +61,21 @@ pre,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pending {
+  padding: var(--s-4) 0;
+  color: var(--muted);
+}
+.pending[role="alert"] {
+  color: var(--fail);
 }

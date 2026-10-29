@@ -140,7 +140,7 @@
   display: contents;
 }
 
-/* Popovers live in the top layer; these override the UA centring and app.css's [role="tooltip"]. */
+/* Popovers live in the top layer; these override the UA centring. */
 .ui-tooltip,
 .ui-popover {
   position: fixed;

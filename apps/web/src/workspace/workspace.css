@@ -245,16 +245,12 @@
   gap: var(--s-2);
 }
 
-.ws-share {
-  display: grid;
-  gap: var(--s-2);
-  width: min(340px, calc(100vw - 32px));
-}
 .ws-share-row {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  padding: 2px 4px 6px 30px;
 }
-.ws-share input {
+.ws-share-row input {
   flex: 1;
   min-width: 0;
   height: var(--control);
@@ -263,6 +259,10 @@
   border-radius: var(--r-1);
   background: var(--field);
   font-size: var(--t-xs);
+}
+.ws-menu .ws-share-row .ui-button {
+  width: auto;
+  flex: none;
 }
 
 .ws-source {
@@ -295,7 +295,8 @@
   top: calc(100% + 6px);
   right: 0;
   z-index: 5;
-  width: 260px;
+  width: 320px;
+  max-width: calc(100vw - 16px);
   padding: var(--s-2);
   border-radius: var(--r-2);
   background: var(--surface-solid);
@@ -764,7 +765,6 @@
 .ws-param[data-invalid] .ws-param-note {
   color: var(--fail);
 }
-/* input.class beats app.css's ".param input[type=range]" placement. */
 .ws-param input.ws-param-track {
   grid-area: track;
   width: 100%;
@@ -823,148 +823,52 @@
   padding-top: var(--s-2);
 }
 
-/* Slots for the agent I/O package, styled until it brings its own components. */
+/* Agent I/O: status line and stream bottom left, command bar between it and the inspector, scrubber along the bottom. */
 .ws-stream {
   position: absolute;
   left: 12px;
-  bottom: calc(var(--frame-b) + 8px);
+  bottom: 62px;
   z-index: 2;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   gap: var(--s-2);
-  width: min(380px, calc(100% - var(--frame-r) - 24px));
-  max-height: 46%;
-  overflow: auto;
+  width: 380px;
+  max-height: calc(100% - var(--frame-t) - 74px);
 }
-.ws-stream:not(:has(> :not(.ws-mobile))) {
-  display: none;
-}
-.ws-stream > .ws-error {
+.ws-alert {
   padding: 8px 12px;
-}
-.ws-stream .panel {
-  border: 0;
-  background: var(--surface);
-  backdrop-filter: var(--blur);
+  border-radius: var(--r-2);
+  background: var(--surface-solid);
   box-shadow: var(--shadow-float);
 }
-.ws-stream .timeline {
-  max-height: 220px;
-}
 .ws-command {
-  left: calc(var(--frame-l) + 12px);
-  right: calc(var(--frame-r) + 12px);
+  position: absolute;
+  left: 404px;
+  right: calc(var(--insp-w) + 24px);
   bottom: 62px;
-  max-width: 720px;
+  z-index: 2;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 6px;
-}
-.ws-command .refine {
-  flex-wrap: nowrap;
-  gap: 6px;
-}
-.ws-command .chip {
-  flex: none;
-  max-width: 45%;
-  height: 26px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: var(--r-1);
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: var(--t-sm);
-  white-space: nowrap;
-  overflow: hidden;
-}
-.ws-command .chip .link {
-  color: var(--muted);
-}
-.ws-command input {
-  flex: 1;
-  min-width: 0;
-  height: 32px;
-  border: 0;
-  background: transparent;
-  font-size: var(--t-lg);
-}
-.ws-command input:focus-visible {
-  outline-offset: 0;
-}
-.ws-command button[type="submit"] {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: var(--r-1);
-  font-size: var(--t-sm);
 }
 .ws-versions {
+  position: absolute;
   left: 12px;
   right: 12px;
   bottom: 10px;
-  height: 44px;
-  padding: 0 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-.ws-versions .versions {
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 4px;
-  height: 100%;
-}
-.ws-versions .versions li {
-  flex-direction: row;
-  align-items: center;
-  flex: none;
-  gap: 4px;
-  padding: 2px 4px;
-  border-radius: var(--r-1);
-}
-.ws-versions .version {
-  align-items: center;
-  gap: 6px;
-  color: var(--text-2);
-}
-.ws-versions .version img {
-  width: 28px;
-  height: 28px;
-}
-.ws-versions .version > span {
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-}
-.ws-versions .version strong {
-  font: 500 var(--t-sm) var(--mono);
-}
-.ws-versions .version .clamp,
-.ws-versions .version .muted {
-  display: none;
-}
-.ws-versions .versions li .secondary {
-  padding: 2px 8px;
-  border-color: transparent;
-  background: transparent;
-  color: var(--muted);
-  font-size: var(--t-xs);
-}
-.ws-versions .versions li.selected {
-  background: var(--accent-soft);
-}
-.ws-insp-section .stack {
-  gap: var(--s-2);
-}
-.ws-insp-section .stack h2 {
-  font-size: var(--t-xs);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  z-index: 2;
 }
 
-/* Below 1100 px the rail is an icon strip. */
+/* Below 1100 px the rail is an icon strip and the stream rises above the command bar. */
 @media (max-width: 1100px) {
   .ws {
     --rail-w: 44px;
+  }
+  .ws-command {
+    left: 12px;
+  }
+  .ws-stream {
+    bottom: 168px;
   }
   .ws .ws-rail .ws-label,
   .ws .ws-rail .ws-id,
@@ -1040,6 +944,7 @@
   }
   .ws-dock > .ws-float,
   .ws-dock > .ws-stream {
+    justify-content: flex-start;
     position: static;
     inset: auto;
     width: auto;
@@ -1117,17 +1022,22 @@
   .ws-insp-head {
     padding-right: 14px;
   }
-  .ws-versions {
-    height: auto;
-  }
-  .ws-versions .versions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .ws-command {
-    margin: 0;
+  .ws-dock > .ws-command,
+  .ws-dock > .ws-versions {
+    position: static;
     max-width: none;
+    margin: 0;
+  }
+  .ws-dock > .ws-command {
     padding: 8px;
     border-top: 1px solid var(--line);
+  }
+  .ws-dock .agent-bar,
+  .ws-dock .agent-stream,
+  .ws-dock .agent-status,
+  .ws-dock .agent-scrub {
+    background: none;
+    backdrop-filter: none;
+    box-shadow: none;
   }
 }

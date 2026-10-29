@@ -209,7 +209,6 @@
   font-size: var(--t-sm);
   line-height: var(--lh-sm);
 }
-/* Overrides app.css's global tooltip rule: this tooltip is laid out by its callout. */
 .ws-callout .ws-callout-text[role="tooltip"] {
   position: static;
   display: flex;
