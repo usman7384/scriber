@@ -4,11 +4,13 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from partwright_context import KbStats
 from partwright_geometry import Finding
-from partwright_ir import DesignDiff, Process, Provenance, RuleKind
+from partwright_ir import Design, DesignDiff, Process, Provenance, RuleKind
 
-JobKind = Literal["generate", "refine", "edit", "params", "ingest", "batch"]
+JobKind = Literal["generate", "refine", "edit", "params", "ingest", "batch", "build"]
 JobStatus = Literal["queued", "running", "done", "failed"]
-Origin = Literal["generate", "refine", "edit", "params", "restore", "context", "variant", "suggestion"]
+Origin = Literal[
+    "generate", "refine", "edit", "params", "restore", "context", "variant", "suggestion", "design", "sizing", "fork", "material"
+]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
 HookEvent = Literal["version.created", "job.failed", "version.stale"]
 
@@ -132,6 +134,14 @@ class Version(Frozen):
     changes: DesignDiff | None
 
 
+class ForkSource(Frozen):
+    publication: str
+    model_id: str
+    version: int
+    title: str
+    author: str
+
+
 class Model(Frozen):
     id: str
     project_id: str
@@ -141,16 +151,26 @@ class Model(Frozen):
     versions: int
     thumbnail_url: str | None
     stale: bool = False
+    forked_from: ForkSource | None = None
 
 
 class ModelDetail(Model):
     version: Version | None
 
 
+class MaterialOut(Frozen):
+    name: str
+    density_g_cm3: float
+    youngs_modulus_gpa: float
+    yield_mpa: float
+    source: str
+
+
 class Component(Frozen):
     id: str
     name: str
     material: str | None
+    properties: MaterialOut | None = None
     parent: str | None
     joint: str | None
 
@@ -316,3 +336,83 @@ class DownloadV1(Frozen):
 
 class JobRef(Frozen):
     job_id: str
+
+
+class DesignIn(Frozen):
+    design: Design
+    prompt: str | None = None
+
+
+class MaterialIn(Frozen):
+    material: str = Field(min_length=1)
+    part: str | None = None
+
+
+class Usage(Frozen):
+    user: str
+    generations: int
+    limit: int | None
+
+
+class BugIn(Frozen):
+    model_id: str
+    version: int
+    text: str = Field(min_length=1, max_length=10_000)
+    screenshot: str | None = Field(default=None, description="data URL of a PNG or JPEG")
+
+
+class Bug(Frozen):
+    id: str
+    model_id: str
+    version: int
+    text: str
+    user: str
+    created: str
+    screenshot_url: str | None
+
+
+class PublishIn(Frozen):
+    model_id: str
+    version: int | None = None
+
+
+class Publication(Frozen):
+    id: str
+    model_id: str
+    version: int
+    title: str
+    author: str
+    created: str
+    thumbnail_url: str | None
+
+
+class ForkIn(Frozen):
+    project_id: str
+
+
+class Sensitivity(Frozen):
+    name: str
+    value: float
+    unit: str
+    step: float
+    d: dict[str, float | None]
+    error: str | None = None
+
+
+class Sensitivities(Frozen):
+    model_id: str
+    version: int
+    metrics: dict[str, float | None]
+    params: list[Sensitivity]
+
+
+class FaceStress(Frozen):
+    face_group: str
+    max_stress_mpa: float
+    allowable_mpa: float = Field(gt=0)
+
+
+class SimulationIn(Frozen):
+    solver: str = ""
+    load_case: str = ""
+    results: list[FaceStress] = Field(min_length=1)

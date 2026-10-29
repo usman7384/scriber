@@ -1,12 +1,13 @@
 from collections.abc import Callable
+from dataclasses import asdict
 
 from partwright_api import schemas
 from partwright_api.disk import FILE_NAMES
 from partwright_api.repo import Row
-from partwright_api.schemas import Model, Version, VersionData
+from partwright_api.schemas import ForkSource, MaterialOut, Model, Version, VersionData
 from partwright_context import Document
 from partwright_context import Fact as ContextFact
-from partwright_ir import Rule
+from partwright_ir import Material, Rule
 
 Urls = Callable[[str], str]
 
@@ -56,6 +57,7 @@ def model(row: Row, versions: list[tuple[int, VersionData]]) -> Model:
         versions=len(versions),
         thumbnail_url=thumbnail,
         stale=row["stale"],
+        forked_from=ForkSource.model_validate(row["forked_from"]) if row.get("forked_from") else None,
     )
 
 
@@ -84,3 +86,7 @@ def fact(f: ContextFact, file_id: str) -> schemas.Fact:
 
 def rule(r: Rule) -> schemas.Rule:
     return schemas.Rule.model_validate({**r.model_dump(exclude={"source"}), "source_ref": r.source.ref})
+
+
+def material(m: Material) -> MaterialOut:
+    return MaterialOut(**asdict(m))

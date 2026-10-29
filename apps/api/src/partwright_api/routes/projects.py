@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from partwright_api import jobs_db, repo, views
-from partwright_api.auth import require_token
+from partwright_api.auth import User, require_token
 from partwright_api.deps import DepsDep
-from partwright_api.routes.common import need_ollama, need_project, start_generate
+from partwright_api.routes.common import charge, need_ollama, need_project, start_generate
 from partwright_api.schemas import Batch, BatchIn, GenerateIn, Job, Model, Project, ProjectIn
 
 router = APIRouter(dependencies=[Depends(require_token)])
@@ -25,10 +25,10 @@ def get_project(project_id: str, d: DepsDep) -> Project:
 
 
 @router.post("/projects/{project_id}/generate", status_code=202)
-async def generate(project_id: str, body: GenerateIn, d: DepsDep) -> Job:
+async def generate(project_id: str, body: GenerateIn, d: DepsDep, user: User) -> Job:
     need_project(d, project_id)
     await need_ollama(d)
-    return start_generate(d, project_id, body)
+    return start_generate(d, project_id, body, user)
 
 
 @router.get("/projects/{project_id}/models")
@@ -44,7 +44,8 @@ def list_jobs(project_id: str, d: DepsDep, active: bool = False) -> list[Job]:
 
 
 @router.post("/batch", status_code=202)
-async def batch(body: BatchIn, d: DepsDep) -> Batch:
+async def batch(body: BatchIn, d: DepsDep, user: User) -> Batch:
     need_project(d, body.project_id)
     await need_ollama(d)
+    charge(d, user, "generate", len(body.prompts))
     return Batch(jobs=[start_generate(d, body.project_id, GenerateIn(prompt=p, process=body.process)) for p in body.prompts])
