@@ -3,7 +3,7 @@
 Generated from `docs/reference/PARITY_CHECKLIST.md` by `partwright-parity-report`; a row is done only with a passing
 acceptance test and a recorded demo (D-030). Evidence paths are in each row's status.
 
-**60 done, 31 in progress, 47 open, of 138 rows.**
+**61 done, 31 in progress, 46 open, of 138 rows.**
 
 | Area | done | in progress | open |
 |---|---|---|---|
@@ -14,8 +14,8 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | Verification & manufacturability | 4 | 2 | 4 |
 | Assemblies | 2 | 1 | 1 |
 | Export & interop | 4 | 3 | 1 |
-| Workflow & platform | 9 | 4 | 2 |
-| API & automation | 5 | 0 | 4 |
+| Workflow & platform | 10 | 3 | 2 |
+| API & automation | 5 | 1 | 3 |
 | Circular design / simulation hooks | 5 | 0 | 3 |
 | Performance | 4 | 0 | 4 |
 | Demo parts (eval cases) | 4 | 4 | 14 |
@@ -48,9 +48,9 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | EX-5 | Export to other CAD systems (CATIA, NX, SolidWorks, Creo; reference: read now, write in progress) | in progress (M5): docs/INTEROP.md export section; AP242 OCCT round trip drift 1.5e-16 (`parity-20261029-052939`); FreeCAD not installed |
 | EX-6 | Share link (read-only view) | in progress (M3): API half, share link view 200 with GLB, write 401, revoked 404 (`parity-20261029-025007`); viewer page not demoed |
 | WP-8 | Thumbnails for models and versions | in progress (M3): thumbnails change on edit in the UI (mock); server-side regeneration not demoed |
-| WP-10 | Community tab: shared projects (fork requested by users) | in progress (M5): API half, publish by alice, fork by bob with forked_from, original unchanged (`parity-20261029-052939`); no web Community tab |
 | WP-11 | Report a bug from the editor | in progress (M5): API stores model, version, text, user and screenshot byte-identical (`parity-20261029-052939`); web dialog posts the same shape on the mock (`parity-web-20261029-050842`); no end-to-end run |
 | WP-14 | Beginner flow: idea → printable part without CAD experience | in progress (M5): prompt, Generate, Download STL in 3 UI steps on the mock (`parity-web-20261029-050842`); live generation and slicer check not run |
+| AP-8 | Onshape integration: describe a change → native Onshape features | in progress (M5): a described change via refine, exported as 18 named native Onshape features with linked variables against a recorded API mock, 0 import or translation calls (`test_parity_m5_onshape`, scripted model); live run pending; mock written from public docs, not captured |
 | DP-2 | Flanged adapter: Adapter Height 60.0 mm, Base Bolt Dia 8.5 mm, Base Bolt Spacing X 85.0 mm, Base Bolt Spacing Y 60.0 mm | in progress: live `partwright-ir:4b-s1` 1/4 checks, holes 5.5 instead of 8.5 (`parity-20261029-020105`); demo also checks the X 85 to 90 edit |
 | DP-7 | Metal bracket with angled support and screw holes | in progress: live bracket valid with holes but no angled support or gusset (`parity-20261029-020105`) |
 | DP-17 | Housing from model-ready context (Ø82 ±0.2 mm, 4×M6) | in progress (M2): analogous spec-driven plate (Ø20 ±0.1 bore, 4×M6) passes live; the Ø82 housing itself not run |
@@ -85,7 +85,6 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | AP-2 | `generate` endpoint: prompt + optional image/mesh references | open |
 | AP-3 | `modify` endpoint: natural-language change to an existing model | open |
 | AP-7 | Batch processing | open |
-| AP-8 | Onshape integration: describe a change → native Onshape features | open |
 | CD-1 | Requirement/calculation change → geometry updates automatically | open |
 | CD-3 | Simulation results flow back into design | open |
 | CD-5 | Manufacturing method change reshapes geometry | open |
