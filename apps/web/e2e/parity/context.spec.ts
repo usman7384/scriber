@@ -141,7 +141,7 @@ test("CX-1 multi-file upload shows per-file progress from 0 to 100", async ({ pa
 async function generateWithContext(page: Page, names: string[]) {
   await page.goto("/p/p1/context");
   for (const name of names) await page.getByLabel(`Use ${name} as context`).check();
-  await page.getByRole("button", { name: `Use selected as context (${names.length})` }).click();
+  await page.getByRole("button", { name: `Use ${names.length} in the next generation` }).click();
   await expect(page.getByRole("list", { name: "Context files" }).getByRole("listitem")).toHaveCount(
     names.length + 1,
   );
@@ -169,7 +169,7 @@ test("CX-3 selected files as context: the generation carries exactly them and th
   await row.shot("1-generated-with-context");
   const body = api.requests.find((r) => r.path.endsWith("/generate"))?.body as { context_ids?: string[] };
 
-  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Context" }).click();
+  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();
   for (const name of chosen) await expect(usedIn(page, name)).toHaveText("Sensor plate");
   await expect(usedIn(page, "notes.txt")).toHaveText("—");
   await row.shot("2-used-in");
@@ -217,13 +217,13 @@ test("CX-6 knowledge-base level and score follow the formula after uploads and a
     const shown = await read();
     const want = expected();
     row.measured[`${stage}_ui`] =
-      `files ${shown.Files}, facts ${shown.Facts}, rules ${shown.Rules}, used ${shown["Used in generation"]}, score ${shown.score}/${shown.next}, level ${shown.level}`;
+      `files ${shown.files}, facts ${shown.facts}, rules ${shown.rules}, used ${shown.used}, score ${shown.score}/${shown.next}, level ${shown.level}`;
     row.measured[`${stage}_formula`] = `score ${want.score}/${want.next}, level ${want.level}`;
     expect(shown).toMatchObject({
-      Files: want.s.files,
-      Facts: want.s.facts,
-      Rules: want.s.rules,
-      "Used in generation": want.s.used_in_generation,
+      files: want.s.files,
+      facts: want.s.facts,
+      rules: want.s.rules,
+      used: want.s.used_in_generation,
       score: want.score,
       level: want.level,
       next: want.next,
@@ -239,8 +239,8 @@ test("CX-6 knowledge-base level and score follow the formula after uploads and a
   await page.locator(".dropzone input[type=file]").setInputFiles(sixFiles.slice(0, 2));
   await expect(page.getByRole("list", { name: "Uploads" }).getByText("processed")).toHaveCount(2);
   await generateWithContext(page, ["notes.txt"]);
-  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Context" }).click();
-  await expect(card.locator("dd").nth(0)).toHaveText(String((before.Files ?? 0) + 2));
+  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();
+  await expect(card.locator("dd").nth(0)).toHaveText(String((before.files ?? 0) + 2));
   const after = await check("after_2_uploads_1_generation");
   await row.shot("2-after");
   const delta = (after.score ?? 0) - (before.score ?? 0);

@@ -33,3 +33,15 @@ export function layoutGraph(graph: GraphView) {
   });
   return { nodes, edges };
 }
+
+// A viewBox around the nodes, at least min wide and high, so nodes keep a sane size on a big screen.
+export function frame(nodes: PlacedNode[], minWidth: number, minHeight: number) {
+  const xs = nodes.map((n) => n.x);
+  const ys = nodes.map((n) => n.y);
+  const [x0, x1, y0, y1] = nodes.length
+    ? [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
+    : [0, 0, 0, 0];
+  const width = Math.max(x1 - x0 + 40, minWidth);
+  const height = Math.max(y1 - y0 + 40, minHeight);
+  return [(x0 + x1 - width) / 2, (y0 + y1 - height) / 2, width, height] as const;
+}

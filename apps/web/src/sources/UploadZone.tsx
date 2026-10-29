@@ -1,6 +1,9 @@
 import { useState, type DragEvent } from "react";
 import { api, waitForJob } from "../api";
 import { useT } from "../i18n";
+import { cx } from "../ui/cx";
+import { Icon } from "../ui/icons";
+import { FileStatus } from "./FileStatus";
 
 interface Upload {
   name: string;
@@ -12,7 +15,7 @@ interface Upload {
 export function UploadZone({ projectId, onChange }: { projectId: string; onChange: () => void }) {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [over, setOver] = useState(false);
-  const t = useT();
+  const t = useT().context;
 
   const set = (name: string, patch: Partial<Upload>) =>
     setUploads((all) => all.map((u) => (u.name === name ? { ...u, ...patch } : u)));
@@ -29,7 +32,7 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
       await Promise.all(
         files.map(async (f, i) => {
           const job = jobs[i];
-          if (!job) return set(f.name, { status: "failed", error: t.context.noJob });
+          if (!job) return set(f.name, { status: "failed", error: t.noJob });
           set(f.name, { status: "processing" });
           const end = await waitForJob(job.id, (s) => set(f.name, { progress: s.progress ?? 0 }));
           set(f.name, { status: end.status === "done" ? "processed" : "failed", error: end.error });
@@ -48,9 +51,9 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
   };
 
   return (
-    <div className="stack">
+    <>
       <div
-        className={`dropzone${over ? " over" : ""}`}
+        className={cx("dropzone", over && "over")}
         onDragOver={(e) => {
           e.preventDefault();
           setOver(true);
@@ -58,9 +61,10 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         onDragLeave={() => setOver(false)}
         onDrop={drop}
       >
-        <p>{t.context.drop}</p>
-        <label className="button secondary">
-          {t.context.choose}
+        <Icon name="plus" />
+        <span>{t.drop}</span>
+        <label className="ui-button">
+          {t.choose}
           <input
             type="file"
             multiple
@@ -70,17 +74,17 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         </label>
       </div>
       {uploads.length > 0 && (
-        <ul className="list" aria-label={t.context.uploads}>
+        <ul className="src-uploads" aria-label={t.uploads}>
           {uploads.map((u, i) => (
-            <li key={i} className="row">
-              <span>{u.name}</span>
-              <progress value={u.progress} max={100} aria-label={t.context.progress(u.name)} />
-              <span className={`badge ${u.status}`}>{t.status[u.status] ?? u.status}</span>
-              {u.error && <span className="error small">{u.error}</span>}
+            <li key={i}>
+              <span className="src-name">{u.name}</span>
+              <progress value={u.progress} max={100} aria-label={t.progress(u.name)} />
+              <FileStatus status={u.status} error={u.error} />
+              {u.error && <span className="src-error">{u.error}</span>}
             </li>
           ))}
         </ul>
       )}
-    </div>
+    </>
   );
 }
