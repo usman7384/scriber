@@ -1,0 +1,128 @@
+/* The only file with colour literals (docs/design/UI_DIRECTION.md §4). Dark first; light is a full set. */
+:root {
+  color-scheme: dark;
+  --font: "IBM Plex Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+
+  --viewport: #07090b;
+  --bg: #0c0f12;
+  --surface: rgb(18 22 26 / 88%);
+  --surface-solid: #12161a;
+  --raised: #181d22;
+  --field: #20262c;
+  --line: #1f252b;
+  --line-strong: #2b323a;
+  --text: #eef1f3;
+  --text-2: #c9d0d6;
+  --muted: #8a949e;
+  --faint: #5c6670;
+
+  --accent: #4fd1e8;
+  --accent-ink: #03171b;
+  --accent-soft: rgb(79 209 232 / 14%);
+  --accent-line: rgb(79 209 232 / 45%);
+  --pass: #46d18b;
+  --warn: #f2b33d;
+  --fail: #ff5c5c;
+  --pass-soft: rgb(70 209 139 / 12%);
+  --warn-soft: rgb(242 179 61 / 14%);
+  --fail-soft: rgb(255 92 92 / 14%);
+  --warn-line: rgb(242 179 61 / 50%);
+  --axis-x: #e86a6a;
+  --axis-y: #6ad08f;
+  --axis-z: #6aa2e8;
+
+  --grid-minor: rgb(140 160 180 / 13%);
+  --grid-major: rgb(140 160 180 / 26%);
+  --part: #9aa4ae;
+  --part-edge: #1b2026;
+
+  --scrim: rgb(3 5 7 / 55%);
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 45%), 0 0 0 1px var(--line);
+  --blur: blur(14px) saturate(120%);
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 12px;
+  --control: 28px;
+  --control-dense: 24px;
+  --touch: 44px;
+
+  --t-xs: 11px;
+  --lh-xs: 16px;
+  --t-sm: 12px;
+  --lh-sm: 18px;
+  --t-md: 13px;
+  --lh-md: 20px;
+  --t-lg: 15px;
+  --lh-lg: 22px;
+  --t-xl: 20px;
+  --lh-xl: 28px;
+  --t-2xl: 28px;
+  --lh-2xl: 34px;
+
+  --d-fast: 80ms;
+  --d-mid: 140ms;
+  --d-slow: 220ms;
+  --d-camera: 320ms;
+  --ease-in: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.3, 0, 1, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --viewport: #eef1f4;
+  --bg: #f3f5f7;
+  --surface: rgb(255 255 255 / 90%);
+  --surface-solid: #ffffff;
+  --raised: #ffffff;
+  --field: #f0f2f5;
+  --line: #e1e5ea;
+  --line-strong: #c9d0d8;
+  --text: #11161b;
+  --text-2: #2c343c;
+  --muted: #5b6570;
+  --faint: #7d8792;
+
+  --accent: #0a7489;
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(10 116 137 / 10%);
+  --accent-line: rgb(10 116 137 / 45%);
+  --pass: #17804c;
+  --warn: #9a6400;
+  --fail: #c62f2f;
+  --pass-soft: rgb(23 128 76 / 10%);
+  --warn-soft: rgb(154 100 0 / 10%);
+  --fail-soft: rgb(198 47 47 / 10%);
+  --warn-line: rgb(154 100 0 / 50%);
+
+  --grid-minor: rgb(40 60 80 / 8%);
+  --grid-major: rgb(40 60 80 / 16%);
+  --part: #c3cad1;
+  --part-edge: #3a434c;
+
+  --shadow-float: 0 12px 32px rgb(20 30 40 / 14%), 0 0 0 1px var(--line);
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="light"] {
+    --line: var(--line-strong);
+    --blur: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-mid: 80ms;
+    --d-slow: 80ms;
+    --d-camera: 0ms;
+  }
+}
