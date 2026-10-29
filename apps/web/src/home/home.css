@@ -306,9 +306,11 @@ a.home-group[aria-current="page"] {
   .home-project {
     display: contents;
   }
+  /* The icons share the first row; the project switcher gets the second to itself. */
   .home-switcher {
     display: block;
-    flex: 1 1 0;
+    flex: 1 1 100%;
+    order: 1;
     min-width: 0;
     height: var(--touch);
     padding: 0 var(--s-2);
