@@ -88,3 +88,44 @@ class StepBody(Frozen):
 class StepMetadata(Frozen):
     schema_name: str
     bodies: list[StepBody]
+
+
+GeoKind = Literal["point", "line", "arc", "circle"]
+ConstraintKind = Literal[
+    "coincident",
+    "horizontal",
+    "vertical",
+    "tangent",
+    "point_on_object",
+    "radius",
+    "diameter",
+    "distance",
+    "distance_x",
+    "distance_y",
+    "angle",
+]
+
+
+class Constraint(Frozen):
+    kind: ConstraintKind
+    refs: list[str]
+    value: float | None = None
+    expr: str | None = None
+
+
+class SketchGeo(Frozen):
+    name: str
+    kind: GeoKind
+    values: list[float]
+
+
+class SketchDof(Frozen):
+    part: str
+    sketch: str
+    geometry: list[SketchGeo]
+    unknowns: int
+    constraints: list[Constraint]
+    redundant: int
+    dof: int | None
+    solve_error: float = 0.0
+    note: str = ""
