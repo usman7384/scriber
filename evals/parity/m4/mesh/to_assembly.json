@@ -1,0 +1,213 @@
+{
+  "title": "TO bracket on base plate",
+  "params": [
+    {
+      "name": "base_length",
+      "value": 140,
+      "unit": "mm",
+      "description": "base plate length"
+    },
+    {
+      "name": "base_width",
+      "value": 90,
+      "unit": "mm",
+      "description": "base plate width"
+    },
+    {
+      "name": "base_thickness",
+      "value": 5,
+      "unit": "mm",
+      "description": "base plate thickness"
+    },
+    {
+      "name": "mount_spacing_x",
+      "value": 100,
+      "unit": "mm",
+      "description": "mount hole spacing along x"
+    },
+    {
+      "name": "mount_spacing_y",
+      "value": 50,
+      "unit": "mm",
+      "description": "mount hole spacing along y"
+    },
+    {
+      "name": "mount_diameter",
+      "value": 6.6,
+      "unit": "mm",
+      "description": "M6 clearance, ISO 273 normal"
+    },
+    {
+      "name": "bracket_length",
+      "value": 118,
+      "unit": "mm",
+      "description": "bracket design-space length"
+    },
+    {
+      "name": "bracket_width",
+      "value": 68,
+      "unit": "mm",
+      "description": "bracket design-space width"
+    },
+    {
+      "name": "bracket_thickness",
+      "value": 8,
+      "unit": "mm",
+      "description": "bracket thickness"
+    },
+    {
+      "name": "hub_diameter",
+      "value": 10,
+      "unit": "mm",
+      "description": "hub bore"
+    }
+  ],
+  "parts": [
+    {
+      "id": "base",
+      "name": "Base plate",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "base_length",
+              "height": "base_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Plate",
+          "sketch": "outline",
+          "distance": "base_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "mounts",
+          "name": "Mount holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "base_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "mount_spacing_x",
+            "spacing_y": "mount_spacing_y"
+          },
+          "diameter": "mount_diameter"
+        }
+      ]
+    },
+    {
+      "id": "bracket",
+      "name": "Bracket design space",
+      "material": "6061 aluminium",
+      "sketches": [
+        {
+          "id": "outline",
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "bracket_length",
+              "height": "bracket_width"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Plate",
+          "sketch": "outline",
+          "distance": "bracket_thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "mounts",
+          "name": "Mount holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "bracket_thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "mount_spacing_x",
+            "spacing_y": "mount_spacing_y"
+          },
+          "diameter": "mount_diameter"
+        },
+        {
+          "kind": "hole",
+          "id": "hub",
+          "name": "Hub bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "bracket_thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "hub_diameter"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "bracket_seat",
+        "part": "base",
+        "origin": [
+          "-mount_spacing_x / 2",
+          "-mount_spacing_y / 2",
+          "base_thickness"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bracket_mount",
+        "part": "bracket",
+        "origin": [
+          "-mount_spacing_x / 2",
+          "-mount_spacing_y / 2",
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "bracket_on_base",
+        "parent": "bracket_seat",
+        "child": "bracket_mount"
+      }
+    ]
+  }
+}

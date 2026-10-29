@@ -23,13 +23,7 @@ def run(row: str, geometry: LocalGeometry, tmp_path: Path) -> Evidence:
     return run_row(row, ROWS[row], Rig(tmp_path, geometry, FakeLLM([]), load(ROOT / "config.yaml")))
 
 
-@pytest.mark.parametrize("row", ["IN-7", "IN-8", "PF-5"])
+@pytest.mark.parametrize("row", ["IN-7", "IN-8", "CD-4", "PF-5"])
 def test_m4_mesh_row_demo_passes(row: str, geometry: LocalGeometry, tmp_path: Path) -> None:
     ev = run(row, geometry, tmp_path)
     assert ev.passed, ev
-
-
-def test_cd_4_reconstruction_passes_and_assembly_stays_pending(geometry: LocalGeometry, tmp_path: Path) -> None:
-    ev = run("CD-4", geometry, tmp_path)
-    assert ev.measured["reconstruction_passed"] is True, ev
-    assert ev.measured["assembly"] == "pending" and not ev.passed

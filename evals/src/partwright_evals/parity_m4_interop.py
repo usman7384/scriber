@@ -84,7 +84,7 @@ def ge_3(rig: Rig) -> Evidence:
         "max_solve_error": max(r.solve_error for r in reports),
         "constraints": len(constraints),
         "driven_by_ir_expressions": sum(c.expr is not None for c in constraints),
-        "plain_positions": sum(c.expr is None and c.kind.startswith("distance") for c in constraints),
+        "plain_positions": sum(c.expr is None and c.kind.startswith("distance") and len(c.refs) == 1 for c in constraints),
         "bundle_sketches": ", ".join(f"{s.sketch}: {len(s.constraints)} constraints, dof {s.dof}" for s in bundle.sketches),
     }
     (rig.out / "sketches.json").write_text(json.dumps([r.model_dump() for r in reports], indent=1), encoding="utf-8")

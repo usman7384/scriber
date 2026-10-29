@@ -47,6 +47,7 @@ CASES: dict[str, tuple[dict[str, Any], Any]] = {
         ),
     ),
     "polygon": ({"kind": "polygon", "points": [[0, 0], ["w", 0], [30, 25], [0, 10]]}, None),
+    "collinear": ({"kind": "polygon", "points": [[0, 0], [21, 0], ["w", 0], [37, 0], [48, 0]]}, None),
 }
 
 
