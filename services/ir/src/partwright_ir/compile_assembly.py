@@ -1,4 +1,4 @@
-from partwright_ir.assembly import joint_order, joint_tree
+from partwright_ir.assembly import effective_assembly, joint_order, joint_tree
 from partwright_ir.expr import to_python
 from partwright_ir.model import Connector, Design
 
@@ -14,8 +14,9 @@ def _mate(parent, angle, offset, child):
 
 
 def assembly_build(design: Design) -> str:
-    assert design.assembly is not None
-    connectors = {c.id: c for c in design.assembly.connectors}
+    a = effective_assembly(design)
+    assert a is not None
+    connectors = {c.id: c for c in a.connectors}
     tree = joint_tree(design)
     mates = ", ".join(f"({j.id!r}, {tree[c][1]!r}, {c!r})" for c, (j, _) in tree.items())
     lines = [f"MATES = [{mates}]", "", "", "def build():", f"    L = {{p: Location() for p in {[p.id for p in design.parts]!r}}}"]
