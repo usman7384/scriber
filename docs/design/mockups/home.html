@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home (mockup)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  body { overflow: auto; }
+  .home { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+  .side { border-right: 1px solid var(--line); padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; background: var(--bg); }
+  .side .brand { display: flex; align-items: center; gap: 8px; padding: 4px 8px 14px; font-weight: 600; }
+  .side .eyebrow { padding: 10px 10px 4px; }
+  .nav { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: var(--r-1); color: var(--text-2); }
+  .nav .n { margin-left: auto; font: var(--t-xs) var(--mono); color: var(--faint); }
+  .nav.on { background: var(--raised); color: var(--text); box-shadow: inset 2px 0 0 var(--accent); }
+  .side .bottom { margin-top: auto; }
+  .main { padding: 40px 48px; max-width: 1180px; width: 100%; }
+  h1 { font-size: var(--t-2xl); font-weight: 500; letter-spacing: -0.01em; margin: 4px 0 16px; }
+  .composer { position: relative; background: var(--surface-solid); border-radius: var(--r-2); box-shadow: var(--shadow-float); padding: 14px; }
+  .composer .text { font-size: var(--t-lg); min-height: 52px; line-height: 1.5; }
+  .composer .text .num { font-family: var(--mono); color: var(--accent); }
+  .tray { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .att { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; padding: 6px 10px 6px 6px; border: 1px solid var(--line-strong); border-radius: var(--r-1); min-width: 220px; }
+  .att .ic { width: 28px; height: 28px; border-radius: 3px; background: var(--raised); display: grid; place-items: center; color: var(--text-2); }
+  .att .nm { display: flex; flex-direction: column; font-size: var(--t-sm); }
+  .att .nm span:last-child { font: var(--t-xs) var(--mono); color: var(--muted); }
+  .att.fail { border-color: rgb(255 92 92 / 45%); }
+  .row2 { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .starters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 36px; }
+  .starter { border: 1px solid var(--line); border-radius: var(--r-2); padding: 10px 12px; color: var(--text-2); font-size: var(--t-sm); }
+  .starter b { display: block; color: var(--text); font-weight: 500; font-size: var(--t-md); margin-bottom: 2px; }
+  .starter .mono { color: var(--muted); }
+  .listbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .listbar h2 { font-size: var(--t-lg); font-weight: 600; margin: 0 8px 0 0; }
+  .seg { display: inline-flex; background: var(--raised); border-radius: var(--r-1); padding: 2px; }
+  .seg span { padding: 4px 10px; border-radius: 3px; font-size: var(--t-sm); color: var(--muted); }
+  .seg span.on { background: var(--field); color: var(--text); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .card { border-radius: var(--r-2); background: var(--surface-solid); box-shadow: 0 0 0 1px var(--line); overflow: hidden; }
+  .card svg.th { display: block; width: 100%; aspect-ratio: 4 / 3; background: var(--viewport); }
+  .card .meta { padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .card .meta b { font-weight: 500; }
+  .card .meta span { font-size: var(--t-xs); color: var(--muted); }
+  .card .meta .mono { color: var(--faint); }
+  .card .meta .st.pass { color: var(--pass); } .card .meta .st.warn { color: var(--warn); } .card .meta .st.fail { color: var(--fail); }
+  @media (max-width: 640px) {
+    .home { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .main { padding: 20px 16px; }
+    .starters { grid-template-columns: 1fr 1fr; }
+    .att { min-width: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mark" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1"/><circle cx="10" cy="6" r="2"/><path d="M2 10h4v4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
+  <symbol id="i-part" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M2 5l6 3.5L14 5M8 8.5v6"/></symbol>
+  <symbol id="i-face" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" opacity=".45"/><path d="M2 5l6 3.5L14 5 8 1.5z"/></symbol>
+  <symbol id="i-edges" viewBox="0 0 16 16"><path d="M2 5l6 3.5L14 5M8 8.5v6"/><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 16 16"><path d="M2 11 11 2l3 3-9 9z"/><path d="M5 8l1.5 1.5M7 6l1 1M9 4l1.5 1.5"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 16 16"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></symbol>
+  <symbol id="i-assume" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke-dasharray="2.2 1.8"/><path d="M8 5v3.5M8 11v.01"/></symbol>
+  <symbol id="i-pass" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="m5.5 8.2 1.8 1.8 3.3-3.6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13z"/><path d="M8 6.5v3M8 11.6v.01"/></symbol>
+  <symbol id="i-fail" viewBox="0 0 16 16"><path d="M5.5 1.5h5l4 4v5l-4 4h-5l-4-4v-5z"/><path d="m6 6 4 4m0-4-4 4"/></symbol>
+  <symbol id="i-agent" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v3M8 11.5v3M1.5 8h3M11.5 8h3"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 16 16"><path d="M10.5 4.5 5.8 9.2a1.5 1.5 0 0 0 2.1 2.1l5-5a3 3 0 0 0-4.2-4.2l-5 5a4.5 4.5 0 0 0 6.4 6.4l4.2-4.2"/></symbol>
+  <symbol id="i-send" viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4"/></symbol>
+  <symbol id="i-out" viewBox="0 0 16 16"><path d="M8 2v8M5 5l3-3 3 3M3 9v4.5h10V9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
+  <symbol id="i-right" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="i-mill" viewBox="0 0 16 16"><path d="M6 1.5h4v6l-2 3-2-3zM3 14.5h10"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 16 16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 16 16"><path d="M5 4 2 7l3 3"/><path d="M2 7h7.5a4 4 0 0 1 0 8H7"/></symbol>
+  <symbol id="i-image" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="m2 11 3.5-3.5 3 3 2-2L14 12"/></symbol>
+  <symbol id="i-mesh" viewBox="0 0 16 16"><path d="M8 2 14 6 11.5 13.5h-7L2 6z"/><path d="M8 2v6l6-2M8 8 2 6M8 8l-3.5 5.5M8 8l3.5 5.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></symbol>
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><g id="plateg">
+<defs>
+  <pattern id="g-minor" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="var(--grid-minor)" stroke-width="0.35"/></pattern>
+  <pattern id="g-major" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="var(--grid-major)" stroke-width="0.5"/></pattern>
+  <radialGradient id="fade" cx="700" cy="420" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="0.75" stop-color="#fff" stop-opacity="0.35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="m-fade" maskUnits="userSpaceOnUse" x="-500" y="-500" width="2500" height="2000"><rect x="-500" y="-500" width="2500" height="2000" fill="url(#fade)"/></mask>
+  <clipPath id="h1"><ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h2"><ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h3"><ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h4"><ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h0"><ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/></clipPath>
+</defs>
+<g mask="url(#m-fade)">
+  <g transform="matrix(2.771 1.6 -2.771 1.6 700 420)">
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-minor)"/>
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-major)"/>
+    <path d="M0 0H40" stroke="var(--axis-x)" stroke-width="0.5"/>
+    <path d="M0 0V40" stroke="var(--axis-y)" stroke-width="0.5"/>
+  </g>
+</g>
+<g class="part" stroke="var(--part-edge)" stroke-width="1" stroke-linejoin="round">
+  <polygon points="977.1,432.8 755.4,560.8 755.4,580 977.1,452" fill="var(--part-side)"/>
+  <polygon points="755.4,560.8 422.9,368.8 422.9,388 755.4,580" fill="var(--part-side-2)"/>
+  <polygon class="top" points="644.6,240.8 977.1,432.8 755.4,560.8 422.9,368.8" fill="var(--part)"/>
+  <g stroke="none">
+    <g clip-path="url(#h1)"><rect x="700" y="500" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h2)"><rect x="880" y="400" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h3)"><rect x="600" y="240" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h4)"><rect x="440" y="340" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h0)"><rect x="640" y="360" width="140" height="80" fill="var(--part-side-2)"/><ellipse cx="700" cy="420" rx="43.1" ry="24.9" fill="var(--viewport)"/></g>
+  </g>
+  <g fill="none">
+    <ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/>
+  </g>
+</g>
+
+</g></svg>
+<div class="home">
+  <nav class="side" aria-label="Main">
+    <div class="brand"><svg class="i"><use href="#i-mark"/></svg>Partwright</div>
+    <span class="search" style="width:auto;box-shadow:0 0 0 1px var(--line);margin:0 2px 8px"><svg class="i"><use href="#i-search"/></svg><span>Search</span><span class="kbd">Ctrl K</span></span>
+    <span class="eyebrow">Projects</span>
+    <a class="nav"><svg class="i"><use href="#i-grid"/></svg>All parts<span class="n">3</span></a>
+    <a class="nav on"><svg class="i"><use href="#i-part"/></svg>Bracket lab<span class="n">1</span></a>
+    <a class="nav"><svg class="i"><use href="#i-part"/></svg>Fixture shop<span class="n">2</span></a>
+    <a class="nav muted"><svg class="i"><use href="#i-plus"/></svg>New project</a>
+    <span class="eyebrow">Bracket lab</span>
+    <a class="nav"><svg class="i"><use href="#i-doc"/></svg>Sources<span class="n">6</span></a>
+    <div class="bottom">
+      <a class="nav"><svg class="i"><use href="#i-globe"/></svg>Explore</a>
+      <a class="nav"><svg class="i"><use href="#i-gear"/></svg>Settings<span class="n">EN</span></a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <span class="eyebrow">Bracket lab · new part</span>
+    <h1>Describe it with numbers, or drop what you have.</h1>
+    <form class="composer" aria-label="New generation">
+      <div class="text">Motor holder for a NEMA 17, <span class="num">3 mm</span> walls, <span class="num">M3</span> counterbores, fits the mount in the spec<span style="color:var(--accent)">▏</span></div>
+      <div class="tray" aria-label="Attachments">
+        <div class="att"><span class="ic"><svg class="i"><use href="#i-doc"/></svg></span><span class="nm"><span>motor-mount-spec.pdf</span><span>spec · 4 facts</span></span><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span></div>
+        <div class="att"><span class="ic"><svg class="i"><use href="#i-mesh"/></svg></span><span class="nm"><span>nema17-motor.step</span><span>mesh · 42.3 × 42.3 × 48.0</span></span><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span></div>
+        <div class="att"><span class="ic"><svg class="i"><use href="#i-image"/></svg></span><span class="nm"><span>bench-sketch.jpg</span><span>sketch · reading 60 %</span></span><span class="chip" style="border:0;padding:0"><span class="bar"></span></span></div>
+      </div>
+      <div class="row2">
+        <button class="btn ghost"><svg class="i"><use href="#i-clip"/></svg>Attach</button>
+        <span class="chip"><svg class="i"><use href="#i-mill"/></svg>FDM printing</span>
+        <span class="chip"><svg class="i"><use href="#i-doc"/></svg>Sources: all 6</span>
+        <span class="spacer"></span>
+        <span class="faint" style="font-size:11px">Drop files anywhere</span>
+        <button class="btn primary">Generate <span class="kbd" style="color:inherit;border-color:currentColor">Ctrl ⏎</span></button>
+      </div>
+    </form>
+    <div class="starters" aria-label="Examples">
+      <div class="starter"><b>Mounting plate</b><span class="mono">100 × 60 × 5</span> · four M5 holes</div>
+      <div class="starter"><b>L-bracket</b><span class="mono">40 / 30 legs, 4 thk</span> · two M4 per leg</div>
+      <div class="starter"><b>Spacer ring</b><span class="mono">Ø30 / Ø12 × 8</span></div>
+      <div class="starter"><b>Electronics box</b><span class="mono">120 × 80 × 40</span> · 2 mm walls</div>
+    </div>
+
+    <div class="listbar">
+      <h2>Parts</h2>
+      <span class="seg"><span>All</span><span class="on">Bracket lab</span><span>Fixture shop</span></span>
+      <span class="spacer" style="flex:1"></span>
+      <span class="muted" style="font-size:12px">Newest first</span>
+    </div>
+    <div class="grid" role="list" aria-label="Models">
+      <div class="card" role="listitem"><svg class="th" viewBox="380 200 680 420"><use href="#plateg"/></svg>
+        <div class="meta"><b>Sensor plate</b><span class="st warn"><svg class="i"><use href="#i-warn"/></svg>1</span><span>Bracket lab · <span class="mono">v4</span></span><span>2 min ago</span></div></div>
+      <div class="card" role="listitem"><svg class="th" viewBox="300 140 840 520"><use href="#plateg"/></svg>
+        <div class="meta"><b>Edge test plate</b><span class="st pass"><svg class="i"><use href="#i-pass"/></svg>all</span><span>Fixture shop · <span class="mono">v2</span></span><span>Oct 26</span></div></div>
+      <div class="card" role="listitem"><svg class="th" viewBox="420 230 600 380"><use href="#plateg"/></svg>
+        <div class="meta"><b>Hole near edge</b><span class="st fail"><svg class="i"><use href="#i-fail"/></svg>1</span><span>Fixture shop · <span class="mono">v1</span></span><span>Oct 25</span></div></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

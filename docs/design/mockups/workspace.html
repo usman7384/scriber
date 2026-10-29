@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workspace (mockup)</title>
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mark" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1"/><circle cx="10" cy="6" r="2"/><path d="M2 10h4v4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
+  <symbol id="i-part" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M2 5l6 3.5L14 5M8 8.5v6"/></symbol>
+  <symbol id="i-face" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" opacity=".45"/><path d="M2 5l6 3.5L14 5 8 1.5z"/></symbol>
+  <symbol id="i-edges" viewBox="0 0 16 16"><path d="M2 5l6 3.5L14 5M8 8.5v6"/><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 16 16"><path d="M2 11 11 2l3 3-9 9z"/><path d="M5 8l1.5 1.5M7 6l1 1M9 4l1.5 1.5"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 16 16"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></symbol>
+  <symbol id="i-assume" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke-dasharray="2.2 1.8"/><path d="M8 5v3.5M8 11v.01"/></symbol>
+  <symbol id="i-pass" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="m5.5 8.2 1.8 1.8 3.3-3.6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13z"/><path d="M8 6.5v3M8 11.6v.01"/></symbol>
+  <symbol id="i-fail" viewBox="0 0 16 16"><path d="M5.5 1.5h5l4 4v5l-4 4h-5l-4-4v-5z"/><path d="m6 6 4 4m0-4-4 4"/></symbol>
+  <symbol id="i-agent" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v3M8 11.5v3M1.5 8h3M11.5 8h3"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 16 16"><path d="M10.5 4.5 5.8 9.2a1.5 1.5 0 0 0 2.1 2.1l5-5a3 3 0 0 0-4.2-4.2l-5 5a4.5 4.5 0 0 0 6.4 6.4l4.2-4.2"/></symbol>
+  <symbol id="i-send" viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4"/></symbol>
+  <symbol id="i-out" viewBox="0 0 16 16"><path d="M8 2v8M5 5l3-3 3 3M3 9v4.5h10V9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
+  <symbol id="i-right" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="i-mill" viewBox="0 0 16 16"><path d="M6 1.5h4v6l-2 3-2-3zM3 14.5h10"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 16 16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 16 16"><path d="M5 4 2 7l3 3"/><path d="M2 7h7.5a4 4 0 0 1 0 8H7"/></symbol>
+  <symbol id="i-image" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="m2 11 3.5-3.5 3 3 2-2L14 12"/></symbol>
+  <symbol id="i-mesh" viewBox="0 0 16 16"><path d="M8 2 14 6 11.5 13.5h-7L2 6z"/><path d="M8 2v6l6-2M8 8 2 6M8 8l-3.5 5.5M8 8l3.5 5.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></symbol>
+</svg>
+
+<main class="ws">
+  <svg class="scene" viewBox="100 80 1240 760" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g id="scene">
+<defs>
+  <pattern id="g-minor" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="var(--grid-minor)" stroke-width="0.35"/></pattern>
+  <pattern id="g-major" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="var(--grid-major)" stroke-width="0.5"/></pattern>
+  <radialGradient id="fade" cx="700" cy="420" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="0.75" stop-color="#fff" stop-opacity="0.35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="m-fade" maskUnits="userSpaceOnUse" x="-500" y="-500" width="2500" height="2000"><rect x="-500" y="-500" width="2500" height="2000" fill="url(#fade)"/></mask>
+  <clipPath id="h1"><ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h2"><ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h3"><ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h4"><ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h0"><ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/></clipPath>
+</defs>
+<g mask="url(#m-fade)">
+  <g transform="matrix(2.771 1.6 -2.771 1.6 700 420)">
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-minor)"/>
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-major)"/>
+    <path d="M0 0H40" stroke="var(--axis-x)" stroke-width="0.5"/>
+    <path d="M0 0V40" stroke="var(--axis-y)" stroke-width="0.5"/>
+  </g>
+</g>
+<g class="part" stroke="var(--part-edge)" stroke-width="1" stroke-linejoin="round">
+  <polygon points="977.1,432.8 755.4,560.8 755.4,580 977.1,452" fill="var(--part-side)"/>
+  <polygon points="755.4,560.8 422.9,368.8 422.9,388 755.4,580" fill="var(--part-side-2)"/>
+  <polygon class="top" points="644.6,240.8 977.1,432.8 755.4,560.8 422.9,368.8" fill="var(--part)"/>
+  <g stroke="none">
+    <g clip-path="url(#h1)"><rect x="700" y="500" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h2)"><rect x="880" y="400" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h3)"><rect x="600" y="240" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h4)"><rect x="440" y="340" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h0)"><rect x="640" y="360" width="140" height="80" fill="var(--part-side-2)"/><ellipse cx="700" cy="420" rx="43.1" ry="24.9" fill="var(--viewport)"/></g>
+  </g>
+  <g fill="none">
+    <ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/>
+  </g>
+</g>
+
+      <polygon points="644.6,240.8 977.1,432.8 755.4,560.8 422.9,368.8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+
+      <g class="dim">
+        <path class="ext" d="M644.6 240.8 677.8 221.6M977.1 432.8 1010.4 413.6"/>
+        <path d="M672.3 224.8 1004.8 416.8M668 222 676 228M1000.6 414 1009 420"/>
+        <g class="chipscale"><rect x="806" y="309.8" width="66" height="22" rx="3"/><text x="839" y="325">120.00</text></g>
+      </g>
+      <g class="dim">
+        <path class="ext" d="M977.1 432.8 1010.4 452M755.4 560.8 788.7 580"/>
+        <path d="M1004.8 448.8 783.1 576.8M1001 452 1009 446M779 580 787 574"/>
+        <g class="chipscale"><rect x="864" y="501.8" width="58" height="22" rx="3"/><text x="893" y="517">80.00</text></g>
+      </g>
+      <g class="dim edit">
+        <path class="ext" d="M422.9 368.8 389.6 388M422.9 388 389.6 407.2"/>
+        <path d="M395.2 384.8V404"/>
+        <g class="chipscale"><rect x="318" y="383.5" width="66" height="22" rx="3"/><text x="349" y="398.5">7.00▏</text></g>
+      </g>
+      <g class="dim">
+        <path d="M635 266 600 238H566"/>
+        <g class="chipscale"><rect x="494" y="227" width="72" height="22" rx="3"/><text x="530" y="242">4× Ø6.60</text></g>
+      </g>
+      <g class="dim ref">
+        <path d="M740 392 772 366"/>
+        <g class="chipscale"><rect x="772" y="355" width="72" height="22" rx="3"/><text x="808" y="370">(Ø22.00)</text></g>
+      </g>
+
+      <ellipse cx="755.4" cy="528.8" rx="19" ry="12" fill="none" stroke="var(--warn)" stroke-dasharray="3 3"/>
+      <path d="M752 538 738 567" stroke="var(--warn)" stroke-width="1"/>
+      <g transform="translate(745 518)"><circle cx="10" cy="10" r="10" fill="var(--n-50)" stroke="var(--warn)"/><path d="M10 4.5 15.5 14h-11z M10 8.5v2.5M10 12.6v.01" fill="none" stroke="var(--warn)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></g>
+
+      <g transform="translate(150 655)" stroke-width="1.6" stroke-linecap="round">
+        <path d="M20 20 47 35.6" stroke="var(--axis-x)"/><path d="M20 20 -7 35.6" stroke="var(--axis-y)"/><path d="M20 20V-10" stroke="var(--axis-z)"/>
+        <text x="50" y="42" fill="var(--axis-x)" font-size="10" font-family="var(--mono)">X</text>
+        <text x="-16" y="42" fill="var(--axis-y)" font-size="10" font-family="var(--mono)">Y</text>
+        <text x="16" y="-14" fill="var(--axis-z)" font-size="10" font-family="var(--mono)">Z</text>
+      </g>
+    </g>
+  </svg>
+  <svg class="scene-m" viewBox="290 180 770 470" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><use href="#scene"/></svg>
+
+  <header class="topbar">
+    <span class="mark" title="Home"><svg class="i"><use href="#i-mark"/></svg></span>
+    <nav class="crumbs" aria-label="Location">
+      <span class="proj muted">Bracket lab</span><span class="sep">/</span>
+      <b>Sensor plate</b><span class="ver">v4</span>
+    </nav>
+    <span class="health" title="Checks">
+      <span class="st pass"><svg class="i"><use href="#i-pass"/></svg>3</span>
+      <span class="st warn"><svg class="i"><use href="#i-warn"/></svg>1</span>
+      <span class="st warn w"><svg class="i"><use href="#i-assume"/></svg>1 assumed</span>
+    </span>
+    <span class="spacer"></span>
+    <span class="search"><svg class="i"><use href="#i-search"/></svg><span>Search or run a command</span><span class="kbd">Ctrl K</span></span>
+    <button class="btn primary"><svg class="i"><use href="#i-out"/></svg>Deliver</button>
+  </header>
+
+  <aside class="float rail" aria-label="Structure">
+    <h3 class="eyebrow">Structure</h3>
+    <ul class="tree">
+      <li><div class="sel"><svg class="i"><use href="#i-part"/></svg>Sensor mounting plate<span class="id">plate</span></div>
+        <ul><li><div><svg class="i"><use href="#i-face"/></svg>Top face<span class="id">Thickness</span></div></li></ul>
+      </li>
+    </ul>
+    <hr>
+    <div class="link"><svg class="i"><use href="#i-doc"/></svg>Sources<span class="n">6</span></div>
+    <div class="link"><svg class="i"><use href="#i-warn"/></svg>Checks<span class="n">3 / 4</span></div>
+    <div class="link"><svg class="i"><use href="#i-assume"/></svg>Assumptions<span class="n">1</span></div>
+    <div class="link"><svg class="i"><use href="#i-agent"/></svg>Proposals<span class="n">1</span></div>
+  </aside>
+
+  <div class="float hud" role="toolbar" aria-label="View">
+    <button class="btn">Top</button><button class="btn">Front</button><button class="btn">Right</button><button class="btn" aria-pressed="true">Iso</button>
+    <span class="div"></span>
+    <button class="btn icon" aria-pressed="true" title="Edges (E)"><svg class="i"><use href="#i-edges"/></svg></button>
+    <button class="btn icon" aria-pressed="true" title="Dimensions (M)"><svg class="i"><use href="#i-ruler"/></svg></button>
+    <button class="btn icon" aria-pressed="true" title="Pick face (P)"><svg class="i"><use href="#i-face"/></svg></button>
+    <span class="div lbl"></span>
+    <span class="bbox lbl">120.0 × 80.0 × 6.0 mm</span>
+  </div>
+
+  <div class="float callout" style="left:455px; top:575px">
+    <div class="h"><span class="st warn"><svg class="i"><use href="#i-warn"/></svg></span>Hole too close to the edge</div>
+    <div class="m">edge 10.00 · needs ≥ 13.20 mm (2 × Ø)</div>
+    <p>Rule from plate-design-rules.md:4 · 3-axis milling</p>
+    <div class="acts"><button class="btn">Ask agent to fix</button><button class="btn ghost">Show rule</button></div>
+  </div>
+
+  <aside class="float insp" aria-label="Inspector">
+    <header>
+      <div class="what"><svg class="i"><use href="#i-face"/></svg><b>Top face</b><span class="faint mono">plate</span></div>
+      <div class="ctx">Moved by <b class="mono">Thickness</b> · 1.00 mm per mm</div>
+    </header>
+    <section>
+      <div class="sec-h"><span class="eyebrow">Driving</span><span class="live">Live <span class="switch"></span></span></div>
+      <div class="prm pinned edited">
+        <span class="lab">Thickness <span class="prov">PRM</span></span>
+        <span class="val">7.00 <small>mm</small></span>
+        <span class="track"><b style="left:0;width:23.5%"></b><i style="left:23.5%"></i><span class="lo">3</span><span class="hi">20</span></span>
+        <span class="src">was 6.00 · from prompt <q>120 x 80 x 6 mm</q></span>
+      </div>
+    </section>
+    <section class="hide-m">
+      <div class="sec-h"><span class="eyebrow">Parameters · plate</span></div>
+      <div class="prm"><span class="lab">Length <span class="prov">DOC</span></span><span class="val">120.00 <small>mm</small></span></div>
+      <div class="prm"><span class="lab">Width <span class="prov">PRM</span></span><span class="val">80.00 <small>mm</small></span></div>
+      <div class="prm"><span class="lab">Hole Ø <span class="prov">STD</span></span><span class="val">6.60 <small>mm</small></span></div>
+      <div class="prm"><span class="lab">Edge offset <span class="prov assumed">DEF</span></span><span class="val">10.00 <small>mm</small></span></div>
+      <div style="display:flex;gap:6px;margin-top:8px"><button class="btn primary">Apply 1 change <span class="kbd" style="color:inherit;border-color:currentColor">⏎</span></button><button class="btn ghost">Reset</button></div>
+    </section>
+    <section class="hide-m">
+      <div class="sec-h"><span class="eyebrow">Proposal</span><span class="faint mono" style="font-size:11px">agent · 1 of 1</span></div>
+      <div class="proposal">
+        <div class="delta">Edge offset <s>10.00</s> → 14.00 mm</div>
+        <p>Clears the 2 × Ø edge rule on all four holes; plate size unchanged.</p>
+        <div class="acts"><button class="btn primary">Apply</button><button class="btn ghost">Dismiss</button></div>
+      </div>
+    </section>
+    <section class="hide-m">
+      <div class="facts">
+        <div>Mass<b>148 g</b></div><div>Volume<b>54.89 cm³</b></div><div>Material<b>Al 6061</b></div>
+      </div>
+    </section>
+  </aside>
+
+  <div class="float agent" role="status">
+    <svg class="i" style="color:var(--pass)"><use href="#i-pass"/></svg>
+    <span class="t">v3 · refine <span class="muted">“add four M6 holes”</span></span>
+    <button class="btn ghost" style="margin-left:auto"><svg class="i"><use href="#i-undo"/></svg>Revert</button>
+  </div>
+
+  <form class="float cmd" aria-label="Command bar">
+    <div class="row">
+      <span class="target"><svg class="i"><use href="#i-face"/></svg>plate · top face ✕</span>
+      <span class="input">Change the selection, e.g. “2 mm thicker, chamfer the top edge”</span>
+    </div>
+    <div class="row">
+      <button class="btn icon ghost" title="Attach"><svg class="i"><use href="#i-clip"/></svg></button>
+      <span class="chip"><svg class="i"><use href="#i-mill"/></svg>3-axis milling</span>
+      <span class="chip"><svg class="i"><use href="#i-doc"/></svg>2 sources</span>
+      <span class="spacer"></span>
+      <span class="faint" style="font-size:11px">/ for commands</span>
+      <button class="btn icon primary" title="Send"><svg class="i"><use href="#i-send"/></svg></button>
+    </div>
+  </form>
+
+  <div class="scrub" aria-label="Versions">
+    <svg class="i muted"><use href="#i-clock"/></svg>
+    <div class="lane">
+      <span class="tick agent" style="left:4%"><span>v1</span></span>
+      <span class="tick" style="left:30%"><span>v2</span></span>
+      <span class="tick agent" style="left:71%"><span>v3</span></span>
+      <span class="tick cur" style="left:96%"><span>v4</span></span>
+    </div>
+    <span class="muted" style="font-size:12px">v4 · params · 2 min ago</span>
+    <button class="btn ghost">Compare</button>
+  </div>
+</main>
+
+<div class="scrim" id="palette">
+  <div class="float palette" role="dialog" aria-label="Command palette">
+    <div class="q"><svg class="i muted"><use href="#i-search"/></svg><span>thick = 7<span style="color:var(--accent)">▏</span></span></div>
+    <div class="grp">
+      <span class="eyebrow">Parameter</span>
+      <div class="it on"><svg class="i"><use href="#i-ruler"/></svg>Set Thickness <span class="mono muted">6.00 → 7.00 mm</span><span class="r">3–20 mm <span class="kbd">⏎</span></span></div>
+    </div>
+    <div class="grp">
+      <span class="eyebrow">Ask the agent</span>
+      <div class="it"><svg class="i"><use href="#i-agent"/></svg>“thick = 7” as a change to plate<span class="r"><span class="kbd">Ctrl ⏎</span></span></div>
+    </div>
+    <div class="grp">
+      <span class="eyebrow">Recent</span>
+      <div class="it"><svg class="i"><use href="#i-out"/></svg>Export STEP<span class="r"><span class="kbd">Ctrl Shift E</span></span></div>
+      <div class="it"><svg class="i"><use href="#i-globe"/></svg>Copy share link</div>
+      <div class="it"><svg class="i"><use href="#i-mill"/></svg>Check printability (FDM)</div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="sources">
+  <aside class="float sheet" aria-label="Sources">
+    <header><svg class="i"><use href="#i-doc"/></svg><h2>Sources</h2><span class="muted">Bracket lab</span><span class="spacer"></span><button class="btn ghost">Graph</button><button class="btn icon ghost">✕</button></header>
+    <div class="kb"><span>Level 1</span><span class="meter"></span><span class="mono">132 / 400</span></div>
+    <div class="kb" style="justify-content:space-between"><span><b class="mono" style="color:var(--text)">6</b> files</span><span><b class="mono" style="color:var(--text)">21</b> facts</span><span><b class="mono" style="color:var(--text)">2</b> rules</span><span><b class="mono" style="color:var(--text)">1</b> used</span></div>
+    <div class="drop"><svg class="i"><use href="#i-plus"/></svg>Drop specs, drawings, CAD, images or tables<span class="spacer"></span><button class="btn">Choose files</button></div>
+    <ul class="files">
+      <li><span class="box"></span><span class="nm"><span>motor-mount-spec.pdf</span><span>PDF · 1 fact · used in Sensor plate</span></span><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span><span></span></li>
+      <li class="sel"><span class="box on"></span><span class="nm"><span>plate-design-rules.md</span><span>MD · 3 facts · 1 rule</span></span><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span><span></span></li>
+      <li><span class="box on"></span><span class="nm"><span>nema17-motor.step</span><span>STEP · 2 facts</span></span><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span><span></span></li>
+      <li><span class="box"></span><span class="nm"><span>hole-table.csv</span><span>CSV · reading… 60 %</span></span><span class="chip" style="border:0;padding:0"><span class="bar"></span></span><span></span></li>
+      <li><span class="box"></span><span class="nm"><span>sketch.png</span><span style="color:var(--fail)">PNG · no dimensions found</span></span><span class="st fail"><svg class="i"><use href="#i-fail"/></svg></span><span></span></li>
+    </ul>
+    <div style="padding:10px 16px 6px" class="eyebrow">plate-design-rules.md</div>
+    <div class="fact"><span class="mono">hole_edge ≥ 2 × Ø</span> <span class="muted">· rule · 3-axis milling · line 4</span><br><span class="muted">“Hole-to-edge distance at least 2 x D”</span></div>
+    <div class="fact"><span class="mono">corner_radius = 3 mm</span> <span class="muted">· fact · line 9</span></div>
+    <span class="spacer"></span>
+    <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px"><button class="btn primary">Use 2 in the next change</button><button class="btn ghost">Clear</button></div>
+  </aside>
+</div>
+</body>
+</html>

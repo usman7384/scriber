@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent at work (mockup)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .building .part { opacity: 0.5; }
+  .checks li { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; font-size: var(--t-sm); }
+  .checks li .mono { margin-left: auto; color: var(--muted); }
+  .checks { list-style: none; margin: 0; padding: 0; }
+  .tick.ghost::before { background: transparent; border: 1.5px dashed var(--accent); border-radius: 50%; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mark" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1"/><circle cx="10" cy="6" r="2"/><path d="M2 10h4v4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
+  <symbol id="i-part" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M2 5l6 3.5L14 5M8 8.5v6"/></symbol>
+  <symbol id="i-face" viewBox="0 0 16 16"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" opacity=".45"/><path d="M2 5l6 3.5L14 5 8 1.5z"/></symbol>
+  <symbol id="i-edges" viewBox="0 0 16 16"><path d="M2 5l6 3.5L14 5M8 8.5v6"/><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 16 16"><path d="M2 11 11 2l3 3-9 9z"/><path d="M5 8l1.5 1.5M7 6l1 1M9 4l1.5 1.5"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 16 16"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></symbol>
+  <symbol id="i-assume" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke-dasharray="2.2 1.8"/><path d="M8 5v3.5M8 11v.01"/></symbol>
+  <symbol id="i-pass" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="m5.5 8.2 1.8 1.8 3.3-3.6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13z"/><path d="M8 6.5v3M8 11.6v.01"/></symbol>
+  <symbol id="i-fail" viewBox="0 0 16 16"><path d="M5.5 1.5h5l4 4v5l-4 4h-5l-4-4v-5z"/><path d="m6 6 4 4m0-4-4 4"/></symbol>
+  <symbol id="i-agent" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v3M8 11.5v3M1.5 8h3M11.5 8h3"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 16 16"><path d="M10.5 4.5 5.8 9.2a1.5 1.5 0 0 0 2.1 2.1l5-5a3 3 0 0 0-4.2-4.2l-5 5a4.5 4.5 0 0 0 6.4 6.4l4.2-4.2"/></symbol>
+  <symbol id="i-send" viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4"/></symbol>
+  <symbol id="i-out" viewBox="0 0 16 16"><path d="M8 2v8M5 5l3-3 3 3M3 9v4.5h10V9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
+  <symbol id="i-right" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="i-mill" viewBox="0 0 16 16"><path d="M6 1.5h4v6l-2 3-2-3zM3 14.5h10"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 16 16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 16 16"><path d="M5 4 2 7l3 3"/><path d="M2 7h7.5a4 4 0 0 1 0 8H7"/></symbol>
+  <symbol id="i-image" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="m2 11 3.5-3.5 3 3 2-2L14 12"/></symbol>
+  <symbol id="i-mesh" viewBox="0 0 16 16"><path d="M8 2 14 6 11.5 13.5h-7L2 6z"/><path d="M8 2v6l6-2M8 8 2 6M8 8l-3.5 5.5M8 8l3.5 5.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></symbol>
+</svg>
+
+<main class="ws">
+  <svg class="scene building" viewBox="100 80 1240 760" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g id="scene">
+<defs>
+  <pattern id="g-minor" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="var(--grid-minor)" stroke-width="0.35"/></pattern>
+  <pattern id="g-major" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="var(--grid-major)" stroke-width="0.5"/></pattern>
+  <radialGradient id="fade" cx="700" cy="420" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="0.75" stop-color="#fff" stop-opacity="0.35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="m-fade" maskUnits="userSpaceOnUse" x="-500" y="-500" width="2500" height="2000"><rect x="-500" y="-500" width="2500" height="2000" fill="url(#fade)"/></mask>
+  <clipPath id="h1"><ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h2"><ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h3"><ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h4"><ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/></clipPath>
+  <clipPath id="h0"><ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/></clipPath>
+</defs>
+<g mask="url(#m-fade)">
+  <g transform="matrix(2.771 1.6 -2.771 1.6 700 420)">
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-minor)"/>
+    <rect x="-250" y="-250" width="500" height="500" fill="url(#g-major)"/>
+    <path d="M0 0H40" stroke="var(--axis-x)" stroke-width="0.5"/>
+    <path d="M0 0V40" stroke="var(--axis-y)" stroke-width="0.5"/>
+  </g>
+</g>
+<g class="part" stroke="var(--part-edge)" stroke-width="1" stroke-linejoin="round">
+  <polygon points="977.1,432.8 755.4,560.8 755.4,580 977.1,452" fill="var(--part-side)"/>
+  <polygon points="755.4,560.8 422.9,368.8 422.9,388 755.4,580" fill="var(--part-side-2)"/>
+  <polygon class="top" points="644.6,240.8 977.1,432.8 755.4,560.8 422.9,368.8" fill="var(--part)"/>
+  <g stroke="none">
+    <g clip-path="url(#h1)"><rect x="700" y="500" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h2)"><rect x="880" y="400" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h3)"><rect x="600" y="240" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h4)"><rect x="440" y="340" width="120" height="60" fill="var(--part-side-2)"/></g>
+    <g clip-path="url(#h0)"><rect x="640" y="360" width="140" height="80" fill="var(--part-side-2)"/><ellipse cx="700" cy="420" rx="43.1" ry="24.9" fill="var(--viewport)"/></g>
+  </g>
+  <g fill="none">
+    <ellipse cx="755.4" cy="528.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="921.7" cy="432.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="644.6" cy="272.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="478.3" cy="368.8" rx="12.9" ry="7.47"/>
+    <ellipse cx="700" cy="400.8" rx="43.1" ry="24.9"/>
+  </g>
+</g>
+
+      <polygon points="644.6,240.8 977.1,432.8 755.4,560.8 422.9,368.8" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="6 5"/>
+      <path d="M560 300 870 480" stroke="var(--accent-line)" stroke-width="10" opacity=".25"/>
+      <g class="dim ref">
+        <path d="M672.3 224.8 1004.8 416.8"/>
+        <g class="chipscale"><rect x="806" y="309.8" width="72" height="22" rx="3"/><text x="842" y="325">(120.00)</text></g>
+      </g>
+    </g>
+  </svg>
+
+  <header class="topbar">
+    <span class="mark"><svg class="i"><use href="#i-mark"/></svg></span>
+    <nav class="crumbs"><span class="proj muted">Bracket lab</span><span class="sep">/</span><b>Sensor plate</b><span class="ver">v4</span><span class="ver" style="color:var(--accent);border-color:var(--accent-line)">v5 building</span></nav>
+    <span class="spacer"></span>
+    <span class="search"><svg class="i"><use href="#i-search"/></svg><span>Search or run a command</span><span class="kbd">Ctrl K</span></span>
+    <button class="btn primary"><svg class="i"><use href="#i-out"/></svg>Deliver</button>
+  </header>
+
+  <div class="float hud" role="toolbar" aria-label="View">
+    <button class="btn">Top</button><button class="btn">Front</button><button class="btn">Right</button><button class="btn" aria-pressed="true">Iso</button>
+    <span class="div"></span>
+    <button class="btn icon" aria-pressed="true"><svg class="i"><use href="#i-edges"/></svg></button>
+    <button class="btn icon"><svg class="i"><use href="#i-ruler"/></svg></button>
+    <button class="btn icon"><svg class="i"><use href="#i-face"/></svg></button>
+  </div>
+
+  <section class="float stream" aria-label="Agent activity">
+    <header>
+      <svg class="i" style="color:var(--accent)"><use href="#i-agent"/></svg>
+      <b style="font-weight:600">Refining plate</b>
+      <span class="muted mono" style="font-size:11px">attempt 2 · 34.7 s</span>
+      <span class="spacer" style="flex:1"></span>
+      <button class="btn icon ghost" title="Collapse"><svg class="i"><use href="#i-down"/></svg></button>
+    </header>
+    <div class="prog" role="progressbar" aria-valuenow="70"><i style="width:70%"></i></div>
+    <ol class="steps">
+      <li><span class="dot ok"></span><span class="k">Requirements</span><span class="t">0.5 s</span>
+        <span class="x">REQ-1 4 × M6 clearance Ø6.60 <span class="faint">STD</span><br>REQ-2 hole edge ≥ 2 × Ø <span class="faint">plate-design-rules.md:4</span><br>REQ-3 keep 120 × 80 × 6 <span class="faint">prompt</span></span></li>
+      <li><span class="dot ok"></span><span class="k">Model written</span><span class="t">17.3 s</span>
+        <span class="d">6 parameters · 2 features · <u>View IR</u></span></li>
+      <li><span class="dot bad"></span><span class="k">Check</span><span class="t">17.3 s</span>
+        <span class="x"><span class="pass">✓</span> REQ-1 &nbsp;<span class="pass">✓</span> REQ-3<br><span class="fail">✕</span> REQ-2 edge 10.00 &lt; 13.20 mm</span></li>
+      <li><span class="dot run"></span><span class="k">Repair</span><span class="t">running</span>
+        <span class="x"><span class="add">~</span> Edge offset 10.00 → 14.00 mm<br><span class="add">~</span> Hole pattern 100 × 60 → 92 × 52 mm</span></li>
+      <li><span class="dot"></span><span class="k faint">Check again</span><span class="t"></span></li>
+    </ol>
+  </section>
+
+  <aside class="float insp" aria-label="Inspector" style="bottom:52px">
+    <header>
+      <div class="what"><svg class="i"><use href="#i-part"/></svg><b>Sensor plate</b><span class="faint mono">v4</span></div>
+      <div class="ctx">1 part · Al 6061 · 148 g · nothing selected</div>
+    </header>
+    <section>
+      <div class="sec-h"><span class="eyebrow">Requirements</span><span class="mono muted" style="font-size:11px">2 / 3</span></div>
+      <ul class="checks">
+        <li><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span>Plate 120 × 80 × 6<span class="mono">120 × 80 × 6</span></li>
+        <li><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span>4 × M6 clearance<span class="mono">Ø6.60</span></li>
+        <li><span class="st fail"><svg class="i"><use href="#i-fail"/></svg></span>Hole edge ≥ 2 × Ø<span class="mono">10.00 / 13.20</span></li>
+      </ul>
+    </section>
+    <section>
+      <div class="sec-h"><span class="eyebrow">Manufacturability · milling</span></div>
+      <ul class="checks">
+        <li><span class="st warn"><svg class="i"><use href="#i-warn"/></svg></span>Hole near edge, 4×<span class="mono">show</span></li>
+        <li><span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span>Tool reach, min radius<span class="mono">3.00</span></li>
+      </ul>
+    </section>
+    <section>
+      <div class="sec-h"><span class="eyebrow">Printability · FDM</span></div>
+      <button class="btn">Run slicer check</button>
+      <p class="muted" style="font-size:12px;margin:8px 0 0">Slices the STL with the local slicer. Not run for v4.</p>
+    </section>
+    <section>
+      <div class="sec-h"><span class="eyebrow">Assumptions</span><span class="mono muted" style="font-size:11px">1</span></div>
+      <div class="prm"><span class="lab">Edge offset <span class="prov assumed">DEF</span></span><span class="val">10.00 <small>mm</small></span><span class="src">Not in prompt or sources. <u>Confirm</u> or edit.</span></div>
+    </section>
+  </aside>
+
+  <form class="float cmd" aria-label="Command bar" style="left:calc(50% + 40px); width:680px">
+    <div class="row">
+      <span class="target"><svg class="i"><use href="#i-part"/></svg>plate ✕</span>
+      <span class="input">Sending resumes when v5 is done; keep inspecting meanwhile.</span>
+    </div>
+    <div class="row">
+      <span class="chip"><svg class="i"><use href="#i-doc"/></svg>plate-design-rules.md <span class="st pass"><svg class="i"><use href="#i-pass"/></svg></span></span>
+      <span class="chip"><svg class="i"><use href="#i-mill"/></svg>3-axis milling</span>
+      <span class="spacer"></span>
+      <button class="btn icon" disabled title="Send"><svg class="i"><use href="#i-send"/></svg></button>
+    </div>
+  </form>
+
+  <div class="scrub" aria-label="Versions">
+    <svg class="i muted"><use href="#i-clock"/></svg>
+    <div class="lane">
+      <span class="tick agent" style="left:4%"><span>v1</span></span>
+      <span class="tick" style="left:24%"><span>v2</span></span>
+      <span class="tick agent" style="left:55%"><span>v3</span></span>
+      <span class="tick cur" style="left:78%"><span>v4</span></span>
+      <span class="tick ghost" style="left:96%"><span style="color:var(--accent)">v5</span></span>
+    </div>
+    <span class="muted" style="font-size:12px">v5 · refine · building</span>
+  </div>
+</main>
+</body>
+</html>
