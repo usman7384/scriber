@@ -228,8 +228,10 @@ The 8-gram leak guard dropped most L-plates at first, because one phrase ("mm ap
 
 Dev-set baseline, default `partwright-ir:4b-s1` (`dev-20261027-164441`): 7/20 cases, 43/95 checks. Its misses are the S2 targets: 11 mm holes made 12.2, 5 mm made 7, 18 mm made 17.5, and the wrong slot pitch.
 
-Next (overnight runs, laptop):
-1. `partwright-collect` on `qwen3.5:4b` and `partwright-ir:4b-s1`, 200 specs each.
-2. `partwright-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...` into `data/training/s2`.
-3. One night of QLoRA training on the 4B, then export.
-4. Gates: dev for the checkpoint; M1 and grounded against the default in the same session (D-028).
+On-policy collection (200 specs each, temperature 0): `qwen3.5:4b` failed its first answer on 164, `partwright-ir:4b-s1` on 90.
+
+Full S2 set (`partwright-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...`, `data/training/s2`): 2,845 of 2,900 specs verified, 5,034 samples (2,834 generate, 1,534 repair, 666 requirement); S1 had 4,898. Repairs include 163 and 90 on-policy ones. 173 edits, 1,432 paraphrased or vague prompts, 0 eval sizes. Holes by stated diameter 2,138 against 1,475 by fastener; through-all cuts 11. The first attempt ran out of memory beside another process; it was rerun with `--workers 4` and `OPENBLAS_NUM_THREADS=1`, which does not change the data.
+
+Next:
+1. One night of QLoRA training on the 4B, then export.
+2. Gates: dev for the checkpoint; M1 and grounded against the default in the same session (D-028).
