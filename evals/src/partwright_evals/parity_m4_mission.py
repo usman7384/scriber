@@ -1,17 +1,26 @@
 import json
 import math
+import os
+import time
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 
 import numpy as np
 
 from partwright_context.aircraft import aircraft_design
 from partwright_context.mission import ALL, Sizing, read_mission, size
+from partwright_context.sizing import XmlSizing
 from partwright_evals.parity import Demo, Evidence, Measured, Rig, evidence
+from partwright_evals.parity_m4_aircraft import FIXTURES as AIRCRAFT
 from partwright_evals.parity_m4_aircraft import build, wing_checks
-from partwright_geometry import Artifact
-from partwright_ir import Design
+from partwright_geometry import Artifact, BuildError, LocalGeometry, PartMetrics
+from partwright_ir import Design, apply_params
 
 FIXTURES = Path(__file__).parents[2] / "parity" / "m4" / "mission"
+WORKERS = max(1, (os.cpu_count() or 2) // 2)
+BUDGET_S = 600.0
 
 
 def linked_fields(design: Design, source: str) -> dict[str, set[str]]:
@@ -81,4 +90,64 @@ def in_14(rig: Rig) -> Evidence:
     )
 
 
-ROWS: dict[str, Demo] = {"IN-14": in_14}
+def variants(rig: Rig, count: int = 1000, workers: int = WORKERS) -> Evidence:
+    base = aircraft_design(XmlSizing().read(AIRCRAFT / "bwb.xml"))
+    rng = np.random.default_rng(0)
+    designs = [apply_params(base, {p.name: p.value * rng.uniform(0.9, 1.1) for p in base.params}) for _ in range(count)]
+    start = time.monotonic()
+    with ThreadPoolExecutor(workers) as pool:
+        chunks = list(pool.map(partial(_measure_all, timeout=rig.config.geometry.timeout_s), [designs[i::workers] for i in range(workers)]))
+    elapsed = time.monotonic() - start
+    results = [r for chunk in chunks for r in chunk]
+    good = [m for m, _ in results if m and m.solids == 1 and m.valid]
+    seconds = [s for _, s in results]
+    m: Measured = {
+        "variants": count,
+        "valid_single_solids": len(good),
+        "distinct_volumes": len({round(g.volume, 3) for g in good}),
+        "workers": workers,
+        "elapsed_s": round(elapsed, 1),
+        "rebuild_p50_s": round(float(np.median(seconds)), 3),
+        "budget_s": round(BUDGET_S * count / 1000, 1),
+    }
+    checks = [len(good) == count, len({round(g.volume, 3) for g in good}) == count, elapsed <= BUDGET_S * count / 1000]
+    return evidence(
+        "PF-6", m, *checks, note="seeded +-10 % on every BWB param; compile and rebuild with validity and mass checks, no exports"
+    )
+
+
+def _measure_all(designs: list[Design], timeout: float) -> list[tuple[PartMetrics | None, float]]:
+    geometry = LocalGeometry(timeout_s=timeout)
+    try:
+        return [_timed(geometry, d) for d in designs]
+    finally:
+        geometry.close()
+
+
+def _timed(geometry: LocalGeometry, design: Design) -> tuple[PartMetrics | None, float]:
+    start = time.monotonic()
+    try:
+        (part,) = geometry.measure(design)
+    except BuildError:
+        return None, time.monotonic() - start
+    return part, time.monotonic() - start
+
+
+def pf_2(rig: Rig) -> Evidence:
+    timed = {"bwb_xml": _generate(rig, "bwb", lambda: aircraft_design(XmlSizing().read(AIRCRAFT / "bwb.xml")))}
+    timed["mission_yaml"] = _generate(rig, "mission", lambda: aircraft_design(size(read_mission(FIXTURES / "mission.yaml")).spec))
+    m: Measured = {f"{k}_s": round(v, 2) for k, v in timed.items()}
+    return evidence(
+        "PF-2", m, *(v < 300 for v in timed.values()), note="input file to exported, checked part; the aircraft template needs no model"
+    )
+
+
+def _generate(rig: Rig, name: str, design: Callable[[], Design]) -> float:
+    start = time.monotonic()
+    art = build(rig, design(), name)
+    if not all(p.solids == 1 and p.valid for p in art.parts):
+        raise ValueError(f"{name}: not one valid solid per part")
+    return time.monotonic() - start
+
+
+ROWS: dict[str, Demo] = {"IN-14": in_14, "PF-2": pf_2, "PF-6": variants}
