@@ -1,24 +1,10 @@
-import re
-
 from partwright_geometry.models import PartMetrics, Vec
-
-DENSITY_G_CM3 = {
-    "1.4301": 7.9,
-    "stainless": 7.9,
-    "6061": 2.70,
-    "aluminium": 2.70,
-    "aluminum": 2.70,
-    "steel": 7.85,
-    "petg": 1.27,
-    "pla": 1.24,
-    "abs": 1.04,
-    "pa12": 1.01,
-}
+from partwright_ir import material
 
 
-def density(material: str) -> float | None:
-    tokens = set(re.findall(r"[a-z0-9.]+", material.lower()))
-    return next((d for name, d in DENSITY_G_CM3.items() if name in tokens), None)
+def density(text: str) -> float | None:
+    found = material(text)
+    return found.density_g_cm3 if found else None
 
 
 def with_mass(part: PartMetrics, material: str | None) -> PartMetrics:
