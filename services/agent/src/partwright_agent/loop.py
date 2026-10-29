@@ -10,7 +10,7 @@ from pydantic import BaseModel, ValidationError
 from partwright_agent.grounding import grounded, measurable, misquoted
 from partwright_agent.llm import LLM, THINKING_BUDGET, Message, Thinking
 from partwright_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
-from partwright_agent.prompts import design_messages, refine_message, repair_message, requirement_messages, resample_message
+from partwright_agent.prompts import IMAGE_NOTE, design_messages, refine_message, repair_message, requirement_messages, resample_message
 from partwright_agent.requirements import CheckResult, Requirement, RequirementList, check
 from partwright_agent.standards import reference_data
 from partwright_context import Fact
@@ -80,6 +80,7 @@ def generate(
     context: Grounding | None = None,
     images: tuple[bytes, ...] = (),
     thinking: Thinking | None = None,
+    vision: LLM | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
     stated = extract_requirements(prompt, llm, seed)
@@ -88,14 +89,16 @@ def generate(
     reqs = stated + fact_requirements([f for f in facts if f not in dropped])
     yield _requirements_step(reqs, clock, dropped)
     project = context_block(context, dropped) if context else ""
-    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, llm.few_shot)]
-    messages[-1] = messages[-1].model_copy(update={"images": images})
+    designer = vision if images and vision else llm
+    messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, designer.few_shot)]
+    if images:
+        messages[-1] = messages[-1].model_copy(update={"content": messages[-1].content + IMAGE_NOTE, "images": images})
 
     def decode(raw: str) -> Design:
         design = Design.model_validate_json(raw)
         return cite(design, context.pack) if context else design
 
-    run = replace(_run(llm, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking)
+    run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking)
     yield from _attempts(run, messages, json_schema(), decode, reqs, prompt)
 
 
@@ -109,6 +112,7 @@ def refine(
     seed: int = 0,
     context: Grounding | None = None,
     images: tuple[bytes, ...] = (),
+    vision: LLM | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(instruction, llm, seed)
@@ -120,8 +124,9 @@ def refine(
             design, {u.name: u.value for u in answer.updates}, Provenance(source="prompt", quote=instruction)
         )
 
-    messages = [Message(role="user", content=refine_message(answer_json(design), instruction), images=images)]
-    run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
+    content = refine_message(answer_json(design), instruction) + (IMAGE_NOTE if images else "")
+    messages = [Message(role="user", content=content, images=images)]
+    run = _run(vision if images and vision else llm, geometry, context, out_dir, max_repairs, seed, clock)
     yield from _attempts(run, messages, RefineAnswer.model_json_schema(), decode, reqs)
 
 

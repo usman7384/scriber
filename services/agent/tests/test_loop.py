@@ -186,3 +186,17 @@ def test_thinking_level_sets_the_reasoning_budget(tmp_path: Path) -> None:
         logs[level] = steps[1].message
     assert logs["low"].endswith("thinking low with a 0 token reasoning budget")
     assert logs["high"].endswith("thinking high with a 8192 token reasoning budget")
+
+
+def test_requests_with_images_go_to_the_vision_model(tmp_path: Path) -> None:
+    text, vision = FakeLLM([REQS]), FakeLLM([design()])
+    steps = list(generate("bracket like the sketch, 80 x 60, 4x M6", text, FakeGeometry(), tmp_path, images=(b"png",), vision=vision))
+    assert steps[-1].kind == "done" and len(text.calls) == len(vision.calls) == 1
+    assert vision.calls[0][-1].images == (b"png",) and '"source": "vision"' in vision.calls[0][-1].content
+    text, vision = FakeLLM([REQS, design()]), FakeLLM([])
+    list(generate("bracket 80 x 60, 4x M6", text, FakeGeometry(), tmp_path / "t", vision=vision))
+    assert "vision" not in text.calls[1][-1].content and vision.calls == []
+    text, vision = FakeLLM([REQS]), FakeLLM([json.dumps({"updates": [{"name": "length", "value": 90}], "design": None})])
+    base = Design.model_validate_json(design())
+    list(refine(base, "like the photo", text, FakeGeometry(), tmp_path / "r", images=(b"jpg",), vision=vision))
+    assert vision.calls[0][-1].images == (b"jpg",)
