@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "cPlane",
+    "featureId": "FE5KWtq8BUh5bon",
+    "name": "bore plane",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "8547d0c237d6a3d0904c26c7",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

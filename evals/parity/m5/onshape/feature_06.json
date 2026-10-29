@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "assignVariable",
+    "featureId": "Fqi7rGtMHFbWoTN",
+    "name": "bore_diameter",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "669420eb7a0b4daa14289b1f",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

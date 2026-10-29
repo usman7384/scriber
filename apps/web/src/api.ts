@@ -59,6 +59,25 @@ export interface Model {
   latest_version: number | null;
   versions: number;
   thumbnail_url?: string | null;
+  forked_from?: ForkSource | null;
+}
+
+export interface ForkSource {
+  publication: string;
+  model_id: string;
+  version: number;
+  title: string;
+  author: string;
+}
+
+export interface Publication {
+  id: string;
+  model_id: string;
+  version: number;
+  title: string;
+  author: string;
+  created: string;
+  thumbnail_url: string | null;
 }
 
 export interface Param {
@@ -95,7 +114,8 @@ export interface Version {
   number: number;
   created: string;
   status: "ok" | "failed";
-  origin: "generate" | "refine" | "edit" | "params" | "restore" | "context" | "variant" | "suggestion";
+  origin:
+    "generate" | "refine" | "edit" | "params" | "restore" | "context" | "variant" | "suggestion" | "fork";
   prompt?: string | null;
   params: Param[];
   checks: Check[];
@@ -250,6 +270,11 @@ export const api = {
   shared: (shareId: string) => request<SharedModel>(`/s/${shareId}`),
   revokeShare: (shareId: string) => request<undefined>(`/shares/${shareId}`, { method: "DELETE" }),
   reportBug: (report: BugReport) => post<unknown>("/bugs", report),
+  community: () => request<Publication[]>("/community"),
+  publish: (modelId: string, version: number) =>
+    post<Publication>("/community", { model_id: modelId, version }),
+  fork: (publicationId: string, projectId: string) =>
+    post<Model>(`/community/${publicationId}/fork`, { project_id: projectId }),
 };
 
 export const exportUrl = (modelId: string, fmt: ExportFormat, version: number) =>

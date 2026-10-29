@@ -1,0 +1,15 @@
+{
+  "id": "6a2d9f4c1b8e7d3a5f0c2e9b",
+  "name": "Motor mount",
+  "owner": {
+    "id": "5e8f1a2b3c4d5e6f7a8b9c0d",
+    "type": 0
+  },
+  "public": false,
+  "defaultWorkspace": {
+    "id": "9c3e5a7b1d2f4a6c8e0b2d4f",
+    "name": "Main",
+    "type": "workspace"
+  },
+  "defaultElementId": "1f3e5a7c9b2d4f6a8c0e2b4d"
+}

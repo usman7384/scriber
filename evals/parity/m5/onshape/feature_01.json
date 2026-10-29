@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "assignVariable",
+    "featureId": "FjSdT4dbcSf4FzY",
+    "name": "plate_length",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "d84c6ebfaa1b54b2ebd23a2f",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

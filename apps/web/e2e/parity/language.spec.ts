@@ -41,7 +41,7 @@ async function tour(page: Page, row: { shot: (n: string) => Promise<void> }, lan
     await row.shot(`${lang}-${where}`);
   };
   const t = messages[lang];
-  for (const path of ["/", "/library", "/settings", "/help", "/nowhere"]) {
+  for (const path of ["/", "/library", "/explore", "/settings", "/help", "/nowhere"]) {
     await page.goto(path);
     await expect(page.locator("main")).not.toContainText(t.loading);
     await grab(path === "/" ? "projects" : path.slice(1));
@@ -123,5 +123,5 @@ test("WP-13 language selector switches every UI label between EN and DE and pers
   expect(missingInDe).toEqual([]);
   expect(persisted).toEqual({ select: "de", html_lang: "de", stored: "de" });
   row.note =
-    "Own typed message table (src/i18n.ts, DE typed as EN so no key can be missing). The check walks every text node and aria-label, placeholder, title and alt on nine pages, hidden dialogs and tooltips included. API content (titles, findings, file names, example prompts) is not translated.";
+    "Own typed message table (src/i18n.ts, DE typed as EN so no key can be missing). The check walks every text node and aria-label, placeholder, title and alt on ten pages, hidden dialogs and tooltips included. API content (titles, findings, file names, example prompts) is not translated.";
 });

@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "cPlane",
+    "featureId": "Fx4hX1R0wLQcm3H",
+    "name": "boss_sketch plane",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "f508723d5839c6611efd873b",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import { Pending } from "./components/Pending";
 import { Shell } from "./components/Shell";
 import { useT } from "./i18n";
+import { CommunityPage } from "./pages/CommunityPage";
 import { ContextPage } from "./pages/ContextPage";
 import { HelpPage } from "./pages/HelpPage";
 import { LibraryPage } from "./pages/LibraryPage";
@@ -19,6 +20,7 @@ export function App() {
       <Route element={<Shell />}>
         <Route index element={<ProjectsPage />} />
         <Route path="library" element={<LibraryPage />} />
+        <Route path="explore" element={<CommunityPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="help" element={<HelpPage />} />
         <Route path="p/:projectId" element={<ProjectPage />} />

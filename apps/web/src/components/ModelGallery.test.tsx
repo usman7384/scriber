@@ -44,3 +44,13 @@ it("says when a model has no version yet", () => {
   );
   expect(screen.getByText(/no version yet/)).toBeInTheDocument();
 });
+
+it("shows where a forked model came from", () => {
+  const forked_from = { publication: "c1", model_id: "m2", version: 2, title: "Edge plate", author: "alice" };
+  render(
+    <MemoryRouter>
+      <ModelGallery models={[{ ...model("a", "Edge plate", "2026-10-26T08:00:00Z"), forked_from }]} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("Forked from Edge plate v2 by alice")).toBeInTheDocument();
+});

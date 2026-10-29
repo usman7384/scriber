@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMFeature-134",
+    "featureType": "hole",
+    "featureId": "FpTj5G6d8KVmzNj",
+    "name": "Motor bore",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "77058fef3caf1fda41de60f9",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}

@@ -17,6 +17,7 @@ const en = {
     library: "Library",
     settings: "Settings",
     help: "Help",
+    community: "Community",
     api: "API",
   },
   step: {
@@ -50,6 +51,7 @@ const en = {
     context: "context",
     variant: "variant",
     suggestion: "suggestion",
+    fork: "fork",
   } as Record<string, string>,
   source: {
     prompt: "prompt",
@@ -121,6 +123,21 @@ const en = {
   },
   share: { share: "Share", link: "Share link", copy: "Copy", revoke: "Revoke", revoked: "Link revoked" },
   shared: { badge: "shared, read-only", parameters: "Parameters" },
+  community: {
+    title: "Community",
+    region: "Published parts",
+    none: "Nothing published yet. Publish a part from the editor.",
+    by: (author: string) => `by ${author}`,
+    into: "Fork into project",
+    fork: "Fork",
+    forkTitle: (title: string) => `Fork ${title}`,
+    forked: (title: string, project: string) => `Forked ${title} into ${project}.`,
+    open: "Open the copy",
+    publish: "Publish",
+    published: "Published to the community",
+    forkedFrom: (title: string, version: number, author: string) =>
+      `Forked from ${title} v${version} by ${author}`,
+  },
   exportMenu: { export: "Export", script: "Script" },
   bug: {
     open: "Report a bug",
@@ -257,6 +274,7 @@ const de: Messages = {
     library: "Bibliothek",
     settings: "Einstellungen",
     help: "Hilfe",
+    community: "Community",
     api: "API",
   },
   step: {
@@ -290,6 +308,7 @@ const de: Messages = {
     context: "Kontext",
     variant: "Variante",
     suggestion: "Vorschlag",
+    fork: "Kopie",
   },
   source: {
     prompt: "Eingabe",
@@ -367,6 +386,20 @@ const de: Messages = {
     revoked: "Link widerrufen",
   },
   shared: { badge: "geteilt, nur lesen", parameters: "Parameter" },
+  community: {
+    title: "Community",
+    region: "Veröffentlichte Teile",
+    none: "Noch nichts veröffentlicht. Veröffentliche ein Teil im Editor.",
+    by: (author) => `von ${author}`,
+    into: "Kopieren in Projekt",
+    fork: "Kopieren",
+    forkTitle: (title) => `${title} kopieren`,
+    forked: (title, project) => `${title} wurde nach ${project} kopiert.`,
+    open: "Kopie öffnen",
+    publish: "Veröffentlichen",
+    published: "In der Community veröffentlicht",
+    forkedFrom: (title, version, author) => `Kopie von ${title} v${version} von ${author}`,
+  },
   exportMenu: { export: "Exportieren", script: "Skript" },
   bug: {
     open: "Fehler melden",

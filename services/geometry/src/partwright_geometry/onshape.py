@@ -44,20 +44,26 @@ class OnshapeImport(Frozen):
 class RecordedOnshape:
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.routes: dict[str, str] = json.loads((root / "recording.json").read_text(encoding="utf-8"))
+        self.routes: dict[str, str | list[str]] = json.loads((root / "recording.json").read_text(encoding="utf-8"))
         self.calls: list[str] = []
+        self.posts: list[tuple[str, dict[str, Any]]] = []
 
     def get(self, path: str) -> bytes:
         return self._reply(f"GET {path}")
 
     def post(self, path: str, body: dict[str, Any]) -> bytes:
+        self.posts.append((path, body))
         return self._reply(f"POST {path}")
 
     def _reply(self, key: str) -> bytes:
         self.calls.append(key)
         if key not in self.routes:
             raise KeyError(f"no recorded response for {key}")
-        return (self.root / self.routes[key]).read_bytes()
+        route, n = self.routes[key], self.calls.count(key)
+        # a list holds the recorded replies to successive identical calls
+        if isinstance(route, list) and n > len(route):
+            raise KeyError(f"only {len(route)} recorded responses for {key}")
+        return (self.root / (route if isinstance(route, str) else route[n - 1])).read_bytes()
 
 
 def import_onshape(api: OnshapeApi, ref: OnshapeRef, step: Path) -> OnshapeImport:

@@ -29,6 +29,7 @@ export function Shell() {
               {t.nav.projects}
             </NavLink>
             <NavLink to="/library">{t.nav.library}</NavLink>
+            <NavLink to="/explore">{t.nav.community}</NavLink>
             <NavLink to="/settings">{t.nav.settings}</NavLink>
             <NavLink to="/help">{t.nav.help}</NavLink>
             <a href={apiUrl("/docs")} target="_blank" rel="noreferrer">

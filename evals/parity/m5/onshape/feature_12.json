@@ -1,0 +1,19 @@
+{
+  "btType": "BTFeatureDefinitionResponse-1617",
+  "feature": {
+    "btType": "BTMSketch-151",
+    "featureType": "newSketch",
+    "featureId": "FVQDuS0Yuh16Lul",
+    "name": "boss_sketch",
+    "suppressed": false
+  },
+  "featureState": {
+    "btType": "BTFeatureState-1688",
+    "featureStatus": "OK",
+    "inactive": false
+  },
+  "serializationVersion": "1.2.15",
+  "sourceMicroversion": "38fd0da5ae1cf7f2d96cf981",
+  "microversionSkew": false,
+  "libraryVersion": 2433
+}
