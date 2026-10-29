@@ -99,6 +99,12 @@ const glyphs = {
   ),
   mesh: <path d="M8 2 14 6 11.5 13.5h-7L2 6zM8 2v6l6-2M8 8 2 6M8 8l-3.5 5.5M8 8l3.5 5.5" />,
   trash: <path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 10h6.6L12 4M6.8 6.5v5M9.2 6.5v5" />,
+  help: (
+    <>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M6.2 6.3a1.9 1.9 0 0 1 3.7.5c0 1.3-1.9 1.6-1.9 2.9M8 11.6v.01" />
+    </>
+  ),
   settings: (
     <>
       <circle cx="8" cy="8" r="2.2" />

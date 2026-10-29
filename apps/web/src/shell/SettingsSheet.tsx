@@ -1,31 +1,48 @@
-import { API_BASE } from "../api";
-import { useT } from "../i18n";
-import { useTheme, type Theme } from "../theme";
+import { useId } from "react";
+import { API_BASE, apiUrl } from "../api";
+import { messages, useLang, useT, type Lang } from "../i18n";
+import { themePrefs } from "../theme";
+import { Sheet } from "../ui/Sheet";
+import { useShell } from "./context";
+import { useCloseSheet } from "./sheets";
 
-const themes: Theme[] = ["light", "dark"];
-
-export function SettingsPage() {
-  const [theme, setTheme] = useTheme();
-  const t = useT().settings;
+export function SettingsSheet() {
+  const { theme, setTheme } = useShell();
+  const [lang, setLang] = useLang();
+  const close = useCloseSheet();
+  const id = useId();
+  const t = useT();
   return (
-    <section className="stack narrow">
-      <h1>{t.title}</h1>
-      <fieldset className="panel">
-        <legend>{t.theme}</legend>
-        {themes.map((mode) => (
-          <label key={mode} className="toggle">
-            <input type="radio" name="theme" checked={theme === mode} onChange={() => setTheme(mode)} />
-            {t[mode]}
-          </label>
-        ))}
-      </fieldset>
-      <section className="panel" aria-label={t.server}>
-        <h2>{t.server}</h2>
-        <p>
+    <Sheet open onClose={close} title={t.settings.title}>
+      <div className="shell-form">
+        <fieldset className="shell-fieldset">
+          <legend>{t.settings.theme}</legend>
+          <div className="shell-segments">
+            {themePrefs.map((pref) => (
+              <label key={pref}>
+                <input type="radio" name="theme" checked={theme === pref} onChange={() => setTheme(pref)} />
+                {t.settings[pref]}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <label htmlFor={`${id}-lang`}>{t.language}</label>
+        <select id={`${id}-lang`} value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+          {(Object.keys(messages) as Lang[]).map((l) => (
+            <option key={l} value={l}>
+              {t.languages[l]}
+            </option>
+          ))}
+        </select>
+        <section className="shell-server" aria-labelledby={`${id}-server`}>
+          <h3 id={`${id}-server`}>{t.settings.server}</h3>
           <code>{API_BASE || window.location.origin}</code>
-        </p>
-        <p className="muted small">{t.serverNote}</p>
-      </section>
-    </section>
+          <p>{t.settings.serverNote}</p>
+          <a href={apiUrl("/docs")} target="_blank" rel="noreferrer">
+            {t.nav.api}
+          </a>
+        </section>
+      </div>
+    </Sheet>
   );
 }
