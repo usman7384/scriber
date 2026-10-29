@@ -1,0 +1,27 @@
+{
+  "title": "Mounting plate",
+  "params": [
+    {"name": "length", "value": 120, "unit": "mm"},
+    {"name": "width", "value": 80, "unit": "mm"},
+    {"name": "thickness", "value": 5, "unit": "mm"},
+    {"name": "hole_d", "value": 6.6, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "plate",
+      "name": "Plate",
+      "sketches": [{"id": "s", "entities": [{"kind": "rect", "width": "length", "height": "width"}]}],
+      "features": [
+        {"kind": "extrude", "id": "body", "name": "Plate", "sketch": "s", "distance": "thickness"},
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Bolt holes",
+          "plane": {"offset": "thickness"},
+          "at": {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": 100, "spacing_y": 60},
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}
