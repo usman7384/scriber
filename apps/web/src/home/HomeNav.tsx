@@ -1,6 +1,8 @@
-import { Link, NavLink, useNavigate } from "react-router";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import type { Project } from "../api";
 import { useLang, useT } from "../i18n";
+import { SearchButton } from "../shell/SearchButton";
+import { sheetLinkState } from "../shell/sheets";
 import { Icon } from "../ui/icons";
 import { NewProject, ProjectList } from "./ProjectList";
 
@@ -10,16 +12,20 @@ interface Props {
   allCurrent?: boolean;
 }
 
+// The one navigation on Home, All parts, a project and Explore; under 640 px a header with a project switcher.
 export function HomeNav({ projects, current, allCurrent = false }: Props) {
   const t = useT();
   const [lang] = useLang();
   const navigate = useNavigate();
+  const location = useLocation();
+  const sheet = sheetLinkState(location);
   return (
     <nav className="home-nav" aria-label={t.nav.main}>
       <Link to="/" className="home-brand">
         <Icon name="mark" />
         <span className="home-link-text">Partwright</span>
       </Link>
+      <SearchButton label={t.nav.search} />
       <select
         className="home-switcher"
         aria-label={t.home.switcher}
@@ -33,7 +39,9 @@ export function HomeNav({ projects, current, allCurrent = false }: Props) {
           </option>
         ))}
       </select>
-      <span className="eyebrow home-group">{t.home.projects}</span>
+      <NavLink to="/" end className="eyebrow home-group">
+        {t.home.projects}
+      </NavLink>
       <ProjectList projects={projects} allCurrent={allCurrent} />
       <NewProject />
       {current && (
@@ -53,12 +61,16 @@ export function HomeNav({ projects, current, allCurrent = false }: Props) {
         <Icon name="globe" />
         <span className="home-link-text">{t.community.title}</span>
       </NavLink>
-      <NavLink to="/settings" className="home-link">
+      <NavLink to="/settings" state={sheet} className="home-link">
         <Icon name="settings" />
         <span className="home-link-text">{t.nav.settings}</span>
         <span className="home-count" aria-hidden>
           {lang.toUpperCase()}
         </span>
+      </NavLink>
+      <NavLink to="/help" state={sheet} className="home-link">
+        <Icon name="help" />
+        <span className="home-link-text">{t.nav.help}</span>
       </NavLink>
     </nav>
   );

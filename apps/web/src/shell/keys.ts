@@ -38,10 +38,10 @@ export const matches = (e: KeyLike, shortcut: string) => {
 
 const named: Record<string, string> = { enter: "⏎", escape: "Esc", arrowleft: "←", arrowright: "→" };
 
-export const keyCaps = (shortcut: string, mac: boolean) => {
+export const keyCaps = (shortcut: string, mac: boolean, ctrl = "Ctrl") => {
   const s = parse(shortcut);
   return [
-    ...(s.mod ? [mac ? "⌘" : "Ctrl"] : []),
+    ...(s.mod ? [mac ? "⌘" : ctrl] : []),
     ...(s.alt ? [mac ? "⌥" : "Alt"] : []),
     ...(s.shift ? [mac ? "⇧" : "Shift"] : []),
     named[s.key] ?? (s.key.length === 1 ? s.key.toUpperCase() : s.key[0]?.toUpperCase() + s.key.slice(1)),

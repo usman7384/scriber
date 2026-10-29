@@ -2,10 +2,8 @@ export const en = {
   nav: {
     main: "Main",
     projects: "Projects",
-    library: "Library",
     settings: "Settings",
     help: "Help",
-    community: "Community",
     api: "API docs",
     home: "Partwright home",
     search: "Search",
@@ -86,10 +84,8 @@ export const de: typeof en = {
   nav: {
     main: "Hauptmenü",
     projects: "Projekte",
-    library: "Bibliothek",
     settings: "Einstellungen",
     help: "Hilfe",
-    community: "Community",
     api: "API-Dokumentation",
     home: "Partwright-Startseite",
     search: "Suchen",

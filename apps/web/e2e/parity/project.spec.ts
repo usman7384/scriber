@@ -92,6 +92,7 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   };
 
   await page.goto("/help");
+  await expect(page.getByRole("dialog", { name: "Help" })).toBeVisible();
   await page.keyboard.press("Escape");
   await visit("Projects", /\/$/, "Projects");
   await visit("All parts", /\/library$/, "All parts");

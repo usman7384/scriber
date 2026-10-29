@@ -28,14 +28,14 @@ export function useBuiltInActions(
         id: "go.library",
         group: "navigate",
         icon: "part",
-        label: (t) => t.nav.library,
+        label: (t) => t.home.allParts,
         run: () => navigate("/library"),
       },
       {
         id: "go.explore",
         group: "navigate",
         icon: "globe",
-        label: (t) => t.nav.community,
+        label: (t) => t.community.title,
         run: () => navigate("/explore"),
       },
       {

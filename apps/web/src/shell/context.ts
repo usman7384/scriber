@@ -21,7 +21,3 @@ export const useShell = () => {
   if (!shell) throw new Error("useShell needs the ShellProvider");
   return shell;
 };
-
-export type SlotName = "side" | "top";
-
-export const SlotsContext = createContext<Partial<Record<SlotName, HTMLElement | null>>>({});

@@ -1,13 +1,10 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes, useLocation } from "react-router";
+import { Outlet, Route, Routes, useLocation } from "react-router";
 import { Pending } from "./components/Pending";
-import { Shell } from "./components/Shell";
+import { ExplorePage } from "./home/ExplorePage";
+import { HomeLayout } from "./home/HomeLayout";
+import { HomePage } from "./home/HomePage";
 import { useT } from "./i18n";
-import { CommunityPage } from "./pages/CommunityPage";
-import { ContextPage } from "./pages/ContextPage";
-import { LibraryPage } from "./pages/LibraryPage";
-import { ProjectPage } from "./pages/ProjectPage";
-import { ProjectsPage } from "./pages/ProjectsPage";
 import { HelpSheet } from "./shell/HelpSheet";
 import { SettingsSheet } from "./shell/SettingsSheet";
 import { ShellProvider } from "./shell/ShellProvider";
@@ -23,30 +20,16 @@ export function App() {
     <ShellProvider>
       {/* /settings and /help are sheets over the page they were opened from (Home for a deep link). */}
       <Routes location={backdropOf(location)}>
-        <Route element={<Shell />}>
-          <Route index element={<ProjectsPage />} />
-          <Route path="library" element={<LibraryPage />} />
-          <Route path="explore" element={<CommunityPage />} />
-          <Route path="p/:projectId" element={<ProjectPage />} />
-          <Route path="p/:projectId/context" element={<ContextPage />} />
-          <Route
-            path="m/:modelId"
-            element={
-              <Suspense fallback={<Pending />}>
-                <EditorPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="shared/:shareId"
-            element={
-              <Suspense fallback={<Pending />}>
-                <SharedPage />
-              </Suspense>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
+        <Route index element={<HomePage />} />
+        <Route path="library" element={<HomePage />} />
+        <Route path="p/:projectId" element={<HomePage />} />
+        <Route path="p/:projectId/context" element={<HomePage />} />
+        <Route path="explore" element={<ExplorePage />} />
+        <Route element={<Stage />}>
+          <Route path="m/:modelId" element={<EditorPage />} />
+          <Route path="shared/:shareId" element={<SharedPage />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {sheet === "settings" && <SettingsSheet />}
       {sheet === "help" && <HelpSheet />}
@@ -54,6 +37,21 @@ export function App() {
   );
 }
 
+// Model routes: the workspace covers the window and brings its own top bar.
+function Stage() {
+  return (
+    <main>
+      <Suspense fallback={<Pending />}>
+        <Outlet />
+      </Suspense>
+    </main>
+  );
+}
+
 function NotFound() {
-  return <p className="empty">{useT().notFound}</p>;
+  return (
+    <HomeLayout>
+      <p className="home-empty">{useT().notFound}</p>
+    </HomeLayout>
+  );
 }

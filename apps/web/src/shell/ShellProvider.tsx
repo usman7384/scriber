@@ -8,6 +8,7 @@ import { useBuiltInActions } from "./builtins";
 import { ShellContext, type BugTarget, type ShellApi } from "./context";
 import { useShortcutLayer } from "./keys";
 import { Palette } from "./palette/Palette";
+import "./shell.css";
 
 // Theme, language, the action registry, the palette and the bug sheet, for every route.
 export function ShellProvider({ children }: { children: ReactNode }) {

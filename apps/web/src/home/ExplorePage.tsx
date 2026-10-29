@@ -14,7 +14,12 @@ export function ExplorePage() {
   const published = useResource("community", api.community);
   const projects = useResource("projects", api.projects);
   const t = useT().community;
-  if (!published.data || !projects.data) return <Pending error={published.error ?? projects.error} />;
+  if (!published.data || !projects.data)
+    return (
+      <HomeLayout projects={projects.data}>
+        <Pending error={published.error ?? projects.error} />
+      </HomeLayout>
+    );
   const into = projects.data;
   return (
     <HomeLayout projects={into}>

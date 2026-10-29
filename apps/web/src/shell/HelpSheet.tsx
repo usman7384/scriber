@@ -58,7 +58,7 @@ export function HelpSheet() {
               <tr key={what}>
                 <td>
                   {keys.map((k) => (
-                    <Kbd key={k} keys={keyCaps(k, mac)} />
+                    <Kbd key={k} keys={keyCaps(k, mac, t.agent.command.ctrl)} />
                   ))}
                 </td>
                 <td>{t.help.keys[what]}</td>
