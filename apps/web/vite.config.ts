@@ -16,7 +16,7 @@ const apiPaths = [
   "/docs",
   "/openapi.json",
 ];
-const target = "http://127.0.0.1:8000";
+const target = process.env.PARTWRIGHT_API_URL ?? "http://127.0.0.1:8000";
 
 export default defineConfig({
   plugins: [react()],
