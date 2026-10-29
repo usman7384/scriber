@@ -40,7 +40,16 @@ def generate(d: Deps, project_id: str, model_id: str, req: GenerateIn, emit: Emi
     images = image_files(d, project_id, req.attachments)
     number, out = allocate(d, model_id)
     steps = agent_generate(
-        req.prompt, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, tuple(images.values()), req.thinking
+        req.prompt,
+        d.llm,
+        d.geometry,
+        out,
+        d.settings.max_repairs,
+        d.settings.seed,
+        context,
+        tuple(images.values()),
+        req.thinking,
+        vision=d.vision,
     )
     meta = Meta("generate", req.prompt, req.process, req.attachments, list(images))
     return finish(d, project_id, model_id, number, relay(steps, emit), meta)
@@ -55,7 +64,9 @@ def refine(d: Deps, project_id: str, model_id: str, req: RefineIn, emit: Emit, o
     images = image_files(d, project_id, req.attachments)
     number, out = allocate(d, model_id)
     images_sent = tuple(images.values())
-    steps = agent_refine(design, instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, images_sent)
+    steps = agent_refine(
+        design, instruction, d.llm, d.geometry, out, d.settings.max_repairs, d.settings.seed, context, images_sent, vision=d.vision
+    )
     meta = Meta(origin, req.instruction, process, req.attachments, list(images), design)
     return finish(d, project_id, model_id, number, relay(steps, emit), meta)
 

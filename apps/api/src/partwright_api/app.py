@@ -15,14 +15,19 @@ from partwright_context import Context
 
 
 def create_app(
-    settings: Settings, llm: LLM, geometry: Geometry, context_service: Context, transport: httpx.AsyncBaseTransport | None = None
+    settings: Settings,
+    llm: LLM,
+    geometry: Geometry,
+    context_service: Context,
+    transport: httpx.AsyncBaseTransport | None = None,
+    vision: LLM | None = None,
 ) -> FastAPI:
     logs.setup()
     engine = db.open_engine(settings.data_dir / "api.sqlite")
     http = httpx.AsyncClient(transport=transport)
     hooks = Hooks(engine, http, settings)
     serial = geometry if isinstance(geometry, SerialGeometry) else SerialGeometry(geometry)
-    deps = Deps(settings, engine, llm, serial, context_service, http, hooks, Jobs(engine, hooks))
+    deps = Deps(settings, engine, llm, serial, context_service, http, hooks, Jobs(engine, hooks), vision)
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:

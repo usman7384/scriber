@@ -55,6 +55,7 @@ class Deps:
     http: httpx.AsyncClient
     hooks: Hooks
     jobs: Jobs
+    vision: LLM | None = None
     context_lock: threading.Lock = field(default_factory=threading.Lock)
 
 

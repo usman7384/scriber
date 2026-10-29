@@ -22,6 +22,7 @@ class Rig:
     geometry: LocalGeometry
     llm: LLM
     config: Config
+    vision: LLM | None = None
 
 
 class Evidence(BaseModel):
@@ -49,7 +50,7 @@ def run_row(row: str, demo: Demo, rig: Rig) -> Evidence:
     out = rig.out / row
     out.mkdir(parents=True, exist_ok=True)
     try:
-        ev = demo(Rig(out, rig.geometry, rig.llm, rig.config))
+        ev = demo(Rig(out, rig.geometry, rig.llm, rig.config, rig.vision))
     except Exception as e:  # a crashing demo is a failed row, recorded with its traceback
         (out / "error.txt").write_text(traceback.format_exc(), encoding="utf-8")
         ev = Evidence(row=row, passed=False, measured={}, note=f"{type(e).__name__}: {e}"[:300])
@@ -84,7 +85,7 @@ def main() -> None:
     results = []
     try:
         for row in args.rows or sorted(demos):
-            results.append(run_row(row, demos[row], Rig(run_dir, geometry, llm, config)))
+            results.append(run_row(row, demos[row], Rig(run_dir, geometry, llm, config, llm_for(config, config.llm.vision))))
             print(results[-1].model_dump_json(), flush=True)
     finally:
         geometry.close()
