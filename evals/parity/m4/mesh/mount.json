@@ -1,0 +1,38 @@
+{
+  "title": "Motor mount",
+  "params": [
+    {"name": "length", "value": 100, "unit": "mm"},
+    {"name": "width", "value": 70, "unit": "mm"},
+    {"name": "corner_radius", "value": 10, "unit": "mm"},
+    {"name": "thickness", "value": 8, "unit": "mm"},
+    {"name": "boss_diameter", "value": 40, "unit": "mm"},
+    {"name": "boss_height", "value": 12, "unit": "mm"},
+    {"name": "bore_diameter", "value": 22, "unit": "mm"},
+    {"name": "hole_diameter", "value": 6.6, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "mount",
+      "name": "Mount",
+      "material": "6061 aluminium",
+      "sketches": [
+        {"id": "plate", "entities": [{"kind": "rect", "width": "length", "height": "width", "corner_radius": "corner_radius"}]},
+        {"id": "boss", "plane": {"offset": "thickness"}, "entities": [{"kind": "circle", "diameter": "boss_diameter"}]},
+        {"id": "bore", "entities": [{"kind": "circle", "diameter": "bore_diameter"}]}
+      ],
+      "features": [
+        {"kind": "extrude", "id": "plate", "name": "Plate", "sketch": "plate", "distance": "thickness"},
+        {"kind": "extrude", "id": "boss", "name": "Boss", "sketch": "boss", "distance": "boss_height"},
+        {"kind": "extrude", "id": "bore", "name": "Bore", "sketch": "bore", "mode": "cut", "extent": "through_all"},
+        {
+          "kind": "hole",
+          "id": "mounting",
+          "name": "Mounting holes",
+          "plane": {"offset": "thickness"},
+          "at": {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": 80, "spacing_y": 50},
+          "diameter": "hole_diameter"
+        }
+      ]
+    }
+  ]
+}

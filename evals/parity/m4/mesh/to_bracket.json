@@ -1,0 +1,33 @@
+{
+  "holes": [
+    {
+      "center": [
+        -50.0,
+        -25.0
+      ],
+      "diameter": 6.6
+    },
+    {
+      "center": [
+        50.0,
+        -25.0
+      ],
+      "diameter": 6.6
+    },
+    {
+      "center": [
+        -50.0,
+        25.0
+      ],
+      "diameter": 6.6
+    },
+    {
+      "center": [
+        50.0,
+        25.0
+      ],
+      "diameter": 6.6
+    }
+  ],
+  "thickness": 8.0
+}
