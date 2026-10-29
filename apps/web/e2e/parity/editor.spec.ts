@@ -181,3 +181,53 @@ test("WP-8 thumbnails for models and versions, new one after an edit", async ({ 
   row.note =
     "PNGs are real 256 px renders from the geometry service for hole x=20 and x=15; the mock API stands in for regeneration on edit.";
 });
+
+test("PR-7 suggestions with accept and ignore in the editor", async ({ page, row }) => {
+  const api = new MockApi(edgePlate);
+  await openEditor(page, api);
+  const panel = page.getByRole("region", { name: "Suggestions" });
+  const history = page.getByRole("list", { name: "Version history" });
+  const items = panel.locator("li");
+  await expect(panel).toContainText("No open suggestions.");
+  await panel.getByRole("button", { name: "Suggest changes" }).click();
+  await expect(items).toHaveCount(2);
+  await expect(items.first()).toContainText("Hole X 20 → 15 mm");
+  await expect(items.first()).toContainText("1.5 x its diameter");
+  await row.shot("1-suggestions");
+
+  await items.nth(1).getByRole("button", { name: "Ignore" }).click();
+  await expect(items).toHaveCount(1);
+  await page.waitForTimeout(500);
+  const afterIgnore = { versions: api.versions.length, patches: patches(api).length };
+  await expect(history.locator("strong")).toHaveText(["v1"]);
+  await row.shot("2-ignored");
+
+  await expect(page.getByLabel(/^Finding: /)).toHaveCount(1);
+  await items.first().getByRole("button", { name: "Accept" }).click();
+  await expect(history.locator("strong")).toHaveText(["v2", "v1"]);
+  await expect(history.locator("li").first()).toContainText("suggestion");
+  await expect(page.getByLabel("Hole X", { exact: true })).toHaveValue("15");
+  await expect(page.getByLabel(/^Finding: /)).toHaveCount(0);
+  await expect(panel).toContainText("No open suggestions.");
+  await row.shot("3-accepted");
+
+  const calls = api.requests
+    .filter((r) => r.path.includes("/suggestions"))
+    .map((r) => `${r.method} ${r.path}`);
+  const [v1, v2] = api.versions;
+  Object.assign(row.measured, {
+    suggestion_calls: calls.join(", "),
+    versions_after_ignore: afterIgnore.versions,
+    param_patches_after_ignore: afterIgnore.patches,
+    accepted_origin: v2?.origin ?? null,
+    hole_x: `${v1?.params[0]?.value} -> ${v2?.params[0]?.value}`,
+    findings: `${v1?.findings.length} -> ${v2?.findings.length}`,
+    statuses: api.suggestions.map((s) => `${s.id} ${s.status}`).join(", "),
+  });
+  expect(afterIgnore).toEqual({ versions: 1, patches: 0 });
+  expect(v2).toMatchObject({ origin: "suggestion" });
+  expect(v2?.params[0]?.value).toBe(15);
+  expect(api.suggestions.map((s) => s.status)).toEqual(["accepted", "ignored"]);
+  row.note =
+    "Suggestion routes are mocked in the apps/api shapes (ignore returns the suggestion); accepting rebuilds through the mocked job stream with real geometry for hole x = 15. Bubbles anchored in the 3D view are not built; suggestions are a panel.";
+});
