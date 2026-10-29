@@ -1,0 +1,676 @@
+/* Agent I/O (docs/design/UI_DIRECTION.md §3). Tokens only. */
+.agent-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.agent-spacer {
+  flex: 1;
+}
+.agent-meta {
+  color: var(--muted);
+  font-size: var(--t-xs);
+  line-height: var(--lh-xs);
+}
+.agent-muted {
+  color: var(--muted);
+}
+.agent-accent {
+  color: var(--accent);
+}
+.agent-error {
+  margin: 0;
+  color: var(--fail);
+  font-size: var(--t-sm);
+}
+.agent-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.agent-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--t-sm);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.agent-bar,
+.agent-stream,
+.agent-status,
+.agent-scrub {
+  border-radius: var(--r-2);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  box-shadow: var(--shadow-float);
+  color: var(--text);
+}
+
+/* Command bar */
+.agent-composer {
+  display: grid;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.agent-bar {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+  padding: var(--s-2) 10px;
+}
+.agent-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.agent-bar-top {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+.agent-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.agent-field textarea,
+.agent-field-marks {
+  margin: 0;
+  padding: 4px 2px;
+  font: 400 var(--t-lg) / var(--lh-lg) var(--font);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.agent-field textarea {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: calc(var(--lh-lg) + 8px);
+  max-height: calc(8 * var(--lh-lg));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  caret-color: var(--accent);
+  resize: none;
+  field-sizing: content;
+  overflow: auto;
+}
+.agent-bar[data-mode="generate"] textarea {
+  min-height: calc(3 * var(--lh-lg) + 8px);
+}
+.agent-field textarea::placeholder {
+  color: var(--muted);
+}
+.agent-field textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.agent-bar:focus-within {
+  box-shadow:
+    var(--shadow-float),
+    0 0 0 1px var(--accent-line);
+}
+.agent-field-marks {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: transparent;
+  pointer-events: none;
+}
+.agent-field-marks mark {
+  border-radius: 2px;
+  background: var(--accent-soft);
+  color: transparent;
+  box-shadow: 0 1px 0 var(--accent-line);
+}
+
+.agent-chips {
+  display: contents;
+  list-style: none;
+}
+.agent-chip,
+.chip.agent-target {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  height: var(--control-dense);
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--t-sm);
+  white-space: nowrap;
+}
+.chip.agent-target {
+  flex: none;
+  max-width: 45%;
+  margin-top: 3px;
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.chip.agent-target[data-empty] {
+  background: var(--raised);
+  color: var(--muted);
+}
+.agent-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.agent-chip-x {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-right: -4px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.agent-chip-x:hover {
+  background: var(--accent-soft);
+}
+.agent-pass {
+  color: var(--pass);
+}
+.agent-process select {
+  min-width: 0;
+  max-width: 180px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: var(--t-sm);
+  cursor: pointer;
+}
+.agent-process select option {
+  background: var(--surface-solid);
+  color: var(--text);
+}
+.agent-attach {
+  position: relative;
+}
+.agent-attach:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Attachment tray */
+.agent-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.agent-attachment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: var(--control);
+  padding: 0 2px 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  background: var(--raised);
+  color: var(--text-2);
+  font-size: var(--t-sm);
+}
+.agent-attachment[data-status="failed"] {
+  border-color: var(--fail);
+}
+.agent-attachment-name {
+  min-width: 0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-attachment-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.agent-attachment[data-status="ready"] .agent-attachment-state {
+  color: var(--pass);
+}
+.agent-attachment[data-status="failed"] .agent-attachment-state {
+  color: var(--fail);
+  white-space: normal;
+}
+.agent-attachment .agent-hairline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.agent-hairline {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border: 0;
+  background: var(--line);
+  appearance: none;
+}
+.agent-hairline::-webkit-progress-bar {
+  background: var(--line);
+}
+.agent-hairline::-webkit-progress-value {
+  background: var(--accent);
+  transition: width var(--d-mid) var(--ease-in);
+}
+.agent-hairline::-moz-progress-bar {
+  background: var(--accent);
+}
+
+/* Starter cards */
+.agent-starters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s-2);
+}
+.agent-starter {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--raised);
+  color: var(--text-2);
+  font-size: var(--t-sm);
+  line-height: var(--lh-sm);
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--ease-in);
+}
+.agent-starter:hover {
+  border-color: var(--accent-line);
+}
+.agent-starter .mono {
+  color: var(--text);
+}
+
+/* Agent stream */
+.agent-stream {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.agent-stream[data-variant="card"] {
+  background: var(--raised);
+  backdrop-filter: none;
+}
+.agent-stream[data-variant="dock"] {
+  max-height: min(60vh, 520px);
+}
+.agent-stream-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  padding: 6px 6px 6px 12px;
+}
+.agent-stream-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-badge {
+  padding: 1px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  color: var(--accent);
+  font-size: var(--t-xs);
+}
+.agent-badge[data-status="done"] {
+  color: var(--pass);
+}
+.agent-badge[data-status="failed"] {
+  color: var(--fail);
+}
+.agent-steps {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: var(--s-2) var(--s-3) var(--s-3);
+  overflow: auto;
+  list-style: none;
+}
+.agent-steps[hidden] {
+  display: none;
+}
+.agent-step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--s-2);
+  padding: 4px 0;
+}
+.agent-step > * {
+  grid-column: 1;
+}
+.agent-step-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--control-dense);
+  font-weight: 500;
+  list-style: none;
+}
+summary.agent-step-head {
+  cursor: pointer;
+}
+summary.agent-step-head::-webkit-details-marker {
+  display: none;
+}
+summary.agent-step-head::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin: 0 4px 2px 2px;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  rotate: 45deg;
+}
+details:not([open]) > summary.agent-step-head::after {
+  rotate: -45deg;
+}
+.agent-step-glyph {
+  color: var(--pass);
+}
+.agent-step[data-state="fail"] .agent-step-glyph {
+  color: var(--fail);
+}
+.agent-step[data-state="run"] .agent-step-glyph {
+  color: var(--accent);
+}
+.agent-push {
+  margin-left: auto;
+}
+.agent-step-message {
+  margin: 0 0 0 22px;
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+.agent-step-detail {
+  margin: 4px 0 0 22px;
+  padding: 6px 8px;
+  border-radius: var(--r-1);
+  background: var(--field);
+  color: var(--text-2);
+  font-size: var(--t-xs);
+  line-height: var(--lh-xs);
+  overflow-wrap: anywhere;
+}
+.agent-step[data-state="fail"] .agent-step-detail {
+  color: var(--fail);
+}
+.agent-step[data-kind="repair"] .agent-step-detail {
+  box-shadow: inset 2px 0 0 var(--accent-line);
+}
+.agent-linked {
+  margin: 2px 0 0 22px;
+  color: var(--muted);
+  font-size: var(--t-xs);
+}
+.agent-step-thumb {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-1);
+  background: var(--viewport);
+  object-fit: contain;
+}
+.agent-changes {
+  margin: 0 var(--s-3) var(--s-3) calc(var(--s-3) + 22px);
+}
+.agent-stream > .agent-error,
+.agent-stream > .agent-bar-row {
+  padding: 0 var(--s-3) var(--s-3);
+}
+
+/* Status line */
+.agent-status {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  min-height: 36px;
+  padding: 2px 4px 2px 12px;
+}
+.agent-status-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--t-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Version scrubber */
+.agent-scrub {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 6px 4px 12px;
+}
+.agent-scrub-row,
+.agent-scrub-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.agent-scrub-banner {
+  flex-wrap: wrap;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-sm);
+}
+.agent-scrub-banner > span {
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.agent-scrub-label {
+  max-width: 30%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-lane {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  min-width: 0;
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+}
+.agent-lane::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 9px;
+  height: 1px;
+  background: var(--line-strong);
+}
+.agent-tick-item {
+  position: relative;
+  min-width: 0;
+}
+.agent-tick {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 3px;
+  min-width: 24px;
+  min-height: 36px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.agent-tick strong {
+  font: 500 var(--t-xs) / 1 var(--mono);
+}
+.agent-tick-mark {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--muted);
+}
+.agent-tick-item[data-agent] .agent-tick-mark {
+  border: 1.5px solid var(--muted);
+  border-radius: 50%;
+  background: var(--bg);
+}
+.agent-tick[aria-current="true"] {
+  color: var(--accent);
+}
+.agent-tick[aria-current="true"] .agent-tick-mark {
+  width: 10px;
+  height: 10px;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.agent-tick-item[data-other] .agent-tick-mark {
+  outline: 1.5px dashed var(--accent);
+  outline-offset: 2px;
+}
+.agent-tick:hover {
+  color: var(--text);
+}
+.agent-tick-card {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 10;
+  display: none;
+  gap: 4px;
+  width: 220px;
+  padding: var(--s-2);
+  border-radius: var(--r-2);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow-float);
+  color: var(--text-2);
+  font-size: var(--t-sm);
+  translate: -50% 0;
+}
+.agent-tick-item:first-child .agent-tick-card {
+  left: auto;
+  right: 0;
+  translate: none;
+}
+.agent-tick-item:last-child .agent-tick-card {
+  left: 0;
+  translate: none;
+}
+.agent-tick-item:hover .agent-tick-card,
+.agent-tick-item:focus-within .agent-tick-card {
+  display: grid;
+}
+.agent-tick-card img {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--r-1);
+  background: var(--viewport);
+}
+.agent-tick-prompt {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+.agent-diff {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+}
+.agent-diff th,
+.agent-diff td {
+  padding: 3px 6px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.agent-diff th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Proposals */
+.agent-proposals {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+}
+.agent-proposal-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.agent-proposal {
+  display: grid;
+  gap: 6px;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--line);
+}
+.agent-proposal .agent-step-detail {
+  margin: 0;
+  color: var(--text);
+}
+.agent-proposal-why {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--t-sm);
+}
+
+@media (max-width: 640px) {
+  .agent-bar .ui-kbd {
+    display: none;
+  }
+  .agent-scrub-label {
+    display: none;
+  }
+  .agent-tick {
+    min-width: var(--touch);
+    min-height: var(--touch);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-hairline::-webkit-progress-value {
+    transition: none;
+  }
+}
