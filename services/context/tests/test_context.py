@@ -92,6 +92,10 @@ def test_requirements_are_retrieved_traced_to_features_and_marked_stale(ctx: Loc
     assert ctx.stale("p1", [thickness.id]) == ["m1"]
     assert ctx.stale("p1", ["no-such-fact"]) == []
 
+    revised = ctx.ingest("p1", write_pdf("requirements-v2.pdf", [[*REQUIREMENTS[:3], "REQ-3: plate thickness 10 mm"]], None))
+    assert ctx.changed("p1", doc.id, revised.id) == [thickness.id]
+    assert ctx.stale("p1", ctx.changed("p1", doc.id, revised.id)) == ["m1"]
+
 
 def test_rule_documents_feed_rules_and_retrieval(ctx: LocalContext, fixtures: Path) -> None:
     doc = ctx.ingest("p1", fixtures / "screw-design-norm.md")

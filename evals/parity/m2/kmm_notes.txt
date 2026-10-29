@@ -1,0 +1,2 @@
+Notes on the KMM-28
+Base plate thickness 4 mm, printed in PETG.

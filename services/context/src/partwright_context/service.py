@@ -108,6 +108,10 @@ class LocalContext:
         models = {g.nodes[n]["model_id"] for fact_id in changed_fact_ids for n in derived_from(g, fact_id)}
         return sorted(m for m in models if m)
 
+    def changed(self, project_id: str, old_doc_id: str, new_doc_id: str) -> list[str]:
+        revised = {_signature(f) for f in self.facts(project_id, new_doc_id)}
+        return [f.id for f in self.facts(project_id, old_doc_id) if _signature(f) not in revised]
+
     def graph(self, project_id: str) -> GraphView:
         with self._engine(project_id).connect() as conn:
             return view(store.all_nodes(conn), store.all_edges(conn))
@@ -141,3 +145,7 @@ class LocalContext:
                 store.check_meta(conn, "embedder", f"{self._embedder.name}/{self._embedder.dim}")
             self._engines[project_id] = engine
         return self._engines[project_id]
+
+
+def _signature(f: Fact) -> tuple[object, ...]:
+    return (f.kind, f.name, f.value, f.unit, f.tol, f.count, f.at)
