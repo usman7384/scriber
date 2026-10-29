@@ -9,6 +9,7 @@ dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "par
 [project.scripts]
 partwright-dataset = "partwright_training.dataset:main"
 partwright-collect = "partwright_training.collect:main"
+partwright-conventions = "partwright_training.conventions:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]

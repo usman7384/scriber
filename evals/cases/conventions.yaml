@@ -1,0 +1,79 @@
+# CX-13 held-out conventions benchmark. Requests never state the house style (evals/parity/m5/house-style.md);
+# each case scores the conventions listed, and `holes` is the number of screw points the request asks for.
+- id: c01-pcb-enclosure
+  prompt: Open-top enclosure for a small PCB, 110 x 70 x 35 mm overall. Put a screw boss in each of the four corners so a lid can be fastened on.
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c02-battery-housing
+  prompt: "I need a housing for a battery pack: outside size 140 x 90 x 50 mm, no top. Four lid fixing points, one at every corner."
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c03-tray
+  prompt: Tray, 160 by 110 by 25 mm outside, open at the top.
+  conventions: [wall, fillet, names]
+- id: c04-sensor-box
+  prompt: Make a box for a sensor module, 80 mm long, 60 mm wide, 40 mm tall, open top, with corner bosses for four lid screws.
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c05-keypad-case
+  prompt: "Shallow case for a keypad: 130 x 85 x 22 mm, open on top, the lid screws into all four corners."
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c06-junction-box
+  prompt: Cable junction box 100 x 100 x 45 mm (outside), top left open.
+  conventions: [wall, fillet, names]
+- id: c07-desk-bin
+  prompt: Desk organiser bin, outside 120 x 60 x 55 mm, without a lid.
+  conventions: [wall, fillet, names]
+- id: c08-driver-enclosure
+  prompt: Enclosure for a motor driver board. Overall 150 x 95 x 45 mm, open top, and a fixing boss at each corner for the cover.
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c09-small-housing
+  prompt: Small open-top housing, 70 x 50 x 30 mm outside, with four screw bosses for a lid.
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: c10-electronics-enclosure
+  prompt: Electronics enclosure 175 x 115 x 60 mm, open on top; the corners get bosses so the lid can be screwed down.
+  conventions: [wall, insert, fillet, edge, names]
+  holes: 4
+- id: p01-mounting-plate
+  prompt: Flat mounting plate 100 x 60 mm, 10 mm thick, with a screw hole near each of the four corners.
+  conventions: [insert, fillet, edge, names]
+  holes: 4
+- id: p02-pump-base
+  prompt: "Base plate for a small pump: 150 x 90 mm, 12 mm thick, four holes at the corners to bolt it down."
+  conventions: [insert, fillet, edge, names]
+  holes: 4
+- id: p03-fixing-bar
+  prompt: Bar 160 x 40 x 10 mm with five fixing holes on its centre line, 30 mm apart.
+  conventions: [insert, fillet, edge, names]
+  holes: 5
+- id: p04-sensor-plate
+  prompt: Sensor bracket plate, 90 mm by 50 mm and 9 mm thick, three holes in a row along the long side at 25 mm pitch, centred.
+  conventions: [insert, fillet, edge, names]
+  holes: 3
+- id: p05-adapter-plate
+  prompt: Adapter plate 120 x 120 mm, 14 mm thick, one screw hole in each corner.
+  conventions: [insert, fillet, edge, names]
+  holes: 4
+- id: p06-strip
+  prompt: A strip 200 mm long, 35 mm wide and 9 mm thick, with four holes along the middle spaced 45 mm.
+  conventions: [insert, fillet, edge, names]
+  holes: 4
+- id: p07-display-mount
+  prompt: Display mount plate 140 x 80 x 10 mm, four corner screw holes.
+  conventions: [insert, fillet, edge, names]
+  holes: 4
+- id: p08-small-plate
+  prompt: Rectangular plate 75 x 45 mm, 11 mm thick, two holes 40 mm apart on the centre line.
+  conventions: [insert, fillet, edge, names]
+  holes: 2
+- id: p09-rail-clamp
+  prompt: Rail clamp plate 180 x 50 x 12 mm, six holes in one row, 28 mm apart.
+  conventions: [insert, fillet, edge, names]
+  holes: 6
+- id: p10-cover-plate
+  prompt: Plain cover plate 110 x 70 mm, 10 mm thick, with fixing holes at the four corners.
+  conventions: [insert, fillet, edge, names]
+  holes: 4

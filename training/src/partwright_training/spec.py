@@ -44,6 +44,11 @@ class Draft:
         self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": provenance})
         return name
 
+    def rule(self, name: str, value: float, unit: str, description: str, ref: str) -> str:
+        provenance = {"source": "rule", "ref": ref}
+        self.params.append({"name": name, "value": value, "unit": unit, "description": description, "provenance": provenance})
+        return name
+
     def say(self, section: str, text: str) -> None:
         assert section in SECTIONS, section
         self.statements.append((section, text))

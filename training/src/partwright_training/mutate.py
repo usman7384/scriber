@@ -72,7 +72,7 @@ def revolve_boss(d: Design, rng: random.Random) -> Design | None:
 
 
 def port_outside(d: Design, rng: random.Random) -> Design | None:
-    side = [h for h in _holes(d) if h["plane"]["ref"].split(".")[-1] in ("front", "left", "right") and h["at"]["kind"] == "points"]
+    side = [h for h in _holes(d) if h["plane"].get("ref", "").split(".")[-1] in ("front", "left", "right") and h["at"]["kind"] == "points"]
     if not side:
         return None
     point = rng.choice(side)["at"]["points"][0]
