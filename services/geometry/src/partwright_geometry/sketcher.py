@@ -57,7 +57,7 @@ class Builder:
 
 
 def sketch_dof(design: Design, seed: int = 0) -> list[SketchDof]:
-    return [_analyse(part.id, s, design.param_values(), seed) for part in design.parts for s in part.sketches]
+    return [analyse_sketch(part.id, s, design.param_values(), seed) for part in design.parts for s in part.sketches]
 
 
 def remaining_dof(geometry: list[SketchGeo], constraints: list[Constraint]) -> int:
@@ -72,7 +72,7 @@ def remaining_dof(geometry: list[SketchGeo], constraints: list[Constraint]) -> i
     return len(x0) - int(np.linalg.matrix_rank(rows, tol=RANK_TOL))
 
 
-def _analyse(part: str, sketch: Sketch, values: dict[str, float], seed: int) -> SketchDof:
+def analyse_sketch(part: str, sketch: Sketch, values: dict[str, float], seed: int) -> SketchDof:
     b = Builder(values)
     try:
         for e in sketch.entities:
@@ -294,6 +294,9 @@ def _slot(b: Builder, e: Slot) -> None:
     centers = (f"{segs[3].geo.name}.center", f"{segs[1].geo.name}.center")
     b.want("distance", *centers, value=length - width, expr=f"{_t(e.length)} - {_t(e.width)}")
     b.want("angle", segs[0].geo.name, value=angle, expr=_t(e.angle))
+    half_span = f"({_t(e.length)} - {_t(e.width)}) / 2"
+    b.want("distance_x", f"{segs[3].geo.name}.center", value=c1[0], expr=f"{_t(e.center[0])} - {half_span} * cos({_t(e.angle)})")
+    b.want("distance_y", f"{segs[3].geo.name}.center", value=c1[1], expr=f"{_t(e.center[1])} - {half_span} * sin({_t(e.angle)})")
     _fallback(b, segs)
 
 

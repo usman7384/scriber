@@ -1,0 +1,94 @@
+[
+  {
+    "row": "EX-4",
+    "passed": true,
+    "measured": {
+      "bundle_files": "design.json, features.json, manifest.json, model.py, model.step, params.json, sketches.json",
+      "features": "Base plate <- plate_sketch, XY, Load boss <- boss_sketch, plate.end, Mounting holes <- plate.end",
+      "sketch_constraints": "plate_sketch: 28, boss_sketch: 3",
+      "sketch_dof": "plate_sketch: 0, boss_sketch: 0",
+      "volume_drift": 0.0,
+      "bundle_ok": true,
+      "onshape_features": "plate_sketch (newSketch), Base plate (extrude), boss_sketch plane (cPlane), boss_sketch (newSketch), Motor boss (extrude), bore plane (cPlane), bore locations (newSketch), Motor bore (hole), mount_holes locations (newSketch), Mounting holes (hole)",
+      "onshape_ok": true,
+      "fcstd_reference_designs": "26/30 map to PartDesign",
+      "fcstd_unsupported": "b07-counterbored-plate: hole 'screws': counterbores, countersinks and drill points have no FreeCAD export yet; b10-stepped-pin: revolve feature 'body' has no FreeCAD export yet; b16-hinge-leaf: hole 'screws': counterbores, countersinks and drill points have no FreeCAD export yet; b27-control-knob: chamfer feature 'top_edge' has no FreeCAD export yet",
+      "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+      "bracket_tree": "plate_sketch (SketchObject), Base plate (Pad), boss_sketch (SketchObject), Load boss (Pad), mount_holes_centres (SketchObject), Mounting holes (Pocket)",
+      "bracket_sketches": "plate_sketch: 20 constraints, dof 0, boss_sketch: 3 constraints, dof 0, mount_holes_centres: 12 constraints, dof 0",
+      "bracket_redundant_or_conflicting": 0,
+      "bracket_expressions": 17,
+      "bracket_recompute_errors": "",
+      "bracket_volume_drift": 1.1172281617197863e-16,
+      "bracket_params_driving_the_model": "7/7",
+      "flange_tree": "disc (SketchObject), Body (Pad), hub (SketchObject), Hub (Pad), bore (SketchObject), Bore (Pocket), bolts_centres (SketchObject), Bolt holes (Pocket)",
+      "flange_sketches": "disc: 3 constraints, dof 0, hub: 3 constraints, dof 0, bore: 3 constraints, dof 0, bolts_centres: 18 constraints, dof 0",
+      "flange_redundant_or_conflicting": 0,
+      "flange_expressions": 25,
+      "flange_recompute_errors": "",
+      "flange_volume_drift": 2.048568608242724e-16,
+      "flange_params_driving_the_model": "7/7",
+      "fcstd_ok": true
+    },
+    "note": "FCStd written and reopened by FreeCAD 1.1.4 (freecadcmd); Onshape half = native feature export (AP-8 exporter) against the recorded mock, not FeatureScript source"
+  },
+  {
+    "row": "EX-5",
+    "passed": true,
+    "measured": {
+      "documented": true,
+      "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+      "ap214_schema": "AUTOMOTIVE_DESIGN",
+      "ap214_occt_volume_drift": 1.537745022366455e-16,
+      "ap214_material": null,
+      "ap214_freecad_solids": 1,
+      "ap214_freecad_valid": true,
+      "ap214_freecad_volume_drift": 1.537745022366455e-16,
+      "ap214_reimported_solids": 1,
+      "ap214_reimported_valid": true,
+      "ap214_reimported_volume_drift": 1.537745022366455e-16,
+      "ap214_reimported_bbox_drift": 0.0,
+      "ap242_schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF",
+      "ap242_occt_volume_drift": 1.0278499087822034e-14,
+      "ap242_material": "6061 aluminium",
+      "ap242_freecad_solids": 1,
+      "ap242_freecad_valid": true,
+      "ap242_freecad_volume_drift": 1.0278499087822034e-14,
+      "ap242_reimported_solids": 1,
+      "ap242_reimported_valid": true,
+      "ap242_reimported_volume_drift": 0.0,
+      "ap242_reimported_bbox_drift": 0.0
+    },
+    "note": "AP214 = build123d's default export (plate); AP242 = our XCAF writer with face groups and material (load bracket)"
+  },
+  {
+    "row": "VM-9",
+    "passed": true,
+    "measured": {
+      "prusaslicer": "C:\\Users\\mu393\\tools\\PrusaSlicer-2.9.6\\PrusaSlicer-2.9.6\\prusa-slicer-console.exe",
+      "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+      "b05-shaft-collar": "exit 0, manifold True, 33 layers, 672892 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 5.1e-06",
+      "b11-lightened-disc": "exit 0, manifold True, 50 layers, 2305336 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 4.4e-14",
+      "b17-cup": "exit 0, manifold True, 133 layers, 3581609 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 1.6e-14",
+      "b21-gear-blank": "exit 0, manifold True, 60 layers, 940230 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 2.2e-14",
+      "b27-control-knob": "exit 0, manifold True, 50 layers, 870119 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 1.2e-14"
+    },
+    "note": "PrusaSlicer 2.9.6 built-in defaults (0.3 mm layers, 200x200 bed), G-code deleted after counting; STEP read by FreeCAD 1.1.4"
+  },
+  {
+    "row": "GE-3",
+    "passed": true,
+    "measured": {
+      "designs": 927,
+      "sketches": 1211,
+      "fully_constrained": 1211,
+      "unsupported": 0,
+      "max_solve_error": 5.684341886080802e-14,
+      "constraints": 15082,
+      "driven_by_ir_expressions": 5866,
+      "plain_positions": 0,
+      "bundle_sketches": "plate_sketch: 28 constraints, dof 0, boss_sketch: 3 constraints, dof 0"
+    },
+    "note": "every IR design in the repo: worked examples, fixtures and live-run outputs; FreeCAD Sketcher replay not run"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "row": "EX-5",
+  "passed": true,
+  "measured": {
+    "documented": true,
+    "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+    "ap214_schema": "AUTOMOTIVE_DESIGN",
+    "ap214_occt_volume_drift": 1.537745022366455e-16,
+    "ap214_material": null,
+    "ap214_freecad_solids": 1,
+    "ap214_freecad_valid": true,
+    "ap214_freecad_volume_drift": 1.537745022366455e-16,
+    "ap214_reimported_solids": 1,
+    "ap214_reimported_valid": true,
+    "ap214_reimported_volume_drift": 1.537745022366455e-16,
+    "ap214_reimported_bbox_drift": 0.0,
+    "ap242_schema": "AP242_MANAGED_MODEL_BASED_3D_ENGINEERING_MIM_LF",
+    "ap242_occt_volume_drift": 1.0278499087822034e-14,
+    "ap242_material": "6061 aluminium",
+    "ap242_freecad_solids": 1,
+    "ap242_freecad_valid": true,
+    "ap242_freecad_volume_drift": 1.0278499087822034e-14,
+    "ap242_reimported_solids": 1,
+    "ap242_reimported_valid": true,
+    "ap242_reimported_volume_drift": 0.0,
+    "ap242_reimported_bbox_drift": 0.0
+  },
+  "note": "AP214 = build123d's default export (plate); AP242 = our XCAF writer with face groups and material (load bracket)"
+}

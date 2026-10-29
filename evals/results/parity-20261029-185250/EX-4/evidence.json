@@ -1,0 +1,33 @@
+{
+  "row": "EX-4",
+  "passed": true,
+  "measured": {
+    "bundle_files": "design.json, features.json, manifest.json, model.py, model.step, params.json, sketches.json",
+    "features": "Base plate <- plate_sketch, XY, Load boss <- boss_sketch, plate.end, Mounting holes <- plate.end",
+    "sketch_constraints": "plate_sketch: 28, boss_sketch: 3",
+    "sketch_dof": "plate_sketch: 0, boss_sketch: 0",
+    "volume_drift": 0.0,
+    "bundle_ok": true,
+    "onshape_features": "plate_sketch (newSketch), Base plate (extrude), boss_sketch plane (cPlane), boss_sketch (newSketch), Motor boss (extrude), bore plane (cPlane), bore locations (newSketch), Motor bore (hole), mount_holes locations (newSketch), Mounting holes (hole)",
+    "onshape_ok": true,
+    "fcstd_reference_designs": "26/30 map to PartDesign",
+    "fcstd_unsupported": "b07-counterbored-plate: hole 'screws': counterbores, countersinks and drill points have no FreeCAD export yet; b10-stepped-pin: revolve feature 'body' has no FreeCAD export yet; b16-hinge-leaf: hole 'screws': counterbores, countersinks and drill points have no FreeCAD export yet; b27-control-knob: chamfer feature 'top_edge' has no FreeCAD export yet",
+    "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+    "bracket_tree": "plate_sketch (SketchObject), Base plate (Pad), boss_sketch (SketchObject), Load boss (Pad), mount_holes_centres (SketchObject), Mounting holes (Pocket)",
+    "bracket_sketches": "plate_sketch: 20 constraints, dof 0, boss_sketch: 3 constraints, dof 0, mount_holes_centres: 12 constraints, dof 0",
+    "bracket_redundant_or_conflicting": 0,
+    "bracket_expressions": 17,
+    "bracket_recompute_errors": "",
+    "bracket_volume_drift": 1.1172281617197863e-16,
+    "bracket_params_driving_the_model": "7/7",
+    "flange_tree": "disc (SketchObject), Body (Pad), hub (SketchObject), Hub (Pad), bore (SketchObject), Bore (Pocket), bolts_centres (SketchObject), Bolt holes (Pocket)",
+    "flange_sketches": "disc: 3 constraints, dof 0, hub: 3 constraints, dof 0, bore: 3 constraints, dof 0, bolts_centres: 18 constraints, dof 0",
+    "flange_redundant_or_conflicting": 0,
+    "flange_expressions": 25,
+    "flange_recompute_errors": "",
+    "flange_volume_drift": 2.048568608242724e-16,
+    "flange_params_driving_the_model": "7/7",
+    "fcstd_ok": true
+  },
+  "note": "FCStd written and reopened by FreeCAD 1.1.4 (freecadcmd); Onshape half = native feature export (AP-8 exporter) against the recorded mock, not FeatureScript source"
+}

@@ -1,0 +1,54 @@
+# Runs inside FreeCAD (see freecad.py): reopen an FCStd, recompute everything and report each body's history;
+# then edit each named parameter in turn and write the recomputed bodies to a STEP file per edit.
+import json
+import os
+
+import FreeCAD as App
+import Part
+
+
+def feature(o):
+    found = {"name": o.Name, "label": o.Label, "type": o.TypeId, "valid": o.isValid(), "expressions": len(o.ExpressionEngine)}
+    if o.TypeId == "Sketcher::SketchObject":
+        o.solve()
+        found |= {"dof": o.DoF, "constraints": len(o.Constraints), "conflicting": len(o.ConflictingConstraints), "redundant": len(o.RedundantConstraints)}
+    return found
+
+
+def body(b):
+    shape = b.Shape
+    built = not shape.isNull()
+    return {
+        "name": b.Name,
+        "label": b.Label,
+        "features": [feature(o) for o in b.Group],
+        "solids": len(shape.Solids) if built else 0,
+        "valid": built and shape.isValid(),
+        "volume": shape.Volume if built else 0.0,
+    }
+
+
+def errors(prefix):
+    return [f"{prefix}{o.Label}: {o.State}" for o in doc.Objects if not o.isValid()]
+
+
+doc = App.openDocument(ARGS["path"])
+for o in doc.Objects:
+    o.touch()
+doc.recompute()
+bodies = [o for o in doc.Objects if o.TypeId == "PartDesign::Body"]
+found = {"bodies": [body(b) for b in bodies], "errors": errors(""), "edited": {}}
+sheet = doc.getObject("Parameters")
+for edit in ARGS["edits"]:
+    name = edit["name"]
+    cell = sheet.getCellFromAlias(edit["alias"])
+    before = sheet.getContents(cell)
+    sheet.set(cell, repr(edit["value"]))
+    doc.recompute()
+    found["errors"] += errors(f"after editing {name}: ")
+    found["edited"][name] = os.path.join(ARGS["step_dir"], f"{name}.step")
+    Part.makeCompound([b.Shape for b in bodies]).exportStep(found["edited"][name])
+    sheet.set(cell, before)
+    doc.recompute()
+with open(ARGS["result"], "w", encoding="utf-8") as out:
+    json.dump(found, out)

@@ -3,7 +3,7 @@
 Generated from `docs/reference/PARITY_CHECKLIST.md` by `partwright-parity-report`; a row is done only with a passing
 acceptance test and a recorded demo (D-030). Evidence paths are in each row's status.
 
-**78 done, 58 in progress, 2 open, of 138 rows.**
+**81 done, 56 in progress, 1 open, of 138 rows.**
 
 | Area | done | in progress | open |
 |---|---|---|---|
@@ -11,9 +11,9 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | Context Manager / knowledge | 7 | 7 | 0 |
 | Generation & output | 8 | 5 | 0 |
 | Parameters & refinement | 6 | 4 | 0 |
-| Verification & manufacturability | 7 | 2 | 1 |
+| Verification & manufacturability | 8 | 2 | 0 |
 | Assemblies | 2 | 2 | 0 |
-| Export & interop | 4 | 3 | 1 |
+| Export & interop | 6 | 1 | 1 |
 | Workflow & platform | 10 | 5 | 0 |
 | API & automation | 6 | 3 | 0 |
 | Circular design / simulation hooks | 5 | 3 | 0 |
@@ -52,8 +52,6 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 | VM-10 | Vision/visual critique of results (not claimed by reference; ours by design) | in progress: live run on `partwright-ir:4b-s2` fails: wrong_flagged=5/5, right_flagged=4/5; control: the correct parts must pass too, or a critic that rejects everything would meet the row (`parity-20261029-112255`) |
 | AS-1 | Segment selection & assembly tree | in progress (M5): API lists components (`test_assembly`); clicking parts in the viewer selects the same ids on the mock (`parity-web-20261029-050842`); no live run |
 | AS-3 | Place generated asset directly into an existing assembly | in progress: live run on `partwright-ir:4b-s2` fails: built=False (`parity-20261029-112255`) |
-| EX-4 | Native parametric CAD export with feature tree (reference: Onshape write) | in progress (M4): IR bundle with feature tree and sketch constraints reopens (`parity-20261029-041904`); FreeCAD .FCStd blocked (not installed), FeatureScript export not built |
-| EX-5 | Export to other CAD systems (CATIA, NX, SolidWorks, Creo; reference: read now, write in progress) | in progress (M5): docs/INTEROP.md export section; AP242 OCCT round trip drift 1.5e-16 (`parity-20261029-052939`); FreeCAD not installed |
 | EX-6 | Share link (read-only view) | in progress (M3): API half, share link view 200 with GLB, write 401, revoked 404 (`parity-20261029-025007`); viewer page not demoed |
 | WP-6 | Real-time generation progress | in progress: live run on `partwright-ir:4b-s2` fails: step_events=14, progress=10, 40, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100, final=failed; API half; the bar is the web suite's (`parity-20261029-112255`) |
 | WP-8 | Thumbnails for models and versions | in progress (M3): thumbnails change on edit in the UI (mock); server-side regeneration not demoed |
@@ -87,5 +85,4 @@ acceptance test and a recorded demo (D-030). Evidence paths are in each row's st
 
 | Row | Capability | Status |
 |---|---|---|
-| VM-9 | "Ready to manufacture" output (printable/machinable as exported) | open |
 | EX-8 | Implicit/field geometry → B-rep connection | open |

@@ -36,7 +36,7 @@ Branch `feat/m5-platform`. Demos in `evals/src/partwright_evals/parity_m5_platfo
 ## Gaps
 
 - EX-8 (SDF gyroid bracket → B-rep within 0.2 mm) not attempted: no marching-cubes or surface-nets code in the dependencies (scikit-image is absent), and a triangle-sewn B-rep of a gyroid is about 1e5 faces for OCCT to sew. Needs a meshing step and a decision on B-rep fitting first.
-- EX-5's FreeCAD half: FreeCAD is not installed; the test is written so it fails until it is.
+- EX-5's FreeCAD half was built later with FreeCAD 1.1.4 (`docs/agents/parity-freecad-tools.md`).
 - Projects and models are not user-scoped; any token can read every project. The community listing is the shared space, not an access boundary.
 - The shadow-box outline is the mid-height section, so it suits flat tools only.
 - `partwright pipe` is tested against the in-process app, not a running server.

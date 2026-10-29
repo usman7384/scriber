@@ -23,6 +23,7 @@
 - Mesh reconstruction (`reconstruct_mesh`) handles only Z-stacked prismatic meshes and rebuilds fillets and chamfers as sharp edges; see `docs/agents/parity-m4-mesh.md`.
 - API users are token names and projects are not user-scoped: any valid token reads and edits every project. The community space and the generation limit are per user, nothing else is.
 - `examples/shadow_box.py` takes the tool outline from the mid-height section of the STL, so tools whose outline changes with height get a pocket that fits only that section.
-- EX-5 is checked by an OCCT round trip only; no other CAD system (FreeCAD included) has opened our STEP on the build machine.
+- EX-5's other-CAD check is FreeCAD 1.1.4, which shares OCCT with us; no proprietary system has opened our STEP. FreeCAD heals what it reads: the cross-drilled shaft collar (b05) comes back with a volume 5e-6 lower, so VM-9 allows 1e-4.
+- FreeCAD `.FCStd` export maps extrudes and simple/tapped holes only; sketches on faces other than the start or end of a blind extrude are placed as numbers and do not follow edits (`docs/INTEROP.md`).
 - Live parity runs on `partwright-ir:4b-s2` (2026-10-29): 64 % of specified benchmark dimensions within tolerance (GE-8 needs 95 %); spec-table hole positions 25 mm off (IN-2, IN-3); no assemblies, design intent or suggestions from the model (GE-5, GE-6, AS-3, PR-5, CX-10, PR-7, CD-3). Details in `docs/agents/integration-2026-10-29.md`.
 - Vision through `qwen3.5:4b`: dimensions are read from sketches, but the designs do not build (IN-4/5/6); the visual critic also rejects 4 of 5 correct parts (VM-10), so it stays out of the generate loop (D-032).

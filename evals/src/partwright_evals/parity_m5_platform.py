@@ -17,10 +17,12 @@ from partwright_cli.pipe import pipe
 from partwright_context import HashEmbedder, LocalContext, archive_files, ingest_all
 from partwright_context.sizing import XmlSizing
 from partwright_evals.legacy_archive import BROKEN_PDF, BROKEN_STEP, make_archive
-from partwright_evals.parity import Demo, Evidence, Measured, Rig, evidence
+from partwright_evals.parity import Demo, Evidence, Measured, Rig, Value, evidence
 from partwright_evals.parity_api import NO_REQS, Api, Response, Seeded, serve
 from partwright_evals.parity_m4_aircraft import wing_checks
-from partwright_geometry import Artifact
+from partwright_evals.parity_m4_interop import bracket
+from partwright_evals.tools import FREECAD, PRUSASLICER, missing, tool
+from partwright_geometry import Artifact, slice_stl, step_in_freecad
 from partwright_ir import Design, material
 
 ROOT = Path(__file__).parents[3]
@@ -29,7 +31,12 @@ SIZING = ROOT / "evals" / "parity" / "m4" / "aircraft" / "sizing.xml"
 SKETCH_PNG = ROOT / "evals" / "parity" / "m3" / "sketch.png"
 INTEROP_DOC = ROOT / "docs" / "INTEROP.md"
 EXAMPLES_DOC = ROOT / "docs" / "EXAMPLES.md"
-FREECAD = ("FreeCADCmd", "freecadcmd", "freecad")
+REFERENCE = ROOT / "evals" / "parity" / "m5" / "reference"
+# the STEP header names AP214 by its schema identifier
+SCHEMAS = {"AP214": "AUTOMOTIVE_DESIGN", "AP242": "AP242"}
+# FreeCAD heals what it reads, so the cross-drilled collar's volume moves by about 5e-6
+FREECAD_VOLUME = 1e-4
+PRINTABLE = ("b05-shaft-collar", "b11-lightened-disc", "b17-cup", "b21-gear-blank", "b27-control-knob")
 Array = npt.NDArray[np.float64]
 
 
@@ -366,34 +373,85 @@ def cx_14(rig: Rig) -> Evidence:
 
 
 def ex_5(rig: Rig) -> Evidence:
-    design = fixture("plate.json")
-    design["parts"][0]["material"] = "Aluminum 6061-T6"
-    art = rig.geometry.build(Design.model_validate(design), rig.out / "plate")
-    [reread] = rig.geometry.import_step(art.files["step"])
-    meta = rig.geometry.step_metadata(art.files["step"])
+    documented = "Export to other CAD systems" in INTEROP_DOC.read_text(encoding="utf-8")
+    freecad = tool(FREECAD)
+    m: dict[str, Value] = {"documented": documented, "freecad": str(freecad) if freecad else missing(FREECAD)}
+    checks = [documented, freecad is not None]
+    for schema, design in (("AP214", Design.model_validate(fixture("plate.json"))), ("AP242", bracket())):
+        found, ok = _step_round_trip(rig, schema, design, freecad)
+        m |= found
+        checks.append(ok)
+    note = "AP214 = build123d's default export (plate); AP242 = our XCAF writer with face groups and material (load bracket)"
+    return evidence("EX-5", m, *checks, note=note)
+
+
+def _step_round_trip(rig: Rig, schema: str, design: Design, freecad: Path | None) -> tuple[dict[str, Value], bool]:
+    art = rig.geometry.build(design, rig.out / schema.lower())
     [built] = art.parts
-    doc = INTEROP_DOC.read_text(encoding="utf-8")
-    freecad = next((name for name in FREECAD if shutil.which(name)), None)
-    volume_drift = abs(reread.volume - built.volume) / built.volume
-    bbox_drift = max(abs(a - b) for a, b in zip(reread.bbox_size, built.bbox_size, strict=True))
-    m: Measured = {
-        "schema": meta.schema_name,
-        "volume_drift": volume_drift,
-        "bbox_drift": bbox_drift,
-        "solids": reread.solids,
-        "valid": reread.valid,
-        "material": meta.bodies[0].material,
-        "documented": "Export to other CAD systems" in doc,
-        "freecad": freecad or "not installed",
+    meta = rig.geometry.step_metadata(art.files["step"])
+    [reread] = rig.geometry.import_step(art.files["step"])
+    key = schema.lower()
+    m: dict[str, Value] = {
+        f"{key}_schema": meta.schema_name,
+        f"{key}_occt_volume_drift": _drift(reread.volume, built.volume),
+        f"{key}_material": meta.bodies[0].material,
     }
-    checks = (
-        meta.schema_name.startswith("AP242"),
-        volume_drift < 1e-6 and bbox_drift < 1e-6,
-        reread.solids == 1 and reread.valid and meta.bodies[0].material == "Aluminum 6061-T6",
-        "Export to other CAD systems" in doc,
+    ok = (
+        meta.schema_name.startswith(SCHEMAS[schema])
+        and reread.solids == 1
+        and reread.valid
+        and _drift(reread.volume, built.volume) < 1e-6
+        and meta.bodies[0].material == design.parts[0].material
     )
-    note = "OCCT round trip only; the FreeCAD half needs FreeCAD installed"
-    return evidence("EX-5", m, *checks, freecad is not None, note=note)
+    if freecad is None:
+        return m, ok
+    opened = step_in_freecad(freecad, art.files["step"], rig.out / f"{key}_from_freecad.step")
+    back = rig.geometry.import_step(opened.exported)
+    bbox = max(abs(a - b) for p in back for a, b in zip(p.bbox_size, built.bbox_size, strict=True))
+    m |= {
+        f"{key}_freecad_solids": opened.solids,
+        f"{key}_freecad_valid": opened.valid,
+        f"{key}_freecad_volume_drift": _drift(opened.volume, built.volume),
+        f"{key}_reimported_solids": sum(p.solids for p in back),
+        f"{key}_reimported_valid": all(p.valid for p in back),
+        f"{key}_reimported_volume_drift": _drift(sum(p.volume for p in back), built.volume),
+        f"{key}_reimported_bbox_drift": bbox,
+    }
+    ok = ok and opened.solids == built.solids == 1 and opened.valid and _drift(opened.volume, built.volume) < 1e-6
+    ok = ok and [(p.solids, p.valid) for p in back] == [(1, True)] and _drift(back[0].volume, built.volume) < 1e-6 and bbox < 1e-6
+    return m, ok
+
+
+def _drift(value: float, reference: float) -> float:
+    return abs(value - reference) / reference
+
+
+def vm_9(rig: Rig) -> Evidence:
+    slicer, freecad = tool(PRUSASLICER), tool(FREECAD)
+    m: dict[str, Value] = {
+        "prusaslicer": str(slicer) if slicer else missing(PRUSASLICER),
+        "freecad": str(freecad) if freecad else missing(FREECAD),
+    }
+    if slicer is None or freecad is None:
+        return evidence("VM-9", m, False, note="needs PrusaSlicer and FreeCAD")
+    checks = []
+    for name in PRINTABLE:
+        design = Design.model_validate_json((REFERENCE / f"{name}.json").read_text(encoding="utf-8"))
+        art = rig.geometry.build(design, rig.out / name)
+        [built] = art.parts
+        sliced = slice_stl(slicer, art.files["stl"], rig.out / f"{name}.gcode")
+        opened = step_in_freecad(freecad, art.files["step"], rig.out / f"{name}_from_freecad.step")
+        m[name] = (
+            f"exit {sliced.exit_code}, manifold {sliced.manifold}, {sliced.layers} layers, {sliced.gcode_bytes} B gcode, "
+            f"{len(sliced.warnings)} warnings, {len(sliced.errors)} errors; FreeCAD {opened.solids} solid, valid {opened.valid}, "
+            f"volume drift {_drift(opened.volume, built.volume):.1e}"
+        )
+        if sliced.warnings or sliced.errors:
+            m[f"{name}_log"] = "; ".join(sliced.warnings + sliced.errors)[:300]
+        checks += [sliced.ok, opened.solids == 1 and opened.valid and _drift(opened.volume, built.volume) < FREECAD_VOLUME]
+        (rig.out / f"{name}.gcode").unlink()
+    note = "PrusaSlicer 2.9.6 built-in defaults (0.3 mm layers, 200x200 bed), G-code deleted after counting; STEP read by FreeCAD 1.1.4"
+    return evidence("VM-9", m, *checks, note=note)
 
 
 ROWS: dict[str, Demo] = {
@@ -408,4 +466,5 @@ ROWS: dict[str, Demo] = {
     "CX-12": cx_12,
     "CX-14": cx_14,
     "EX-5": ex_5,
+    "VM-9": vm_9,
 }

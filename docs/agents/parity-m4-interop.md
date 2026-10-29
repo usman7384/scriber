@@ -30,7 +30,7 @@ uv run python evals/parity/m4/interop/make_fixtures.py   # regenerates the STEP 
 
 ## Gaps and gotchas
 
-- EX-4 stays open until FreeCAD 1.1 is installed and an IR → PartDesign emitter is written and tested headless.
+- EX-4's FCStd half was built later with FreeCAD 1.1.4 (`docs/agents/parity-freecad-tools.md`).
 - GE-3: a coincidence that is only half redundant (a closed chain of collinear lines, as in the recorded "Stepped shaft" polygon with every point on y = 0) is kept as its independent axis (`distance_x`/`distance_y` = 0 between the two points); before, the whole coincidence was dropped and the polygon kept 1 DOF. Re-run 2026-10-29: 812 designs, 954 sketches, all 0 DOF, max re-solve deviation 6e-13.
 - GE-3: no path or slot entity appears in the recorded designs; both are covered by unit tests (perimeters match build123d). A fillet next to an arc segment in a path is reported as unsupported, not counted. Airfoil sections are generated curves, not sketches. Constraints are not replayed in a FreeCAD Sketcher.
 - Onshape: no HTTP client, no translation polling, sketch constraints not read, arcs/splines not mapped, `booleanScope` ignored. The mock was not captured from a live account.

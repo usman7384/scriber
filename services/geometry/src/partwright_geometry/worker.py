@@ -64,13 +64,43 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet, materials: dict[
 
 
 def solids(source: str) -> tuple[dict[str, Shape[Any]], dict[str, Any]]:
-    namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
-    exec(compile(source, "model.py", "exec"), namespace)
+    namespace = _load(source)
     parts: dict[str, Shape[Any]] = namespace["build"]()
     for pid, shape in parts.items():
         if not isinstance(shape, Shape):
             raise TypeError(f"part {pid!r} produced {type(shape).__name__}, not a solid")
     return parts, namespace
+
+
+def sketch_frames(source: str) -> list[dict[str, Any]]:
+    namespace = _load(source)
+    ref, extrude, seen = namespace["_ref"], namespace["_extrude"], []
+
+    def recording(part: Any, features: Any, datums: Any, name: str, offset: float) -> Any:
+        pl, out = ref(part, features, datums, name, offset)
+        seen.append({"ref": name, "origin": _vec(pl.origin), "x_dir": _vec(pl.x_dir), "z_dir": _vec(pl.z_dir), "out": out})
+        return pl, out
+
+    def facing(part: Any, sk: Any, pl: Any, *rest: Any) -> Any:
+        # build123d extrudes along the face normal, which a clockwise outline turns against the plane normal
+        signs = {f.normal_at().dot(pl.z_dir) > 0 for f in sk.faces()}
+        seen[-1]["normal"] = 1 if signs == {True} else -1 if signs == {False} else 0
+        return extrude(part, sk, pl, *rest)
+
+    # model functions look these up in their globals at call time, so the swap sees every sketch in feature order
+    namespace["_ref"], namespace["_extrude"] = recording, facing
+    namespace["build"]()
+    return seen
+
+
+def _load(source: str) -> dict[str, Any]:
+    namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
+    exec(compile(source, "model.py", "exec"), namespace)
+    return namespace
+
+
+def _vec(v: Any) -> tuple[float, float, float]:
+    return (float(v.X), float(v.Y), float(v.Z))
 
 
 OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
@@ -79,6 +109,7 @@ OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "describe": lambda r: {"descriptor": describe(Path(r["path"])).model_dump()},
     "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
     "step_metadata": lambda r: {"metadata": read_step(Path(r["path"])).model_dump()},
+    "frames": lambda r: {"frames": sketch_frames(r["source"])},
     "sections": lambda r: {"sections": span_sections(Path(r["path"]), r["ys"])},
     "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"]))},
 }

@@ -18,6 +18,7 @@ from partwright_geometry.models import (
     BuildError,
     Finding,
     PartMetrics,
+    SketchFrame,
     StepMetadata,
     Vec,
 )
@@ -64,6 +65,13 @@ class LocalGeometry:
         if not reply["ok"]:
             raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
         return [PartMetrics.model_validate(p) for p in reply["parts"]]
+
+    def frames(self, design: Design) -> list[SketchFrame]:
+        source = compile_design(design)
+        reply = self._call({"op": "frames", "source": source})
+        if not reply["ok"]:
+            raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
+        return [SketchFrame.model_validate(f) for f in reply["frames"]]
 
     def describe(self, path: Path) -> ShapeDescriptor:
         return ShapeDescriptor.model_validate(self._read("describe", path, STEP_SUFFIXES | MESH_SUFFIXES)["descriptor"])
