@@ -1,6 +1,8 @@
-import { asset, shopModels } from "../fixtures";
+import { readFileSync, writeFileSync } from "node:fs";
+import { asset, motorHolder, shopModels } from "../fixtures";
 import { MockApi } from "../mock-api";
 import { expect, test } from "./row";
+import { seenProgress, watchProgress } from "./watch";
 
 test("WP-2 prompt card with image, mesh and spec attachments makes one generation job", async ({
   page,
@@ -139,4 +141,116 @@ test("WP-9 library lists every part with thumbnail and title, newest first", asy
     thumbnails_loaded: await imgs.count(),
   });
   await row.shot("library");
+});
+
+test("WP-6 progress bar follows the SSE progress events to 100 %", async ({ page, row }) => {
+  const api = new MockApi();
+  api.drip = 150;
+  await api.install(page);
+  await page.goto("/p/p1");
+  await watchProgress(page);
+  await page.getByLabel("Describe the part").fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
+  await page.getByRole("button", { name: "Generate" }).click();
+  const timeline = page.getByRole("region", { name: "Generation timeline" });
+  await expect(timeline.getByRole("progressbar", { name: "Progress" })).toBeVisible();
+  await row.shot("1-running");
+  await expect(timeline.getByRole("status")).toHaveText("done");
+  await row.shot("2-done");
+
+  const sent = (api.jobs.get("generate-1")?.events ?? []).flatMap(([kind, data]) =>
+    kind === "step" && "progress" in data ? [data.progress ?? 0] : [],
+  );
+  const shown = (await seenProgress(page)).Progress ?? [];
+  Object.assign(row.measured, {
+    sse_progress_events: sent.join(", "),
+    bar_values_seen: shown.join(", "),
+    event_spacing_ms: api.drip ?? null,
+  });
+  expect(sent.length).toBeGreaterThanOrEqual(3);
+  expect(sent.at(-1)).toBe(100);
+  expect(shown).toEqual(sent);
+  row.note =
+    "The mock stream sends one event per response and the browser reconnects for the next (EventSource retry), so the bar is sampled while events arrive; progress values are apps/api work.PROGRESS.";
+});
+
+// A binary STL is watertight and consistently oriented when every directed edge appears once and its reverse once.
+function stlReport(stl: Buffer) {
+  type V = [number, number, number];
+  const count = stl.readUInt32LE(80);
+  const vertex = (o: number): V => [stl.readFloatLE(o), stl.readFloatLE(o + 4), stl.readFloatLE(o + 8)];
+  const edges = new Map<string, number>();
+  const lo: V = [Infinity, Infinity, Infinity];
+  const hi: V = [-Infinity, -Infinity, -Infinity];
+  let volume = 0;
+  for (let t = 0; t < count; t++) {
+    const o = 84 + t * 50 + 12;
+    const tri: [V, V, V] = [vertex(o), vertex(o + 12), vertex(o + 24)];
+    const [a, b, c] = tri;
+    volume +=
+      (a[0] * (b[1] * c[2] - b[2] * c[1]) -
+        a[1] * (b[0] * c[2] - b[2] * c[0]) +
+        a[2] * (b[0] * c[1] - b[1] * c[0])) /
+      6;
+    const keys = tri.map((v) => {
+      v.forEach((x, i) => {
+        lo[i] = Math.min(lo[i] ?? x, x);
+        hi[i] = Math.max(hi[i] ?? x, x);
+      });
+      return v.map((x) => x.toFixed(4)).join(",");
+    });
+    keys.forEach((k, i) => {
+      const e = `${k}>${keys[(i + 1) % 3]}`;
+      edges.set(e, (edges.get(e) ?? 0) + 1);
+    });
+  }
+  const closed = [...edges].every(([e, n]) => n === 1 && edges.get(e.split(">").reverse().join(">")) === 1);
+  return { triangles: count, size: hi.map((h, i) => h - (lo[i] ?? h)), volume, closed };
+}
+
+test("WP-14 beginner flow: prompt to STL download in three UI steps", async ({ page, row }) => {
+  const api = new MockApi(motorHolder);
+  await api.install(page);
+  await page.goto("/p/p1");
+  const steps: string[] = [];
+  const prompt = "motor holder for 28 mm motor, 2 M3 screws";
+
+  await page.getByLabel("Describe the part").fill(prompt);
+  steps.push("type the prompt");
+  await page.getByRole("button", { name: "Generate" }).click();
+  steps.push("Generate");
+  const download = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Download STL" }).click();
+  steps.push("Download STL");
+  await row.shot("1-done");
+  // Browser downloads bypass Playwright's request interception, so the bytes are fetched from the same URL through the mock.
+  const file = await download;
+  const fetched = await page.evaluate(async (url) => {
+    const res = await fetch(url);
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? "model.stl";
+    return { name, b64: btoa(Array.from(bytes, (b) => String.fromCharCode(b)).join("")) };
+  }, file.url());
+  const path = `${row.dir}/${fetched.name}`;
+  writeFileSync(path, Buffer.from(fetched.b64, "base64"));
+
+  const stl = stlReport(readFileSync(path));
+  const generate = api.requests.find((r) => r.path.endsWith("/generate"))?.body as { prompt: string };
+  Object.assign(row.measured, {
+    ui_steps: steps.length,
+    steps: steps.join(" -> "),
+    prompt_sent: generate.prompt,
+    download_url: new URL(file.url()).pathname + new URL(file.url()).search,
+    stl_file: fetched.name,
+    triangles: stl.triangles,
+    size_mm: stl.size.map((v) => +v.toFixed(3)).join(" x "),
+    volume_mm3: +stl.volume.toFixed(1),
+    watertight_and_oriented: stl.closed,
+  });
+  expect(steps).toHaveLength(3);
+  expect(generate.prompt).toBe(prompt);
+  expect(stl.closed).toBe(true);
+  expect(stl.size.map((v) => +v.toFixed(2))).toEqual(motorHolder.metrics.bbox);
+  expect(Math.abs(stl.volume - motorHolder.metrics.volume) / motorHolder.metrics.volume).toBeLessThan(0.01);
+  row.note =
+    "STL is geometry-service output for a hand-written motor-holder IR standing in for the model's answer (generation is mocked). VM-9 needs a slicer run on it; here it is checked watertight and consistently oriented.";
 });
