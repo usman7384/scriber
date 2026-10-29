@@ -12,7 +12,8 @@
     "typecheck": "tsc -p .",
     "test": "vitest run",
     "e2e": "playwright test",
-    "parity": "playwright test -c playwright.parity.config.ts"
+    "parity": "playwright test -c playwright.parity.config.ts",
+    "parity:live": "playwright test -c playwright.live.config.ts"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",

@@ -1,0 +1,14 @@
+{
+  "row": "EX-6",
+  "passed": true,
+  "measured": {
+    "link": "http://127.0.0.1:5198/shared/sfVG59toK4pVDWxBU",
+    "shared_requests": "GET /s/sfVG59toK4pVDWxBU, GET /s/sfVG59toK4pVDWxBU/files/glb",
+    "editable_fields": 0,
+    "edit_buttons": 0,
+    "api_share_title": "Base plate",
+    "write_on_share_status": 405,
+    "api_status_after_revoke": 404
+  },
+  "note": "Live: POST /shares and DELETE /shares/{id} from the editor; the visitor page is served the real GET /s/{id}."
+}

@@ -1,0 +1,15 @@
+{
+  "row": "PR-10",
+  "passed": true,
+  "measured": {
+    "base_plate_api_bbox": "120 x 80 x 5",
+    "base_plate_labels": "L 120.0 mm | W 80.0 mm | H 5.0 mm",
+    "base_plate_glb_size": "120 x 80 x 5",
+    "base_plate_labels_inside_view": true,
+    "stack_api_bbox": "40 x 40 x 50",
+    "stack_labels": "L 40.0 mm | W 40.0 mm | H 50.0 mm",
+    "stack_glb_size": "40 x 40 x 50",
+    "stack_labels_inside_view": true
+  },
+  "note": "Live: designs built by apps/api; metrics.bbox from the API, labels and GLB box from the viewer."
+}

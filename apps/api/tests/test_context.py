@@ -179,3 +179,12 @@ def test_selected_context_is_exactly_what_the_version_used(api: Api) -> None:
     assert [i["id"] for i in version["inputs"] if i["kind"] == "file" and i["role"] == "used"] == chosen
     used_in = {f["name"]: f["used_in"] for f in listing(api, project)["files"]}
     assert used_in == {"a.md": [job["model_id"]], "b.md": [job["model_id"]], "c.md": []}
+
+
+def test_upload_takes_the_contract_field_name(api: Api) -> None:
+    project = api.project()
+    sent = [("files[]", ("a.md", spec(), "text/markdown")), ("files[]", ("b.md", spec(90), "text/markdown"))]
+    jobs = api.ok(api.client.post(f"/projects/{project}/context", files=sent))
+    assert [api.wait(j["id"])["status"] for j in jobs] == ["done", "done"]
+    assert [f["name"] for f in listing(api, project)["files"]] == ["a.md", "b.md"]
+    assert api.client.post(f"/projects/{project}/context", data={"x": "1"}).status_code == 422

@@ -2,8 +2,9 @@ import asyncio
 from collections import defaultdict
 from functools import partial
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 
 from partwright_api import disk, ingest, repo, schemas, views
 from partwright_api.auth import require_token
@@ -17,11 +18,19 @@ router = APIRouter(prefix="/projects/{project_id}", dependencies=[Depends(requir
 
 
 @router.post("/context", status_code=202)
-async def upload(project_id: str, files: list[UploadFile], d: DepsDep) -> list[Job]:
+async def upload(
+    project_id: str,
+    d: DepsDep,
+    files: Annotated[list[UploadFile], File(default_factory=list)],
+    bracketed: Annotated[list[UploadFile], File(default_factory=list, alias="files[]")],
+) -> list[Job]:
     need_project(d, project_id)
+    # docs/API.md and the web client name the field files[]; scripts and the CLI send files
+    if not files and not bracketed:
+        raise HTTPException(422, "send the files as multipart field files[]")
     await need_ollama(d)
     jobs = []
-    for upload in files:
+    for upload in [*files, *bracketed]:
         name = Path(upload.filename or "").name
         if not name:
             raise HTTPException(400, "every uploaded file needs a name")
