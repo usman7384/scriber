@@ -1,18 +1,21 @@
 import argparse
 import io
+import json
 import sys
 from collections.abc import Iterator
 from pathlib import Path
 from typing import get_args
 
+import httpx
 import uvicorn
 
 from partwright_agent import Result, Step, generate, refine
 from partwright_api import SerialGeometry, Settings, create_app
 from partwright_cli import project, store
 from partwright_cli.config import Config, llm_for, load
+from partwright_cli.pipe import pipe
 from partwright_cli.view import serve
-from partwright_context import LocalContext, OllamaEmbedder
+from partwright_context import LocalContext, OllamaEmbedder, archive_files, ingest_all
 from partwright_geometry import BuildError, LocalGeometry
 from partwright_ir import ParamError, Process, apply_params, label
 
@@ -60,9 +63,28 @@ def _refine(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -
 
 def _context_add(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
     with project.open_context(config, geometry) as ctx:
-        for path in args.files:
-            d = ctx.ingest(args.project, path)
-            print(f"{d.name}: {d.kind}, {d.chunks} chunks, {d.facts} facts, {d.rules} rules")
+        outcomes = ingest_all(ctx, args.project, archive_files(args.files))
+    for o in outcomes:
+        print(f"{o.name}: {o.kind}, {o.facts} facts" if o.status == "parsed" else f"{o.name}: FAILED {o.error}")
+    failed = sum(o.status == "failed" for o in outcomes)
+    print(f"{len(outcomes) - failed}/{len(outcomes)} files parsed")
+    if args.report:
+        args.report.write_text(json.dumps([o.model_dump() for o in outcomes], indent=2), encoding="utf-8")
+    return 1 if failed else 0
+
+
+def _pipe(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    headers = {"X-API-Token": args.token} if args.token else {}
+    with httpx.Client(base_url=args.api or f"http://{config.api.host}:{config.api.port}", headers=headers, timeout=30) as http:
+        job = pipe(sys.stdin.buffer.read(), http, args.project, args.name)
+        if job["status"] != "done":
+            print(f"error: {job['error']}", file=sys.stderr)
+            return 1
+        print(f"model {job['model_id']} v{job['version']}")
+        if args.out:
+            step = http.get(f"/models/{job['model_id']}/export", params={"fmt": "step", "version": job["version"]})
+            args.out.write_bytes(step.raise_for_status().content)
+            print(f"saved {args.out}")
     return 0
 
 
@@ -147,7 +169,8 @@ def _parser() -> argparse.ArgumentParser:
     c = sub.add_parser("context", help="manage a project's engineering files").add_subparsers(required=True)
     ca = c.add_parser("add", help="ingest files into a project")
     ca.add_argument("project")
-    ca.add_argument("files", type=Path, nargs="+")
+    ca.add_argument("files", type=Path, nargs="+", help="files or folders (read recursively)")
+    ca.add_argument("--report", type=Path, help="write the per-file outcome as JSON")
     ca.set_defaults(run=_context_add)
     cs = c.add_parser("show", help="list a project's files, knowledge base and rules")
     cs.add_argument("project")
@@ -156,6 +179,13 @@ def _parser() -> argparse.ArgumentParser:
     pa.add_argument("model_dir", type=Path)
     pa.add_argument("--set", nargs="*", metavar="NAME=VALUE")
     pa.set_defaults(run=_params)
+    pi = sub.add_parser("pipe", help="build a model from sizing XML on stdin through a running API")
+    pi.add_argument("--api", help="API base URL; defaults to the api section of config")
+    pi.add_argument("--project", help="project id; a new project when omitted")
+    pi.add_argument("--token", help="API token when the server uses tokens")
+    pi.add_argument("--name", default="sizing.xml", help="file name recorded as provenance")
+    pi.add_argument("--out", type=Path, help="save the STEP here")
+    pi.set_defaults(run=_pipe)
     s = sub.add_parser("serve", help="run the HTTP API (host, port and auth from the api section of config)")
     s.set_defaults(run=_serve)
     v = sub.add_parser("view", help="open a 3D viewer for the models in the output folder")

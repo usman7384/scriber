@@ -9,7 +9,7 @@ from partwright_api import db, logs
 from partwright_api.deps import Deps, Geometry, SerialGeometry
 from partwright_api.hooks import Hooks
 from partwright_api.jobs import Jobs
-from partwright_api.routes import context, jobs, models, projects, sharing, suggestions, v1
+from partwright_api.routes import bugs, community, context, designs, jobs, materials, models, projects, sharing, suggestions, v1
 from partwright_api.settings import Settings
 from partwright_context import Context
 
@@ -39,7 +39,10 @@ def create_app(
     app = FastAPI(title="Partwright API", version="0.1.0", lifespan=lifespan)
     app.state.deps = deps
     app.add_middleware(logs.RequestContext)
-    routers = (projects.router, context.router, models.router, suggestions.router, jobs.router, v1.router)
-    for router in (*routers, sharing.router, sharing.tokens, sharing.public):
+    routers = (
+        *(projects.router, designs.router, context.router, models.router, suggestions.router, suggestions.simulation, jobs.router),
+        *(v1.router, materials.router, bugs.router, community.router, sharing.router, sharing.tokens, sharing.public),
+    )
+    for router in routers:
         app.include_router(router)
     return app

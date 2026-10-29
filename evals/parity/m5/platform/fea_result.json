@@ -1,0 +1,5 @@
+{
+  "solver": "mock-beam",
+  "load_case": "193.2 N tip load on load_face",
+  "results": [{"face_group": "mount_face", "max_stress_mpa": 193.2, "allowable_mpa": 138}]
+}

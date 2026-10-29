@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 import trimesh
 
-from partwright_geometry import Artifact, LocalGeometry
+from partwright_geometry import Artifact, BuildError, LocalGeometry
 from partwright_ir import Design
 
 PLATE_WITH_HOLES: dict[str, Any] = {
@@ -80,3 +80,10 @@ def test_import_step_keeps_parts_and_names(geometry: LocalGeometry, tmp_path: Pa
     parts = geometry.import_step(art.files["step"])
     assert [(p.name, len(p.holes)) for p in parts] == [("Plate", 4), ("Lid", 0)]
     assert [p.volume for p in parts] == pytest.approx([p.volume for p in art.parts], rel=1e-6)
+
+
+def test_truncated_step_is_an_error_not_an_empty_shape(geometry: LocalGeometry, plate: Artifact, tmp_path: Path) -> None:
+    cut = tmp_path / "cut.step"
+    cut.write_bytes(plate.files["step"].read_bytes()[:400])
+    with pytest.raises(BuildError, match="holds no geometry"):
+        geometry.describe(cut)

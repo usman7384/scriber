@@ -6,7 +6,7 @@ import httpx
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 
-from partwright_api import disk, jobs_db, repo, work
+from partwright_api import access, disk, jobs_db, repo, work
 from partwright_api.deps import Deps
 from partwright_api.repo import Row
 from partwright_api.schemas import FileKind, GenerateIn, Job, JobKind, Origin, Project, RefineIn, VersionData
@@ -78,20 +78,30 @@ def latest_design(d: Deps, model_id: str) -> Design:
     return disk.design(disk.version_dir(d.settings.data_dir, model_id, ok[-1]))
 
 
-def start_generate(d: Deps, project_id: str, req: GenerateIn) -> Job:
+def charge(d: Deps, user: str, kind: str, count: int = 1) -> None:
+    limit = d.settings.generation_limit
+    if not access.charge(d.engine, user, kind, count, limit):
+        raise HTTPException(429, f"user {user!r} reached the limit of {limit} generations")
+
+
+def start_generate(d: Deps, project_id: str, req: GenerateIn, user: str | None = None) -> Job:
     need_processed(d, project_id, [*(req.context_ids or []), *req.attachments])
+    if user is not None:
+        charge(d, user, "generate")
     model_id = repo.create_model(d.engine, project_id, req.prompt)
     run = partial(work.generate, d, project_id, model_id, req)
     return d.jobs.submit("generate", project_id, model_id, run, req.model_dump(mode="json"))
 
 
-def start_refine(d: Deps, model: Row, req: RefineIn, origin: Origin = "refine") -> Job:
+def start_refine(d: Deps, model: Row, req: RefineIn, origin: Origin = "refine", user: str | None = None) -> Job:
     model_id, project_id = model["id"], model["project_id"]
     need_idle(d, model_id)
     design = latest_design(d, model_id)
     if req.target is not None and req.target not in {p.id for p in design.parts}:
         raise HTTPException(400, f"unknown part {req.target!r}; parts: {sorted(p.id for p in design.parts)}")
     need_processed(d, project_id, req.attachments)
+    if user is not None:
+        charge(d, user, "refine")
     run = partial(work.refine, d, project_id, model_id, req, origin=origin)
     return d.jobs.submit("refine", project_id, model_id, run, req.model_dump(mode="json"))
 

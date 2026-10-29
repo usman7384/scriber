@@ -1,7 +1,7 @@
 import hashlib
 import secrets
 
-from sqlalchemy import Engine, delete, insert, select
+from sqlalchemy import Engine, delete, func, insert, select
 
 from partwright_api import db
 from partwright_api.repo import Row, new_id, now
@@ -21,9 +21,24 @@ def tokens(e: Engine) -> list[Token]:
         return [Token.model_validate(dict(r._mapping)) for r in rows]
 
 
-def valid_token(e: Engine, token: str) -> bool:
+def token_user(e: Engine, token: str) -> str | None:
     with e.connect() as c:
-        return c.execute(select(db.tokens.c.id).where(db.tokens.c.digest == _digest(token))).first() is not None
+        name = c.execute(select(db.tokens.c.name).where(db.tokens.c.digest == _digest(token))).scalar()
+    return None if name is None else str(name)
+
+
+def charge(e: Engine, user: str, kind: str, count: int, limit: int | None) -> bool:
+    with e.begin() as c:
+        used = c.execute(select(func.count()).where(db.usage.c.user == user)).scalar_one()
+        if limit is not None and used + count > limit:
+            return False
+        c.execute(insert(db.usage), [{"id": new_id("u"), "user": user, "kind": kind, "created": now()} for _ in range(count)])
+    return True
+
+
+def generations(e: Engine, user: str) -> int:
+    with e.connect() as c:
+        return int(c.execute(select(func.count()).where(db.usage.c.user == user)).scalar_one())
 
 
 def create_share(e: Engine, model_id: str, version: int | None) -> str:
