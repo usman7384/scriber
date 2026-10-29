@@ -19,7 +19,7 @@ class SuggestionList(BaseModel):
 def suggest(design: Design, findings: list[Finding], llm: LLM, seed: int = 0) -> list[Suggestion]:
     notes = "\n".join(f"- {f.severity} {f.rule_id} on {f.part}: {f.message}" for f in findings) or "- none"
     message = (
-        f"Current design:\n{answer_json(design)}\n\nManufacturing and rule findings:\n{notes}\n\n"
+        f"Current design:\n{answer_json(design)}\n\nFindings from manufacturing checks, rules and simulation:\n{notes}\n\n"
         "Suggest up to three improvements an engineer would accept, each a change of parameter values. Answer "
         '{"suggestions": [{"target": "<parameter or feature id>", "change": {"<parameter>": <new value>}, "rationale": "<one sentence>"}]}.'
     )

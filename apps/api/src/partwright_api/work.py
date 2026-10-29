@@ -32,6 +32,17 @@ class Rebuild:
     source_id: str | None = None
     # a replaced document gives its facts new ids; lineage follows them
     relink: Mapping[str, str] = field(default_factory=dict)
+    materials: Mapping[str, str] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class Meta:
+    origin: Origin
+    prompt: str | None
+    process: Process
+    attachments: list[str]
+    images: list[str]
+    previous: Design | None = None
 
 
 def generate(d: Deps, project_id: str, model_id: str, req: GenerateIn, emit: Emit) -> Outcome:
@@ -77,23 +88,34 @@ def rebuild(d: Deps, project_id: str, model_id: str, edit: Rebuild, emit: Emit) 
     design = previous
     for name, value in edit.values.items():
         design = apply_params(design, {name: value}, edit.sources.get(name))
+    if edit.materials:
+        design = with_materials(design, edit.materials)
+    used = live(d, project_id, [edit.relink.get(u, u) for u in base.used])
+    prompt = edit.note or ", ".join(f"{k}={v:g}" for k, v in edit.values.items())
+    return build(d, project_id, model_id, design, Meta(edit.origin, prompt, base.process, [], [], previous), emit, used)
+
+
+def build(d: Deps, project_id: str, model_id: str, design: Design, meta: Meta, emit: Emit, used: list[str] | None = None) -> Outcome:
     with d.context_lock:
         rules = d.context.rules(project_id)
     number, out = allocate(d, model_id)
     start = time.monotonic()
     artifact: Artifact | None = None
     try:
-        artifact = d.geometry.build(design, out, rules, base.process)
+        artifact = d.geometry.build(design, out, rules, meta.process)
         errors = [f"{f.rule_id}: {f.message}" for f in artifact.findings if f.severity == "error"]
-        message = "; ".join([f"rebuilt in {artifact.elapsed_ms} ms", *errors])
+        message = "; ".join([f"built in {artifact.elapsed_ms} ms", *errors])
     except BuildError as e:
         message = f"CAD kernel error ({e.kind}): {e}"
-    used = live(d, project_id, [edit.relink.get(u, u) for u in base.used])
-    result = Result(design=design, artifact=artifact, checks=[], attempts=1, repairs=0, used=used)
+    result = Result(design=design, artifact=artifact, checks=[], attempts=1, repairs=0, used=used or [])
     kind = "done" if result.ok else "failed"
     step = AgentStep(kind=kind, message=message, attempt=1, elapsed_ms=int((time.monotonic() - start) * 1000), result=result)
-    prompt = edit.note or ", ".join(f"{k}={v:g}" for k, v in edit.values.items())
-    return finish(d, project_id, model_id, number, relay([step], emit), Meta(edit.origin, prompt, base.process, [], [], previous))
+    return finish(d, project_id, model_id, number, relay([step], emit), meta)
+
+
+def with_materials(design: Design, materials: Mapping[str, str]) -> Design:
+    parts = [p.model_copy(update={"material": materials.get(p.id, p.material)}) for p in design.parts]
+    return design.model_copy(update={"parts": parts})
 
 
 def ground(d: Deps, project_id: str, request: str, process: Process, only: list[str] | None, attached: list[str]) -> Grounding:
@@ -146,16 +168,6 @@ def relay(steps: Iterable[AgentStep], emit: Emit) -> list[AgentStep]:
         progress = max(progress, PROGRESS.get(s.kind, progress))
         emit(Step(kind=s.kind, message=s.message, attempt=s.attempt, elapsed_ms=s.elapsed_ms, progress=progress))
     return seen
-
-
-@dataclass(frozen=True)
-class Meta:
-    origin: Origin
-    prompt: str | None
-    process: Process
-    attachments: list[str]
-    images: list[str]
-    previous: Design | None = None
 
 
 def finish(d: Deps, project_id: str, model_id: str, number: int, steps: list[AgentStep], meta: Meta) -> Outcome:

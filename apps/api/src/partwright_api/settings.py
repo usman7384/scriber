@@ -14,3 +14,4 @@ class Settings(BaseModel):
     public_url: str = "http://127.0.0.1:8000"
     hook_attempts: int = 4
     hook_backoff_s: float = 0.5
+    generation_limit: int | None = None

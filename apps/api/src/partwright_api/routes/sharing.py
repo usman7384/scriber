@@ -4,13 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import FileResponse
 
 from partwright_api import access, repo, views
-from partwright_api.auth import require_token, require_token_unless_first
+from partwright_api.auth import User, require_token, require_token_unless_first
 from partwright_api.deps import Deps, DepsDep
 from partwright_api.disk import FILE_NAMES
 from partwright_api.repo import Row
 from partwright_api.routes.common import export, need_model, need_version, ollama_up
 from partwright_api.routes.models import thumbnail_file
-from partwright_api.schemas import FileKind, Health, Hook, HookIn, ModelDetail, NewToken, Share, ShareIn, Token, TokenIn
+from partwright_api.schemas import FileKind, Health, Hook, HookIn, ModelDetail, NewToken, Share, ShareIn, Token, TokenIn, Usage
 
 router = APIRouter(dependencies=[Depends(require_token)])
 tokens = APIRouter(dependencies=[Depends(require_token_unless_first)])
@@ -29,6 +29,11 @@ def create_share(body: ShareIn, d: DepsDep) -> Share:
 @router.delete("/shares/{share_id}", status_code=204)
 def delete_share(share_id: str, d: DepsDep) -> Response:
     return _deleted(access.remove(d.engine, "shares", share_id), "share", share_id)
+
+
+@router.get("/usage")
+def usage(d: DepsDep, user: User) -> Usage:
+    return Usage(user=user, generations=access.generations(d.engine, user), limit=d.settings.generation_limit)
 
 
 @router.post("/hooks", status_code=201)
