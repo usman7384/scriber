@@ -64,12 +64,7 @@ export function AgentStream({ jobId, variant, onDone, onRetry }: Props) {
       <header className="agent-stream-head">
         <Icon name="agent" className="agent-accent" />
         <b className="agent-stream-title">{title}</b>
-        {last && (
-          <span className="agent-meta mono">
-            {last.attempt > 0 && `${t.timeline.attempt(last.attempt)} · `}
-            {seconds(last.elapsed_ms)}
-          </span>
-        )}
+        {last && <span className="agent-meta mono">{seconds(last.elapsed_ms)}</span>}
         <span className="agent-spacer" />
         <span role="status" className="agent-badge mono" data-status={end ?? "running"}>
           {t.status[end ?? "running"]}

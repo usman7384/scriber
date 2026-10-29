@@ -446,6 +446,17 @@ details:not([open]) > summary.agent-step-head::after {
 .agent-changes {
   margin: 0 var(--s-3) var(--s-3) calc(var(--s-3) + 22px);
 }
+.agent-stream a.ui-button {
+  text-decoration: none;
+}
+.agent-step .step-kind {
+  font-weight: 600;
+  text-transform: none;
+}
+.agent-stream-head .agent-meta {
+  flex: none;
+  white-space: nowrap;
+}
 .agent-stream > .agent-error,
 .agent-stream > .agent-bar-row {
   padding: 0 var(--s-3) var(--s-3);
@@ -612,6 +623,7 @@ details:not([open]) > summary.agent-step-head::after {
 }
 .agent-diff {
   width: 100%;
+  max-width: 560px;
   border-collapse: collapse;
   font-size: var(--t-sm);
 }
