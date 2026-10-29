@@ -1,13 +1,15 @@
 import { api } from "../api";
 import { Pending } from "../components/Pending";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 
 export function FactsList({ projectId, fileId }: { projectId: string; fileId: string }) {
   const facts = useResource(`facts:${fileId}`, () => api.facts(projectId, fileId));
+  const t = useT().context;
   if (!facts.data) return <Pending error={facts.error} />;
-  if (facts.data.length === 0) return <p className="muted">No facts extracted from this file.</p>;
+  if (facts.data.length === 0) return <p className="muted">{t.noFacts}</p>;
   return (
-    <ul className="list" aria-label="Facts">
+    <ul className="list" aria-label={t.facts}>
       {facts.data.map((f) => (
         <li key={f.id}>
           <strong>{f.name}</strong> {String(f.value)}

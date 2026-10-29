@@ -13,6 +13,8 @@ export interface Hit {
 }
 
 interface Props {
+  axes: [string, string, string];
+  finding: (message: string) => string;
   url: string;
   view: { name: View };
   edges: boolean;
@@ -23,7 +25,18 @@ interface Props {
   onLoad: (size: Vector3) => void;
 }
 
-export function Model({ url, view, edges, measure, findings, selected, onSelect, onLoad }: Props) {
+export function Model({
+  axes,
+  finding,
+  url,
+  view,
+  edges,
+  measure,
+  findings,
+  selected,
+  onSelect,
+  onLoad,
+}: Props) {
   const { scene } = useGLTF(url, false);
   const parts = useMemo(() => cadParts(scene), [scene]);
   const box = useMemo(() => bounds(parts), [parts]);
@@ -53,8 +66,8 @@ export function Model({ url, view, edges, measure, findings, selected, onSelect,
           {edges && <Edges threshold={15} color="#1d2733" />}
         </mesh>
       ))}
-      {measure && <Measurements box={box} />}
-      <FindingMarkers findings={findings} />
+      {measure && <Measurements box={box} axes={axes} />}
+      <FindingMarkers findings={findings} label={finding} />
     </>
   );
 }

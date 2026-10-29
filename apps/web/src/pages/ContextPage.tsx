@@ -10,6 +10,7 @@ import { KbStatsCard } from "../context/KbStatsCard";
 import { RulesTable } from "../context/RulesTable";
 import { UploadZone } from "../context/UploadZone";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 
 export function ContextPage() {
   const projectId = useParams().projectId ?? "";
@@ -21,6 +22,7 @@ export function ContextPage() {
   const [open, setOpen] = useState<string>();
   const [chosen, setChosen] = useState<string[]>([]);
   const navigate = useNavigate();
+  const t = useT().context;
   const [error, setError] = useState<string>();
 
   const refresh = () => {
@@ -63,16 +65,16 @@ export function ContextPage() {
             disabled={chosen.length === 0}
             onClick={() => navigate(`/p/${projectId}?context=${chosen.join(",")}`)}
           >
-            Use selected as context ({chosen.length})
+            {t.useSelected(chosen.length)}
           </button>
           {openFile && (
-            <section className="panel" aria-label={`Facts from ${openFile.name}`}>
-              <h2>Facts from {openFile.name}</h2>
+            <section className="panel" aria-label={t.factsFrom(openFile.name)}>
+              <h2>{t.factsFrom(openFile.name)}</h2>
               <FactsList projectId={projectId} fileId={openFile.id} />
             </section>
           )}
           <section className="panel">
-            <h2>Project rules</h2>
+            <h2>{t.rules}</h2>
             {rules.data ? <RulesTable rules={rules.data} /> : <Pending error={rules.error} />}
           </section>
         </div>

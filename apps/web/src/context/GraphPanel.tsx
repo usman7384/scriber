@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import type { GraphView } from "../api";
+import { useT } from "../i18n";
 import { layoutGraph } from "./graph-layout";
 
 const palette = ["#3b82f6", "#f0883e", "#22a06b", "#a371f7", "#e5534b", "#d4a72c", "#39c5cf"];
 
 export function GraphPanel({ graph }: { graph: GraphView }) {
   const [full, setFull] = useState(false);
+  const t = useT().graph;
   const { nodes, edges } = useMemo(() => layoutGraph(graph), [graph]);
   const types = [...new Set(nodes.map((n) => n.type))];
   const color = (type: string) => palette[types.indexOf(type) % palette.length];
@@ -24,16 +26,14 @@ export function GraphPanel({ graph }: { graph: GraphView }) {
   return (
     <section
       className={`panel graph${full ? " fullscreen" : ""}`}
-      aria-label="Knowledge graph"
+      aria-label={t.region}
       onKeyDown={(e) => e.key === "Escape" && setFull(false)}
     >
       <header className="row">
-        <h2>Knowledge graph</h2>
-        <span className="muted small">
-          {nodes.length} entities · {edges.length} relations
-        </span>
+        <h2>{t.region}</h2>
+        <span className="muted small">{t.counts(nodes.length, edges.length)}</span>
         <button type="button" className="secondary small push" onClick={() => setFull(!full)}>
-          {full ? "Exit fullscreen" : "Fullscreen"}
+          {full ? t.exit : t.full}
         </button>
       </header>
       <ul className="legend">
@@ -43,7 +43,7 @@ export function GraphPanel({ graph }: { graph: GraphView }) {
           </li>
         ))}
       </ul>
-      <svg viewBox={box.join(" ")} role="img" aria-label={`Graph with ${nodes.length} entities`}>
+      <svg viewBox={box.join(" ")} role="img" aria-label={t.image(nodes.length)}>
         {edges.map(({ a, b }, i) => (
           <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="edge" />
         ))}

@@ -14,6 +14,7 @@ import { Suggestions } from "../components/Suggestions";
 import { JobTimeline } from "../components/Timeline";
 import { VersionHistory } from "../components/VersionHistory";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 import { Viewer } from "../viewer/Viewer";
 
 export function EditorPage() {
@@ -28,6 +29,7 @@ export function EditorPage() {
   );
   const [job, setJob] = useState<{ id: string; running: boolean }>();
   const [selected, setSelected] = useState<string>();
+  const t = useT();
   const [face, setFace] = useState<FaceDriver>();
   const [error, setError] = useState<string>();
   const main = useRef<HTMLElement>(null);
@@ -38,8 +40,7 @@ export function EditorPage() {
       <section className="stack">
         <h1>{model.data.title}</h1>
         <p className="empty">
-          This model has no version yet: its generation is still running or was interrupted.{" "}
-          <Link to={`/p/${model.data.project_id}`}>Back to the project</Link>
+          {t.editor.noVersion} <Link to={`/p/${model.data.project_id}`}>{t.editor.backToProject}</Link>
         </p>
       </section>
     );
@@ -72,13 +73,13 @@ export function EditorPage() {
     <div className="editor">
       <header className="editor-head">
         <Link to={`/p/${model.data.project_id}`} className="button ghost">
-          ← Project
+          {t.editor.back}
         </Link>
         <h1>{model.data.title}</h1>
         <span className="badge plain">v{version.number}</span>
         <span className="push" />
         <Link to={`/p/${model.data.project_id}`} className="button primary">
-          New generation
+          {t.editor.newGeneration}
         </Link>
         <ShareButton modelId={modelId} version={version.number} />
         <ExportMenu modelId={modelId} version={version.number} />
@@ -89,9 +90,9 @@ export function EditorPage() {
         />
       </header>
       <aside className="editor-left panel">
-        <h2>Components</h2>
+        <h2>{t.editor.components}</h2>
         <ComponentTree components={parts} selected={selected} onSelect={setSelected} />
-        <h2>History</h2>
+        <h2>{t.editor.history}</h2>
         <VersionHistory
           versions={all}
           selected={version.number}
@@ -101,9 +102,7 @@ export function EditorPage() {
         />
       </aside>
       <section className="editor-main" ref={main}>
-        {version.status === "failed" && (
-          <p className="error">This version failed to build; its checks and history show why.</p>
-        )}
+        {version.status === "failed" && <p className="error">{t.editor.failed}</p>}
         {version.files.glb && (
           <Viewer
             url={apiUrl(version.files.glb)}
@@ -144,7 +143,7 @@ export function EditorPage() {
         {job && <JobTimeline key={job.id} jobId={job.id} onEnd={ended} />}
       </section>
       <aside className="editor-right panel">
-        <h2>Parameters</h2>
+        <h2>{t.editor.parameters}</h2>
         <ParamPanel
           params={version.params}
           busy={busy}
@@ -152,8 +151,8 @@ export function EditorPage() {
         />
         {version.metrics && (
           <p className="muted small">
-            Volume {(version.metrics.volume / 1000).toFixed(2)} cm³
-            {version.metrics.mass_g != null && ` · Mass ${version.metrics.mass_g.toFixed(1)} g`}
+            {t.editor.volume} {(version.metrics.volume / 1000).toFixed(2)} cm³
+            {version.metrics.mass_g != null && ` · ${t.editor.mass} ${version.metrics.mass_g.toFixed(1)} g`}
           </p>
         )}
         <Findings checks={version.checks} findings={version.findings} />

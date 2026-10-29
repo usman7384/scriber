@@ -489,6 +489,12 @@ p {
   border-color: transparent;
   background: transparent;
 }
+.tree button[aria-pressed="true"] {
+  background: var(--accent);
+}
+.tree .tree {
+  padding-left: 16px;
+}
 .versions {
   display: flex;
   flex-direction: column;

@@ -18,7 +18,10 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   await page.getByRole("button", { name: /^Spacer ring/ }).click();
   await expect(page.getByLabel("Describe the part")).toHaveValue(/^Spacer ring/);
   await page.getByLabel("Describe the part").fill("Sensor plate 120 x 80 x 6 mm with four M6 holes");
-  await page.getByRole("combobox").selectOption("milling_3axis");
+  await page
+    .getByRole("form", { name: "New generation" })
+    .getByRole("combobox")
+    .selectOption("milling_3axis");
   await page.getByRole("button", { name: "Generate" }).click();
 
   const timeline = page.getByRole("region", { name: "Generation timeline" });

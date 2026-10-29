@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from "react";
 import { api, waitForJob } from "../api";
+import { useT } from "../i18n";
 
 interface Upload {
   name: string;
@@ -11,6 +12,7 @@ interface Upload {
 export function UploadZone({ projectId, onChange }: { projectId: string; onChange: () => void }) {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [over, setOver] = useState(false);
+  const t = useT();
 
   const set = (name: string, patch: Partial<Upload>) =>
     setUploads((all) => all.map((u) => (u.name === name ? { ...u, ...patch } : u)));
@@ -27,7 +29,7 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
       await Promise.all(
         files.map(async (f, i) => {
           const job = jobs[i];
-          if (!job) return set(f.name, { status: "failed", error: "No ingest job returned" });
+          if (!job) return set(f.name, { status: "failed", error: t.context.noJob });
           set(f.name, { status: "processing" });
           const end = await waitForJob(job.id, (s) => set(f.name, { progress: s.progress ?? 0 }));
           set(f.name, { status: end.status === "done" ? "processed" : "failed", error: end.error });
@@ -56,9 +58,9 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         onDragLeave={() => setOver(false)}
         onDrop={drop}
       >
-        <p>Drop specs, drawings, CAD files, images or tables here</p>
+        <p>{t.context.drop}</p>
         <label className="button secondary">
-          Choose files
+          {t.context.choose}
           <input
             type="file"
             multiple
@@ -68,12 +70,12 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
         </label>
       </div>
       {uploads.length > 0 && (
-        <ul className="list" aria-label="Uploads">
+        <ul className="list" aria-label={t.context.uploads}>
           {uploads.map((u, i) => (
             <li key={i} className="row">
               <span>{u.name}</span>
-              <progress value={u.progress} max={100} aria-label={`${u.name} progress`} />
-              <span className={`badge ${u.status}`}>{u.status}</span>
+              <progress value={u.progress} max={100} aria-label={t.context.progress(u.name)} />
+              <span className={`badge ${u.status}`}>{t.status[u.status] ?? u.status}</span>
               {u.error && <span className="error small">{u.error}</span>}
             </li>
           ))}

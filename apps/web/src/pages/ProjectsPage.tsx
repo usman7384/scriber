@@ -4,12 +4,14 @@ import { api } from "../api";
 import { Pending } from "../components/Pending";
 import { byNewest, date } from "../format";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 
 export function ProjectsPage() {
   const projects = useResource("projects", api.projects);
   const [name, setName] = useState("");
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
+  const t = useT();
 
   const create = (e: FormEvent) => {
     e.preventDefault();
@@ -22,19 +24,19 @@ export function ProjectsPage() {
   return (
     <section className="stack">
       <div className="page-head">
-        <h1>Projects</h1>
+        <h1>{t.nav.projects}</h1>
         <form onSubmit={create} className="row">
           <label className="sr-only" htmlFor="project-name">
-            Project name
+            {t.projects.name}
           </label>
           <input
             id="project-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="New project name"
+            placeholder={t.projects.newName}
           />
           <button type="submit" disabled={!name.trim()}>
-            Create
+            {t.projects.create}
           </button>
         </form>
       </div>
@@ -50,13 +52,11 @@ export function ProjectsPage() {
               <Link to={`/p/${p.id}`} className="card-title">
                 {p.name}
               </Link>
-              <p className="muted">
-                {p.model_count} models · {p.file_count} context files
-              </p>
-              <p className="muted small">Created {date(p.created)}</p>
+              <p className="muted">{t.projects.counts(p.model_count, p.file_count)}</p>
+              <p className="muted small">{t.projects.created(date(p.created))}</p>
             </li>
           ))}
-          {projects.data.length === 0 && <li className="empty">No projects yet. Create one to start.</li>}
+          {projects.data.length === 0 && <li className="empty">{t.projects.none}</li>}
         </ul>
       ) : (
         <Pending error={projects.error} />

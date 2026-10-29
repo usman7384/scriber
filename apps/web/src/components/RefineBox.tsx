@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useT } from "../i18n";
 
 interface Props {
   target?: string | undefined;
@@ -9,32 +10,33 @@ interface Props {
 
 export function RefineBox({ target, busy, onClearTarget, onRefine }: Props) {
   const [text, setText] = useState("");
+  const t = useT();
   const submit = (e: FormEvent) => {
     e.preventDefault();
     onRefine(text.trim());
     setText("");
   };
   return (
-    <form className="refine" onSubmit={submit} aria-label="Refine">
+    <form className="refine" onSubmit={submit} aria-label={t.refine.form}>
       <span className="chip">
-        Target: {target ?? "Entire object"}
+        {t.refine.target} {target ?? t.refine.whole}
         {target && (
           <button type="button" className="link" onClick={onClearTarget}>
-            Clear
+            {t.clear}
           </button>
         )}
       </span>
       <label className="sr-only" htmlFor="refine">
-        Change request
+        {t.refine.label}
       </label>
       <input
         id="refine"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="e.g. make it 10 mm thicker"
+        placeholder={t.refine.placeholder}
       />
       <button type="submit" className="primary" disabled={busy || !text.trim()}>
-        Refine
+        {t.refine.submit}
       </button>
     </form>
   );
