@@ -117,6 +117,9 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   await expect(page.getByRole("table", { name: "Context files" })).toBeVisible();
   await row.shot(`${reached.length + 1}-sources`);
   reached.push("Sources");
+  // The Sources sheet is modal; close it before going back to the sidebar.
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/p\/p1$/);
 
   await nav.getByRole("link", { name: "Settings", exact: true }).click();
   const [popup] = await Promise.all([
