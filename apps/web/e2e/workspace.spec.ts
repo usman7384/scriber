@@ -159,28 +159,3 @@ test("mobile: a bottom sheet with three snap points, no horizontal scroll", asyn
   await expect(page.getByRole("list", { name: "Version history" })).toBeVisible();
   await expect(inspector(page)).toBeHidden();
 });
-
-// SHOTS=dir npx playwright test workspace -g screenshots
-test("screenshots", async ({ page }) => {
-  test.skip(!process.env.SHOTS, "set SHOTS to an output folder");
-  test.setTimeout(120_000);
-  for (const theme of ["dark", "light"])
-    for (const [name, size] of [
-      ["1440", { width: 1440, height: 900 }],
-      ["390", { width: 390, height: 844 }],
-    ] as const) {
-      await page.setViewportSize(size);
-      await page.addInitScript((t) => localStorage.setItem("theme", t), theme);
-      await open(page);
-      const free = await page.locator(".ws-free").boundingBox();
-      if (!free) throw new Error("no free frame");
-      await page.mouse.click(free.x + free.width * 0.4, free.y + free.height * 0.45);
-      if (name === "1440")
-        await page
-          .getByLabel(/^Finding: /)
-          .first()
-          .hover();
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: `${process.env.SHOTS}/workspace-${theme}-${name}.png` });
-    }
-});
