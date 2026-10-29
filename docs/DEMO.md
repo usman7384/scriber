@@ -9,7 +9,7 @@ Every step below runs offline on the laptop in `docs/HARDWARE.md`; the parity de
 | Step | Command | Shows |
 |---|---|---|
 | Text to part | `uv run partwright generate "mounting bracket, 4x M6 holes, 80x60 plate, 5 mm thick"` | IR, build, checks and repair log; STEP, STL, GLB, params |
-| Refine | `uv run partwright refine <model> "make the plate 100 mm long"` | parameter-only change, rest of the IR untouched |
+| Refine | `uv run partwright refine out/<model folder> "make the plate 100 mm long"` | parameter-only change, rest of the IR untouched |
 | Project context | `uv run partwright context add demo evals/demos/m2/*` then `generate ... --project demo` | facts and rules cited by page and line, rule violations repaired |
 | Aircraft from a sizing tool | `uv run partwright pipe < evals/parity/m4/aircraft/sizing.xml` (API running) | lofted NACA wing, no model involved |
 | Mesh to parametric | `uv run partwright-parity IN-7 IN-8` | STL rebuilt as named features with exact holes |
