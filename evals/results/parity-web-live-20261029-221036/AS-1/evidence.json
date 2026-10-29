@@ -1,0 +1,12 @@
+{
+  "row": "AS-1",
+  "passed": true,
+  "measured": {
+    "click_Plate": "screen (590, 477) -> tree id plate",
+    "click_Cube": "screen (590, 282) -> tree id cube",
+    "api_components": "plate (Plate, parent -, joint -); cube (Cube, parent plate, joint cube_on_plate)",
+    "picked_ids": "plate, cube",
+    "cube_nested_under_plate": true
+  },
+  "note": "Live: the D-033 cube-on-plate assembly built by apps/api; components from GET /models/{id}/components. Refine with the selection as target is not run here (it needs a model call)."
+}

@@ -1,0 +1,15 @@
+{
+  "row": "VM-4",
+  "passed": true,
+  "measured": {
+    "api_finding": "min_hole_edge_ratio: Ø10 hole at (20, 0, 2.5) is 10 mm from the outer edge; needs ≥ 15 mm (1.5 times Ø)",
+    "api_suggestion": "keep hole centres x between -15 and 15 and y between -5 and 5, or reduce Ø to ≤ 6.67 mm",
+    "api_required_mm": 15,
+    "hole_enclosed": true,
+    "hole_diameter_mm": 9.89,
+    "hole_centre_to_right_edge_mm": 10.04,
+    "marker_to_hole_centre_mm": 0.06,
+    "popup": "Ø10 hole at (20, 0, 2.5) is 10 mm from the outer edge; needs ≥ 15 mm (1.5 times Ø)measured 10.00 · required 15.00keep hole centres x between -15 and 15 and y between -5 and 5, or reduce Ø to ≤ 6.67 mmRule min_hole_edge_ratio · static"
+  },
+  "note": "Live: the finding is apps/api's DFM output with the project's default hole-edge rule (1.5 x D)."
+}

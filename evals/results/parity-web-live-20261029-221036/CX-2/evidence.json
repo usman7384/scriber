@@ -1,0 +1,18 @@
+{
+  "row": "CX-2",
+  "passed": true,
+  "measured": {
+    "columns": "Name, Type, Status, Facts, Used in, Uploaded, Actions",
+    "rows": 6,
+    "search_motor": "motor-bracket-spec.pdf, motor-plate.step",
+    "facts_shown_for_holes_csv": 10,
+    "rows_after_delete": 5,
+    "api_files_after_delete": 5,
+    "graph_nodes_before": 41,
+    "graph_nodes_after": 38,
+    "api_nodes_of_deleted_file_before": 3,
+    "api_nodes_of_deleted_file_after": 0,
+    "ui_nodes_naming_deleted_file": 0
+  },
+  "note": "Live: DELETE /projects/{id}/context/{file} through the UI; the graph is read back from apps/api (document, fact and chunk nodes of the file)."
+}

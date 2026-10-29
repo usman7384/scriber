@@ -1,0 +1,16 @@
+{
+  "row": "WP-11",
+  "passed": true,
+  "measured": {
+    "stored_bugs": 1,
+    "model_id": "m24facd6eb9a9",
+    "version": 1,
+    "text": "Top view hides the hole markers",
+    "user": "local",
+    "screenshot_px": "1280 x 900",
+    "screenshot_bytes_sent": 443287,
+    "screenshot_bytes_stored": 443287,
+    "screenshot_identical": true
+  },
+  "note": "Live: the dialog's POST /bugs is stored by apps/api; the screenshot is read back from /bugs/{id}/screenshot."
+}

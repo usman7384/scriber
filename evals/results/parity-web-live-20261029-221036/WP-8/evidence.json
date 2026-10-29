@@ -1,0 +1,13 @@
+{
+  "row": "WP-8",
+  "passed": true,
+  "measured": {
+    "model_card": "256x256",
+    "versions": "v1 design hole_x 15 /models/m4f4a1900b74c/versions/1/thumbnail; v2 params hole_x 10 /models/m4f4a1900b74c/versions/2/thumbnail",
+    "version_thumb_size": "256x256",
+    "distinct_urls": true,
+    "content_types": "image/png, image/png",
+    "changed_pixel_fraction": 0.012
+  },
+  "note": "Live: thumbnails rendered by apps/api for each version (pyrender), including the PATCH rebuild."
+}
