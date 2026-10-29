@@ -4,7 +4,7 @@ from partwright_ir.model import Design, Param
 from partwright_ir.validate import NON_EXPR_FIELDS, used_params
 
 COUNT_FIELDS = {"count", "count_x", "count_y"}
-ANGLE_FIELDS = {"angle", "start_angle"}
+ANGLE_FIELDS = {"angle", "start_angle", "twist"}
 
 
 def normalize(design: Design) -> Design:
