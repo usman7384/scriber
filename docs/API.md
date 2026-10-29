@@ -28,7 +28,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | /health | | {status, model, ollama: bool} |
+| GET | /health | | {status, model, ollama: bool, tools: {freecad: bool, prusaslicer: bool}} |
 | POST | /projects | {name} | Project |
 | GET | /projects | | [Project] |
 | GET | /projects/{id} | | Project |
@@ -52,7 +52,8 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | GET | /models/{id}/suggestions | | [Suggestion] |
 | POST | /models/{id}/suggestions/{sid}/accept | | Job (rebuild, origin `suggestion`) |
 | POST | /models/{id}/suggestions/{sid}/ignore | | Suggestion |
-| GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir&version=n | | file |
+| GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir\|fcstd&version=n | | file; `fcstd` is a FreeCAD PartDesign document written by FreeCAD (422 naming the construct it cannot map, 503 when FreeCAD is not configured) |
+| POST | /models/{id}/slice?version=n | | {model_id, version, ok, exit_code, manifold, layers, gcode_bytes, warnings, errors}: PrusaSlicer printability of the version's STL (503 when PrusaSlicer is not configured) |
 | GET | /models/{id}/components?version=n | | [Component]: part id, name, material, parent part and joint |
 | POST | /models/{id}/face-driver | {point: [x,y,z], normal: [x,y,z], version?} | {part, feature, param, rate}: the parameter that moves the picked planar face; 404 when none does |
 | GET | /projects/{id}/jobs?active=true | | [Job] newest first; `active` keeps queued and running |
@@ -96,4 +97,5 @@ Under `/api/v1`, with the same token auth: `POST /api/v1/generate {prompt, image
 - Users: with `auth: tokens` a user is the token's name (two tokens with one name are one user); without auth every request is user `local`. Projects and models are not user-scoped; the community listing is the shared space.
 - Generation limit: `generation_limit` in the API settings (default unset, unlimited) caps generate, refine, batch, `/api/v1/generate` and `/api/v1/modify` requests per user; past it they return 429. A batch is charged per prompt, all or nothing. Context-triggered regenerations are not charged.
 - Sensitivities are central finite differences (step 1e-3 of the value, at least 1e-3 mm or deg, one-sided at a bound) over `mm` and `deg` parameters, each a kernel rebuild without exports; mass needs a material on every part.
-- Errors: `{"detail": "..."}` with 400 (bad input), 403 (not yours), 404, 409 (job still running), 422 (validation), 429 (generation limit), 503 (Ollama unreachable).
+- External tools: `freecad` and `prusaslicer` in the API settings are executable paths (`partwright serve` reads `PARTWRIGHT_FREECAD` and `PARTWRIGHT_PRUSASLICER`; unset means the tool is off and `/health` says so). They run as subprocesses off the event loop; see `docs/INTEROP.md#external-tools`. The FCStd export is written per request, not stored; slicing uses PrusaSlicer's built-in defaults and discards the G-code after counting.
+- Errors: `{"detail": "..."}` with 400 (bad input), 403 (not yours), 404, 409 (job still running), 422 (validation, or no FreeCAD mapping for the design), 429 (generation limit), 502 (FreeCAD or PrusaSlicer failed), 503 (Ollama unreachable, or the tool not configured).

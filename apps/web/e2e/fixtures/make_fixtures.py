@@ -1,4 +1,4 @@
-# Builds the web e2e fixtures with the real geometry service: uv run python apps/web/e2e/fixtures/make_fixtures.py
+# Builds the web e2e fixtures with the real geometry service, FreeCAD and PrusaSlicer: uv run python apps/web/e2e/fixtures/make_fixtures.py
 
 import json
 import shutil
@@ -6,7 +6,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from partwright_geometry import LocalGeometry
+from partwright_evals.tools import FREECAD, PRUSASLICER, missing, tool
+from partwright_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, slice_stl
 from partwright_ir import Design, label
 
 HERE = Path(__file__).parent
@@ -132,6 +133,23 @@ def build(geometry: LocalGeometry, name: str, data: dict[str, Any], stl: bool = 
     (HERE / f"{name}.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
 
+def external_tools(geometry: LocalGeometry) -> None:
+    freecad, slicer = tool(FREECAD), tool(PRUSASLICER)
+    if freecad is None or slicer is None:
+        raise SystemExit(missing(FREECAD if freecad is None else PRUSASLICER))
+    base = Design.model_validate(plate(5))
+    export_fcstd(base, geometry.frames(base), freecad, HERE / "base-plate-t5.FCStd")
+    try:
+        fcstd_plan(Design.model_validate(STACK), [])
+        raise SystemExit("the stack assembly unexpectedly maps to FreeCAD")
+    except UnsupportedExportError as e:
+        unsupported = str(e)
+    with tempfile.TemporaryDirectory() as tmp:
+        sliced = slice_stl(slicer, HERE / "motor-holder.stl", Path(tmp) / "motor-holder.gcode")
+    found = {"stack_fcstd_error": unsupported, "motor_holder_slice": sliced.model_dump()}
+    (HERE / "external-tools.json").write_text(json.dumps(found, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     geometry = LocalGeometry()
     try:
@@ -139,6 +157,7 @@ def main() -> None:
         build(geometry, "base-plate-t7", plate(7))
         build(geometry, "stack", STACK)
         build(geometry, "motor-holder", MOTOR_HOLDER, stl=True)
+        external_tools(geometry)
     finally:
         geometry.close()
 

@@ -2,14 +2,15 @@ import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from partwright_agent import VariantPlan, plan_variants
-from partwright_api import disk, repo, sensitivity, views, work
+from partwright_api import disk, repo, sensitivity, tools, views, work
 from partwright_api.auth import User, require_token
 from partwright_api.deps import Deps, DepsDep
 from partwright_api.repo import Row
 from partwright_api.routes.common import (
+    download_name,
     export,
     latest_design,
     need_idle,
@@ -23,11 +24,12 @@ from partwright_api.routes.common import (
 from partwright_api.schemas import (
     Batch,
     Component,
-    FileKind,
+    ExportKind,
     Job,
     MaterialOut,
     ModelDetail,
     ParamsIn,
+    Printability,
     RefineIn,
     Sensitivities,
     VariantsIn,
@@ -110,8 +112,25 @@ async def variants(model_id: str, body: VariantsIn, d: DepsDep) -> Batch:
 
 
 @router.get("/export")
-def export_file(model_id: str, d: DepsDep, fmt: FileKind = "step", version: int | None = None) -> FileResponse:
-    return export(d, need_model(d, model_id), fmt, version)
+async def export_file(model_id: str, d: DepsDep, fmt: ExportKind = "step", version: int | None = None) -> Response:
+    model = need_model(d, model_id)
+    if fmt != "fcstd":
+        return await asyncio.to_thread(export, d, model, fmt, version)
+    freecad = tools.need_tool(d.settings.freecad, "FreeCAD", "PARTWRIGHT_FREECAD")
+    n = _built(d, model_id, version)
+    content = await asyncio.to_thread(tools.fcstd, d, freecad, disk.version_dir(d.settings.data_dir, model_id, n))
+    name = download_name(model, n, ".FCStd")
+    return Response(content, media_type="application/x-freecad", headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@router.post("/slice")
+async def slice_model(model_id: str, d: DepsDep, version: int | None = None) -> Printability:
+    need_model(d, model_id)
+    prusaslicer = tools.need_tool(d.settings.prusaslicer, "PrusaSlicer", "PARTWRIGHT_PRUSASLICER")
+    n = _built(d, model_id, version)
+    stl = disk.version_dir(d.settings.data_dir, model_id, n) / disk.FILE_NAMES["stl"]
+    report = await asyncio.to_thread(tools.slice_version, prusaslicer, stl)
+    return Printability(model_id=model_id, version=n, ok=report.ok, **report.model_dump())
 
 
 @router.get("/components")
@@ -143,6 +162,13 @@ async def sensitivities(
         raise HTTPException(400, f"unknown parameters {sorted(unknown)}")
     base, rows = await asyncio.to_thread(sensitivity.sensitivities, design, d.geometry.measure, params)
     return Sensitivities(model_id=model_id, version=n, metrics=base, params=rows)
+
+
+def _built(d: Deps, model_id: str, version: int | None) -> int:
+    n, data = need_version(d, model_id, version)
+    if data.status != "ok":
+        raise HTTPException(404, f"version {n} of model {model_id} failed and has no geometry")
+    return n
 
 
 def _properties(name: str | None) -> MaterialOut | None:

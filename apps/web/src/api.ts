@@ -1,6 +1,6 @@
 export type Vec3 = [number, number, number];
 export type Process = "any" | "milling_3axis" | "fdm" | "sla" | "sls";
-export type ExportFormat = "step" | "stl" | "glb" | "py" | "ir";
+export type ExportFormat = "step" | "stl" | "glb" | "py" | "ir" | "fcstd";
 
 export interface Project {
   id: string;
@@ -214,17 +214,41 @@ export interface BugReport {
   screenshot?: string;
 }
 
+export interface Health {
+  status: string;
+  model: string;
+  ollama: boolean;
+  tools: { freecad: boolean; prusaslicer: boolean };
+}
+
+export interface Printability {
+  model_id: string;
+  version: number;
+  ok: boolean;
+  exit_code: number;
+  manifold: boolean;
+  layers: number;
+  gcode_bytes: number;
+  warnings: string[];
+  errors: string[];
+}
+
 export const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 export const apiUrl = (path: string) => (/^(https?:|data:|blob:)/.test(path) ? path : API_BASE + path);
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function send(path: string, init?: RequestInit): Promise<Response> {
   const headers = init?.body instanceof FormData ? undefined : { "Content-Type": "application/json" };
   const res = await fetch(apiUrl(path), { headers, ...init });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { detail?: unknown } | null;
     throw new Error(typeof body?.detail === "string" ? body.detail : `${res.status} ${res.statusText}`);
   }
+  return res;
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await send(path, init);
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
 
@@ -232,6 +256,7 @@ const post = <T>(path: string, body?: unknown) =>
   request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const api = {
+  health: () => request<Health>("/health"),
   projects: () => request<Project[]>("/projects"),
   project: (id: string) => request<Project>(`/projects/${id}`),
   createProject: (name: string) => post<Project>("/projects", { name }),
@@ -260,6 +285,12 @@ export const api = {
     request<Job>(`/models/${id}/params`, { method: "PATCH", body: JSON.stringify({ values }) }),
   components: (id: string, version: number) =>
     request<Component[]>(`/models/${id}/components?version=${version}`),
+  exportFile: async (id: string, fmt: ExportFormat, version: number) => {
+    const res = await send(`/models/${id}/export?fmt=${fmt}&version=${version}`);
+    const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") ?? "")?.[1];
+    return { blob: await res.blob(), name: name ?? `${id}-v${version}.${fmt}` };
+  },
+  slice: (id: string, version: number) => post<Printability>(`/models/${id}/slice?version=${version}`),
   faceDriver: (id: string, pick: FacePick) => post<FaceDriver>(`/models/${id}/face-driver`, pick),
   suggestions: (id: string) => request<Suggestion[]>(`/models/${id}/suggestions`),
   suggest: (id: string) => post<Suggestion[]>(`/models/${id}/suggestions`),

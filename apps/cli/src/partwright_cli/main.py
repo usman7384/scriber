@@ -12,7 +12,7 @@ import uvicorn
 from partwright_agent import Result, Step, generate, refine
 from partwright_api import SerialGeometry, Settings, create_app
 from partwright_cli import project, store
-from partwright_cli.config import Config, llm_for, load
+from partwright_cli.config import Config, llm_for, load, tool_path
 from partwright_cli.pipe import pipe
 from partwright_cli.view import serve
 from partwright_context import LocalContext, OllamaEmbedder, archive_files, ingest_all
@@ -123,6 +123,8 @@ def _serve(args: argparse.Namespace, config: Config, geometry: LocalGeometry) ->
         seed=config.agent.seed,
         ollama_host=config.llm.host,
         public_url=f"http://{api.host}:{api.port}",
+        freecad=tool_path("PARTWRIGHT_FREECAD"),
+        prusaslicer=tool_path("PARTWRIGHT_PRUSASLICER"),
     )
     embedder = OllamaEmbedder(config.embeddings.model, host=config.llm.host)
     with LocalContext(config.data_dir / "context", embedder, describe=serial.describe) as ctx:

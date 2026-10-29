@@ -8,6 +8,7 @@ import { FaceEdit } from "../components/FaceEdit";
 import { Findings } from "../components/Findings";
 import { ParamPanel } from "../components/ParamPanel";
 import { Pending } from "../components/Pending";
+import { PrintCheck } from "../components/PrintCheck";
 import { PublishButton } from "../components/PublishButton";
 import { RefineBox } from "../components/RefineBox";
 import { ShareButton } from "../components/ShareButton";
@@ -25,6 +26,8 @@ export function EditorPage() {
   const [picked, setPicked] = useState<number>();
   const latest = Math.max(0, ...(versions.data ?? []).map((v) => v.number));
   const shown = picked ?? latest;
+  const health = useResource("health", () => api.health());
+  const tools = health.data?.tools;
   const components = useResource(`components:${modelId}:${shown}`, () =>
     shown ? api.components(modelId, shown) : Promise.resolve([]),
   );
@@ -93,7 +96,12 @@ export function EditorPage() {
         </Link>
         <ShareButton modelId={modelId} version={version.number} />
         <PublishButton modelId={modelId} version={version.number} />
-        <ExportMenu modelId={modelId} version={version.number} />
+        <ExportMenu
+          modelId={modelId}
+          version={version.number}
+          freecad={tools?.freecad ?? false}
+          onError={fail}
+        />
         <BugDialog
           modelId={modelId}
           version={version.number}
@@ -167,6 +175,9 @@ export function EditorPage() {
           </p>
         )}
         <Findings checks={version.checks} findings={version.findings} />
+        {tools?.prusaslicer && version.files.stl && (
+          <PrintCheck key={version.number} modelId={modelId} version={version.number} />
+        )}
         <Suggestions
           modelId={modelId}
           version={version.number}

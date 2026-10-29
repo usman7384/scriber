@@ -43,7 +43,7 @@ Both are optional, run as subprocesses only (never imported into our processes),
 | FreeCAD (`freecadcmd`) | 1.1.4 | LGPL-2.1+ | `PARTWRIGHT_FREECAD` (path to `freecadcmd`) | `.FCStd` export and reopening (EX-4), STEP round trip (EX-5, VM-9) | <https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4> |
 | PrusaSlicer CLI (`prusa-slicer-console`) | 2.9.6 | AGPL-3.0 | `PARTWRIGHT_PRUSASLICER` | slicing exported STL (VM-9) | <https://github.com/prusa3d/PrusaSlicer/releases/tag/version_2.9.6> |
 
-`partwright_geometry.freecad.run_freecad` passes its arguments in a JSON file to a small script next to the module (`*.FCMacro`) and reads the answer from a result file, because `freecadcmd` interleaves its progress output with anything the script prints. Our Python variables (`PYTHONPATH`, `VIRTUAL_ENV`, ...) are removed from FreeCAD's environment. `slice_stl` runs PrusaSlicer with a throwaway `--datadir`, so only its built-in defaults apply (0.3 mm layers, 200 × 200 mm bed) and the user's profiles are never read or written.
+`partwright_geometry.freecad.run_freecad` passes its arguments in a JSON file to a small script next to the module (`*.FCMacro`) and reads the answer from a result file, because `freecadcmd` interleaves its progress output with anything the script prints. Our Python variables (`PYTHONPATH`, `VIRTUAL_ENV`, ...) are removed from FreeCAD's environment. The API exposes both (`GET /models/{id}/export?fmt=fcstd`, `POST /models/{id}/slice`, `tools` in `GET /health`; see `docs/API.md`) and the web editor shows them only when configured. `slice_stl` runs PrusaSlicer with a throwaway `--datadir`, so only its built-in defaults apply (0.3 mm layers, 200 × 200 mm bed) and the user's profiles are never read or written.
 
 ## Out of scope
 

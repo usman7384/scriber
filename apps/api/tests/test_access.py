@@ -29,7 +29,8 @@ def test_tokens_guard_every_route_when_enabled(make_api: MakeApi) -> None:
 
 def test_no_auth_by_default(api: Api) -> None:
     assert api.client.get("/projects").status_code == 200
-    assert api.ok(api.client.get("/health")) == {"status": "ok", "model": "fake", "ollama": False}
+    tools = {"freecad": False, "prusaslicer": False}
+    assert api.ok(api.client.get("/health")) == {"status": "ok", "model": "fake", "ollama": False, "tools": tools}
 
 
 def test_share_links_are_read_only_and_revocable(make_api: MakeApi) -> None:

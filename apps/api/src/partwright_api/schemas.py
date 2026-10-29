@@ -12,6 +12,7 @@ Origin = Literal[
     "generate", "refine", "edit", "params", "restore", "context", "variant", "suggestion", "design", "sizing", "fork", "material"
 ]
 FileKind = Literal["step", "stl", "glb", "py", "ir"]
+ExportKind = Literal["step", "stl", "glb", "py", "ir", "fcstd"]
 HookEvent = Literal["version.created", "job.failed", "version.stale"]
 
 
@@ -299,10 +300,28 @@ class NewToken(Token):
     token: str
 
 
+class Tools(Frozen):
+    freecad: bool
+    prusaslicer: bool
+
+
 class Health(Frozen):
     status: str
     model: str
     ollama: bool
+    tools: Tools
+
+
+class Printability(Frozen):
+    model_id: str
+    version: int
+    ok: bool
+    exit_code: int
+    manifold: bool
+    layers: int
+    gcode_bytes: int
+    warnings: list[str]
+    errors: list[str]
 
 
 class ContextListing(Frozen):
