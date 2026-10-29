@@ -1,29 +1,29 @@
 import type { KbStats } from "../api";
+import { useT } from "../i18n";
 
 export function KbStatsCard({ stats }: { stats: KbStats }) {
-  const items: [string, number][] = [
-    ["Files", stats.files],
-    ["Facts", stats.facts],
-    ["Rules", stats.rules],
-    ["Entities", stats.entities],
-    ["Relations", stats.relations],
-    ["Generations", stats.generations],
-    ["Used in generation", stats.used_in_generation],
+  const t = useT().kb;
+  const values = [
+    stats.files,
+    stats.facts,
+    stats.rules,
+    stats.entities,
+    stats.relations,
+    stats.generations,
+    stats.used_in_generation,
   ];
   return (
-    <section className="panel" aria-label="Knowledge base">
+    <section className="panel" aria-label={t.region}>
       <header className="row">
-        <h2>Knowledge base level {stats.level}</h2>
-        <span className="muted small push">
-          score {stats.score} / {stats.next_level_score}
-        </span>
+        <h2>{t.level(stats.level)}</h2>
+        <span className="muted small push">{t.score(stats.score, stats.next_level_score)}</span>
       </header>
-      <progress value={stats.score} max={stats.next_level_score} aria-label="Progress to next level" />
+      <progress value={stats.score} max={stats.next_level_score} aria-label={t.progress} />
       <dl className="stats">
-        {items.map(([label, value]) => (
+        {t.items.map((label, i) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd>{value}</dd>
+            <dd>{values[i]}</dd>
           </div>
         ))}
       </dl>

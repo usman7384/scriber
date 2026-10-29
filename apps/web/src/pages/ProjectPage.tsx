@@ -7,6 +7,7 @@ import { ProjectNav } from "../components/ProjectNav";
 import { PromptPanel } from "../components/PromptPanel";
 import { JobTimeline } from "../components/Timeline";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 
 export function ProjectPage() {
   const projectId = useParams().projectId ?? "";
@@ -19,6 +20,7 @@ export function ProjectPage() {
     ids.length ? api.context(projectId) : Promise.resolve(undefined),
   );
   const [started, setStarted] = useState<string>();
+  const t = useT();
   const jobId = started ?? active.data?.[0]?.id;
 
   if (!project.data) return <Pending error={project.error} />;
@@ -38,11 +40,11 @@ export function ProjectPage() {
             job.model_id && (
               <div className="row">
                 <Link className="button primary" to={`/m/${job.model_id}`}>
-                  Open model
+                  {t.timeline.open}
                 </Link>
                 {job.version && (
                   <a className="button secondary" href={exportUrl(job.model_id, "stl", job.version)} download>
-                    Download STL
+                    {t.timeline.stl}
                   </a>
                 )}
               </div>
@@ -50,7 +52,7 @@ export function ProjectPage() {
           }
         </JobTimeline>
       )}
-      <h2>Models</h2>
+      <h2>{t.project.models}</h2>
       {models.data ? <ModelGallery models={models.data} /> : <Pending error={models.error} />}
     </section>
   );

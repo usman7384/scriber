@@ -1,16 +1,17 @@
 import { exportUrl, type ExportFormat } from "../api";
-
-const formats: [ExportFormat, string][] = [
-  ["step", "STEP"],
-  ["stl", "STL"],
-  ["glb", "GLB"],
-  ["py", "Script"],
-];
+import { useT } from "../i18n";
 
 export function ExportMenu({ modelId, version }: { modelId: string; version: number }) {
+  const t = useT().exportMenu;
+  const formats: [ExportFormat, string][] = [
+    ["step", "STEP"],
+    ["stl", "STL"],
+    ["glb", "GLB"],
+    ["py", t.script],
+  ];
   return (
     <details className="menu">
-      <summary className="button secondary">Export</summary>
+      <summary className="button secondary">{t.export}</summary>
       <ul>
         {formats.map(([fmt, label]) => (
           <li key={fmt}>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api, type Job, type Param } from "../api";
 import { useResource } from "../hooks";
+import { useT } from "../i18n";
 
 interface Props {
   modelId: string;
@@ -14,6 +15,7 @@ export function Suggestions({ modelId, version, params, busy, onAccept }: Props)
   const list = useResource(`suggestions:${modelId}:${version}`, () => api.suggestions(modelId));
   const [asking, setAsking] = useState(false);
   const [error, setError] = useState<string>();
+  const t = useT().suggestions;
   const fail = (e: Error) => setError(e.message);
   const ask = () => {
     setAsking(true);
@@ -35,14 +37,14 @@ export function Suggestions({ modelId, version, params, busy, onAccept }: Props)
   };
   const open = list.data?.filter((s) => s.status === "open") ?? [];
   return (
-    <section className="stack" aria-label="Suggestions">
+    <section className="stack" aria-label={t.region}>
       <header className="row">
-        <h2>Suggestions</h2>
+        <h2>{t.region}</h2>
         <button type="button" className="secondary small push" disabled={busy || asking} onClick={ask}>
-          {asking ? "Thinking…" : "Suggest changes"}
+          {asking ? t.thinking : t.ask}
         </button>
       </header>
-      {open.length === 0 && <p className="muted small">No open suggestions.</p>}
+      {open.length === 0 && <p className="muted small">{t.none}</p>}
       <ul className="list">
         {open.map((s) => (
           <li key={s.id} className="stack suggestion">
@@ -54,14 +56,14 @@ export function Suggestions({ modelId, version, params, busy, onAccept }: Props)
             <span className="muted small">{s.rationale}</span>
             <span className="row">
               <button type="button" className="primary small" disabled={busy} onClick={() => accept(s.id)}>
-                Accept
+                {t.accept}
               </button>
               <button
                 type="button"
                 className="secondary small"
                 onClick={() => api.ignoreSuggestion(modelId, s.id).then(list.reload, fail)}
               >
-                Ignore
+                {t.ignore}
               </button>
             </span>
           </li>

@@ -1,12 +1,13 @@
 import { Link } from "react-router";
 import { apiUrl, type Model } from "../api";
 import { byNewest, date } from "../format";
+import { useT } from "../i18n";
 
 export function ModelGallery({ models }: { models: Model[] }) {
-  if (models.length === 0)
-    return <p className="empty">No models yet. Describe a part above to generate one.</p>;
+  const t = useT().gallery;
+  if (models.length === 0) return <p className="empty">{t.none}</p>;
   return (
-    <ul className="gallery" aria-label="Models">
+    <ul className="gallery" aria-label={t.region}>
       {byNewest(models).map((m) => (
         <li key={m.id} className="card">
           <Link to={`/m/${m.id}`} className="thumb-link">
@@ -18,7 +19,7 @@ export function ModelGallery({ models }: { models: Model[] }) {
             <span className="card-title">{m.title}</span>
           </Link>
           <p className="muted small">
-            {m.latest_version === null ? "no version yet" : `v${m.latest_version}`} · {date(m.created)}
+            {m.latest_version === null ? t.noVersion : `v${m.latest_version}`} · {date(m.created)}
           </p>
         </li>
       ))}

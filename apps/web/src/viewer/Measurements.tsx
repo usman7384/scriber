@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import { BoxGeometry, EdgesGeometry, Vector3, type Box3 } from "three";
 import { mm } from "../format";
 
-export function Measurements({ box }: { box: Box3 }) {
+// drei Html renders into its own React root, so the axis names come in as props.
+export function Measurements({ box, axes }: { box: Box3; axes: [string, string, string] }) {
   const size = box.getSize(new Vector3());
   const center = box.getCenter(new Vector3());
   const edges = useMemo(
@@ -12,9 +13,9 @@ export function Measurements({ box }: { box: Box3 }) {
   );
   const { min, max } = box;
   const labels: [string, number, [number, number, number]][] = [
-    ["L", size.x, [center.x, min.y, min.z]],
-    ["W", size.y, [max.x, center.y, min.z]],
-    ["H", size.z, [max.x, min.y, center.z]],
+    [axes[0], size.x, [center.x, min.y, min.z]],
+    [axes[1], size.y, [max.x, center.y, min.z]],
+    [axes[2], size.z, [max.x, min.y, center.z]],
   ];
   return (
     <group>

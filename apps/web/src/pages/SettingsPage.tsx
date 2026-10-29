@@ -1,30 +1,30 @@
 import { API_BASE } from "../api";
+import { useT } from "../i18n";
 import { useTheme, type Theme } from "../theme";
 
 const themes: Theme[] = ["light", "dark"];
 
 export function SettingsPage() {
   const [theme, setTheme] = useTheme();
+  const t = useT().settings;
   return (
     <section className="stack narrow">
-      <h1>Settings</h1>
+      <h1>{t.title}</h1>
       <fieldset className="panel">
-        <legend>Theme</legend>
-        {themes.map((t) => (
-          <label key={t} className="toggle">
-            <input type="radio" name="theme" checked={theme === t} onChange={() => setTheme(t)} />
-            {t === "light" ? "Light" : "Dark"}
+        <legend>{t.theme}</legend>
+        {themes.map((mode) => (
+          <label key={mode} className="toggle">
+            <input type="radio" name="theme" checked={theme === mode} onChange={() => setTheme(mode)} />
+            {t[mode]}
           </label>
         ))}
       </fieldset>
-      <section className="panel" aria-label="API server">
-        <h2>API server</h2>
+      <section className="panel" aria-label={t.server}>
+        <h2>{t.server}</h2>
         <p>
           <code>{API_BASE || window.location.origin}</code>
         </p>
-        <p className="muted small">
-          Set with VITE_API_URL at build time. Every request goes to this server only.
-        </p>
+        <p className="muted small">{t.serverNote}</p>
       </section>
     </section>
   );

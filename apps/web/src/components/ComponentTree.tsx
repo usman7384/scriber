@@ -1,4 +1,5 @@
 import type { Component } from "../api";
+import { useT } from "../i18n";
 
 interface Props {
   components: Component[];
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function ComponentTree({ components, selected, onSelect }: Props) {
+  const t = useT();
   const branch = (parent: string | null, label?: string) => (
     <ul className="tree" aria-label={label}>
       {components
@@ -27,5 +29,5 @@ export function ComponentTree({ components, selected, onSelect }: Props) {
         ))}
     </ul>
   );
-  return branch(null, "Components");
+  return branch(null, t.editor.components);
 }

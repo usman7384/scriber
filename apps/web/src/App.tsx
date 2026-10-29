@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
 import { Pending } from "./components/Pending";
 import { Shell } from "./components/Shell";
+import { useT } from "./i18n";
 import { ContextPage } from "./pages/ContextPage";
 import { HelpPage } from "./pages/HelpPage";
 import { LibraryPage } from "./pages/LibraryPage";
@@ -38,8 +39,12 @@ export function App() {
             </Suspense>
           }
         />
-        <Route path="*" element={<p className="empty">Page not found.</p>} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
+}
+
+function NotFound() {
+  return <p className="empty">{useT().notFound}</p>;
 }

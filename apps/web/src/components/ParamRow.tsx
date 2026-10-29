@@ -1,4 +1,5 @@
 import type { Param } from "../api";
+import { useT } from "../i18n";
 
 function sliderRange(p: Param): [number, number] {
   const span = Math.abs(p.value) || 10;
@@ -15,21 +16,22 @@ export function ParamRow({ param, draft, onChange }: Props) {
   const [lo, hi] = sliderRange(param);
   const id = `param-${param.name}`;
   const { source, ref, quote } = param.provenance;
+  const t = useT();
   return (
     <div className="param">
       <label htmlFor={id} title={param.description}>
         {param.label}
       </label>
       <span className="provenance" tabIndex={0} aria-describedby={`${id}-src`}>
-        {source}
+        {t.source[source] ?? source}
         <span role="tooltip" id={`${id}-src`}>
-          {quote ? `“${quote}”` : "No quote"}
+          {quote ? `“${quote}”` : t.params.noQuote}
           {ref && <small> {ref}</small>}
         </span>
       </span>
       <input
         type="range"
-        aria-label={`${param.label} slider`}
+        aria-label={t.params.slider(param.label)}
         min={lo}
         max={hi}
         step={0.1}

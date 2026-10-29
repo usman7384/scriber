@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { api, waitForJob, type ContextFile, type Job, type Process } from "../api";
-import { processes } from "../format";
+import { useT } from "../i18n";
 
 const examples = [
   "Mounting plate 100 x 60 x 5 mm with four M5 clearance holes 8 mm from each edge",
@@ -10,10 +10,10 @@ const examples = [
 ];
 
 const kinds = [
-  { label: "Image", accept: "image/*" },
-  { label: "Mesh", accept: ".stl,.obj,.step,.stp,.glb" },
-  { label: "Spec file", accept: ".pdf,.md,.txt,.csv" },
-];
+  { kind: "image", accept: "image/*" },
+  { kind: "mesh", accept: ".stl,.obj,.step,.stp,.glb" },
+  { kind: "spec", accept: ".pdf,.md,.txt,.csv" },
+] as const;
 
 async function uploadAttachments(projectId: string, files: File[]): Promise<string[]> {
   if (files.length === 0) return [];
@@ -37,6 +37,7 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const t = useT();
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -57,16 +58,16 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
   };
 
   return (
-    <form className="panel prompt" onSubmit={submit} aria-label="New generation">
-      <label htmlFor="prompt">Describe the part</label>
+    <form className="panel prompt" onSubmit={submit} aria-label={t.prompt.form}>
+      <label htmlFor="prompt">{t.prompt.label}</label>
       <textarea
         id="prompt"
         rows={4}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Dimensions, holes, material, how it mounts…"
+        placeholder={t.prompt.placeholder}
       />
-      <div className="chips" aria-label="Example prompts">
+      <div className="chips" aria-label={t.prompt.examples}>
         {examples.map((text) => (
           <button key={text} type="button" className="chip" onClick={() => setPrompt(text)}>
             {text}
@@ -74,7 +75,7 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
         ))}
       </div>
       {context.length > 0 && (
-        <ul className="attachments" aria-label="Context files">
+        <ul className="attachments" aria-label={t.prompt.context}>
           {context.map((f) => (
             <li key={f.id} className="chip">
               {f.name}
@@ -82,18 +83,18 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
           ))}
           <li>
             <button type="button" className="link" onClick={onClearContext}>
-              Clear context
+              {t.prompt.clearContext}
             </button>
           </li>
         </ul>
       )}
       {files.length > 0 && (
-        <ul className="attachments" aria-label="Attachments">
+        <ul className="attachments" aria-label={t.prompt.attachments}>
           {files.map((f) => (
             <li key={f.name} className="chip">
               {f.name}
               <button type="button" className="link" onClick={() => setFiles(files.filter((x) => x !== f))}>
-                Remove <span className="sr-only">{f.name}</span>
+                {t.prompt.remove} <span className="sr-only">{f.name}</span>
               </button>
             </li>
           ))}
@@ -101,8 +102,8 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
       )}
       <div className="row wrap">
         {kinds.map((k) => (
-          <label key={k.label} className="button secondary">
-            + {k.label}
+          <label key={k.kind} className="button secondary">
+            + {t.prompt.kinds[k.kind]}
             <input
               type="file"
               className="sr-only"
@@ -113,9 +114,9 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
           </label>
         ))}
         <label className="row">
-          Process
+          {t.prompt.process}
           <select value={proc} onChange={(e) => setProc(e.target.value as Process)}>
-            {Object.entries(processes).map(([value, label]) => (
+            {Object.entries(t.processes).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -123,7 +124,7 @@ export function PromptPanel({ projectId, context = [], onClearContext, onJob }: 
           </select>
         </label>
         <button type="submit" className="primary push" disabled={busy || !prompt.trim()}>
-          {busy ? "Starting…" : "Generate"}
+          {busy ? t.prompt.starting : t.prompt.generate}
         </button>
       </div>
       {error && (

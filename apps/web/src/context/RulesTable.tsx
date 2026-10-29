@@ -1,17 +1,17 @@
 import type { Rule } from "../api";
+import { useT } from "../i18n";
 
 export function RulesTable({ rules }: { rules: Rule[] }) {
-  if (rules.length === 0) return <p className="muted">No project rules yet.</p>;
+  const t = useT();
+  if (rules.length === 0) return <p className="muted">{t.context.noRules}</p>;
   return (
     <div className="table-wrap">
-      <table aria-label="Project rules">
+      <table aria-label={t.context.rules}>
         <thead>
           <tr>
-            <th>Rule</th>
-            <th>Limit</th>
-            <th>Process</th>
-            <th>Severity</th>
-            <th>Source</th>
+            {t.context.ruleColumns.map((c) => (
+              <th key={c}>{c}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -23,7 +23,7 @@ export function RulesTable({ rules }: { rules: Rule[] }) {
               </td>
               <td>{r.process}</td>
               <td>
-                <span className={`badge ${r.severity}`}>{r.severity}</span>
+                <span className={`badge ${r.severity}`}>{t.status[r.severity] ?? r.severity}</span>
               </td>
               <td className="muted small">{r.source_ref ?? "—"}</td>
             </tr>
