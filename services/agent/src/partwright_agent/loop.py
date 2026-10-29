@@ -16,6 +16,7 @@ from partwright_agent.standards import reference_data
 from partwright_context import Fact
 from partwright_geometry import Artifact, BuildError, Finding
 from partwright_ir import (
+    ComponentError,
     Design,
     ParamError,
     Process,
@@ -24,12 +25,20 @@ from partwright_ir import (
     answer_json,
     apply_params,
     drop_unused_params,
+    insert,
     json_schema,
     normalize,
+    scope,
+    splice,
     validate,
 )
 
 REPAIR_TEMPERATURE = 0.5
+PLACE_NOTE = (
+    "The part goes into an existing assembly at its connector {mate!r}. Add "
+    '"assembly": {{"connectors": [{{"id": ..., "part": <the part id>, "origin": [x, y, z]}}]}} with one connector '
+    "on the part where it seats; the part is placed so that this connector meets {mate!r}, z axes aligned."
+)
 STUCK_TEMPERATURE = 0.9
 StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
 Build = Callable[[Design, Path], Artifact]
@@ -105,20 +114,45 @@ def refine(
     max_repairs: int = 3,
     seed: int = 0,
     context: Grounding | None = None,
+    target: str | None = None,
 ) -> Iterator[Step]:
     clock = _Clock()
     reqs = extract_requirements(instruction, llm, seed)
     yield _requirements_step(reqs, clock)
+    shown = design if target is None else scope(design, target)
 
     def decode(raw: str) -> Design:
         answer = RefineAnswer.model_validate_json(raw)
-        return answer.design or apply_params(
-            design, {u.name: u.value for u in answer.updates}, Provenance(source="prompt", quote=instruction)
+        edited = answer.design or apply_params(
+            shown, {u.name: u.value for u in answer.updates}, Provenance(source="prompt", quote=instruction)
         )
+        return edited if target is None else splice(design, edited, target)
 
-    messages = [Message(role="user", content=refine_message(answer_json(design), instruction))]
+    messages = [Message(role="user", content=refine_message(answer_json(shown), instruction))]
     run = _run(llm, geometry, context, out_dir, max_repairs, seed, clock)
     yield from _attempts(run, messages, RefineAnswer.model_json_schema(), decode, reqs)
+
+
+def place(
+    prompt: str,
+    target: Design,
+    mate: str,
+    llm: LLM,
+    geometry: Geometry,
+    out_dir: Path,
+    max_repairs: int = 3,
+    seed: int = 0,
+) -> Iterator[Step]:
+    clock = _Clock()
+    request = f"{prompt}\n\n{PLACE_NOTE.format(mate=mate)}"
+    messages = [Message(role=r, content=c) for r, c in design_messages(request, reference_data(prompt), "", llm.few_shot)]
+
+    def decode(raw: str) -> Design:
+        return insert(target, Design.model_validate_json(raw), mate)
+
+    run = _run(llm, geometry, None, out_dir, max_repairs, seed, clock)
+    # size requirements would be checked against the whole assembly; the interference and mate checks verify the placement
+    yield from _attempts(run, messages, json_schema(), decode, [], prompt)
 
 
 def extract_requirements(text: str, llm: LLM, seed: int = 0) -> list[Requirement]:
@@ -198,7 +232,7 @@ def evaluate(
         design = drop_unused_params(normalize(decode(raw)))
     except ValidationError as e:
         return [f"{'.'.join(map(str, err['loc']))}: {err['msg']}" for err in e.errors()[:8]], None, None, []
-    except ParamError as e:
+    except (ParamError, ComponentError) as e:
         return [str(e)], None, None, []
     errors = validate(design)
     if errors:
