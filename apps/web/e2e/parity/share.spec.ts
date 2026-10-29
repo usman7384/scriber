@@ -7,6 +7,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   await api.install(page);
   await page.goto("/m/m1");
   await expect(page.getByLabel("Bounding box")).toBeVisible();
+  await page.locator("details.menu summary").click();
   await page.getByRole("button", { name: "Share" }).click();
   const link = await page.getByLabel("Share link").inputValue();
   await row.shot("1-link");
@@ -18,7 +19,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   await expect(visitor.getByRole("heading", { level: 1 })).toHaveText("Sensor plate");
   await expect(visitor.getByText("shared, read-only")).toBeVisible();
   await expect(visitor.getByLabel("Bounding box")).toHaveText("120.0 mm × 80.0 mm × 6.0 mm");
-  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Plate Length120 mm");
+  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Plate Length120.00 mm");
   const editable = await visitor.locator("main").getByRole("spinbutton").count();
   const textboxes = await visitor.locator("main").getByRole("textbox").count();
   const actions = await visitor
@@ -29,7 +30,7 @@ test("EX-6 share link opens a read-only viewer; revoking it gives 404", async ({
   const visits = api.requests.slice(before).map((r) => `${r.method} ${r.path}`);
 
   await page.getByRole("button", { name: "Revoke" }).click();
-  await expect(page.getByRole("status")).toHaveText("Link revoked");
+  await expect(page.locator("details.menu").getByRole("status")).toHaveText("Link revoked");
   await visitor.reload();
   await expect(visitor.getByRole("alert")).toHaveText("share link not found or revoked");
   await visitor.screenshot({ path: `${row.dir}/3-revoked.png` });

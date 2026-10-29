@@ -1,28 +1,39 @@
 import { useRef, useState } from "react";
-import { Link, useParams } from "react-router";
-import { api, apiUrl, type FaceDriver, type Job } from "../api";
-import { BugDialog } from "../components/BugDialog";
-import { ComponentTree } from "../components/ComponentTree";
-import { ExportMenu } from "../components/ExportMenu";
-import { FaceEdit } from "../components/FaceEdit";
-import { Findings } from "../components/Findings";
-import { ParamPanel } from "../components/ParamPanel";
+import { Link, useNavigate, useParams } from "react-router";
+import { api, apiUrl, exportUrl, type ExportFormat, type Finding, type Job } from "../api";
+import { AgentStatus } from "../agent/AgentStatus";
+import { AgentStream } from "../agent/AgentStream";
+import { CommandBar } from "../agent/CommandBar";
+import { Proposals } from "../agent/Proposals";
+import { VersionScrubber } from "../agent/VersionScrubber";
 import { Pending } from "../components/Pending";
-import { PrintCheck } from "../components/PrintCheck";
-import { PublishButton } from "../components/PublishButton";
-import { RefineBox } from "../components/RefineBox";
-import { ShareButton } from "../components/ShareButton";
-import { Suggestions } from "../components/Suggestions";
-import { JobTimeline } from "../components/Timeline";
-import { VersionHistory } from "../components/VersionHistory";
 import { useResource } from "../hooks";
 import { useT } from "../i18n";
+import { useBugAction } from "../shell/bug";
+import { useShell } from "../shell/context";
 import { Viewer } from "../viewer/Viewer";
+import { ChecksPopover } from "../workspace/ChecksPopover";
+import { DeliverMenu } from "../workspace/DeliverMenu";
+import { Inspector, type Selection } from "../workspace/inspector/Inspector";
+import { usePrintCheck } from "../workspace/usePrintCheck";
+import { useShortcuts } from "../workspace/shortcuts";
+import { StructureRail } from "../workspace/StructureRail";
+import { tally } from "../workspace/tally";
+import { useEditorActions } from "../workspace/useEditorActions";
+import { Workspace } from "../workspace/Workspace";
+
+const focusParam = (name: string) =>
+  requestAnimationFrame(() => document.getElementById(`param-${name}`)?.focus());
 
 export function EditorPage() {
   const modelId = useParams().modelId ?? "";
+  const navigate = useNavigate();
   const model = useResource(`model:${modelId}`, () => api.model(modelId));
   const versions = useResource(`versions:${modelId}`, () => api.versions(modelId));
+  const projectId = model.data?.project_id;
+  const project = useResource(`project:${projectId ?? ""}`, () =>
+    projectId ? api.project(projectId) : Promise.resolve(undefined),
+  );
   const [picked, setPicked] = useState<number>();
   const latest = Math.max(0, ...(versions.data ?? []).map((v) => v.number));
   const shown = picked ?? latest;
@@ -31,37 +42,74 @@ export function EditorPage() {
   const components = useResource(`components:${modelId}:${shown}`, () =>
     shown ? api.components(modelId, shown) : Promise.resolve([]),
   );
-  const [job, setJob] = useState<{ id: string; running: boolean }>();
-  const [selected, setSelected] = useState<string>();
-  const t = useT();
-  const [face, setFace] = useState<FaceDriver>();
+  // The job this session started: streamed in the dock while it runs, then summed up by the status line.
+  const [job, setJob] = useState<{ id: string; ended?: Job }>();
+  const [selection, setSelection] = useState<Selection>();
+  const [hidden, setHidden] = useState<string[]>([]);
   const [error, setError] = useState<string>();
-  const main = useRef<HTMLElement>(null);
+  const pill = useRef<HTMLButtonElement>(null);
+  const print = usePrintCheck(modelId, shown);
+  const t = useT();
+  const { openPalette } = useShell();
+  const all = versions.data ?? [];
+  const version = all.find((v) => v.number === shown) ?? all.at(-1);
+  const parts = components.data ?? [];
+  const nameOf = (id?: string | null) => parts.find((c) => c.id === id)?.name;
+  const selectedPart =
+    selection?.kind === "part"
+      ? selection.id
+      : selection?.kind === "face"
+        ? selection.driver.part
+        : selection?.kind === "finding"
+          ? version?.findings[selection.index]?.part
+          : undefined;
+  const target = parts.find((c) => c.id === selectedPart)?.id;
+  const busy = job !== undefined && !job.ended;
+  const fail = (e: Error) => setError(e.message);
+  const start = (request: Promise<Job>) => {
+    setError(undefined);
+    setSelection((s) => (s?.kind === "face" ? undefined : s));
+    request.then((j) => setJob({ id: j.id }), fail);
+  };
+  const setParams = (values: Record<string, number>) => start(api.setParams(modelId, values));
+  useBugAction({
+    modelId,
+    version: version?.number ?? 0,
+    screenshot: () => document.querySelector<HTMLCanvasElement>(".viewer canvas")?.toDataURL("image/png"),
+  });
+  useEditorActions({
+    params: version?.params ?? [],
+    numbers: all.map((v) => v.number),
+    shown,
+    target: nameOf(target),
+    editable: latest > 0 && shown === latest,
+    setParam: (name, value) => setParams({ [name]: value }),
+    focusParam,
+    refine: (instruction) => start(api.refine(modelId, { instruction, ...(target && { target }) })),
+    show: setPicked,
+    newGeneration: () => void navigate(`/p/${model.data?.project_id ?? ""}`),
+  });
+  // Esc closes an open popover, menu or dialog first (the browser does that); only then does it clear the selection.
+  useShortcuts({
+    Escape: () =>
+      !document.querySelector(":popover-open, details[open], dialog[open]") && setSelection(undefined),
+  });
 
   if (!model.data || !versions.data) return <Pending error={model.error ?? versions.error} />;
   if (versions.data.length === 0)
     return (
-      <section className="stack">
+      <section className="ws-blank">
         <h1>{model.data.title}</h1>
-        <p className="empty">
+        <p>
           {t.editor.noVersion} <Link to={`/p/${model.data.project_id}`}>{t.editor.backToProject}</Link>
         </p>
       </section>
     );
-  const all = versions.data;
-  const version = all.find((v) => v.number === shown) ?? all[all.length - 1];
   if (!version) return null;
-  const parts = components.data ?? [];
-  const nameOf = (id?: string) => parts.find((c) => c.id === id)?.name;
-
-  const fail = (e: Error) => setError(e.message);
-  const start = (request: Promise<Job>) => {
-    setError(undefined);
-    setFace(undefined);
-    request.then((j) => setJob({ id: j.id, running: true }), fail);
-  };
+  const newest = all.find((v) => v.number === latest);
+  const sourcesHref = `/p/${model.data.project_id}/context`;
   const ended = (j: Job) => {
-    setJob({ id: j.id, running: false });
+    setJob({ id: j.id, ended: j });
     versions.reload();
     model.reload();
     if (j.status === "done" && j.version) setPicked(j.version);
@@ -71,121 +119,211 @@ export function EditorPage() {
       versions.reload();
       setPicked(v.number);
     }, fail);
-  const busy = job?.running ?? false;
+  const ask = (f: Finding) =>
+    start(
+      api.refine(modelId, {
+        instruction: t.findings.fixRequest(f.message, f.suggestion ?? ""),
+        ...(f.part && { target: f.part }),
+      }),
+    );
+  // A plain download link cannot show why the API refused, so the FreeCAD file is fetched first.
+  const downloadFcstd = () =>
+    api.exportFile(modelId, "fcstd", version.number).then(({ blob, name }) => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }, fail);
+  const formats: [string, ExportFormat][] = [
+    ["STEP", "step"],
+    ["STL", "stl"],
+    ["GLB", "glb"],
+    [t.deliver.script, "py"],
+    [t.deliver.ir, "ir"],
+  ];
+  const n = tally(version);
+  const slicer = tools?.prusaslicer && version.files.stl ? print : undefined;
+  const face = selection?.kind === "face" ? selection : undefined;
+  const driven = face && version.params.find((p) => p.name === face.driver.param);
+  const firstAssumed = version.params.find((p) => p.provenance.source === "default");
 
   return (
-    <div className="editor">
-      <header className="editor-head">
-        <Link to={`/p/${model.data.project_id}`} className="button ghost">
-          {t.editor.back}
-        </Link>
-        <h1>{model.data.title}</h1>
-        <span className="badge plain">v{version.number}</span>
-        {model.data.forked_from && (
-          <span className="muted small">
-            {t.community.forkedFrom(
-              model.data.forked_from.title,
-              model.data.forked_from.version,
-              model.data.forked_from.author,
-            )}
-          </span>
-        )}
-        <span className="push" />
-        <Link to={`/p/${model.data.project_id}`} className="button primary">
-          {t.editor.newGeneration}
-        </Link>
-        <ShareButton modelId={modelId} version={version.number} />
-        <PublishButton modelId={modelId} version={version.number} />
-        <ExportMenu
-          modelId={modelId}
-          version={version.number}
-          freecad={tools?.freecad ?? false}
-          onError={fail}
-        />
-        <BugDialog
-          modelId={modelId}
-          version={version.number}
-          screenshot={() => main.current?.querySelector("canvas")?.toDataURL("image/png")}
-        />
-      </header>
-      <aside className="editor-left panel">
-        <h2>{t.editor.components}</h2>
-        <ComponentTree components={parts} selected={selected} onSelect={setSelected} />
-        <h2>{t.editor.history}</h2>
-        <VersionHistory
-          versions={all}
-          selected={version.number}
-          latest={latest}
-          onSelect={setPicked}
-          onRestore={restore}
-        />
-      </aside>
-      <section className="editor-main" ref={main}>
-        {version.status === "failed" && <p className="error">{t.editor.failed}</p>}
-        {version.files.glb && (
-          <Viewer
-            url={apiUrl(version.files.glb)}
-            findings={version.findings}
-            selected={nameOf(selected)}
-            onSelect={(name) => setSelected(parts.find((c) => c.name === name)?.id)}
-            onPickFace={(hit) =>
-              api.faceDriver(modelId, { ...hit, version: version.number }).then(setFace, (e: Error) => {
-                setFace(undefined);
-                fail(e);
-              })
-            }
+    <Workspace
+      title={model.data.title}
+      version={version.number}
+      project={project.data && { href: `/p/${project.data.id}`, name: project.data.name }}
+      badges={
+        <>
+          <ChecksPopover
+            version={version}
+            print={slicer}
+            pill={pill}
+            onFinding={(index) => {
+              setSelection({ kind: "finding", index });
+              requestAnimationFrame(() =>
+                document.querySelector<HTMLElement>(`[data-finding="${index}"]`)?.focus(),
+              );
+            }}
+            onParam={(name) => {
+              setSelection(undefined);
+              focusParam(name);
+            }}
           />
-        )}
-        {face && (
-          <FaceEdit
-            key={`${face.part}.${face.feature}.${face.param}`}
-            driver={face}
-            params={version.params}
-            busy={busy}
-            onApply={(values) => start(api.setParams(modelId, values))}
-            onClose={() => setFace(undefined)}
-          />
-        )}
-        <RefineBox
-          target={nameOf(selected)}
-          busy={busy}
-          onClearTarget={() => setSelected(undefined)}
-          onRefine={(instruction) =>
-            start(api.refine(modelId, { instruction, ...(selected && { target: selected }) }))
+          {model.data.forked_from && (
+            <span className="ws-muted ws-wide">
+              {t.community.forkedFrom(
+                model.data.forked_from.title,
+                model.data.forked_from.version,
+                model.data.forked_from.author,
+              )}
+            </span>
+          )}
+        </>
+      }
+      actions={
+        <DeliverMenu
+          heading={t.deliver.export}
+          links={formats.map(([label, fmt]) => [label, exportUrl(modelId, fmt, version.number)])}
+          fcstd={{ available: tools?.freecad ?? false, download: () => void downloadFcstd() }}
+          share={{ create: () => api.share(modelId, version.number), revoke: api.revokeShare }}
+          publish={() => api.publish(modelId, version.number)}
+          checkPrint={
+            slicer &&
+            (() => {
+              slicer.check();
+              pill.current?.click();
+            })
           }
         />
-        {error && (
-          <p role="alert" className="error">
-            {error}
-          </p>
-        )}
-        {job && <JobTimeline key={job.id} jobId={job.id} onEnd={ended} />}
-      </section>
-      <aside className="editor-right panel">
-        <h2>{t.editor.parameters}</h2>
-        <ParamPanel
-          params={version.params}
-          busy={busy}
-          onApply={(values) => start(api.setParams(modelId, values))}
+      }
+      viewport={
+        <>
+          {version.files.glb && (
+            <Viewer
+              url={apiUrl(version.files.glb)}
+              findings={version.findings}
+              selected={nameOf(target)}
+              hidden={hidden.flatMap((id) => nameOf(id) ?? [])}
+              finding={selection?.kind === "finding" ? selection.index : undefined}
+              driving={
+                face &&
+                driven && {
+                  at: face.hit.point,
+                  normal: face.hit.normal,
+                  value: driven.value,
+                  unit: driven.unit,
+                  label: t.viewer.driving(driven.label),
+                  busy,
+                  onCommit: (value) => setParams({ [driven.name]: value }),
+                }
+              }
+              pinActions={{
+                onSelect: (index) => setSelection({ kind: "finding", index }),
+                onAsk: ask,
+                onShowRule: () => void navigate(sourcesHref),
+              }}
+              onSelect={(name) => {
+                const id = parts.find((c) => c.name === name)?.id;
+                setSelection(id ? { kind: "part", id } : undefined);
+              }}
+              onPickFace={(hit) =>
+                api.faceDriver(modelId, { ...hit, version: version.number }).then(
+                  (driver) => setSelection({ kind: "face", driver, hit }),
+                  (e: Error) => {
+                    setSelection(undefined);
+                    fail(e);
+                  },
+                )
+              }
+            />
+          )}
+          {version.status === "failed" && <p className="ws-banner ws-error">{t.editor.failed}</p>}
+        </>
+      }
+      rail={
+        <StructureRail
+          components={parts}
+          selected={target}
+          face={face && { part: face.driver.part, param: driven?.label ?? face.driver.param }}
+          hidden={hidden}
+          counts={{
+            files: project.data?.file_count,
+            checks: `${n.pass} / ${version.checks.length + version.findings.length}`,
+            assumed: n.assumed,
+          }}
+          sourcesHref={sourcesHref}
+          onSelect={(id) => setSelection(id ? { kind: "part", id } : undefined)}
+          onHidden={setHidden}
+          onChecks={() => pill.current?.click()}
+          onAssumptions={() => {
+            setSelection(undefined);
+            if (firstAssumed) focusParam(firstAssumed.name);
+          }}
+          onProposals={() => document.getElementById("ws-proposals")?.scrollIntoView({ block: "nearest" })}
         />
-        {version.metrics && (
-          <p className="muted small">
-            {t.editor.volume} {(version.metrics.volume / 1000).toFixed(2)} cm³
-            {version.metrics.mass_g != null && ` · ${t.editor.mass} ${version.metrics.mass_g.toFixed(1)} g`}
-          </p>
-        )}
-        <Findings checks={version.checks} findings={version.findings} />
-        {tools?.prusaslicer && version.files.stl && (
-          <PrintCheck key={version.number} modelId={modelId} version={version.number} />
-        )}
-        <Suggestions
+      }
+      inspector={
+        <Inspector
+          title={model.data.title}
+          version={version}
+          latest={newest}
+          components={parts}
+          selection={selection}
+          busy={busy}
+          sourcesHref={sourcesHref}
+          onApply={setParams}
+          onClearSelection={() => setSelection(undefined)}
+          onAsk={ask}
+          onBack={() => setPicked(latest)}
+          proposals={
+            <section id="ws-proposals" className="ws-insp-section">
+              <Proposals key={latest} modelId={modelId} onApplied={(j) => setJob({ id: j.id })} />
+            </section>
+          }
+        />
+      }
+      stream={
+        <>
+          {error && (
+            <p role="alert" className="ws-error ws-alert">
+              {error}
+            </p>
+          )}
+          {job && <AgentStream key={job.id} jobId={job.id} variant="dock" onDone={ended} />}
+          {!busy && <AgentStatus job={job?.ended} versions={all} onRevert={(n) => void restore(n)} />}
+        </>
+      }
+      command={
+        <CommandBar
+          mode="refine"
           modelId={modelId}
-          version={version.number}
-          params={version.params}
+          target={
+            target === undefined
+              ? undefined
+              : {
+                  id: target,
+                  label: nameOf(target) ?? target,
+                  kind: selection?.kind === "face" ? "face" : "part",
+                }
+          }
+          onClearTarget={() => setSelection(undefined)}
           busy={busy}
-          onAccept={start}
+          onJob={(j) => {
+            setError(undefined);
+            setJob({ id: j.id });
+          }}
+          onCommand={openPalette}
         />
-      </aside>
-    </div>
+      }
+      versions={
+        <VersionScrubber
+          versions={all}
+          shown={version.number}
+          onShow={setPicked}
+          onRestore={(n) => void restore(n)}
+        />
+      }
+    />
   );
 }

@@ -1,0 +1,17 @@
+{
+  "row": "CX-1",
+  "passed": true,
+  "measured": {
+    "motor-bracket-spec.pdf": "0 -> 100",
+    "motor-plate.step": "0 -> 100",
+    "plate_spec.md": "0 -> 100",
+    "notes.txt": "0 -> 100",
+    "holes.csv": "0 -> 100",
+    "sketch.png": "0 -> 100",
+    "kinds": "pdf, step, md, txt, csv, image",
+    "listed": 6,
+    "listed_processed": 6,
+    "facts": "motor-bracket-spec.pdf 3, motor-plate.step 0, plate_spec.md 4, notes.txt 1, holes.csv 10, sketch.png 0"
+  },
+  "note": "Live: apps/api ingest with the configured embedder, real PDF/MD/TXT/CSV/PNG fixtures and a STEP exported by the same API; progress sampled from the UI each frame."
+}

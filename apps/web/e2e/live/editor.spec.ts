@@ -13,6 +13,7 @@ test("EX-6 live: share link opens a read-only viewer; revoking it gives 404", as
   const model = await build(request, await project(request, "EX-6 live"), basePlate);
   await page.goto(`/m/${model}`);
   await expect(page.getByLabel("Bounding box")).toBeVisible();
+  await page.locator("details.menu summary").click();
   await page.getByRole("button", { name: "Share" }).click();
   const link = await page.getByLabel("Share link").inputValue();
   const share = /\/shared\/([^/]+)$/.exec(link)?.[1] ?? "";
@@ -28,7 +29,7 @@ test("EX-6 live: share link opens a read-only viewer; revoking it gives 404", as
   await expect(visitor.getByRole("heading", { level: 1 })).toHaveText("Base plate");
   await expect(visitor.getByText("shared, read-only")).toBeVisible();
   await expect(visitor.getByLabel("Bounding box")).toHaveText("120.0 mm × 80.0 mm × 5.0 mm");
-  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Thickness5 mm");
+  await expect(visitor.getByRole("table", { name: "Parameters" })).toContainText("Thickness5.00 mm");
   const main = visitor.locator("main");
   const editable = (await main.getByRole("spinbutton").count()) + (await main.getByRole("textbox").count());
   const actions = await main
@@ -39,7 +40,7 @@ test("EX-6 live: share link opens a read-only viewer; revoking it gives 404", as
   const write = await request.patch(`${API}/s/${share}`, { data: {} });
 
   await page.getByRole("button", { name: "Revoke" }).click();
-  await expect(page.getByRole("status")).toHaveText("Link revoked");
+  await expect(page.locator("details.menu").getByRole("status")).toHaveText("Link revoked");
   await visitor.reload();
   await expect(visitor.getByRole("alert")).toHaveText("share link not found or revoked");
   await visitor.screenshot({ path: `${row.dir}/3-revoked.png` });
@@ -73,7 +74,8 @@ test("WP-11 live: report a bug from the editor; the API stores model, version, t
   const model = await build(request, await project(request, "WP-11 live"), basePlate);
   await page.goto(`/m/${model}`);
   await expect(page.getByLabel("Bounding box")).toHaveText("120.0 mm × 80.0 mm × 5.0 mm");
-  await page.getByRole("button", { name: "Report a bug" }).click();
+  await page.keyboard.press("?");
+  await page.getByRole("dialog", { name: "Help" }).getByRole("button", { name: "Report a bug" }).click();
   const text = "Top view hides the hole markers";
   await page.getByLabel("What went wrong?").fill(text);
   await row.shot("1-dialog");

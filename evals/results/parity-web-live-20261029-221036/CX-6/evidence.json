@@ -1,0 +1,13 @@
+{
+  "row": "CX-6",
+  "passed": false,
+  "measured": {
+    "1-empty_api": "files 0, facts 0, rules 0, generations 0, used 0, score 0/100, level 0",
+    "1-empty_ui": "files 0, facts 0, rules 0, used 0, score 0/100, level 0",
+    "1-empty_formula": "score 0/100, level 0",
+    "2-after-2-uploads_api": "files 2, facts 5, rules 0, generations 0, used 0, score 30/100, level 0",
+    "2-after-2-uploads_ui": "files 2, facts 5, rules 0, used 0, score 30/100, level 0",
+    "2-after-2-uploads_formula": "score 30/100, level 0"
+  },
+  "note": "failed: Test timeout of 600000ms exceeded."
+}

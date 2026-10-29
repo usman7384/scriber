@@ -1,0 +1,21 @@
+{
+  "row": "AP-9",
+  "passed": true,
+  "measured": {
+    "cli_output": "model m8b810905c5c7 v1\r",
+    "ui_bbox": "301.9 mm × 1000.0 mm × 65.3 mm",
+    "ui_history": "v1v1 · sizingsizing file sizing.xml52 seconds ago · 6 parameters changed",
+    "solids": 1,
+    "valid": true,
+    "span": 1000,
+    "root_chord": 250.036,
+    "tip_chord": 120.017,
+    "sweep_deg": 20.002,
+    "dihedral_deg": 5,
+    "twist_deg": 2,
+    "airfoil_deviation_pct_chord": 0.015,
+    "in_11_checks_passed": 9,
+    "in_11_checks": 9
+  },
+  "note": "Live: `partwright pipe` posts the sizing XML to the running API (POST /projects/{id}/sizing, no model call); IN-11 checks on the STEP it saved; the editor opens the built model."
+}
