@@ -1,8 +1,11 @@
-import type { ContextFile, GraphView, Param, Version } from "../src/api";
+import { readFileSync } from "node:fs";
+import type { ContextFile, Finding, GraphView, Model, Param, Project, Version } from "../src/api";
 
 export const now = (minute: number) => `2026-10-26T10:${String(minute).padStart(2, "0")}:00Z`;
 
-export const project = {
+export const asset = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url));
+
+export const project: Project = {
   id: "p1",
   name: "Bracket lab",
   created: now(0),
@@ -10,54 +13,146 @@ export const project = {
   file_count: 6,
 };
 
-export const params: Param[] = [
+export const shop: Project = {
+  id: "p2",
+  name: "Fixture shop",
+  created: now(2),
+  model_count: 2,
+  file_count: 0,
+};
+
+export const shopModels: Model[] = [
   {
-    name: "plate_length",
-    label: "Plate Length",
-    value: 120,
-    unit: "mm",
-    description: "plate length",
-    provenance: { source: "document", ref: "spec.pdf#p1:l2", quote: "REQ-1 Plate size 120 x 80 x 6 mm" },
+    id: "m2",
+    project_id: "p2",
+    title: "Edge test plate",
+    created: now(3),
+    latest_version: 2,
+    versions: 2,
+    thumbnail_url: "/models/m2/versions/2/thumbnail",
   },
   {
-    name: "mounting_hole_diameter",
-    label: "Mounting Hole Diameter",
-    value: 6.6,
-    unit: "mm",
-    description: "M6 clearance",
-    provenance: { source: "standard", ref: "ISO 273" },
+    id: "m3",
+    project_id: "p2",
+    title: "Hole near edge",
+    created: "2026-10-25T09:00:00Z",
+    latest_version: 1,
+    versions: 1,
+    thumbnail_url: "/models/m3/versions/1/thumbnail",
   },
 ];
 
-export const firstVersion = (): Version => ({
+export const shopThumbnails: Record<string, Buffer> = {
+  m2: asset("edge-plate-x15.png"),
+  m3: asset("edge-plate-x20.png"),
+};
+
+export interface Built {
+  glb: Buffer;
+  thumbnail: Buffer;
+  findings: Finding[];
+}
+
+// A scenario stands in for the geometry service: each parameter set maps to prebuilt real output.
+export interface Scenario {
+  title: string;
+  prompt: string;
+  params: Param[];
+  checks: Version["checks"];
+  volume: number;
+  build: (values: Record<string, number>) => Built | undefined;
+}
+
+const sensorFinding: Finding = {
+  rule_id: "min_hole_edge_ratio",
+  severity: "warning",
+  binding: "static",
+  message: "Hole Ø6.6 is 10 mm from the edge; needs at least 13.2 mm",
+  location: { point: [26.85, 16.85, 6], face: null },
+  suggestion: "Keep hole centres within x ±46.8 and y ±26.8",
+};
+
+export const sensorPlate: Scenario = {
+  title: "Sensor plate",
+  prompt: "Sensor plate 120 x 80 x 6 mm with four M6 holes",
+  params: [
+    {
+      name: "plate_length",
+      label: "Plate Length",
+      value: 120,
+      unit: "mm",
+      description: "plate length",
+      provenance: { source: "document", ref: "spec.pdf#p1:l2", quote: "REQ-1 Plate size 120 x 80 x 6 mm" },
+    },
+    {
+      name: "mounting_hole_diameter",
+      label: "Mounting Hole Diameter",
+      value: 6.6,
+      unit: "mm",
+      description: "M6 clearance",
+      provenance: { source: "standard", ref: "ISO 273" },
+    },
+  ],
+  checks: [{ description: "Plate size 120 x 80 x 6 mm", passed: true, actual: "120 x 80 x 6" }],
+  volume: 54893.96,
+  build: () => ({ glb: asset("plate.glb"), thumbnail: asset("plate.png"), findings: [sensorFinding] }),
+};
+
+// Output of the geometry service for a 60 x 40 x 5 mm plate with a Ø10 hole at x = 20 (fails 1.5 x D) and x = 15 (passes).
+const edgeBuilds: Record<number, Built> = {
+  20: {
+    glb: asset("edge-plate-x20.glb"),
+    thumbnail: asset("edge-plate-x20.png"),
+    findings: JSON.parse(asset("edge-plate-x20-findings.json").toString("utf8")) as Finding[],
+  },
+  15: { glb: asset("edge-plate-x15.glb"), thumbnail: asset("edge-plate-x15.png"), findings: [] },
+};
+
+export const edgePlate: Scenario = {
+  title: "Edge test plate",
+  prompt: "Plate 60 x 40 x 5 mm with a Ø10 hole 10 mm from the right edge",
+  params: [
+    {
+      name: "hole_x",
+      label: "Hole X",
+      value: 20,
+      unit: "mm",
+      min: -25,
+      max: 25,
+      description: "hole centre x",
+      provenance: { source: "prompt", quote: "a Ø10 hole 10 mm from the right edge" },
+    },
+  ],
+  checks: [{ description: "Plate 60 x 40 x 5 mm", passed: true, actual: "60 x 40 x 5" }],
+  volume: 11607.3,
+  build: (values) => (values.hole_x === undefined ? undefined : edgeBuilds[values.hole_x]),
+};
+
+export const versionUrls = (number: number) => ({
+  files: Object.fromEntries(
+    (["step", "stl", "glb", "py", "ir"] as const).map((f) => [
+      f,
+      `/models/m1/export?fmt=${f}&version=${number}`,
+    ]),
+  ),
+  thumbnail_url: `/models/m1/versions/${number}/thumbnail`,
+});
+
+export const firstVersion = (s: Scenario = sensorPlate): Version => ({
   model_id: "m1",
   number: 1,
   created: now(1),
   status: "ok",
   origin: "generate",
-  prompt: "Sensor plate 120 x 80 x 6 mm with four M6 holes",
-  params,
-  checks: [{ description: "Plate size 120 x 80 x 6 mm", passed: true, actual: "120 x 80 x 6" }],
-  findings: [
-    {
-      rule_id: "min_hole_edge_ratio",
-      severity: "warning",
-      binding: "static",
-      message: "Hole Ø6.6 is 10 mm from the edge; needs at least 13.2 mm",
-      location: { point: [26.85, 16.85, 6], face: null },
-      suggestion: "Keep hole centres within x ±46.8 and y ±26.8",
-    },
-  ],
-  metrics: { volume: 54893.96, mass_g: null },
-  files: {
-    step: "/models/m1/export?fmt=step&version=1",
-    stl: "/models/m1/export?fmt=stl&version=1",
-    glb: "/models/m1/export?fmt=glb&version=1",
-    py: "/models/m1/export?fmt=py&version=1",
-    ir: "/models/m1/export?fmt=ir&version=1",
-  },
-  thumbnail_url: "/models/m1/thumbnail.svg",
+  prompt: s.prompt,
+  params: s.params,
+  checks: s.checks,
+  findings: s.build(valuesOf(s.params))?.findings ?? [],
+  metrics: { volume: s.volume, mass_g: null },
+  ...versionUrls(1),
 });
+
+export const valuesOf = (params: Param[]) => Object.fromEntries(params.map((p) => [p.name, p.value]));
 
 const fileNames = [
   "motor-mount-spec.pdf",
@@ -81,19 +176,23 @@ export const contextFiles: ContextFile[] = fileNames.map((name, i) => ({
   used_in: i === 0 ? ["m1"] : [],
 }));
 
-export const graph: GraphView = {
-  nodes: [
-    ...contextFiles.map((f) => ({ id: f.id, type: "file", name: f.name })),
+const relations = [
+  { src: "f1", dst: "r1", type: "states" },
+  { src: "f4", dst: "r1", type: "mentions" },
+  { src: "m1", dst: "r1", type: "satisfies" },
+  { src: "m1", dst: "f2", type: "similar_to" },
+];
+
+// Like the context service, deleting a file drops its entity and every relation touching it.
+export const graphOf = (files: ContextFile[]): GraphView => {
+  const nodes = [
+    ...files.map((f) => ({ id: f.id, type: "file", name: f.name })),
     { id: "r1", type: "requirement", name: "REQ-1" },
     { id: "m1", type: "model", name: "Sensor plate" },
-  ],
-  edges: [
-    { src: "f1", dst: "r1", type: "states" },
-    { src: "m1", dst: "r1", type: "satisfies" },
-    { src: "m1", dst: "f2", type: "similar_to" },
-  ],
-  counts: { entities: 8, relations: 3 },
+  ];
+  const ids = new Set(nodes.map((n) => n.id));
+  const edges = relations.filter((e) => ids.has(e.src) && ids.has(e.dst));
+  return { nodes, edges, counts: { entities: nodes.length, relations: edges.length } };
 };
 
-export const thumbnail =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 30"><rect x="5" y="8" width="30" height="14" fill="#9aa7b4"/></svg>';
+export const graph = graphOf(contextFiles);

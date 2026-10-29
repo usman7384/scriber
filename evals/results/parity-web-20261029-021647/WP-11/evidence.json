@@ -1,0 +1,13 @@
+{
+  "row": "WP-11",
+  "passed": true,
+  "measured": {
+    "model_id": "m1",
+    "version": 1,
+    "text": "Top view hides the hole markers",
+    "screenshot_png": true,
+    "screenshot_px": "662 x 516",
+    "screenshot_part_coverage": 0.124
+  },
+  "note": "Web client sends the full report; storage is the mock's POST /bugs (apps/api has no /bugs route yet)."
+}

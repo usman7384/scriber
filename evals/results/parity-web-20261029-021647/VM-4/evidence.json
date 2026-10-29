@@ -1,0 +1,14 @@
+{
+  "row": "VM-4",
+  "passed": true,
+  "measured": {
+    "finding_message": "Ø10 hole at (20, 0, 2.5) is 10 mm from the outer edge; needs ≥ 15 mm (1.5 times Ø)",
+    "finding_required_mm": 15,
+    "hole_enclosed": true,
+    "hole_diameter_mm": 9.25,
+    "hole_centre_to_right_edge_mm": 10.42,
+    "marker_to_hole_centre_mm": 0.19,
+    "popup": "Ø10 hole at (20, 0, 2.5) is 10 mm from the outer edge; needs ≥ 15 mm (1.5 times Ø) keep hole centres x between -15 and 15 and y between -5 and 5, or reduce Ø to ≤ 6.67 mm"
+  },
+  "note": "Finding, GLB and thumbnail are real geometry-service output for a 60x40x5 plate with a Ø10 hole at x=20; the API leg is mocked."
+}

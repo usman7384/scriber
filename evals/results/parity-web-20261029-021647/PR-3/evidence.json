@@ -1,0 +1,12 @@
+{
+  "row": "PR-3",
+  "passed": true,
+  "measured": {
+    "off_value_after_drag": 174.3,
+    "off_patches_1s_after_drag": 0,
+    "off_patches_after_enter": 1,
+    "on_patches_after_drag": 1,
+    "on_debounce_ms": 397
+  },
+  "note": "PATCH /models/m1/params is mocked; the new version comes back over the mocked job stream."
+}

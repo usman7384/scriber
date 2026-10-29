@@ -3,8 +3,11 @@ import { Route, Routes } from "react-router";
 import { Pending } from "./components/Pending";
 import { Shell } from "./components/Shell";
 import { ContextPage } from "./pages/ContextPage";
+import { HelpPage } from "./pages/HelpPage";
+import { LibraryPage } from "./pages/LibraryPage";
 import { ProjectPage } from "./pages/ProjectPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 const EditorPage = lazy(() => import("./pages/EditorPage").then((m) => ({ default: m.EditorPage })));
 
@@ -13,6 +16,9 @@ export function App() {
     <Routes>
       <Route element={<Shell />}>
         <Route index element={<ProjectsPage />} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+        <Route path="help" element={<HelpPage />} />
         <Route path="p/:projectId" element={<ProjectPage />} />
         <Route path="p/:projectId/context" element={<ContextPage />} />
         <Route

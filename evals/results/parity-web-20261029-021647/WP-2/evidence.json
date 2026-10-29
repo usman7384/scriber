@@ -1,0 +1,10 @@
+{
+  "row": "WP-2",
+  "passed": true,
+  "measured": {
+    "uploaded_files": 3,
+    "generate_requests": 1,
+    "attachments_in_job": "u7, u8, u9"
+  },
+  "note": "Upload, ingest and generate endpoints are mocked; the request shape follows docs/API.md."
+}

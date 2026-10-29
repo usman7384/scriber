@@ -28,7 +28,7 @@ vite 8.3.5, react / react-dom 19.3.1, three 0.186.1, @react-three/fiber 9.8.2, @
 - **Measurements** come from the loaded geometry's bounding box (L/W/H labels in the scene and a text readout in the toolbar), so they do not depend on the shape of `metrics.bbox`.
 - **Graph view: d3-force (ISC, ~20 kB) for layout, SVG for drawing.** The layout runs 300 ticks synchronously (`context/graph-layout.ts`), so it is deterministic and testable; fullscreen is a CSS overlay (Esc or the button exits), which works without the Fullscreen API.
 - **Bug report stub.** No route exists in the contract. The dialog posts `POST /bugs {model_id, version, text, screenshot?}` (screenshot is a PNG data URL of the viewer canvas, `preserveDrawingBuffer` is on) and shows the server's error if the route is missing. Proposed for the API: store the JSON and return `201 {id}`.
-- **Look.** Our own: neutral greys, one blue accent, orange measurement tags, CSS variables in `styles/theme.css` with light and dark sets (follows the OS, toggle in the top bar, remembered in `localStorage`). Real buttons and labels throughout, visible focus rings, tooltips open on hover and focus. Three-column editor at 1280 px; two columns below 1200 px; one column below 900 px (checked at 768 px).
+- **Look.** Our own: neutral greys, one blue accent, orange measurement tags, CSS variables in `styles/theme.css` with light and dark sets (follows the OS, switch on the Settings page, remembered in `localStorage`). Real buttons and labels throughout, visible focus rings, tooltips open on hover and focus. Three-column editor at 1280 px; two columns below 1200 px; one column below 900 px (checked at 768 px).
 
 ## Contract ambiguities and how they were resolved
 

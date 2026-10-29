@@ -1,0 +1,10 @@
+{
+  "row": "PR-1",
+  "passed": true,
+  "measured": {
+    "Sensor plate: Plate Length": "slider 0..240, field 120, unit mm",
+    "Sensor plate: Mounting Hole Diameter": "slider 0..13.2, field 6.6, unit mm",
+    "Edge test plate: Hole X": "slider -25..25, field 20, unit mm"
+  },
+  "note": "Web half only: params come from the mock API in the documented shape."
+}

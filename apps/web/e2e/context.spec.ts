@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { graph } from "./fixtures";
+import { graphOf } from "./fixtures";
 import { MockApi } from "./mock-api";
 
 test("context manager lists files, filters, deletes, and shows the graph and level", async ({ page }) => {
@@ -25,6 +25,7 @@ test("context manager lists files, filters, deletes, and shows the graph and lev
   await expect(page.getByRole("heading", { name: "Knowledge base level 1" })).toBeVisible();
 
   const kg = page.getByRole("region", { name: "Knowledge graph" });
+  const graph = graphOf(api.files);
   await expect(kg.locator("circle.node")).toHaveCount(graph.nodes.length);
   await expect(kg).toContainText(`${graph.nodes.length} entities · ${graph.edges.length} relations`);
   await kg.getByRole("button", { name: "Fullscreen" }).click();

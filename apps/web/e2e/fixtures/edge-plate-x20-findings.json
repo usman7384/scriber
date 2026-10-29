@@ -1,0 +1,20 @@
+[
+  {
+    "rule_id": "hole-edge",
+    "severity": "error",
+    "message": "Ø10 hole at (20, 0, 2.5) is 10 mm from the outer edge; needs ≥ 15 mm (1.5 times Ø)",
+    "part": "p",
+    "binding": "static",
+    "measured": 10.0,
+    "required": 15.0,
+    "location": {
+      "point": [
+        20.0,
+        0.0,
+        2.5
+      ],
+      "face": "Ø10 hole"
+    },
+    "suggestion": "keep hole centres x between -15 and 15 and y between -5 and 5, or reduce Ø to ≤ 6.67 mm"
+  }
+]
