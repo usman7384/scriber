@@ -2,6 +2,7 @@ from partwright_ir.assembly import joint_tree
 from partwright_ir.compile import compile_design
 from partwright_ir.components import ComponentError, insert, part_hash, scope, splice
 from partwright_ir.diff import DesignDiff, diff
+from partwright_ir.drivers import FaceDriver, face_driver
 from partwright_ir.expr import ExprError, evaluate
 from partwright_ir.model import Assembly, Connector, Design, Joint, Param, Process, Provenance
 from partwright_ir.normalize import drop_unused_params, normalize
@@ -17,6 +18,7 @@ __all__ = [
     "Design",
     "DesignDiff",
     "ExprError",
+    "FaceDriver",
     "IrError",
     "Joint",
     "Param",
@@ -34,6 +36,7 @@ __all__ = [
     "diff",
     "drop_unused_params",
     "evaluate",
+    "face_driver",
     "insert",
     "joint_tree",
     "json_schema",
