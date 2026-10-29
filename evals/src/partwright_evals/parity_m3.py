@@ -78,7 +78,7 @@ def png_size(api: Api, url: str) -> tuple[int, int]:
 
 
 def in_17(rig: Rig) -> Evidence:
-    with serve(rig, seeded(rig)) as api:
+    with serve(rig, seeded(rig), vision=rig.vision) as api:
         model_id = api.wait(api.ok("POST", "/api/v1/generate", json={"prompt": PLATE_PROMPT})["job_id"])["model_id"]
         photo = api.upload("default", "photo.png", (FIXTURES / "sketch.png").read_bytes())
         body = {"model_id": model_id, "prompt": "Make it match the photo: 150 x 90 mm", "attachments": [photo["id"]]}
@@ -443,7 +443,7 @@ def wp_7(rig: Rig) -> Evidence:
 
 def in_16(rig: Rig) -> Evidence:
     prompt = "Mounting plate like the attached sketch, built to the attached spec"
-    with serve(rig, rig.llm) as api:
+    with serve(rig, rig.llm, vision=rig.vision) as api:
         project = api.project()
         sketch = api.upload(project, "sketch.png", (FIXTURES / "sketch.png").read_bytes())
         spec = api.upload(project, "plate_spec.md", fixture("plate_spec.md").encode())
