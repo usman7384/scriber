@@ -1,0 +1,74 @@
+{
+  "title": "M16 washer",
+  "params": [
+    {
+      "name": "od",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "id",
+      "value": 17,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 3,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "M16 washer",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "hole",
+          "name": "Hole",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "id"
+        }
+      ]
+    }
+  ]
+}

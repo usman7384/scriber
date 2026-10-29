@@ -1,0 +1,66 @@
+{
+  "plate_a": {
+    "length": 140,
+    "width": 90,
+    "thickness": 6,
+    "hole_d": 9,
+    "pitch_x": 120,
+    "pitch_y": 70
+  },
+  "plate_b": {
+    "length": 160,
+    "width": 100,
+    "thickness": 8,
+    "hole_d": 6.6,
+    "pitch_x": 130,
+    "pitch_y": 80
+  },
+  "plate_c": {
+    "length": 120,
+    "width": 120,
+    "thickness": 10,
+    "hole_d": 11,
+    "pitch_x": 90,
+    "pitch_y": 90
+  },
+  "plate_d": {
+    "length": 200,
+    "width": 80,
+    "thickness": 5,
+    "hole_d": 5.5,
+    "pitch_x": 170,
+    "pitch_y": 50
+  },
+  "flange_a": {
+    "od": 150,
+    "pcd": 110,
+    "bolt_count": 4,
+    "hole_d": 18,
+    "bore": 49,
+    "thickness": 16
+  },
+  "flange_b": {
+    "od": 200,
+    "pcd": 160,
+    "bolt_count": 8,
+    "hole_d": 18,
+    "bore": 90,
+    "thickness": 20
+  },
+  "flange_c": {
+    "od": 130,
+    "pcd": 100,
+    "bolt_count": 6,
+    "hole_d": 9,
+    "bore": 50,
+    "thickness": 12
+  },
+  "flange_d": {
+    "od": 180,
+    "pcd": 140,
+    "bolt_count": 8,
+    "hole_d": 13.5,
+    "bore": 76,
+    "thickness": 14
+  }
+}

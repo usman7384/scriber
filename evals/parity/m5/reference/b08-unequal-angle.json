@@ -1,0 +1,137 @@
+{
+  "title": "Unequal angle bracket",
+  "params": [
+    {
+      "name": "leg_a",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "leg_b",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_gap",
+      "value": 25,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Unequal angle bracket",
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  "leg_a",
+                  0
+                ],
+                [
+                  "leg_a",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "leg_b"
+                ],
+                [
+                  0,
+                  "leg_b"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "profile",
+          "distance": "width",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "hole",
+          "id": "base_holes",
+          "name": "Base holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                35,
+                "-hole_gap / 2"
+              ],
+              [
+                35,
+                "hole_gap / 2"
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        },
+        {
+          "kind": "hole",
+          "id": "upright_holes",
+          "name": "Upright holes",
+          "plane": {
+            "ref": "YZ",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_gap / 2",
+                22.5
+              ],
+              [
+                "hole_gap / 2",
+                22.5
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

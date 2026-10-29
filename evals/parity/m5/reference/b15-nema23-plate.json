@@ -1,0 +1,102 @@
+{
+  "title": "NEMA 23 adapter plate",
+  "params": [
+    {
+      "name": "size",
+      "value": 70,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 6,
+      "unit": "mm"
+    },
+    {
+      "name": "pilot_d",
+      "value": 38.5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch",
+      "value": 47.14,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "NEMA 23 adapter plate",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "pilot",
+          "name": "Pilot",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "pilot_d"
+        },
+        {
+          "kind": "hole",
+          "id": "screws",
+          "name": "Screws",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch",
+            "spacing_y": "pitch"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "title": "Lightened disc",
+  "params": [
+    {
+      "name": "od",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 15,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_count",
+      "value": 4,
+      "unit": ""
+    },
+    {
+      "name": "pcd",
+      "value": 34,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 12,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Lightened disc",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "disc",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "lightening",
+          "name": "Lightening",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "polar",
+            "count": "hole_count",
+            "diameter": "pcd"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

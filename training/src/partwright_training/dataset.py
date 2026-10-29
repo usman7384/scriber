@@ -28,7 +28,14 @@ from partwright_training.verify import design_failures, failures
 HELDOUT_OFFSET = 500_000
 PRIOR_OFFSET = 7_000_000
 DOCUMENTED, VAGUE, PARAPHRASED, EDIT = 0.15, 0.15, 0.45, 0.08
-EVAL_CASES = ("evals/cases/m1.yaml", "evals/cases/challenge.yaml", "evals/grounded/cases.yaml", "evals/cases/dev.yaml")
+EVAL_CASES = (
+    "evals/cases/m1.yaml",
+    "evals/cases/challenge.yaml",
+    "evals/grounded/cases.yaml",
+    "evals/cases/dev.yaml",
+    "evals/cases/parts.yaml",
+    "evals/cases/benchmark.yaml",
+)
 
 
 @dataclass(frozen=True)

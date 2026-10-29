@@ -1,0 +1,145 @@
+{
+  "title": "Sensor mounting plate",
+  "params": [
+    {
+      "name": "length",
+      "value": 70,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "barrel_d",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "screw_d",
+      "value": 3.4,
+      "unit": "mm"
+    },
+    {
+      "name": "screw_gap",
+      "value": 24,
+      "unit": "mm"
+    },
+    {
+      "name": "corner_d",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_x",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_y",
+      "value": 40,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Sensor mounting plate",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "barrel",
+          "name": "Barrel",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "barrel_d"
+        },
+        {
+          "kind": "hole",
+          "id": "sensor_screws",
+          "name": "Sensor screws",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-screw_gap / 2",
+                0
+              ],
+              [
+                "screw_gap / 2",
+                0
+              ]
+            ]
+          },
+          "diameter": "screw_d"
+        },
+        {
+          "kind": "hole",
+          "id": "corner_holes",
+          "name": "Corner holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch_x",
+            "spacing_y": "pitch_y"
+          },
+          "diameter": "corner_d"
+        }
+      ]
+    }
+  ]
+}

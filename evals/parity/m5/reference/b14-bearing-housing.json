@@ -1,0 +1,132 @@
+{
+  "title": "Bearing housing",
+  "params": [
+    {
+      "name": "size",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "seat_d",
+      "value": 22,
+      "unit": "mm"
+    },
+    {
+      "name": "seat_depth",
+      "value": 7,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch",
+      "value": 46,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Bearing housing",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "seat",
+          "name": "Seat",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "seat_d",
+          "depth": "seat_depth"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "screws",
+          "name": "Screws",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch",
+            "spacing_y": "pitch"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

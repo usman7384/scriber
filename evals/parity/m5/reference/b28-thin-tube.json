@@ -1,0 +1,64 @@
+{
+  "title": "Thin-walled tube",
+  "params": [
+    {
+      "name": "od",
+      "value": 25,
+      "unit": "mm"
+    },
+    {
+      "name": "id",
+      "value": 21,
+      "unit": "mm"
+    },
+    {
+      "name": "length",
+      "value": 120,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Thin-walled tube",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "id",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "ring",
+          "distance": "length"
+        }
+      ]
+    }
+  ]
+}

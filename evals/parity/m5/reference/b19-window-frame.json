@@ -1,0 +1,108 @@
+{
+  "title": "Window frame",
+  "params": [
+    {
+      "name": "length",
+      "value": 120,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "open_l",
+      "value": 90,
+      "unit": "mm"
+    },
+    {
+      "name": "open_w",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 4.5,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_x",
+      "value": 105,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_y",
+      "value": 65,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Window frame",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            },
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "open_l",
+              "height": "open_w",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "corner_holes",
+          "name": "Corner holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch_x",
+            "spacing_y": "pitch_y"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

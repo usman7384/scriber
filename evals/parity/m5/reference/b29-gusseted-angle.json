@@ -1,0 +1,181 @@
+{
+  "title": "Gusseted angle bracket",
+  "params": [
+    {
+      "name": "leg_a",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "leg_b",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "gusset",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "gusset_t",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_gap",
+      "value": 20,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Gusseted angle bracket",
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  "leg_a",
+                  0
+                ],
+                [
+                  "leg_a",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "leg_b"
+                ],
+                [
+                  0,
+                  "leg_b"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gusset",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "thickness",
+                  "thickness"
+                ],
+                [
+                  "thickness + gusset",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "thickness + gusset"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "profile",
+          "distance": "width",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "extrude",
+          "id": "gusset",
+          "name": "Gusset",
+          "sketch": "gusset",
+          "distance": "gusset_t",
+          "extent": "symmetric"
+        },
+        {
+          "kind": "hole",
+          "id": "base_holes",
+          "name": "Base holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                30,
+                "-hole_gap / 2"
+              ],
+              [
+                30,
+                "hole_gap / 2"
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        },
+        {
+          "kind": "hole",
+          "id": "upright_holes",
+          "name": "Upright holes",
+          "plane": {
+            "ref": "YZ",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_gap / 2",
+                30
+              ],
+              [
+                "hole_gap / 2",
+                30
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

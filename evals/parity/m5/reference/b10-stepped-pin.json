@@ -1,0 +1,104 @@
+{
+  "title": "Stepped pin",
+  "params": [
+    {
+      "name": "major_d",
+      "value": 20,
+      "unit": "mm"
+    },
+    {
+      "name": "major_len",
+      "value": 40,
+      "unit": "mm"
+    },
+    {
+      "name": "minor_d",
+      "value": 12,
+      "unit": "mm"
+    },
+    {
+      "name": "minor_len",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Stepped pin",
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  "major_d / 2",
+                  0
+                ],
+                [
+                  "major_d / 2",
+                  "major_len"
+                ],
+                [
+                  "minor_d / 2",
+                  "major_len"
+                ],
+                [
+                  "minor_d / 2",
+                  "major_len + minor_len"
+                ],
+                [
+                  0,
+                  "major_len + minor_len"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "revolve",
+          "id": "body",
+          "name": "Body",
+          "sketch": "profile",
+          "axis": "Y"
+        },
+        {
+          "kind": "hole",
+          "id": "axial_hole",
+          "name": "Axial hole",
+          "plane": {
+            "ref": "XY",
+            "offset": "major_len + minor_len"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}

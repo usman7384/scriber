@@ -1,0 +1,302 @@
+# Spec-driven benchmark (GE-8, VM-8): our own wording; each case has a hand-built reference design in evals/parity/m5/reference/.
+- id: b01-cover-plate
+  rows: [GE-8, VM-8]
+  prompt: Rectangular cover plate 140 by 90 mm, 6 mm thick, with a 9 mm hole 10 mm in from each corner.
+  checks:
+    - {kind: extent, description: length 140, value: 140}
+    - {kind: extent, description: width 90, value: 90}
+    - {kind: extent, description: thickness 6, value: 6}
+    - {kind: holes, description: four 9 mm holes, count: 4, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: holes 120 apart, value: 120, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: holes 70 apart, value: 70, diameter_min: 8.9, diameter_max: 9.1}
+
+- id: b02-round-spacer
+  rows: [GE-8, VM-8]
+  prompt: Round spacer, 30 mm across and 12 mm long, with a 10.5 mm clearance bore down its axis.
+  checks:
+    - {kind: extent, description: diameter 30, value: 30}
+    - {kind: extent, description: length 12, value: 12}
+    - {kind: holes, description: one 10.5 bore, count: 1, diameter_min: 10.4, diameter_max: 10.6}
+    - {kind: wall, description: wall 9.75, value: 9.75, tolerance: 0.05}
+
+- id: b03-square-tube
+  rows: [GE-8, VM-8]
+  prompt: Square hollow section 40 x 40 mm with 3 mm walls, 100 mm long, cross-drilled with two 6.5 mm holes through both walls, 20 mm from each end.
+  checks:
+    - {kind: extent, description: section 40, value: 40}
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: holes, description: two 6.5 cross holes, count: 2, diameter_min: 6.4, diameter_max: 6.6}
+    - {kind: hole_spacing, description: cross holes 60 apart, value: 60, diameter_min: 6.4, diameter_max: 6.6}
+
+- id: b04-bolt-disc
+  rows: [GE-8, VM-8]
+  prompt: Disc flange 100 mm in diameter and 10 mm thick, 40 mm centre bore, six 6.6 mm holes equally spaced on an 80 mm circle.
+  checks:
+    - {kind: extent, description: diameter 100, value: 100}
+    - {kind: extent, description: thickness 10, value: 10}
+    - {kind: holes, description: six 6.6 holes, count: 6, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: 80 circle across, value: 80, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: holes, description: bore 40, count: 1, diameter_min: 39.9, diameter_max: 40.1}
+
+- id: b05-shaft-collar
+  rows: [GE-8, VM-8]
+  prompt: Shaft collar for a 12 mm shaft, 28 mm outside diameter and 10 mm wide, with a radial 4.2 mm tapping hole for an M5 set screw from the outside into the bore.
+  checks:
+    - {kind: extent, description: diameter 28, value: 28}
+    - {kind: extent, description: width 10, value: 10}
+    - {kind: holes, description: bore 12, count: 1, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: holes, description: tapping hole 4.2, count: 1, diameter_min: 4.1, diameter_max: 4.3}
+    - {kind: crossing_holes, description: set screw hole meets the bore, count: 1}
+
+- id: b06-bearing-block
+  rows: [GE-8, VM-8]
+  prompt: Bearing block 80 mm long, 30 mm deep and 40 mm high, a 20 mm bore running front to back 25 mm above the base, and two 9 mm vertical bolt holes 60 mm apart.
+  checks:
+    - {kind: extent, description: length 80, value: 80}
+    - {kind: extent, description: depth 30, value: 30}
+    - {kind: extent, description: height 40, value: 40}
+    - {kind: holes, description: bore 20, count: 1, diameter_min: 19.9, diameter_max: 20.1}
+    - {kind: holes, description: two 9 bolt holes, count: 2, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_spacing, description: bolts 60 apart, value: 60, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: hole_axes, description: holes along two axes, count: 2}
+
+- id: b07-counterbored-plate
+  rows: [GE-8, VM-8]
+  prompt: Plate 100 x 60 x 10 mm with four counterbored holes for M5 cap screws, 5.5 mm through with a 10 mm counterbore 5.5 mm deep, on an 80 x 40 mm rectangle.
+  checks:
+    - {kind: extent, description: length 100, value: 100}
+    - {kind: extent, description: width 60, value: 60}
+    - {kind: extent, description: thickness 10, value: 10}
+    - {kind: counterbores, description: four counterbores, count: 4}
+    - {kind: hole_spacing, description: screws 80 apart, value: 80, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: screws 40 apart, value: 40, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: b08-unequal-angle
+  rows: [GE-8, VM-8]
+  prompt: Unequal angle bracket with legs of 60 mm and 40 mm measured outside, 50 mm wide and 5 mm thick, with two 6.6 mm holes 25 mm apart in each leg.
+  checks:
+    - {kind: extent, description: long leg 60, value: 60}
+    - {kind: extent, description: short leg 40, value: 40}
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: holes, description: four 6.6 holes, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: holes 25 apart, value: 25, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_axes, description: holes in both legs, count: 2}
+
+- id: b09-u-channel
+  rows: [GE-8, VM-8]
+  prompt: Channel bracket with a U section, 4 mm thick, 80 mm long, 50 mm across the outside of the legs and 30 mm tall, with two 6.6 mm holes in the base 50 mm apart along its length.
+  checks:
+    - {kind: extent, description: length 80, value: 80}
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: extent, description: height 30, value: 30}
+    - {kind: holes, description: two 6.6 holes, count: 2, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: holes 50 apart, value: 50, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: b10-stepped-pin
+  rows: [GE-8, VM-8]
+  prompt: Stepped pin turned from bar, 20 mm diameter for 40 mm and then 12 mm diameter for another 30 mm, with a 5 mm hole drilled along its whole axis.
+  checks:
+    - {kind: extent, description: major diameter 20, value: 20}
+    - {kind: extent, description: overall length 70, value: 70}
+    - {kind: holes, description: axial 5 hole, count: 1, diameter_min: 4.9, diameter_max: 5.1}
+
+- id: b11-lightened-disc
+  rows: [GE-8, VM-8]
+  prompt: Lightened disc 60 mm in diameter and 15 mm thick with an 8 mm centre bore and four 12 mm lightening holes on a 34 mm pitch circle.
+  checks:
+    - {kind: extent, description: diameter 60, value: 60}
+    - {kind: extent, description: thickness 15, value: 15}
+    - {kind: holes, description: four 12 holes, count: 4, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: hole_spacing, description: 34 circle across, value: 34, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: holes, description: bore 8, count: 1, diameter_min: 7.9, diameter_max: 8.1}
+
+- id: b12-machine-base
+  rows: [GE-8, VM-8]
+  prompt: Machine base 120 x 80 x 12 mm with a 70 x 40 mm recess 5 mm deep milled in the centre of the top face, and four 6.6 mm holes on a 100 x 60 mm pattern.
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: thickness 12, value: 12}
+    - {kind: holes, description: four 6.6 holes, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: holes 100 apart, value: 100, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: holes 60 apart, value: 60, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: b13-standoff
+  rows: [GE-8, VM-8]
+  prompt: Round standoff 8 mm across and 20 mm long, drilled 2.5 mm right through for an M3 tap.
+  checks:
+    - {kind: extent, description: diameter 8, value: 8}
+    - {kind: extent, description: length 20, value: 20}
+    - {kind: holes, description: tap drill 2.5, count: 1, diameter_min: 2.4, diameter_max: 2.6}
+    - {kind: wall, description: wall 2.75, value: 2.75, tolerance: 0.05}
+
+- id: b14-bearing-housing
+  rows: [GE-8, VM-8]
+  prompt: Square housing 60 x 60 x 20 mm for a 608 bearing, with a 22 mm seat 7 mm deep from the top, a 10 mm hole through the rest, and four 5.5 mm screw holes on a 46 mm square.
+  checks:
+    - {kind: extent, description: 60 square, value: 60}
+    - {kind: extent, description: thickness 20, value: 20}
+    - {kind: holes, description: bearing seat 22, count: 1, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: holes, description: through hole 10, count: 1, diameter_min: 9.9, diameter_max: 10.1}
+    - {kind: holes, description: four 5.5 holes, count: 4, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: 46 square, value: 46, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: b15-nema23-plate
+  rows: [GE-8, VM-8]
+  prompt: Adapter plate for a NEMA 23 stepper, 70 x 70 x 6 mm, with a 38.5 mm hole for the motor's pilot and four 5.5 mm holes on the 47.14 mm square.
+  checks:
+    - {kind: extent, description: 70 square, value: 70}
+    - {kind: extent, description: thickness 6, value: 6}
+    - {kind: holes, description: pilot 38.5, count: 1, diameter_min: 38.4, diameter_max: 38.6}
+    - {kind: holes, description: four 5.5 holes, count: 4, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: 47.14 square, value: 47.14, tolerance: 0.05, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: b16-hinge-leaf
+  rows: [GE-8, VM-8]
+  prompt: Hinge leaf 60 x 40 x 3 mm with three countersunk 4.5 mm holes in a row along the middle of the long side, 20 mm apart.
+  checks:
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: three 4.5 holes, count: 3, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: pitch 20, value: 20, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: outer holes 40 apart, value: 40, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: b17-cup
+  rows: [GE-8, VM-8]
+  prompt: Cylindrical cup, 50 mm outside diameter and 40 mm tall, with a 3 mm side wall and a 3 mm closed bottom.
+  checks:
+    - {kind: extent, description: diameter 50, value: 50}
+    - {kind: extent, description: height 40, value: 40}
+    - {kind: holes, description: cavity 44, count: 1, diameter_min: 43.9, diameter_max: 44.1}
+    - {kind: wall, description: wall 3, value: 3, tolerance: 0.05}
+
+- id: b18-m16-washer
+  rows: [GE-8, VM-8]
+  prompt: Plain washer for M16 to ISO 7089, 17 mm hole, 30 mm outside diameter, 3 mm thick.
+  checks:
+    - {kind: extent, description: diameter 30, value: 30}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: hole 17, count: 1, diameter_min: 16.9, diameter_max: 17.1}
+    - {kind: wall, description: ring width 6.5, value: 6.5, tolerance: 0.05}
+
+- id: b19-window-frame
+  rows: [GE-8, VM-8]
+  prompt: Rectangular frame 120 x 80 mm and 8 mm thick with a 90 x 50 mm opening in the middle and a 4.5 mm hole in each corner, the holes 105 mm and 65 mm apart.
+  checks:
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: extent, description: width 80, value: 80}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: four 4.5 holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: holes 105 apart, value: 105, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: holes 65 apart, value: 65, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: b20-lifting-lug
+  rows: [GE-8, VM-8]
+  prompt: Lifting lug plate 8 mm thick, 60 mm long and 30 mm wide with one end fully rounded, a 12 mm hole at the centre of the round end, and two 6.6 mm holes 15 mm apart across the square end, 10 mm from that edge.
+  checks:
+    - {kind: extent, description: length 60, value: 60}
+    - {kind: extent, description: width 30, value: 30}
+    - {kind: extent, description: thickness 8, value: 8}
+    - {kind: holes, description: eye 12, count: 1, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: holes, description: two 6.6 holes, count: 2, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: bolt holes 15 apart, value: 15, diameter_min: 6.5, diameter_max: 6.7}
+
+- id: b21-gear-blank
+  rows: [GE-8, VM-8]
+  prompt: Gear blank 48 mm across and 10 mm thick, with a 20 mm hub standing 8 mm proud of one face and an 8 mm bore through hub and disc.
+  checks:
+    - {kind: extent, description: diameter 48, value: 48}
+    - {kind: extent, description: overall thickness 18, value: 18}
+    - {kind: holes, description: bore 8, count: 1, diameter_min: 7.9, diameter_max: 8.1}
+
+- id: b22-cross-drilled-cube
+  rows: [GE-8, VM-8]
+  prompt: A 50 mm cube drilled with three 10 mm holes, one straight through along each axis, all meeting at the centre.
+  checks:
+    - {kind: extent, description: cube 50, value: 50}
+    - {kind: holes, description: three 10 holes, count: 3, diameter_min: 9.9, diameter_max: 10.1}
+    - {kind: hole_axes, description: one hole per axis, count: 3}
+    - {kind: crossing_holes, description: holes meet, count: 3}
+
+- id: b23-flat-bar
+  rows: [GE-8, VM-8]
+  prompt: Flat bar 160 x 20 x 4 mm with six 5.5 mm holes on its centre line at a 25 mm pitch, the row centred on the bar.
+  checks:
+    - {kind: extent, description: length 160, value: 160}
+    - {kind: extent, description: width 20, value: 20}
+    - {kind: extent, description: thickness 4, value: 4}
+    - {kind: holes, description: six 5.5 holes, count: 6, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: pitch 25, value: 25, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: end holes 125 apart, value: 125, diameter_min: 5.4, diameter_max: 5.6}
+
+- id: b24-dn32-flange
+  rows: [GE-8, VM-8]
+  prompt: Plate flange DN32 PN16 per EN 1092-1, 16 mm thick, with a 43.5 mm bore and the standard four 18 mm bolt holes.
+  checks:
+    - {kind: extent, description: outer diameter 140, value: 140}
+    - {kind: extent, description: thickness 16, value: 16}
+    - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: hole_spacing, description: bolt circle 100, value: 100, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: holes, description: bore 43.5, count: 1, diameter_min: 43.4, diameter_max: 43.6}
+
+- id: b25-spigot-adapter
+  rows: [GE-8, VM-8]
+  prompt: Square adapter 80 x 80 x 8 mm with a 50 mm round spigot 5 mm high on top, a 30 mm bore through both, and four 6.6 mm holes on a 64 mm square.
+  checks:
+    - {kind: extent, description: 80 square, value: 80}
+    - {kind: extent, description: overall height 13, value: 13}
+    - {kind: holes, description: four 6.6 holes, count: 4, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: hole_spacing, description: 64 square, value: 64, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: holes, description: bore 30, count: 1, diameter_min: 29.9, diameter_max: 30.1}
+
+- id: b26-square-panel
+  rows: [GE-8, VM-8]
+  prompt: Square panel 150 mm by 150 mm, 3 mm thick, with eight 4.5 mm fixing holes 7.5 mm in from the edges, one in each corner and one in the middle of each side.
+  checks:
+    - {kind: extent, description: 150 square, value: 150}
+    - {kind: extent, description: thickness 3, value: 3}
+    - {kind: holes, description: eight 4.5 holes, count: 8, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: corner holes 135 apart, value: 135, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: side holes 67.5 from corners, value: 67.5, diameter_min: 4.4, diameter_max: 4.6}
+
+- id: b27-control-knob
+  rows: [GE-8, VM-8]
+  prompt: Control knob 40 mm in diameter and 15 mm tall with a blind 6 mm shaft hole 12 mm deep from the underside and a 1 mm chamfer round the top edge.
+  checks:
+    - {kind: extent, description: diameter 40, value: 40}
+    - {kind: extent, description: height 15, value: 15}
+    - {kind: holes, description: shaft hole 6, count: 1, diameter_min: 5.9, diameter_max: 6.1}
+
+- id: b28-thin-tube
+  rows: [GE-8, VM-8]
+  prompt: Thin-walled tube, 25 mm outside and 21 mm inside diameter, 120 mm long.
+  checks:
+    - {kind: extent, description: diameter 25, value: 25}
+    - {kind: extent, description: length 120, value: 120}
+    - {kind: holes, description: bore 21, count: 1, diameter_min: 20.9, diameter_max: 21.1}
+    - {kind: wall, description: wall 2, value: 2, tolerance: 0.05}
+
+- id: b29-gusseted-angle
+  rows: [GE-8, VM-8]
+  prompt: Equal angle bracket with 50 mm legs measured outside, 40 mm wide and 5 mm thick, a 5 mm triangular gusset in the middle of the inside corner, and two 5.5 mm holes 20 mm apart across the width of each leg.
+  checks:
+    - {kind: extent, description: legs 50, value: 50}
+    - {kind: extent, description: width 40, value: 40}
+    - {kind: holes, description: four 5.5 holes, count: 4, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_spacing, description: holes 20 apart, value: 20, diameter_min: 5.4, diameter_max: 5.6}
+    - {kind: hole_axes, description: holes in both legs, count: 2}
+
+- id: b30-sensor-plate
+  rows: [GE-8, VM-8]
+  prompt: Sensor mounting plate 70 x 50 x 5 mm with a 12 mm hole in the middle for the sensor barrel, two 3.4 mm holes 24 mm apart either side of it for M3 screws, and four 4.5 mm corner holes 60 mm by 40 mm apart.
+  checks:
+    - {kind: extent, description: length 70, value: 70}
+    - {kind: extent, description: width 50, value: 50}
+    - {kind: extent, description: thickness 5, value: 5}
+    - {kind: holes, description: barrel hole 12, count: 1, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: holes, description: two 3.4 holes, count: 2, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: hole_spacing, description: sensor screws 24 apart, value: 24, diameter_min: 3.3, diameter_max: 3.5}
+    - {kind: holes, description: four 4.5 holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: corner holes 60 apart, value: 60, diameter_min: 4.4, diameter_max: 4.6}
+    - {kind: hole_spacing, description: corner holes 40 apart, value: 40, diameter_min: 4.4, diameter_max: 4.6}

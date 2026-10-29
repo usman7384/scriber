@@ -1,0 +1,102 @@
+{
+  "title": "Counterbored plate",
+  "params": [
+    {
+      "name": "length",
+      "value": 100,
+      "unit": "mm"
+    },
+    {
+      "name": "width",
+      "value": 60,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "cb_d",
+      "value": 10,
+      "unit": "mm"
+    },
+    {
+      "name": "cb_depth",
+      "value": 5.5,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_x",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch_y",
+      "value": 40,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Counterbored plate",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "length",
+              "height": "width",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "hole",
+          "id": "screws",
+          "name": "Screws",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch_x",
+            "spacing_y": "pitch_y"
+          },
+          "diameter": "hole_d",
+          "type": "counterbore",
+          "fastener": "M5",
+          "cb_diameter": "cb_d",
+          "cb_depth": "cb_depth"
+        }
+      ]
+    }
+  ]
+}

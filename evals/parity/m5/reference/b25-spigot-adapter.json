@@ -1,0 +1,137 @@
+{
+  "title": "Spigot adapter",
+  "params": [
+    {
+      "name": "size",
+      "value": 80,
+      "unit": "mm"
+    },
+    {
+      "name": "thickness",
+      "value": 8,
+      "unit": "mm"
+    },
+    {
+      "name": "spigot_d",
+      "value": 50,
+      "unit": "mm"
+    },
+    {
+      "name": "spigot_h",
+      "value": 5,
+      "unit": "mm"
+    },
+    {
+      "name": "bore",
+      "value": 30,
+      "unit": "mm"
+    },
+    {
+      "name": "hole_d",
+      "value": 6.6,
+      "unit": "mm"
+    },
+    {
+      "name": "pitch",
+      "value": 64,
+      "unit": "mm"
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Spigot adapter",
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0,
+                0
+              ],
+              "width": "size",
+              "height": "size",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "spigot",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "spigot_d",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "outline",
+          "distance": "thickness"
+        },
+        {
+          "kind": "extrude",
+          "id": "spigot",
+          "name": "Spigot",
+          "sketch": "spigot",
+          "distance": "spigot_h"
+        },
+        {
+          "kind": "hole",
+          "id": "bore",
+          "name": "Bore",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness + spigot_h"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          "diameter": "bore"
+        },
+        {
+          "kind": "hole",
+          "id": "holes",
+          "name": "Holes",
+          "plane": {
+            "ref": "XY",
+            "offset": "thickness"
+          },
+          "at": {
+            "kind": "grid",
+            "count_x": 2,
+            "count_y": 2,
+            "spacing_x": "pitch",
+            "spacing_y": "pitch"
+          },
+          "diameter": "hole_d"
+        }
+      ]
+    }
+  ]
+}
