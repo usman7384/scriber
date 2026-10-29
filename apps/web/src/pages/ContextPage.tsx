@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { api } from "../api";
 import { Pending } from "../components/Pending";
 import { ProjectNav } from "../components/ProjectNav";
@@ -17,7 +17,10 @@ export function ContextPage() {
   const context = useResource(`context:${projectId}`, () => api.context(projectId));
   const rules = useResource(`rules:${projectId}`, () => api.rules(projectId));
   const graph = useResource(`graph:${projectId}`, () => api.graph(projectId));
+  const models = useResource(`models:${projectId}`, () => api.models(projectId));
   const [open, setOpen] = useState<string>();
+  const [chosen, setChosen] = useState<string[]>([]);
+  const navigate = useNavigate();
   const [error, setError] = useState<string>();
 
   const refresh = () => {
@@ -42,10 +45,26 @@ export function ContextPage() {
             </p>
           )}
           {context.data ? (
-            <FileTable files={context.data.files} open={open} onOpen={setOpen} onDelete={remove} />
+            <FileTable
+              files={context.data.files}
+              open={open}
+              chosen={chosen}
+              titles={Object.fromEntries((models.data ?? []).map((m) => [m.id, m.title]))}
+              onOpen={setOpen}
+              onChoose={setChosen}
+              onDelete={remove}
+            />
           ) : (
             <Pending error={context.error} />
           )}
+          <button
+            type="button"
+            className="primary"
+            disabled={chosen.length === 0}
+            onClick={() => navigate(`/p/${projectId}?context=${chosen.join(",")}`)}
+          >
+            Use selected as context ({chosen.length})
+          </button>
           {openFile && (
             <section className="panel" aria-label={`Facts from ${openFile.name}`}>
               <h2>Facts from {openFile.name}</h2>

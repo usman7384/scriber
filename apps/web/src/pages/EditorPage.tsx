@@ -1,14 +1,16 @@
 import { useRef, useState } from "react";
 import { Link, useParams } from "react-router";
-import { api, apiUrl, type Job } from "../api";
+import { api, apiUrl, type FaceDriver, type Job } from "../api";
 import { BugDialog } from "../components/BugDialog";
 import { ComponentTree } from "../components/ComponentTree";
 import { ExportMenu } from "../components/ExportMenu";
+import { FaceEdit } from "../components/FaceEdit";
 import { Findings } from "../components/Findings";
 import { ParamPanel } from "../components/ParamPanel";
 import { Pending } from "../components/Pending";
 import { RefineBox } from "../components/RefineBox";
 import { ShareButton } from "../components/ShareButton";
+import { Suggestions } from "../components/Suggestions";
 import { JobTimeline } from "../components/Timeline";
 import { VersionHistory } from "../components/VersionHistory";
 import { useResource } from "../hooks";
@@ -19,9 +21,14 @@ export function EditorPage() {
   const model = useResource(`model:${modelId}`, () => api.model(modelId));
   const versions = useResource(`versions:${modelId}`, () => api.versions(modelId));
   const [picked, setPicked] = useState<number>();
+  const latest = Math.max(0, ...(versions.data ?? []).map((v) => v.number));
+  const shown = picked ?? latest;
+  const components = useResource(`components:${modelId}:${shown}`, () =>
+    shown ? api.components(modelId, shown) : Promise.resolve([]),
+  );
   const [job, setJob] = useState<{ id: string; running: boolean }>();
-  const [parts, setParts] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>();
+  const [face, setFace] = useState<FaceDriver>();
   const [error, setError] = useState<string>();
   const main = useRef<HTMLElement>(null);
 
@@ -37,13 +44,15 @@ export function EditorPage() {
       </section>
     );
   const all = versions.data;
-  const latest = Math.max(...all.map((v) => v.number));
-  const version = all.find((v) => v.number === (picked ?? latest)) ?? all[all.length - 1];
+  const version = all.find((v) => v.number === shown) ?? all[all.length - 1];
   if (!version) return null;
+  const parts = components.data ?? [];
+  const nameOf = (id?: string) => parts.find((c) => c.id === id)?.name;
 
   const fail = (e: Error) => setError(e.message);
   const start = (request: Promise<Job>) => {
     setError(undefined);
+    setFace(undefined);
     request.then((j) => setJob({ id: j.id, running: true }), fail);
   };
   const ended = (j: Job) => {
@@ -81,7 +90,7 @@ export function EditorPage() {
       </header>
       <aside className="editor-left panel">
         <h2>Components</h2>
-        <ComponentTree parts={parts} selected={selected} onSelect={setSelected} />
+        <ComponentTree components={parts} selected={selected} onSelect={setSelected} />
         <h2>History</h2>
         <VersionHistory
           versions={all}
@@ -99,13 +108,28 @@ export function EditorPage() {
           <Viewer
             url={apiUrl(version.files.glb)}
             findings={version.findings}
-            selected={selected}
-            onSelect={setSelected}
-            onLoad={(info) => setParts(info.parts)}
+            selected={nameOf(selected)}
+            onSelect={(name) => setSelected(parts.find((c) => c.name === name)?.id)}
+            onPickFace={(hit) =>
+              api.faceDriver(modelId, { ...hit, version: version.number }).then(setFace, (e: Error) => {
+                setFace(undefined);
+                fail(e);
+              })
+            }
+          />
+        )}
+        {face && (
+          <FaceEdit
+            key={`${face.part}.${face.feature}.${face.param}`}
+            driver={face}
+            params={version.params}
+            busy={busy}
+            onApply={(values) => start(api.setParams(modelId, values))}
+            onClose={() => setFace(undefined)}
           />
         )}
         <RefineBox
-          target={selected}
+          target={nameOf(selected)}
           busy={busy}
           onClearTarget={() => setSelected(undefined)}
           onRefine={(instruction) =>
@@ -133,6 +157,13 @@ export function EditorPage() {
           </p>
         )}
         <Findings checks={version.checks} findings={version.findings} />
+        <Suggestions
+          modelId={modelId}
+          version={version.number}
+          params={version.params}
+          busy={busy}
+          onAccept={start}
+        />
       </aside>
     </div>
   );

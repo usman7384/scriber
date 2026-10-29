@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as renderDom, screen } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
 import { expect, it, vi } from "vitest";
 import type { ContextFile } from "../api";
 import { FileTable } from "./FileTable";
@@ -21,6 +23,8 @@ const files = [
   file("f2", "design-rules.md", "md"),
   file("f3", "nema17-motor.step", "step"),
 ];
+
+const render = (ui: ReactElement) => renderDom(<MemoryRouter>{ui}</MemoryRouter>);
 
 const names = () =>
   screen
@@ -53,4 +57,21 @@ it("deletes a file only after confirmation", () => {
   expect(onDelete).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Confirm delete" }));
   expect(onDelete).toHaveBeenCalledExactlyOnceWith("f2");
+});
+
+it("chooses files as context and links the models each was used in", () => {
+  const onChoose = vi.fn();
+  render(
+    <FileTable
+      files={files}
+      chosen={["f1"]}
+      titles={{ m1: "Sensor plate" }}
+      onOpen={vi.fn()}
+      onChoose={onChoose}
+      onDelete={vi.fn()}
+    />,
+  );
+  expect(screen.getAllByRole("link", { name: "Sensor plate" })).toHaveLength(3);
+  fireEvent.click(screen.getByLabelText("Use design-rules.md as context"));
+  expect(onChoose).toHaveBeenCalledExactlyOnceWith(["f1", "f2"]);
 });

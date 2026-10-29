@@ -5,6 +5,7 @@ interface Upload {
   name: string;
   status: "uploading" | "processing" | "processed" | "failed";
   error?: string | null | undefined;
+  progress: number;
 }
 
 export function UploadZone({ projectId, onChange }: { projectId: string; onChange: () => void }) {
@@ -16,7 +17,10 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
 
   const add = async (files: File[]) => {
     if (files.length === 0) return;
-    setUploads((all) => [...files.map((f): Upload => ({ name: f.name, status: "uploading" })), ...all]);
+    setUploads((all) => [
+      ...files.map((f): Upload => ({ name: f.name, status: "uploading", progress: 0 })),
+      ...all,
+    ]);
     try {
       const jobs = await api.upload(projectId, files);
       onChange();
@@ -25,7 +29,7 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
           const job = jobs[i];
           if (!job) return set(f.name, { status: "failed", error: "No ingest job returned" });
           set(f.name, { status: "processing" });
-          const end = await waitForJob(job.id);
+          const end = await waitForJob(job.id, (s) => set(f.name, { progress: s.progress ?? 0 }));
           set(f.name, { status: end.status === "done" ? "processed" : "failed", error: end.error });
           onChange();
         }),
@@ -68,6 +72,7 @@ export function UploadZone({ projectId, onChange }: { projectId: string; onChang
           {uploads.map((u, i) => (
             <li key={i} className="row">
               <span>{u.name}</span>
+              <progress value={u.progress} max={100} aria-label={`${u.name} progress`} />
               <span className={`badge ${u.status}`}>{u.status}</span>
               {u.error && <span className="error small">{u.error}</span>}
             </li>

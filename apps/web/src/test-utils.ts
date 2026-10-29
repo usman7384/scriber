@@ -47,7 +47,7 @@ export const version = (number: number, over: Partial<Version> = {}): Version =>
   params: [param()],
   checks: [],
   findings: [],
-  metrics: { volume: 54000 },
+  metrics: { bbox: [120, 80, 6], volume: 54000, holes: 4 },
   files: { step: "", stl: "", glb: "", py: "", ir: "" },
   thumbnail_url: null,
   ...over,

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router";
-import { api } from "../api";
+import { Link, useParams, useSearchParams } from "react-router";
+import { api, exportUrl } from "../api";
 import { ModelGallery } from "../components/ModelGallery";
 import { Pending } from "../components/Pending";
 import { ProjectNav } from "../components/ProjectNav";
@@ -13,6 +13,11 @@ export function ProjectPage() {
   const project = useResource(`project:${projectId}`, () => api.project(projectId));
   const models = useResource(`models:${projectId}`, () => api.models(projectId));
   const active = useResource(`active-jobs:${projectId}`, () => api.activeJobs(projectId));
+  const [search, setSearch] = useSearchParams();
+  const ids = search.get("context")?.split(",") ?? [];
+  const context = useResource(`context:${projectId}:${ids.join()}`, () =>
+    ids.length ? api.context(projectId) : Promise.resolve(undefined),
+  );
   const [started, setStarted] = useState<string>();
   const jobId = started ?? active.data?.[0]?.id;
 
@@ -20,15 +25,27 @@ export function ProjectPage() {
   return (
     <section className="stack">
       <ProjectNav project={project.data} />
-      <PromptPanel projectId={projectId} onJob={(job) => setStarted(job.id)} />
+      <PromptPanel
+        projectId={projectId}
+        context={context.data?.files.filter((f) => ids.includes(f.id)) ?? []}
+        onClearContext={() => setSearch({})}
+        onJob={(job) => setStarted(job.id)}
+      />
       {jobId && (
         <JobTimeline key={jobId} jobId={jobId} onEnd={models.reload}>
           {(job) =>
             job.status === "done" &&
             job.model_id && (
-              <Link className="button primary" to={`/m/${job.model_id}`}>
-                Open model
-              </Link>
+              <div className="row">
+                <Link className="button primary" to={`/m/${job.model_id}`}>
+                  Open model
+                </Link>
+                {job.version && (
+                  <a className="button secondary" href={exportUrl(job.model_id, "stl", job.version)} download>
+                    Download STL
+                  </a>
+                )}
+              </div>
             )
           }
         </JobTimeline>

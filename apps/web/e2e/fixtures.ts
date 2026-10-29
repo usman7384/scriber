@@ -1,5 +1,17 @@
 import { readFileSync } from "node:fs";
-import type { ContextFile, Finding, GraphView, Model, Param, Project, Version } from "../src/api";
+import type {
+  Component,
+  ContextFile,
+  FaceDriver,
+  Finding,
+  GraphView,
+  Model,
+  Param,
+  Project,
+  Suggestion,
+  Vec3,
+  Version,
+} from "../src/api";
 
 export const now = (minute: number) => `2026-10-26T10:${String(minute).padStart(2, "0")}:00Z`;
 
@@ -47,10 +59,14 @@ export const shopThumbnails: Record<string, Buffer> = {
   m3: asset("edge-plate-x20.png"),
 };
 
+type Metrics = NonNullable<Version["metrics"]>;
+
 export interface Built {
   glb: Buffer;
   thumbnail: Buffer;
   findings: Finding[];
+  metrics?: Metrics;
+  stl?: Buffer;
 }
 
 // A scenario stands in for the geometry service: each parameter set maps to prebuilt real output.
@@ -59,9 +75,22 @@ export interface Scenario {
   prompt: string;
   params: Param[];
   checks: Version["checks"];
-  volume: number;
+  metrics: Metrics;
+  components: Component[];
   build: (values: Record<string, number>) => Built | undefined;
+  // Stands in for POST /models/{id}/face-driver (services/ir face_driver), only for the faces a spec picks.
+  faceDriver?: (point: Vec3, normal: Vec3, values: Record<string, number>) => FaceDriver | undefined;
+  suggestions?: Suggestion[];
 }
+
+const part = (id: string, name: string, over: Partial<Component> = {}): Component => ({
+  id,
+  name,
+  material: null,
+  parent: null,
+  joint: null,
+  ...over,
+});
 
 const sensorFinding: Finding = {
   rule_id: "min_hole_edge_ratio",
@@ -94,7 +123,8 @@ export const sensorPlate: Scenario = {
     },
   ],
   checks: [{ description: "Plate size 120 x 80 x 6 mm", passed: true, actual: "120 x 80 x 6" }],
-  volume: 54893.96,
+  metrics: { bbox: [120, 80, 6], volume: 54893.96, mass_g: null, holes: 4 },
+  components: [part("plate", "Sensor mounting plate")],
   build: () => ({ glb: asset("plate.glb"), thumbnail: asset("plate.png"), findings: [sensorFinding] }),
 };
 
@@ -124,8 +154,82 @@ export const edgePlate: Scenario = {
     },
   ],
   checks: [{ description: "Plate 60 x 40 x 5 mm", passed: true, actual: "60 x 40 x 5" }],
-  volume: 11607.3,
+  metrics: { bbox: [60, 40, 5], volume: 11607.3, mass_g: null, holes: 1 },
+  components: [part("p", "P")],
   build: (values) => (values.hole_x === undefined ? undefined : edgeBuilds[values.hole_x]),
+  suggestions: [
+    {
+      id: "g1",
+      target: "hole_x",
+      change: { hole_x: 15 },
+      rationale: "Moving the hole to x = 15 leaves 15 mm to the edge, 1.5 x its diameter.",
+      status: "open",
+    },
+    {
+      id: "g2",
+      target: "hole_x",
+      change: { hole_x: 10 },
+      rationale: "A hole at x = 10 also clears the edge rule with more margin.",
+      status: "open",
+    },
+  ],
+};
+
+// Geometry-service output written by fixtures/make_fixtures.py: GLB, thumbnail, STL and the version's params and metrics.
+interface Made {
+  title: string;
+  params: Param[];
+  metrics: Metrics;
+  findings: Finding[];
+}
+
+const made = (name: string) => ({
+  ...(JSON.parse(asset(`${name}.json`).toString("utf8")) as Made),
+  glb: asset(`${name}.glb`),
+  thumbnail: asset(`${name}.png`),
+});
+
+const plates = [made("base-plate-t5"), made("base-plate-t7")];
+
+export const basePlate: Scenario = {
+  title: "Base plate",
+  prompt: "Base plate 120 x 80 x 5 mm with four 6.6 mm bolt holes",
+  params: plates[0]?.params ?? [],
+  checks: [{ description: "Plate 120 x 80 x 5 mm", passed: true, actual: "120 x 80 x 5" }],
+  metrics: plates[0]?.metrics ?? { bbox: [0, 0, 0], volume: 0, holes: 0 },
+  components: [part("plate", "Plate")],
+  build: (values) => plates.find((p) => valuesOf(p.params).thickness === values.thickness),
+  faceDriver: (point, normal, values) =>
+    normal[2] > 0.999 && Math.abs(point[2] - (values.thickness ?? NaN)) <= 0.01
+      ? { part: "plate", feature: "body", param: "thickness", rate: 1 }
+      : undefined,
+};
+
+const stack = made("stack");
+
+export const stackScenario: Scenario = {
+  title: stack.title,
+  prompt: "A 10 mm cube fastened on top of a 40 mm plate block",
+  params: stack.params,
+  checks: [],
+  metrics: stack.metrics,
+  components: [
+    part("plate", "Plate", { material: "PLA" }),
+    part("cube", "Cube", { material: "PLA", parent: "plate", joint: "cube_on_plate" }),
+  ],
+  build: () => stack,
+};
+
+const holder = { ...made("motor-holder"), stl: asset("motor-holder.stl") };
+
+export const motorHolder: Scenario = {
+  title: holder.title,
+  prompt: "motor holder for 28 mm motor, 2 M3 screws",
+  params: holder.params,
+  checks: [{ description: "Bore fits a 28 mm motor", passed: true, actual: "28.6 mm" }],
+  metrics: holder.metrics,
+  components: [part("holder", "Motor holder", { material: "PLA" })],
+  build: () => holder,
 };
 
 export const versionUrls = (number: number) => ({
@@ -148,7 +252,7 @@ export const firstVersion = (s: Scenario = sensorPlate): Version => ({
   params: s.params,
   checks: s.checks,
   findings: s.build(valuesOf(s.params))?.findings ?? [],
-  metrics: { volume: s.volume, mass_g: null },
+  metrics: s.metrics,
   ...versionUrls(1),
 });
 
