@@ -1,0 +1,241 @@
+{
+  "ir_version": 2,
+  "title": "Glider",
+  "params": [
+    {
+      "name": "length",
+      "value": 400.0,
+      "unit": "mm",
+      "min": 200.0,
+      "max": 800.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "fuselage_diameter",
+      "value": 30.0,
+      "unit": "mm",
+      "min": 15.0,
+      "max": 60.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "wingspan",
+      "value": 600.0,
+      "unit": "mm",
+      "min": 300.0,
+      "max": 1200.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "wing_chord",
+      "value": 80.0,
+      "unit": "mm",
+      "min": 40.0,
+      "max": 160.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "wing_thickness",
+      "value": 6.0,
+      "unit": "mm",
+      "min": 2.0,
+      "max": 12.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "tail_span",
+      "value": 200.0,
+      "unit": "mm",
+      "min": 80.0,
+      "max": 400.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "tail_chord",
+      "value": 40.0,
+      "unit": "mm",
+      "min": 20.0,
+      "max": 80.0,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "fuselage",
+      "name": "Fuselage",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "section",
+          "plane": {
+            "ref": "YZ",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "diameter": "fuselage_diameter",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "section",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "length",
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    },
+    {
+      "id": "wing",
+      "name": "Wing",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "planform",
+          "plane": {
+            "ref": "XY",
+            "offset": "fuselage_diameter / 2"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "length * 0.3",
+                0.0
+              ],
+              "width": "wing_chord",
+              "height": "wingspan",
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "panel",
+          "name": "Panel",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "planform",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "wing_thickness",
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    },
+    {
+      "id": "tail",
+      "name": "Tailplane",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "planform",
+          "plane": {
+            "ref": "XY",
+            "offset": "fuselage_diameter / 2"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "length - tail_chord / 2",
+                0.0
+              ],
+              "width": "tail_chord",
+              "height": "tail_span",
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "panel",
+          "name": "Panel",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "planform",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "wing_thickness / 2",
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    }
+  ]
+}

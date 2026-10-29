@@ -1,0 +1,11 @@
+{
+  "row": "GE-7",
+  "passed": true,
+  "measured": {
+    "runs": 5,
+    "distinct_ir": 1,
+    "distinct_volumes": 1,
+    "volume": 23315.76112
+  },
+  "note": ""
+}

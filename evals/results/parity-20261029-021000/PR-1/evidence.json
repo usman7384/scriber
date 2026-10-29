@@ -1,0 +1,9 @@
+{
+  "row": "PR-1",
+  "passed": true,
+  "measured": {
+    "params": 7,
+    "fields": "max, min, name, provenance, unit, value"
+  },
+  "note": "API half; the panel is WP rows in the web suite"
+}

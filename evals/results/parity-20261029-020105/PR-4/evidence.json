@@ -1,0 +1,11 @@
+{
+  "row": "PR-4",
+  "passed": true,
+  "measured": {
+    "length": 450.0,
+    "changed": "length",
+    "parts": 3,
+    "valid": true
+  },
+  "note": ""
+}

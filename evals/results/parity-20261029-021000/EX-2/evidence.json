@@ -1,0 +1,10 @@
+{
+  "row": "EX-2",
+  "passed": true,
+  "measured": {
+    "watertight": true,
+    "chordal_deviation_mm": 0.00839,
+    "triangles": 1008
+  },
+  "note": ""
+}

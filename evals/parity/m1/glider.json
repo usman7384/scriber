@@ -1,0 +1,44 @@
+{
+  "title": "Glider",
+  "params": [
+    {"name": "length", "value": 400, "unit": "mm", "min": 200, "max": 800},
+    {"name": "fuselage_diameter", "value": 30, "unit": "mm", "min": 15, "max": 60},
+    {"name": "wingspan", "value": 600, "unit": "mm", "min": 300, "max": 1200},
+    {"name": "wing_chord", "value": 80, "unit": "mm", "min": 40, "max": 160},
+    {"name": "wing_thickness", "value": 6, "unit": "mm", "min": 2, "max": 12},
+    {"name": "tail_span", "value": 200, "unit": "mm", "min": 80, "max": 400},
+    {"name": "tail_chord", "value": 40, "unit": "mm", "min": 20, "max": 80}
+  ],
+  "parts": [
+    {
+      "id": "fuselage",
+      "name": "Fuselage",
+      "sketches": [{"id": "section", "plane": {"ref": "YZ"}, "entities": [{"kind": "circle", "diameter": "fuselage_diameter"}]}],
+      "features": [{"kind": "extrude", "id": "body", "name": "Body", "sketch": "section", "distance": "length"}]
+    },
+    {
+      "id": "wing",
+      "name": "Wing",
+      "sketches": [
+        {
+          "id": "planform",
+          "plane": {"offset": "fuselage_diameter / 2"},
+          "entities": [{"kind": "rect", "center": ["length * 0.3", 0], "width": "wing_chord", "height": "wingspan"}]
+        }
+      ],
+      "features": [{"kind": "extrude", "id": "panel", "name": "Panel", "sketch": "planform", "distance": "wing_thickness"}]
+    },
+    {
+      "id": "tail",
+      "name": "Tailplane",
+      "sketches": [
+        {
+          "id": "planform",
+          "plane": {"offset": "fuselage_diameter / 2"},
+          "entities": [{"kind": "rect", "center": ["length - tail_chord / 2", 0], "width": "tail_chord", "height": "tail_span"}]
+        }
+      ],
+      "features": [{"kind": "extrude", "id": "panel", "name": "Panel", "sketch": "planform", "distance": "wing_thickness / 2"}]
+    }
+  ]
+}

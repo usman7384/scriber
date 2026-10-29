@@ -1,0 +1,10 @@
+{
+  "row": "VM-6",
+  "passed": true,
+  "measured": {
+    "valid": true,
+    "solids": 3,
+    "boundary_edges": 0
+  },
+  "note": ""
+}

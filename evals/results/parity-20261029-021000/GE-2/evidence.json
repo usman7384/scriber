@@ -1,0 +1,11 @@
+{
+  "row": "GE-2",
+  "passed": true,
+  "measured": {
+    "persisted": true,
+    "deterministic": true,
+    "error_feature": "bad_hole",
+    "features": "fuselage.body, wing.panel, tail.panel"
+  },
+  "note": ""
+}

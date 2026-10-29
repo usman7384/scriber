@@ -1,0 +1,10 @@
+{
+  "row": "DP-2",
+  "passed": false,
+  "measured": {
+    "checks": "1/4",
+    "valid": true,
+    "failed": "4 bolt holes 8.5: 0 matching holes; all hole diameters [5.5, 5.5, 43.8]; spacing X 85: hole centre distances []; spacing Y 60: hole centre distances []"
+  },
+  "note": ""
+}

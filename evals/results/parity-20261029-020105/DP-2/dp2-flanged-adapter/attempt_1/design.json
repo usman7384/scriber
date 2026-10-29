@@ -1,0 +1,188 @@
+{
+  "ir_version": 2,
+  "title": "Flanged adapter",
+  "params": [
+    {
+      "name": "tube_diameter",
+      "value": 42.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "outer diameter of the tube",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "tube_length",
+      "value": 60.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "overall height",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "flange_length",
+      "value": 135.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "length of the flange",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "flange_width",
+      "value": 95.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "width of the flange",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "bolt_count",
+      "value": 4.0,
+      "unit": "",
+      "min": null,
+      "max": null,
+      "description": "number of flange holes",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "bolt_circle_diameter",
+      "value": 85.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "bolt circle diameter",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Flanged adapter",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "half_section",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "tube_diameter / 2",
+                  0.0
+                ],
+                [
+                  "flange_length",
+                  "0.0"
+                ],
+                [
+                  "flange_length",
+                  "flange_width"
+                ],
+                [
+                  "tube_diameter / 2",
+                  "flange_width"
+                ],
+                [
+                  "tube_diameter / 2",
+                  "tube_length"
+                ],
+                [
+                  "0.0",
+                  "tube_length"
+                ]
+              ],
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Turned body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "revolve",
+          "sketch": "half_section",
+          "axis": "Y",
+          "axis_offset": 0.0,
+          "angle": 360.0,
+          "mode": "add"
+        },
+        {
+          "id": "flange_holes",
+          "name": "M5 flange holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "body.bottom",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "polar",
+            "center": [
+              0.0,
+              0.0
+            ],
+            "count": "bolt_count",
+            "diameter": "bolt_circle_diameter",
+            "start_angle": 0.0
+          },
+          "type": "simple",
+          "fastener": "M5",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

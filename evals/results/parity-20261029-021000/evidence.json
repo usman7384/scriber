@@ -1,0 +1,73 @@
+[
+  {
+    "row": "GE-1",
+    "passed": true,
+    "measured": {
+      "brep_solids": 3,
+      "mesh_entities": 0,
+      "valid": true,
+      "volume_drift": 0.0
+    },
+    "note": ""
+  },
+  {
+    "row": "GE-2",
+    "passed": true,
+    "measured": {
+      "persisted": true,
+      "deterministic": true,
+      "error_feature": "bad_hole",
+      "features": "fuselage.body, wing.panel, tail.panel"
+    },
+    "note": ""
+  },
+  {
+    "row": "PR-1",
+    "passed": true,
+    "measured": {
+      "params": 7,
+      "fields": "max, min, name, provenance, unit, value"
+    },
+    "note": "API half; the panel is WP rows in the web suite"
+  },
+  {
+    "row": "VM-6",
+    "passed": true,
+    "measured": {
+      "valid": true,
+      "solids": 3,
+      "boundary_edges": 0
+    },
+    "note": ""
+  },
+  {
+    "row": "EX-1",
+    "passed": true,
+    "measured": {
+      "schema": "AP214",
+      "solids": 3,
+      "volume_drift": 0.0
+    },
+    "note": ""
+  },
+  {
+    "row": "EX-2",
+    "passed": true,
+    "measured": {
+      "watertight": true,
+      "chordal_deviation_mm": 0.00839,
+      "triangles": 1008
+    },
+    "note": ""
+  },
+  {
+    "row": "EX-3",
+    "passed": true,
+    "measured": {
+      "errors": 0,
+      "warnings": 0,
+      "mesh_nodes": "Fuselage, Tailplane, Wing"
+    },
+    "note": ""
+  }
+]

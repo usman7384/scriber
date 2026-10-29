@@ -1,0 +1,100 @@
+[
+  {
+    "label": "Length",
+    "name": "length",
+    "value": 400.0,
+    "unit": "mm",
+    "min": 200.0,
+    "max": 800.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Fuselage Diameter",
+    "name": "fuselage_diameter",
+    "value": 30.0,
+    "unit": "mm",
+    "min": 15.0,
+    "max": 60.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Wingspan",
+    "name": "wingspan",
+    "value": 600.0,
+    "unit": "mm",
+    "min": 300.0,
+    "max": 1200.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Wing Chord",
+    "name": "wing_chord",
+    "value": 80.0,
+    "unit": "mm",
+    "min": 40.0,
+    "max": 160.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Wing Thickness",
+    "name": "wing_thickness",
+    "value": 6.0,
+    "unit": "mm",
+    "min": 2.0,
+    "max": 12.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Tail Span",
+    "name": "tail_span",
+    "value": 200.0,
+    "unit": "mm",
+    "min": 80.0,
+    "max": 400.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  },
+  {
+    "label": "Tail Chord",
+    "name": "tail_chord",
+    "value": 40.0,
+    "unit": "mm",
+    "min": 20.0,
+    "max": 80.0,
+    "description": "",
+    "provenance": {
+      "source": "default",
+      "ref": null,
+      "quote": null
+    }
+  }
+]

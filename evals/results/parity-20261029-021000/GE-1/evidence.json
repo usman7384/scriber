@@ -1,0 +1,11 @@
+{
+  "row": "GE-1",
+  "passed": true,
+  "measured": {
+    "brep_solids": 3,
+    "mesh_entities": 0,
+    "valid": true,
+    "volume_drift": 0.0
+  },
+  "note": ""
+}

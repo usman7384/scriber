@@ -1,0 +1,10 @@
+{
+  "row": "DP-21",
+  "passed": false,
+  "measured": {
+    "checks": "2/3",
+    "valid": true,
+    "failed": "four 6 mm holes: 0 matching holes; all hole diameters [4.5, 4.5, 4.5, 4.5]"
+  },
+  "note": ""
+}

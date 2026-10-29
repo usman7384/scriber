@@ -1,0 +1,10 @@
+{
+  "row": "EX-1",
+  "passed": true,
+  "measured": {
+    "schema": "AP214",
+    "solids": 3,
+    "volume_drift": 0.0
+  },
+  "note": ""
+}

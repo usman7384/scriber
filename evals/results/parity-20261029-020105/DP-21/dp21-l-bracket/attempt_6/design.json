@@ -1,0 +1,250 @@
+{
+  "ir_version": 2,
+  "title": "L bracket",
+  "params": [
+    {
+      "name": "base_leg",
+      "value": 120.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "horizontal leg length",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "120 mm long"
+      }
+    },
+    {
+      "name": "upright_leg",
+      "value": 40.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "vertical leg height",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "40 mm wide"
+      }
+    },
+    {
+      "name": "width",
+      "value": 65.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "bracket width",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "6 mm holes"
+      }
+    },
+    {
+      "name": "thickness",
+      "value": 4.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "plate thickness",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "four\" legs and a\" width\" with two\" holes in each leg and a\" fillet on the outer corners\nL bracket made from 4 mm aluminium plate"
+      }
+    },
+    {
+      "name": "hole_spacing",
+      "value": 20.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "spacing of the two holes in each leg",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "120 mm long"
+      }
+    },
+    {
+      "name": "corner_radius",
+      "value": 1.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "vertical end radius",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "two\" legs"
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "L bracket",
+      "material": "aluminium 6061-T6",
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "profile",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  "base_leg",
+                  0.0
+                ],
+                [
+                  "base_leg",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "thickness"
+                ],
+                [
+                  "thickness",
+                  "upright_leg"
+                ],
+                [
+                  0.0,
+                  "upright_leg"
+                ]
+              ],
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Profile",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "profile",
+          "mode": "add",
+          "extent": "symmetric",
+          "distance": "width",
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "base_holes",
+          "name": "Base leg holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "body.bottom",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "thickness + (base_leg - thickness) / 2",
+                "-hole_spacing / 2"
+              ],
+              [
+                "thickness + (base_leg - thickness) / 2",
+                "hole_spacing / 2"
+              ]
+            ]
+          },
+          "type": "simple",
+          "fastener": "M4",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        },
+        {
+          "id": "upright_holes",
+          "name": "Upright leg holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "body.left",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-hole_spacing / 2",
+                "thickness + (upright_leg - thickness) / 2"
+              ],
+              [
+                "hole_spacing / 2",
+                "thickness + (upright_leg - thickness) / 2"
+              ]
+            ]
+          },
+          "type": "simple",
+          "fastener": "M4",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        },
+        {
+          "id": "end_radius",
+          "name": "Vertical end radius",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "fillet",
+          "edges": {
+            "of": "body",
+            "normal": "any",
+            "parallel": "z",
+            "convexity": "any",
+            "extreme": "any"
+          },
+          "radius": "corner_radius"
+        }
+      ]
+    }
+  ]
+}

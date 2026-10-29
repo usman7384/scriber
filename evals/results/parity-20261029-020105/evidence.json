@@ -1,0 +1,87 @@
+[
+  {
+    "row": "IN-1",
+    "passed": true,
+    "measured": {
+      "solids": 1,
+      "valid": true,
+      "height": 50.0,
+      "od": 100.0,
+      "wall": 2.0
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-5",
+    "passed": true,
+    "measured": {
+      "solids": 1,
+      "valid": true,
+      "height": 50.0,
+      "od": 100.0,
+      "wall": 2.0
+    },
+    "note": ""
+  },
+  {
+    "row": "PR-4",
+    "passed": true,
+    "measured": {
+      "length": 450.0,
+      "changed": "length",
+      "parts": 3,
+      "valid": true
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-2",
+    "passed": false,
+    "measured": {
+      "checks": "1/4",
+      "valid": true,
+      "failed": "4 bolt holes 8.5: 0 matching holes; all hole diameters [5.5, 5.5, 43.8]; spacing X 85: hole centre distances []; spacing Y 60: hole centre distances []"
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-7",
+    "passed": false,
+    "measured": {
+      "checks": "1/1",
+      "valid": true,
+      "failed": "",
+      "angled": ""
+    },
+    "note": ""
+  },
+  {
+    "row": "DP-21",
+    "passed": false,
+    "measured": {
+      "checks": "2/3",
+      "valid": true,
+      "failed": "four 6 mm holes: 0 matching holes; all hole diameters [4.5, 4.5, 4.5, 4.5]"
+    },
+    "note": ""
+  },
+  {
+    "row": "GE-10",
+    "passed": true,
+    "measured": {
+      "titles": "Hollow cylinder | Mounting bracket"
+    },
+    "note": ""
+  },
+  {
+    "row": "GE-7",
+    "passed": true,
+    "measured": {
+      "runs": 5,
+      "distinct_ir": 1,
+      "distinct_volumes": 1,
+      "volume": 23315.76112
+    },
+    "note": ""
+  }
+]

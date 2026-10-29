@@ -1,0 +1,157 @@
+{
+  "ir_version": 2,
+  "title": "Flanged adapter",
+  "params": [
+    {
+      "name": "outer_diameter",
+      "value": 95.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "outside diameter of the tube",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "bore_diameter",
+      "value": 43.8,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "bore diameter",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "length",
+      "value": 60.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "overall length",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "hole_pitch",
+      "value": 85.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "spacing of the two flange holes",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Flanged adapter",
+      "material": null,
+      "process": "turning",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "half_section",
+          "plane": {
+            "ref": "XZ",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "bore_diameter / 2",
+                  0.0
+                ],
+                [
+                  "outer_diameter / 2",
+                  0.0
+                ],
+                [
+                  "outer_diameter / 2",
+                  "length"
+                ],
+                [
+                  "bore_diameter / 2",
+                  "length"
+                ]
+              ],
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Turned body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "revolve",
+          "sketch": "half_section",
+          "axis": "Y",
+          "axis_offset": 0.0,
+          "angle": 360.0,
+          "mode": "add"
+        },
+        {
+          "id": "flange_holes",
+          "name": "M5 flange holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "body.bottom",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                0.0,
+                "-(hole_pitch / 2)"
+              ],
+              [
+                "0.0",
+                "hole_pitch / 2"
+              ]
+            ]
+          },
+          "type": "simple",
+          "fastener": "M5",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

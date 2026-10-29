@@ -1,0 +1,102 @@
+{
+  "ir_version": 2,
+  "title": "Hollow cylinder",
+  "params": [
+    {
+      "name": "outer_diameter",
+      "value": 54.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "wall",
+      "value": 2.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    },
+    {
+      "name": "height",
+      "value": 50.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "tube",
+      "name": "Tube",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "diameter": "outer_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "diameter": "outer_diameter - 2 * wall",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "body",
+          "name": "Body",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "ring",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "height",
+          "distance2": null,
+          "taper": 0.0
+        }
+      ]
+    }
+  ]
+}

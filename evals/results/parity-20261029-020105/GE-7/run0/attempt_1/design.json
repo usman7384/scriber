@@ -1,0 +1,145 @@
+{
+  "ir_version": 2,
+  "title": "Mounting bracket",
+  "params": [
+    {
+      "name": "plate_length",
+      "value": 80.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "plate length along X",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "80x60"
+      }
+    },
+    {
+      "name": "plate_width",
+      "value": 60.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "plate width along Y",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "60 plate"
+      }
+    },
+    {
+      "name": "thickness",
+      "value": 5.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "plate thickness",
+      "provenance": {
+        "source": "prompt",
+        "ref": null,
+        "quote": "5 mm thick"
+      }
+    },
+    {
+      "name": "hole_margin",
+      "value": 12.0,
+      "unit": "mm",
+      "min": null,
+      "max": null,
+      "description": "hole centres from the plate edges",
+      "provenance": {
+        "source": "default",
+        "ref": null,
+        "quote": null
+      }
+    }
+  ],
+  "parts": [
+    {
+      "id": "part",
+      "name": "Mounting bracket",
+      "material": null,
+      "process": "any",
+      "datums": [],
+      "sketches": [
+        {
+          "id": "outline",
+          "plane": {
+            "ref": "XY",
+            "offset": 0.0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                0.0,
+                0.0
+              ],
+              "width": "plate_length",
+              "height": "plate_width",
+              "corner_radius": 0.0,
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "plate",
+          "name": "Plate",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "extrude",
+          "sketch": "outline",
+          "mode": "add",
+          "extent": "blind",
+          "distance": "thickness",
+          "distance2": null,
+          "taper": 0.0
+        },
+        {
+          "id": "corner_holes",
+          "name": "M6 corner holes",
+          "intent": "",
+          "provenance": {
+            "source": "prompt",
+            "ref": null,
+            "quote": null
+          },
+          "kind": "hole",
+          "plane": {
+            "ref": "plate.top",
+            "offset": 0.0
+          },
+          "at": {
+            "kind": "grid",
+            "center": [
+              0.0,
+              0.0
+            ],
+            "count_x": 2.0,
+            "count_y": 2.0,
+            "spacing_x": "plate_length - 2 * hole_margin",
+            "spacing_y": "plate_width - 2 * hole_margin"
+          },
+          "type": "simple",
+          "fastener": "M6",
+          "fit": "normal",
+          "diameter": null,
+          "depth": null,
+          "drill_point": "flat",
+          "cb_diameter": null,
+          "cb_depth": null,
+          "cs_diameter": null,
+          "cs_angle": 90.0,
+          "thread": null
+        }
+      ]
+    }
+  ]
+}

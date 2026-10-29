@@ -1,0 +1,10 @@
+{
+  "row": "EX-3",
+  "passed": true,
+  "measured": {
+    "errors": 0,
+    "warnings": 0,
+    "mesh_nodes": "Fuselage, Tailplane, Wing"
+  },
+  "note": ""
+}

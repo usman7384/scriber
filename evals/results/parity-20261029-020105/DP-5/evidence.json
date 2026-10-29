@@ -1,0 +1,12 @@
+{
+  "row": "DP-5",
+  "passed": true,
+  "measured": {
+    "solids": 1,
+    "valid": true,
+    "height": 50.0,
+    "od": 100.0,
+    "wall": 2.0
+  },
+  "note": ""
+}
