@@ -82,6 +82,7 @@ class FaceGroupInfo(Frozen):
 
 class StepBody(Frozen):
     name: str
+    path: str
     material: str | None
     density_g_cm3: float | None
     face_groups: list[FaceGroupInfo]
