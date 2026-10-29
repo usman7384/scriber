@@ -94,7 +94,7 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   await page.goto("/help");
   await page.keyboard.press("Escape");
   await visit("Projects", /\/$/, "Projects");
-  await visit("Library", /\/library$/, "Library");
+  await visit("All parts", /\/library$/, "All parts");
   await sheet("Settings", /\/settings$/);
   await page.getByLabel("Dark").check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -112,10 +112,10 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
     .allTextContents();
   await row.shot(`${reached.length + 1}-project-models`);
   reached.push("Project models");
-  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Context" }).click();
+  await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();
   await expect(page.getByRole("table", { name: "Context files" })).toBeVisible();
-  await row.shot(`${reached.length + 1}-context`);
-  reached.push("Context manager");
+  await row.shot(`${reached.length + 1}-sources`);
+  reached.push("Sources");
 
   await nav.getByRole("link", { name: "Settings", exact: true }).click();
   const [popup] = await Promise.all([
