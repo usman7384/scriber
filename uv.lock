@@ -1176,6 +1176,7 @@ dependencies = [
     { name = "pillow" },
     { name = "pyglet" },
     { name = "pyrender" },
+    { name = "scipy" },
     { name = "trimesh" },
 ]
 
@@ -1186,6 +1187,7 @@ requires-dist = [
     { name = "pillow", specifier = "==13.0.0" },
     { name = "pyglet", specifier = "==2.1.19" },
     { name = "pyrender", specifier = "==0.1.45" },
+    { name = "scipy", specifier = "==1.18.1" },
     { name = "trimesh", specifier = "==5.2.0" },
 ]
 
