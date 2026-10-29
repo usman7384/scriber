@@ -78,3 +78,11 @@ def hole_size(hole: Hole, values: dict[str, float]) -> HoleSize:
         cs = round(2.24 * spec[0], 2)  # ISO 10642 head diameter
     keep_cb = hole.type == "counterbore"
     return HoleSize(diameter, cb_diameter if keep_cb else None, cb_depth if keep_cb else None, cs if hole.type == "countersink" else None)
+
+
+def screw_holes(screw: str) -> tuple[float, float, float]:
+    spec = parse(screw)
+    if spec is None:
+        raise ValueError(f"unknown screw {screw!r}; use M2 to M30")
+    nominal, pitch = spec
+    return nominal, round(nominal - pitch, 2), row(nominal)[0][FITS.index("normal")]

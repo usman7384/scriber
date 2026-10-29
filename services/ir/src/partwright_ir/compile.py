@@ -1,8 +1,12 @@
+from partwright_ir.assembly import effective_assembly
 from partwright_ir.compile_assembly import MATE_PRELUDE, assembly_build
+from partwright_ir.compile_features import high_level
 from partwright_ir.expr import to_python
 from partwright_ir.fasteners import hole_size
 from partwright_ir.model import (
+    HIGH_LEVEL,
     AirfoilSection,
+    BossPattern,
     Chamfer,
     Circle,
     Datum,
@@ -12,7 +16,10 @@ from partwright_ir.model import (
     Feature,
     Fillet,
     GridPattern,
+    Groove,
     Hole,
+    Keyway,
+    Lid,
     Loft,
     Part,
     Path,
@@ -24,32 +31,39 @@ from partwright_ir.model import (
     Polygon,
     Rect,
     Revolve,
+    Rib,
     Selector,
     Shell,
+    ShellWithLid,
     Sketch,
     Slot,
+    SpurGear,
 )
 from partwright_ir.prelude import AIRFOIL_PRELUDE, PRELUDE
+from partwright_ir.prelude_features import FEATURE_PRELUDE
 
 
 def compile_design(design: Design) -> str:
     params = "\n".join(f"    {p.name!r}: {p.value!r},  # {p.unit or 'count'} {p.description}".rstrip() for p in design.params)
     values = design.param_values()
-    parts = "\n\n\n".join(_part(i, p, values) for i, p in enumerate(design.parts))
+    enclosures = {p.id: f for p in design.parts for f in p.features if isinstance(f, ShellWithLid)}
+    parts = "\n\n\n".join(_part(i, p, values, enclosures) for i, p in enumerate(design.parts))
     table = ", ".join(f"{p.id!r}: part_{i}()" for i, p in enumerate(design.parts))
     airfoils = any(isinstance(f, AirfoilSection) for p in design.parts for f in p.features)
     prelude = PRELUDE + AIRFOIL_PRELUDE if airfoils else PRELUDE
+    if any(isinstance(f, HIGH_LEVEL) for p in design.parts for f in p.features):
+        prelude += FEATURE_PRELUDE
     faces = "\nFACES = {}\n" if any(p.face_groups for p in design.parts) else ""
     build = f"def build():\n    return {{{table}}}\n"
-    if design.assembly is not None:
+    if effective_assembly(design) is not None:
         prelude, build = prelude + MATE_PRELUDE, assembly_build(design)
     return f"{prelude}\n\nP = {{\n{params}\n}}\n{faces}\n\n{parts}\n\n\n{build}"
 
 
-def _part(index: int, part: Part, values: dict[str, float]) -> str:
+def _part(index: int, part: Part, values: dict[str, float], enclosures: dict[str, ShellWithLid]) -> str:
     sketches = {s.id: s for s in part.sketches}
     datums = ", ".join(_datum(d) for d in part.datums)
-    body = [line for f in part.features for line in _feature(f, sketches, values)]
+    body = [line for f in part.features for line in _feature(f, sketches, values, enclosures)]
     head = [f"def part_{index}():", "    part = None", "    T = {}", f"    D = {{{datums}}}"]
     groups = ", ".join(f"{g.name!r}: {_select('faces', g.faces)}" for g in part.face_groups)
     faces = [f"    FACES[{part.id!r}] = {{{groups}}}"] if groups else []
@@ -60,12 +74,12 @@ def _datum(d: Datum) -> str:
     return f"{d.id!r}: _datum({d.base!r}, {_x(d.offset)}, {d.rotate_about!r}, {_x(d.angle)})"
 
 
-def _feature(f: Feature, sketches: dict[str, Sketch], values: dict[str, float]) -> list[str]:
+def _feature(f: Feature, sketches: dict[str, Sketch], values: dict[str, float], enclosures: dict[str, ShellWithLid]) -> list[str]:
     head = f"    # {f.id} {f.name}" + (f": {f.intent}" if f.intent else "")
-    return [head, *_body(f, sketches, values)]
+    return [head, *_body(f, sketches, values, enclosures)]
 
 
-def _body(f: Feature, sketches: dict[str, Sketch], values: dict[str, float]) -> list[str]:
+def _body(f: Feature, sketches: dict[str, Sketch], values: dict[str, float], enclosures: dict[str, ShellWithLid]) -> list[str]:
     match f:
         case Extrude():
             sk = sketches[f.sketch]
@@ -119,6 +133,9 @@ def _body(f: Feature, sketches: dict[str, Sketch], values: dict[str, float]) -> 
                 "    part = _apply(part, tool, 'add')",
                 f"    T[{f.id!r}] = (tool, 'add', None)",
             ]
+        case SpurGear() | Rib() | BossPattern() | ShellWithLid() | Lid() | Keyway() | Groove():
+            on = _on(f.plane) if isinstance(f, SpurGear | Rib | BossPattern) else []
+            return high_level(f, on, _placement(f.at) if isinstance(f, BossPattern) else "", enclosures)
 
 
 def _on(plane: PlaneRef) -> list[str]:
