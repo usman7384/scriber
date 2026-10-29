@@ -46,7 +46,7 @@ export function ParamPanel({ params, busy, pinned, sourcesHref, onApply }: Props
   if (params.length === 0) return <p className="ws-muted">{t.params.none}</p>;
   const ordered = [...params].sort((a, b) => Number(b.name === pinned) - Number(a.name === pinned));
   return (
-    <form className="params ws-params" onSubmit={submit} aria-label={t.params.form}>
+    <form className="ws-params" onSubmit={submit} aria-label={t.params.form}>
       <div className="ws-section-head">
         <h3 className="eyebrow">{pinned ? t.params.driving : t.params.form}</h3>
         <label className="ws-live">

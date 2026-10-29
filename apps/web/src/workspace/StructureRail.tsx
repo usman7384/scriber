@@ -28,7 +28,7 @@ export function StructureRail(p: Props) {
     p.onHidden(p.hidden.length === others.length && !p.hidden.includes(c.id) ? [] : others);
   };
   const branch = (parent: string | null, label?: string) => (
-    <ul className="tree ws-tree" aria-label={label}>
+    <ul className="ws-tree" aria-label={label}>
       {p.components
         .filter((c) => c.parent === parent)
         .map((c) => (
