@@ -1,0 +1,21 @@
+{
+  "title": "Hollow cylinder",
+  "params": [
+    {"name": "outer_diameter", "value": 54, "unit": "mm"},
+    {"name": "wall", "value": 2, "unit": "mm"},
+    {"name": "height", "value": 50, "unit": "mm"}
+  ],
+  "parts": [
+    {
+      "id": "tube",
+      "name": "Tube",
+      "sketches": [
+        {
+          "id": "ring",
+          "entities": [{"kind": "circle", "diameter": "outer_diameter"}, {"kind": "circle", "diameter": "outer_diameter - 2 * wall", "subtract": true}]
+        }
+      ],
+      "features": [{"kind": "extrude", "id": "body", "name": "Body", "sketch": "ring", "distance": "height"}]
+    }
+  ]
+}
