@@ -17,8 +17,8 @@ from partwright_api.routes.common import (
     start_rebuild,
     start_refine,
 )
-from partwright_api.schemas import FileKind, Job, ModelDetail, ParamsIn, RefineIn, Version
-from partwright_ir import diff
+from partwright_api.schemas import Component, FileKind, Job, ModelDetail, ParamsIn, RefineIn, Version
+from partwright_ir import diff, joint_tree
 
 router = APIRouter(prefix="/models/{model_id}", dependencies=[Depends(require_token)])
 
@@ -73,6 +73,18 @@ async def params(model_id: str, body: ParamsIn, d: DepsDep) -> Job:
 @router.get("/export")
 def export_file(model_id: str, d: DepsDep, fmt: FileKind = "step", version: int | None = None) -> FileResponse:
     return export(d, need_model(d, model_id), fmt, version)
+
+
+@router.get("/components")
+def components(model_id: str, d: DepsDep, version: int | None = None) -> list[Component]:
+    need_model(d, model_id)
+    n, data = need_version(d, model_id, version)
+    if data.status != "ok":
+        raise HTTPException(404, f"version {n} of model {model_id} failed and has no components")
+    design = disk.design(disk.version_dir(d.settings.data_dir, model_id, n))
+    placed = {child: (joint.id, parent) for child, (joint, parent) in joint_tree(design).items()}
+    rows = [(p, *placed.get(p.id, (None, None))) for p in design.parts]
+    return [Component(id=p.id, name=p.name, material=p.material, joint=joint, parent=parent) for p, joint, parent in rows]
 
 
 def detail(d: Deps, model: Row) -> ModelDetail:

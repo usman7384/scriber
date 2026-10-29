@@ -48,6 +48,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | POST | /models/{id}/refine | {instruction, target?: part_id, process?} | Job |
 | PATCH | /models/{id}/params | {values: {name: number}} | Job (fast path: no LLM) |
 | GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir&version=n | | file |
+| GET | /models/{id}/components?version=n | | [Component]: part id, name, material, parent part and joint |
 | GET | /projects/{id}/jobs?active=true | | [Job] newest first; `active` keeps queued and running |
 | GET | /jobs/{id} | | Job |
 | GET | /jobs/{id}/events | | SSE: `event: step` data Step; `event: done` data Job; `event: failed` data Job |
