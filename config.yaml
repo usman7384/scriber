@@ -1,7 +1,7 @@
 llm:
   host: http://127.0.0.1:11434
   # built locally, not pulled (D-027, D-036; rebuild steps in docs/agents/training.md); without it use --model qwen3.5:4b
-  default: partwright-ir:4b-s2
+  default: partwright-ir:4b-s3
   ci: qwen3.5:0.8b-q8_0
   # requests with images (sketch, photo, drawing, critic) go here; the default has no vision projector (D-027)
   vision: qwen3.5:4b
