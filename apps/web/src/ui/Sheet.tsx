@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { useT } from "../i18n";
 import { IconButton } from "./IconButton";
-import "./ui.css";
 
 interface Props {
   open: boolean;

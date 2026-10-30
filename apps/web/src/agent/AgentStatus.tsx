@@ -4,7 +4,6 @@ import { Button } from "../ui/Button";
 import { Icon } from "../ui/icons";
 import { versionBefore } from "./diff";
 import { ago, byAgent } from "./steps";
-import "./agent.css";
 
 interface Props {
   job?: Job | undefined;

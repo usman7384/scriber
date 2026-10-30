@@ -11,7 +11,6 @@ import { GraphView } from "./GraphView";
 import { KnowledgeMeter } from "./KnowledgeMeter";
 import { RulesList } from "./RulesList";
 import { UploadZone } from "./UploadZone";
-import "./sources.css";
 
 interface Props {
   projectId: string;

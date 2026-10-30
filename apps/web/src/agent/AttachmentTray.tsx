@@ -2,7 +2,6 @@ import { useT } from "../i18n";
 import { IconButton } from "../ui/IconButton";
 import { Icon, type IconName } from "../ui/icons";
 import type { Attachment, AttachKind } from "./useAttachments";
-import "./agent.css";
 
 const glyph: Record<AttachKind, IconName> = { image: "image", mesh: "mesh", spec: "document" };
 

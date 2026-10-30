@@ -9,7 +9,6 @@ import { IconButton } from "../ui/IconButton";
 import { Icon, type IconName } from "../ui/icons";
 import { changeText, paramDiff, versionBefore } from "./diff";
 import { stepStates, type StepState } from "./steps";
-import "./agent.css";
 
 interface Props {
   jobId: string;
