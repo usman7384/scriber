@@ -13,7 +13,6 @@ interface Props {
 export function HomeLayout({ projects = [], current, allCurrent, children }: Props) {
   return (
     <div className="home">
-      <div className="home-horizon" aria-hidden="true" />
       <HomeNav projects={projects} current={current} allCurrent={allCurrent} />
       <main className="home-main">{children}</main>
     </div>

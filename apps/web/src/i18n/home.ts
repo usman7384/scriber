@@ -16,6 +16,7 @@ export const en = {
     parts: "Parts",
     sort: "Sort parts",
     sorts: { newest: "Newest first", name: "Name A–Z" },
+    turn: "Scroll or swipe to turn the horizon",
   },
   gallery: {
     region: "Models",
@@ -95,6 +96,7 @@ export const de: typeof en = {
     parts: "Teile",
     sort: "Teile sortieren",
     sorts: { newest: "Neueste zuerst", name: "Name A–Z" },
+    turn: "Scrollen oder wischen dreht den Horizont",
   },
   gallery: {
     region: "Modelle",

@@ -186,7 +186,8 @@ def thumbnail_file(d: Deps, model_id: str, number: int) -> FileResponse:
     path = disk.version_dir(d.settings.data_dir, model_id, number) / disk.THUMBNAIL
     if not path.exists():
         raise HTTPException(404, f"version {number} of model {model_id} has no thumbnail")
-    return FileResponse(path, media_type="image/png")
+    # Thumbnails can be re-rendered in place (partwright thumbnails), so clients revalidate rather than keep a stale copy.
+    return FileResponse(path, media_type="image/png", headers={"Cache-Control": "no-cache"})
 
 
 def _restore(d: Deps, model: Row, number: int) -> int:

@@ -24,18 +24,132 @@
     repeating-linear-gradient(var(--line) 0 1px, transparent 1px 12px) right center / 8px calc(100% - 128px)
       no-repeat;
 }
-.home-horizon {
+/* The horizon and the parts riding it. --R is the planet's radius; --spin and --step come from PartsOrbit. */
+.orbit {
+  --R: 85vw;
+  --h-top: 104px;
   position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: calc(72vh - var(--h-top));
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.home-horizon {
+  position: absolute;
   left: 50%;
-  top: 72vh;
-  z-index: 0;
-  width: 170vw;
-  height: 170vw;
+  top: var(--h-top);
+  width: calc(2 * var(--R));
+  height: calc(2 * var(--R));
   translate: -50% 0;
   border-radius: 50%;
   background: var(--horizon);
   box-shadow: var(--horizon-glow);
-  pointer-events: none;
+}
+/* A dial of ticks just inside the rim turns with the parts, so the planet itself is seen to spin. */
+.home-horizon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(var(--accent) 0 0.08deg, transparent 0.08deg 1.2deg);
+  mask: radial-gradient(closest-side, transparent 97.4%, black 97.6% 98.6%, transparent 98.8%);
+  opacity: 0.55;
+  rotate: var(--spin, 0deg);
+}
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* Each part starts at the planet's centre, turns to its angle and rides out to just past the rim. */
+.orbit-item {
+  --a: calc(var(--i) * var(--step, 9deg) + var(--spin, 0deg));
+  position: absolute;
+  left: 50%;
+  top: calc(var(--h-top) + var(--R));
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 112px;
+  text-align: center;
+  pointer-events: auto;
+  transform: rotate(var(--a)) translateY(calc(-1 * var(--R) - 10px)) rotate(calc(-1 * var(--a)))
+    translate(-50%, -100%);
+}
+.orbit-thumb {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: var(--faint);
+}
+.orbit-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.orbit-title {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-2);
+  font-size: var(--t-xs);
+  line-height: var(--lh-xs);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.orbit-item:hover .orbit-title,
+.orbit-item:focus-within .orbit-title {
+  color: var(--accent);
+}
+.orbit-meta {
+  display: none;
+  position: absolute;
+  top: 100%;
+  width: 200px;
+  padding-top: 4px;
+}
+.orbit-item:hover .orbit-meta,
+.orbit-item:focus-within .orbit-meta {
+  display: grid;
+}
+.orbit-item .part-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.orbit-empty,
+.orbit-caption {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  pointer-events: auto;
+}
+.orbit-empty {
+  top: 40px;
+  margin: 0;
+  color: var(--muted);
+}
+.orbit-caption {
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  color: var(--muted);
+  font-size: var(--t-xs);
+  white-space: nowrap;
+}
+.orbit-caption select {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-2);
+  font-size: var(--t-xs);
 }
 
 /* Navigation is quiet text along the frame's top edge. */
@@ -152,7 +266,7 @@ a.home-group[aria-current="page"] {
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 13vh 44px 34vh;
+  padding: 10vh 44px 30vh;
 }
 .home-eyebrow h1 {
   color: var(--accent);
@@ -375,16 +489,22 @@ a.home-group[aria-current="page"] {
     flex-basis: 100%;
   }
   .home-main {
-    padding: 48px 28px 30vh;
+    padding: 48px 28px 0;
   }
   .home-lead,
   .home-title {
     font-size: 34px;
     line-height: 38px;
   }
-  .home-horizon {
-    width: 260vw;
-    height: 260vw;
+  /* On phones the horizon closes the page instead of filling the screen; swipe turns it. */
+  .orbit {
+    --R: 130vw;
+    --h-top: 96px;
+    position: relative;
+    top: auto;
+    height: 300px;
+    margin: var(--s-6) -28px 0;
+    touch-action: pan-y;
   }
   .parts-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

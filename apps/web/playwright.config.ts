@@ -11,6 +11,8 @@ export default defineConfig({
     ...devices["Desktop Chrome"],
     baseURL: `http://127.0.0.1:${port}`,
     viewport: { width: 1280, height: 900 },
+    // Home's drifting horizon stalls SwiftShader screenshots; with reduced motion it holds still.
+    reducedMotion: "reduce",
     launchOptions: { args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] },
   },
   webServer: {

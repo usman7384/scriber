@@ -39,6 +39,7 @@ def test_generated_model_lists_versions_with_metrics_files_and_thumbnail(api: Ap
     assert {p["name"]: p["label"] for p in version["params"]}["bolt_spacing_x"] == "Bolt Spacing X"
     assert set(version["files"]) == {"step", "stl", "glb", "py", "ir"}
     assert png_size(api, version["thumbnail_url"]) == (256, 256)
+    assert api.client.get(version["thumbnail_url"]).headers["cache-control"] == "no-cache"
     assert api.ok(api.client.get(f"/projects/{project}/models"))[0]["thumbnail_url"] == version["thumbnail_url"]
     assert api.ok(api.client.get(f"/projects/{project}"))["model_count"] == 1
     root = disk.version_dir(api.deps.settings.data_dir, job["model_id"], 1)
