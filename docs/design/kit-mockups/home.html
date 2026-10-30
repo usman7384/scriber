@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Partwright home concept</title>
+    <link rel="stylesheet" href="kit.css" />
+    <style>
+      /* The measuring frame every screen sits in: corner brackets and tick rails, never boxes. */
+      .frame {
+        position: fixed;
+        inset: 20px;
+        pointer-events: none;
+      }
+      .frame i {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border-color: var(--rule);
+        border-style: solid;
+      }
+      .frame .tl { top: 0; left: 0; border-width: 1px 0 0 1px; }
+      .frame .tr { top: 0; right: 0; border-width: 1px 1px 0 0; }
+      .frame .bl { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+      .frame .br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+      .rail {
+        position: absolute;
+        top: 64px;
+        bottom: 64px;
+        width: 9px;
+        background: repeating-linear-gradient(var(--rule) 0 1px, transparent 1px 12px);
+      }
+      .rail.l { left: 0; }
+      .rail.r { right: 0; }
+
+      header {
+        position: fixed;
+        top: 36px;
+        left: 52px;
+        right: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font: 700 18px / 1 var(--display);
+        letter-spacing: 0.02em;
+      }
+      .mark svg { color: var(--signal-hi); }
+      .project {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        color: var(--ash);
+      }
+      .project b {
+        color: var(--bone);
+        font-weight: 500;
+        border-bottom: 1px solid var(--rule);
+      }
+      .alive {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ash);
+      }
+      .alive::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        background: var(--signal-hi);
+        box-shadow: 0 0 10px var(--signal);
+      }
+
+      main {
+        position: fixed;
+        left: 50%;
+        top: 20vh;
+        width: min(860px, calc(100vw - 120px));
+        translate: -50% 0;
+      }
+      h1 {
+        margin: 0 0 28px;
+        font: 700 60px / 64px var(--display);
+        letter-spacing: 0;
+      }
+      .ask {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 24px;
+        padding-bottom: 14px;
+        /* Kit single-stroke: a rule across the right half, then one across the whole width. */
+        background:
+          linear-gradient(var(--signal-hi), var(--signal-hi)) right bottom 3px / 50% 1px no-repeat,
+          linear-gradient(var(--ash), var(--ash)) left bottom / 100% 1px no-repeat;
+      }
+      .ask p {
+        margin: 0;
+        font: 400 22px / 32px var(--body);
+      }
+      .ask p span { color: var(--steel); }
+      .caret {
+        display: inline-block;
+        width: 2px;
+        height: 26px;
+        margin-left: 2px;
+        vertical-align: -5px;
+        background: var(--signal-hi);
+      }
+      .under {
+        display: flex;
+        gap: 28px;
+        margin-top: 14px;
+        color: var(--ash);
+      }
+      .under span::before {
+        content: "+ ";
+        color: var(--steel);
+      }
+
+      /* The horizon: the one loud element. */
+      .horizon {
+        position: fixed;
+        left: 50%;
+        top: 63vh;
+        width: 170vw;
+        height: 170vw;
+        translate: -50% 0;
+        border-radius: 50%;
+        background:
+          radial-gradient(closest-side, transparent 97.5%, rgb(231 162 162 / 85%) 99.7%, transparent 100%),
+          radial-gradient(closest-side, transparent 93%, rgb(202 53 53 / 45%) 99.5%, transparent 100%),
+          radial-gradient(50% 9% at 50% 0%, rgb(202 53 53 / 40%), transparent 80%),
+          radial-gradient(circle at 50% 0%, #2a0a0a, #0e0303 30%, #030101 55%);
+        box-shadow: 0 -24px 140px rgb(202 53 53 / 26%);
+      }
+      .specimens {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: calc(63vh - 128px);
+        display: flex;
+        justify-content: center;
+        gap: 72px;
+      }
+      .spec {
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+        width: 150px;
+        text-align: center;
+      }
+      .spec:nth-child(1), .spec:nth-child(5) { translate: 0 64px; }
+      .spec:nth-child(2), .spec:nth-child(4) { translate: 0 18px; }
+      .spec svg { color: var(--ash); }
+      .spec b { font: 500 14px / 18px var(--body); }
+      .spec small { color: var(--steel); font-size: 12px; }
+      .spec.new svg { color: var(--signal-hi); }
+
+      .whisper {
+        position: fixed;
+        bottom: 40px;
+        left: 52px;
+        right: 52px;
+        display: flex;
+        justify-content: space-between;
+        color: rgb(245 245 245 / 55%);
+        font-size: 12px;
+      }
+
+      @media (max-width: 720px) {
+        header { top: 30px; left: 32px; right: 32px; }
+        .project { display: none; }
+        .alive { font-size: 0; }
+        main { top: 110px; width: calc(100vw - 64px); }
+        h1 { font-size: 36px; line-height: 40px; }
+        .ask { grid-template-columns: 1fr; gap: 14px; }
+        .ask p { font-size: 18px; line-height: 26px; }
+        .ask .btn { justify-self: end; }
+        .under { flex-direction: column; gap: 6px; }
+        .horizon { top: 74vh; width: 260vw; height: 260vw; }
+        .specimens { top: calc(74vh - 112px); justify-content: flex-start; gap: 20px; padding: 0 32px; overflow-x: auto; }
+        .spec { flex: none; width: 110px; translate: none !important; }
+        .whisper span:last-child { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i><span class="rail l"></span><span class="rail r"></span></div>
+    <div class="horizon"></div>
+
+    <header>
+      <div class="mark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2h12l4 4v12H6l-4-4z" /><circle cx="10" cy="10" r="3.2" /></svg>
+        Partwright
+      </div>
+      <div class="project">Making parts for <b>Bracket lab</b></div>
+      <div class="alive">Model ready on this machine</div>
+    </header>
+
+    <main>
+      <h1>What are we making?</h1>
+      <div class="ask">
+        <p>Mounting plate 100 × 60 × 5 mm, four M5 clearance holes 8 mm from each edge<i class="caret"></i></p>
+        <button class="btn">Generate <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4" /></svg></button>
+      </div>
+      <div class="under"><span>Attach a sketch, photo or STEP</span><span>Any process</span><span>Use project rules</span></div>
+    </main>
+
+    <section class="specimens" aria-label="Recent parts">
+      <div class="spec">
+        <svg width="96" height="56" viewBox="0 0 96 56" fill="none" stroke="currentColor"><path d="M8 30 48 12l40 18-40 18z" /><path d="M8 30v6l40 18v-6M88 30v6L48 54" /><ellipse cx="48" cy="30" rx="7" ry="3.5" /><ellipse cx="30" cy="30" rx="3" ry="1.5" /><ellipse cx="66" cy="30" rx="3" ry="1.5" /></svg>
+        <b>Sensor plate</b><small>v3, 12 of 12 checks</small>
+      </div>
+      <div class="spec">
+        <svg width="96" height="56" viewBox="0 0 96 56" fill="none" stroke="currentColor"><path d="M20 44V14l14-6v30" /><path d="M20 44l44-16 14 6-44 16z" /><path d="M34 38 78 22v12" /><ellipse cx="56" cy="34" rx="3" ry="1.5" /></svg>
+        <b>L-bracket</b><small>v1, 1 warning</small>
+      </div>
+      <div class="spec new">
+        <svg width="96" height="56" viewBox="0 0 96 56" fill="none" stroke="currentColor" stroke-dasharray="3 3"><path d="M18 28 48 14l30 14-30 14z" /><path d="M18 28v10l30 14 30-14V28" /></svg>
+        <b>New part</b><small>appears here</small>
+      </div>
+      <div class="spec">
+        <svg width="96" height="56" viewBox="0 0 96 56" fill="none" stroke="currentColor"><ellipse cx="48" cy="20" rx="26" ry="11" /><ellipse cx="48" cy="20" rx="9" ry="4" /><path d="M22 20v14c0 6 12 11 26 11s26-5 26-11V20" /></svg>
+        <b>Spacer ring</b><small>v2, 6 of 6 checks</small>
+      </div>
+      <div class="spec">
+        <svg width="96" height="56" viewBox="0 0 96 56" fill="none" stroke="currentColor"><path d="M10 24 48 8l38 16-38 16z" /><path d="M10 24v18l38 16 38-16V24" /><path d="M16 26 48 12l32 14" stroke-dasharray="2 3" /></svg>
+        <b>Electronics box</b><small>v4, lid fits</small>
+      </div>
+    </section>
+
+    <footer class="whisper"><span>Offline. Nothing leaves this machine.</span><span>Ctrl K for everything</span></footer>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+@font-face {
+  font-family: "Tektur";
+  font-weight: 500;
+  src: url("../../../apps/web/node_modules/@fontsource/tektur/files/tektur-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Tektur";
+  font-weight: 700;
+  src: url("../../../apps/web/node_modules/@fontsource/tektur/files/tektur-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Exo 2";
+  font-weight: 400;
+  src: url("../../../apps/web/node_modules/@fontsource/exo-2/files/exo-2-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Exo 2";
+  font-weight: 500;
+  src: url("../../../apps/web/node_modules/@fontsource/exo-2/files/exo-2-latin-500-normal.woff2") format("woff2");
+}
+
+:root {
+  --void: #000000;
+  --graphite: #171717;
+  --iron: #262626;
+  --rule: #404040;
+  --steel: #737373;
+  --ash: #a3a3a3;
+  --bone: #f5f5f5;
+  --signal: #ca3535;
+  --signal-hi: #d55d5d;
+  --signal-lo: #551616;
+  --pass: #30dd10;
+  --warn: #ffb800;
+  --display: "Nippo", "Tektur", system-ui, sans-serif;
+  --body: "Exo 2", system-ui, sans-serif;
+  --cut: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  overflow: hidden;
+  background:
+    radial-gradient(circle, rgb(163 163 163 / 14%) 1px, transparent 1.4px) 0 0 / 16px 16px,
+    var(--void);
+  color: var(--bone);
+  font: 400 14px / 20px var(--body);
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Kit Primary button: white fill, cuts, top notch, two bottom notches. */
+.btn {
+  --seg: calc((100% - 20px) / 3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 4px 18px 3px;
+  border: 0;
+  background: #ffffff;
+  color: var(--graphite);
+  font: 500 16px / 1 var(--body);
+  letter-spacing: 0.0125em;
+  text-transform: uppercase;
+  clip-path: polygon(
+    0 0, calc(6px + var(--seg)) 0, calc(10px + var(--seg)) 4px, calc(10px + 2 * var(--seg)) 4px,
+    calc(14px + 2 * var(--seg)) 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, calc(50% + 7px) 100%,
+    calc(50% + 4px) calc(100% - 3px), calc(50% + 1px) 100%, calc(50% - 1px) 100%,
+    calc(50% - 4px) calc(100% - 3px), calc(50% - 7px) 100%, 6px 100%, 0 calc(100% - 6px)
+  );
+}
+.btn.sm {
+  height: 32px;
+  padding: 4px 12px 3px;
+  font-size: 12px;
+}
+
+.dim {
+  color: var(--steel);
+}
+.ash {
+  color: var(--ash);
+}
