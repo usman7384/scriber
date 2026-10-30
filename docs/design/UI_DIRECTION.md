@@ -18,7 +18,7 @@ Status: proposed, 2026-10-29. Scope: `apps/web`. Inputs: [AUDIT.md](AUDIT.md) (t
 4. **Show the agent's work, keep it reversible.** Every job is a log of steps with checks and repairs; every result is a version on the scrubber; every agent change has a one-click Revert (a restore, so history is never rewritten). Assumptions the agent made (provenance `default`) are flagged until the user touches them.
 5. **One way in for everything.** The command bar takes words; the palette (Ctrl+K) takes every action, every parameter (`thick = 7`) and every place. Buttons on screen are shortcuts into the same action registry, not a second implementation.
 6. **Status is a glyph plus a word.** Pass, warn and fail each have a shape (circle-check, triangle, octagon) and a colour; colour alone never carries meaning.
-7. **Calm by default.** One accent, no gradients, glow or glass beyond a light blur on viewport overlays, short motion. The interesting thing on screen is the part.
+7. **Calm by default.** Blue does the work, orange marks the few things alive (D-040); backdrop glow and grid stay faint, motion short. The interesting thing on screen is the part.
 
 ## 2. Information architecture
 
@@ -131,19 +131,20 @@ Reference implementation of every token: [`mockups/mockup.css`](mockups/mockup.c
 
 | Token | Dark | Light | Use |
 |---|---|---|---|
-| `--viewport` | `#07090b` | `#eef1f4` | 3D background |
-| `--bg` | `#0c0f12` | `#f3f5f7` | page |
-| `--surface` | `#12161a` @ 88 % + blur | `#ffffff` @ 90 % | floating panels |
-| `--raised` / `--field` | `#181d22` / `#20262c` | `#ffffff` / `#f0f2f5` | rows, inputs |
-| `--line` / `--line-strong` | `#1f252b` / `#2b323a` | `#e1e5ea` / `#c9d0d8` | hairlines, borders |
-| `--text` / `--text-2` | `#eef1f3` / `#c9d0d6` | `#11161b` / `#2c343c` | text |
-| `--muted` | `#8a949e` | `#5b6570` | secondary text (≥ 4.5:1) |
-| `--faint` | `#5c6670` | `#7d8792` | disabled and decoration only |
-| `--accent` | `#4fd1e8` | `#0a7489` | the one accent: selection, focus, driving dimensions, primary action |
-| `--pass` / `--warn` / `--fail` | `#46d18b` / `#f2b33d` / `#ff5c5c` | `#17804c` / `#9a6400` / `#c62f2f` | check states, with glyphs |
-| `--axis-x/y/z` | `#e86a6a` / `#6ad08f` / `#6aa2e8` | same | triad and grid origin only |
+| `--viewport` / `--bg` | `#02070a` | `#eaf0f4` / `#f2f6f9` | 3D background, page (midnight) |
+| `--surface` | `#06121a` @ 80 % + blur | `#ffffff` @ 88 % | floating panels |
+| `--raised` / `--field` | `#0a1a24` / `#0d212d` | `#ffffff` / `#edf2f6` | rows, inputs |
+| `--line` / `--line-strong` | `#0f2633` / `#1a3a4c` | `#dbe4eb` / `#c3d1dc` | hairlines, borders |
+| `--text` / `--text-2` | `#eaf4fa` / `#c2d3de` | `#02070a` / `#1e2c36` | text |
+| `--muted` | `#7f97a6` | `#4f6270` | secondary text (≥ 4.5:1) |
+| `--faint` | `#4f6676` | `#758896` | disabled and decoration only |
+| `--accent` | `#0297de` | `#0277b0` | electric blue: selection, focus, driving dimensions, primary action |
+| `--accent-2` | `#fc734d` | `#c9481f` | orange: brand mark, eyebrow, running step, caret, progress (D-040) |
+| `--pass` / `--warn` / `--fail` | `#3ddc97` / `#ffc94a` / `#ff4d6d` | `#11804f` / `#8f6200` / `#c4243f` | check states, with glyphs |
+| `--axis-x/y/z` | `#ff6b7d` / `#4fdc9a` / `#3fb2f0` | same | triad and grid origin only |
+| `--backdrop-dot` / `--glow-*` | blue dots, blue and orange glows | same, fainter | page backdrop (`styles/backdrop.css`) |
 
-Computed contrast: accent on `--bg` 10.5:1 (dark) and 5.4:1 on white (light); muted 6.2:1 / 6.0:1; light pass, warn, fail ≥ 4.9:1 on white. Provenance is a monogram, not a colour; only `default` gets the warn treatment.
+Computed contrast: accent on `--bg` 6.3:1 and midnight on accent 6.3:1 (dark), 4.9:1 on white (light); orange 7.4:1 / 4.7:1; muted 6.6:1 / 6.3:1; light pass, warn, fail ≥ 5.0:1 on white. Provenance is a monogram, not a colour; only `default` gets the warn treatment.
 
 **Spacing** 4 px base: 4, 8, 12, 16, 24, 32, 48. Panel padding 12–14, row height 28, control height 28 (24 on dense rows, 44 touch targets on mobile). **Radii**: 3–4 px for controls and chips, 8 px for floating panels, 12 px for sheets; nothing pill-shaped. **Elevation**: one level for floating UI (`0 12px 32px rgb(0 0 0 / 45%)` plus a 1 px `--line` ring); a 14 px backdrop blur only for overlays on the viewport; sheets and the palette add a 55 % scrim.
 
@@ -151,7 +152,7 @@ Computed contrast: accent on `--bg` 10.5:1 (dark) and 5.4:1 on white (light); mu
 
 **Iconography.** Our own SVG set, 16 px grid, 1.5 px stroke, round caps and joins, `currentColor`, in one module (`src/ui/icons.tsx`, about 30 glyphs: mark, search, part, face, edges, dimension, document, assumption, pass, warn, fail, agent, attach, send, deliver, eye, chevrons, process, clock, grid, globe, plus, undo, image, mesh, settings). Generic icon packs lack the CAD glyphs and bring the look we are leaving. The mark is a square datum with a reference circle and a corner bracket; no wordmark styling beyond Plex Sans 600.
 
-**Viewport.** Flat `--viewport`, no gradient or environment reflections. A ground grid on the part's z = 0 plane: minor spacing chosen from 1 / 10 / 100 mm so minor lines stay ≥ 8 px apart, a major line every 10, fading out at about 3× the part diagonal; short X and Y origin lines. Axis triad bottom-left. Part material matte neutral (`--part` tokens) with B-rep edges drawn; hover = 1 px accent outline, selection = 14 % accent tint plus 1.5 px outline. Top / Front / Right default to orthographic; Iso keeps perspective with a P toggle.
+**Viewport.** `--viewport` with a faint blue centre glow and orange corner glow, no environment reflections. A ground grid on the part's z = 0 plane: minor spacing chosen from 1 / 10 / 100 mm so minor lines stay ≥ 8 px apart, a major line every 10, fading out at about 3× the part diagonal; short X and Y origin lines. Axis triad bottom-left. Part material matte neutral (`--part` tokens) with B-rep edges drawn; hover = 1 px accent outline, selection = 14 % accent tint plus 1.5 px outline. Top / Front / Right default to orthographic; Iso keeps perspective with a P toggle.
 
 ## 5. Accessibility
 

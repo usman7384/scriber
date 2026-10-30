@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Project } from "../api";
+import { DotGlobe } from "./DotGlobe";
 import { HomeNav } from "./HomeNav";
 import "./home.css";
 
@@ -14,7 +15,10 @@ export function HomeLayout({ projects = [], current, allCurrent, children }: Pro
   return (
     <div className="home">
       <HomeNav projects={projects} current={current} allCurrent={allCurrent} />
-      <main className="home-main">{children}</main>
+      <main className="home-main">
+        <DotGlobe />
+        {children}
+      </main>
     </div>
   );
 }

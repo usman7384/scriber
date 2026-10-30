@@ -4,41 +4,50 @@
   --font: "IBM Plex Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
 
-  --viewport: #07090b;
-  --bg: #0c0f12;
-  --surface: rgb(18 22 26 / 88%);
-  --surface-solid: #12161a;
-  --raised: #181d22;
-  --field: #20262c;
-  --line: #1f252b;
-  --line-strong: #2b323a;
-  --text: #eef1f3;
-  --text-2: #c9d0d6;
-  --muted: #8a949e;
-  --faint: #5c6670;
+  --viewport: #02070a;
+  --bg: #02070a;
+  --surface: rgb(6 18 26 / 80%);
+  --surface-solid: #06121a;
+  --raised: #0a1a24;
+  --field: #0d212d;
+  --line: #0f2633;
+  --line-strong: #1a3a4c;
+  --text: #eaf4fa;
+  --text-2: #c2d3de;
+  --muted: #7f97a6;
+  --faint: #4f6676;
 
-  --accent: #4fd1e8;
-  --accent-ink: #03171b;
-  --accent-soft: rgb(79 209 232 / 14%);
-  --accent-line: rgb(79 209 232 / 45%);
-  --pass: #46d18b;
-  --warn: #f2b33d;
-  --fail: #ff5c5c;
-  --pass-soft: rgb(70 209 139 / 12%);
-  --warn-soft: rgb(242 179 61 / 14%);
-  --fail-soft: rgb(255 92 92 / 14%);
-  --warn-line: rgb(242 179 61 / 50%);
-  --axis-x: #e86a6a;
-  --axis-y: #6ad08f;
-  --axis-z: #6aa2e8;
+  --accent: #0297de;
+  --accent-ink: #02070a;
+  --accent-soft: rgb(2 151 222 / 16%);
+  --accent-line: rgb(2 151 222 / 50%);
+  --accent-2: #fc734d;
+  --accent-2-soft: rgb(252 115 77 / 14%);
+  --accent-2-line: rgb(252 115 77 / 50%);
+  --pass: #3ddc97;
+  --warn: #ffc94a;
+  --fail: #ff4d6d;
+  --pass-soft: rgb(61 220 151 / 12%);
+  --warn-soft: rgb(255 201 74 / 14%);
+  --fail-soft: rgb(255 77 109 / 14%);
+  --warn-line: rgb(255 201 74 / 50%);
+  --axis-x: #ff6b7d;
+  --axis-y: #4fdc9a;
+  --axis-z: #3fb2f0;
 
-  --grid-minor: rgb(140 160 180 / 13%);
-  --grid-major: rgb(140 160 180 / 26%);
-  --part: #9aa4ae;
-  --part-edge: #1b2026;
+  --grid-minor: rgb(2 151 222 / 12%);
+  --grid-major: rgb(2 151 222 / 26%);
+  --part: #a9b8c4;
+  --part-edge: #0b1a22;
 
-  --scrim: rgb(3 5 7 / 55%);
-  --shadow-float: 0 12px 32px rgb(0 0 0 / 45%), 0 0 0 1px var(--line);
+  --backdrop-dot: rgb(2 151 222 / 22%);
+  --backdrop-line: rgb(2 151 222 / 7%);
+  --glow-blue: rgb(2 151 222 / 16%);
+  --glow-orange: rgb(252 115 77 / 9%);
+
+  --scrim: rgb(2 7 10 / 60%);
+  --shadow-float: 0 12px 32px rgb(0 0 0 / 55%), 0 0 0 1px var(--line);
+  --glow-focus: 0 0 28px rgb(2 151 222 / 18%);
   --blur: blur(14px) saturate(120%);
 
   --s-1: 4px;
@@ -78,37 +87,46 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --viewport: #eef1f4;
-  --bg: #f3f5f7;
-  --surface: rgb(255 255 255 / 90%);
+  --viewport: #eaf0f4;
+  --bg: #f2f6f9;
+  --surface: rgb(255 255 255 / 88%);
   --surface-solid: #ffffff;
   --raised: #ffffff;
-  --field: #f0f2f5;
-  --line: #e1e5ea;
-  --line-strong: #c9d0d8;
-  --text: #11161b;
-  --text-2: #2c343c;
-  --muted: #5b6570;
-  --faint: #7d8792;
+  --field: #edf2f6;
+  --line: #dbe4eb;
+  --line-strong: #c3d1dc;
+  --text: #02070a;
+  --text-2: #1e2c36;
+  --muted: #4f6270;
+  --faint: #758896;
 
-  --accent: #0a7489;
+  --accent: #0277b0;
   --accent-ink: #ffffff;
-  --accent-soft: rgb(10 116 137 / 10%);
-  --accent-line: rgb(10 116 137 / 45%);
-  --pass: #17804c;
-  --warn: #9a6400;
-  --fail: #c62f2f;
-  --pass-soft: rgb(23 128 76 / 10%);
-  --warn-soft: rgb(154 100 0 / 10%);
-  --fail-soft: rgb(198 47 47 / 10%);
-  --warn-line: rgb(154 100 0 / 50%);
+  --accent-soft: rgb(2 119 176 / 10%);
+  --accent-line: rgb(2 119 176 / 45%);
+  --accent-2: #c9481f;
+  --accent-2-soft: rgb(201 72 31 / 10%);
+  --accent-2-line: rgb(201 72 31 / 45%);
+  --pass: #11804f;
+  --warn: #8f6200;
+  --fail: #c4243f;
+  --pass-soft: rgb(17 128 79 / 10%);
+  --warn-soft: rgb(143 98 0 / 10%);
+  --fail-soft: rgb(196 36 63 / 10%);
+  --warn-line: rgb(143 98 0 / 50%);
 
-  --grid-minor: rgb(40 60 80 / 8%);
-  --grid-major: rgb(40 60 80 / 16%);
+  --grid-minor: rgb(2 119 176 / 9%);
+  --grid-major: rgb(2 119 176 / 18%);
   --part: #c3cad1;
-  --part-edge: #3a434c;
+  --part-edge: #2a3a46;
 
-  --shadow-float: 0 12px 32px rgb(20 30 40 / 14%), 0 0 0 1px var(--line);
+  --backdrop-dot: rgb(2 119 176 / 16%);
+  --backdrop-line: rgb(2 119 176 / 5%);
+  --glow-blue: rgb(2 151 222 / 10%);
+  --glow-orange: rgb(252 115 77 / 8%);
+
+  --shadow-float: 0 12px 32px rgb(2 30 45 / 14%), 0 0 0 1px var(--line);
+  --glow-focus: 0 0 24px rgb(2 119 176 / 12%);
 }
 
 @media (prefers-contrast: more) {

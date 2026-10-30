@@ -98,7 +98,7 @@
   border-radius: 0;
   background: transparent;
   color: var(--text);
-  caret-color: var(--accent);
+  caret-color: var(--accent-2);
   resize: none;
   field-sizing: content;
   overflow: auto;
@@ -116,7 +116,8 @@
 .agent-bar:focus-within {
   box-shadow:
     var(--shadow-float),
-    0 0 0 1px var(--accent-line);
+    0 0 0 1px var(--accent-line),
+    var(--glow-focus);
 }
 .agent-field-marks {
   position: absolute;
@@ -276,11 +277,11 @@
   background: var(--line);
 }
 .agent-hairline::-webkit-progress-value {
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
   transition: width var(--d-mid) var(--ease-in);
 }
 .agent-hairline::-moz-progress-bar {
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
 
 /* Starter cards */
@@ -403,7 +404,7 @@ details:not([open]) > summary.agent-step-head::after {
   color: var(--fail);
 }
 .agent-step[data-state="run"] .agent-step-glyph {
-  color: var(--accent);
+  color: var(--accent-2);
 }
 .agent-push {
   margin-left: auto;

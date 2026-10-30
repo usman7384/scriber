@@ -7,7 +7,6 @@
 body {
   min-height: 100dvh;
   margin: 0;
-  background: var(--bg);
   color: var(--text);
   font: 400 var(--t-md) / var(--lh-md) var(--font);
   font-feature-settings: "tnum" 1;
