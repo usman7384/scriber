@@ -14,7 +14,8 @@
   overflow: auto;
   padding: var(--s-3) var(--s-2);
   border-right: 1px solid var(--line);
-  background: var(--bg);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
 }
 .home-nav ul {
   display: flex;
@@ -32,6 +33,9 @@
   color: var(--text);
   font-weight: 600;
   text-decoration: none;
+}
+.home-brand svg {
+  color: var(--accent-2);
 }
 .home-group {
   display: block;
@@ -123,9 +127,25 @@ a.home-group[aria-current="page"] {
 }
 
 .home-main {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
   width: 100%;
   max-width: 1180px;
   padding: 40px var(--s-7);
+}
+.dot-globe {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  z-index: -1;
+  width: 440px;
+  height: 440px;
+  pointer-events: none;
+  mask-image: linear-gradient(black 55%, transparent);
+}
+.home-eyebrow h1 {
+  color: var(--accent-2);
 }
 .home-eyebrow {
   display: flex;
@@ -342,6 +362,13 @@ a.home-group[aria-current="page"] {
   }
   .home-main {
     padding: 20px var(--s-4);
+  }
+  .dot-globe {
+    top: -20px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+    opacity: 0.6;
   }
   .home-lead,
   .home-title {

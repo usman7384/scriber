@@ -1,7 +1,9 @@
 .ws-viewer {
   position: absolute;
   inset: 0;
-  background: var(--viewport);
+  background:
+    radial-gradient(60% 55% at 50% 45%, var(--glow-blue), transparent 75%),
+    radial-gradient(40% 35% at 100% 100%, var(--glow-orange), transparent 70%), var(--viewport);
 }
 .ws-viewer[data-picking] canvas {
   cursor: crosshair;
