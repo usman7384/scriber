@@ -26,8 +26,9 @@ def test_thumbnail_is_a_256_px_png(geometry: LocalGeometry, tmp_path: Path) -> N
     art = geometry.build(PLATE, tmp_path)
     png = geometry.thumbnail(art.files["glb"], tmp_path / "thumbnail.png")
     with Image.open(png) as image:
-        assert (image.format, image.size) == ("PNG", (256, 256))
+        assert (image.format, image.size, image.mode) == ("PNG", (256, 256), "RGBA")
         assert len(set(image.getdata())) > 2
+        assert image.getpixel((0, 0))[3] == 0
 
 
 def test_thumbnail_of_a_missing_file_is_an_error_reply(tmp_path: Path) -> None:

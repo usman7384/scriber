@@ -51,6 +51,13 @@
   --part-edge: #171717;
   --backdrop-dot: rgb(163 163 163 / 16%);
   --glow: rgb(202 53 53 / 14%);
+  /* Home's horizon, after the kit cover's planet: a bright rim over a dark body. */
+  --horizon:
+    radial-gradient(closest-side, transparent 97.5%, rgb(231 162 162 / 85%) 99.7%, transparent 100%),
+    radial-gradient(closest-side, transparent 93%, rgb(202 53 53 / 45%) 99.5%, transparent 100%),
+    radial-gradient(50% 9% at 50% 0%, rgb(202 53 53 / 40%), transparent 80%),
+    radial-gradient(circle at 50% 0%, #2a0a0a, #0e0303 30%, #030101 55%);
+  --horizon-glow: 0 -24px 140px rgb(202 53 53 / 26%);
 
   --scrim: rgb(0 0 0 / 65%);
   --shadow-float: inset 0 0 0 1px var(--line);
@@ -82,6 +89,12 @@
         transparent 0
       )
       bottom left / var(--cut) var(--cut) no-repeat;
+  /* A measuring scale: baseline, a major tick every tenth, a minor tick every fiftieth. */
+  --scale:
+    linear-gradient(var(--line-strong), var(--line-strong)) left bottom / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, var(--faint) 0 1px, transparent 1px 10%) left bottom / calc(100% + 1px)
+      9px no-repeat,
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2%) left bottom / 100% 4px no-repeat;
   --chamfer-ink:
     linear-gradient(
         to bottom left,
@@ -178,6 +191,11 @@
   --part-edge: #262626;
   --backdrop-dot: rgb(23 23 23 / 14%);
   --glow: rgb(202 53 53 / 8%);
+  --horizon:
+    radial-gradient(closest-side, transparent 97.5%, rgb(184 48 48 / 70%) 99.7%, transparent 100%),
+    radial-gradient(50% 9% at 50% 0%, rgb(202 53 53 / 18%), transparent 80%),
+    radial-gradient(circle at 50% 0%, #faebeb, #f5f5f5 40%);
+  --horizon-glow: 0 -24px 120px rgb(202 53 53 / 12%);
 
   --shadow-float: inset 0 0 0 1px var(--line);
 }
