@@ -2,7 +2,6 @@ import type { ComponentProps } from "react";
 import { cx } from "./cx";
 import { Icon, type IconName } from "./icons";
 import { Tooltip } from "./Tooltip";
-import "./ui.css";
 
 interface Props extends Omit<ComponentProps<"button">, "children" | "aria-label"> {
   icon: IconName;

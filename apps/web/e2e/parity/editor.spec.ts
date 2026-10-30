@@ -15,7 +15,9 @@ async function openEditor(page: Page, api: MockApi) {
 }
 
 async function drag(page: Page, label: string, fromFraction: number, toFraction: number) {
-  const box = await page.getByLabel(`${label} slider`).boundingBox();
+  const slider = page.getByLabel(`${label} slider`);
+  await slider.scrollIntoViewIfNeeded();
+  const box = await slider.boundingBox();
   if (!box) throw new Error("no slider");
   const y = box.y + box.height / 2;
   await page.mouse.move(box.x + box.width * fromFraction, y);
@@ -110,6 +112,7 @@ test("WP-3 editor header and target chip", async ({ page, row }) => {
   await note();
 
   await page.getByRole("button", { name: "Top" }).click();
+  await page.locator(".viewer canvas").scrollIntoViewIfNeeded();
   // a point on the plate's top face between its holes, and one on the ground beside it
   const plate = Object.values((await probe(page)).parts)[0];
   if (!plate) throw new Error("no plate");

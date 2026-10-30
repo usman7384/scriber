@@ -1,6 +1,6 @@
 # UI direction
 
-Status: proposed, 2026-10-29. Scope: `apps/web`. Inputs: [AUDIT.md](AUDIT.md) (today's screens, critiqued), [`mockups/`](mockups/) (static HTML of the target, with screenshots). Behaviour stays as specified in `docs/agents/web.md` and `docs/agents/parity-web.md`; this changes how it is presented and reached.
+Status: superseded by D-041 (2026-10-30); the app is unstyled until the Figma-based design lands. Was proposed 2026-10-29. Scope: `apps/web`. Inputs: [AUDIT.md](AUDIT.md) (today's screens, critiqued), [`mockups/`](mockups/) (static HTML of the target, with screenshots). Behaviour stays as specified in `docs/agents/web.md` and `docs/agents/parity-web.md`; this changes how it is presented and reached.
 
 **In one line:** a dark, quiet drafting table where the part fills the screen, numbers are set like a drawing, the agent's work is a visible, reversible log, and every control appears next to the thing it changes.
 

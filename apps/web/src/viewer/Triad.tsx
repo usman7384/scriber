@@ -9,7 +9,7 @@ const length = 18;
 
 export function TriadSvg({ ref }: { ref: RefObject<SVGSVGElement | null> }) {
   return (
-    <svg ref={ref} className="ws-triad" viewBox="0 0 56 56" aria-hidden="true">
+    <svg ref={ref} className="ws-triad" viewBox="0 0 56 56" width="56" height="56" aria-hidden="true">
       {names.map((n, i) => (
         <g key={n} data-axis={i}>
           <line x1={centre} y1={centre} x2={centre} y2={centre} />

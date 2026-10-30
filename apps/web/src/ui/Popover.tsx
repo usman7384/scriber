@@ -1,6 +1,5 @@
 import { useId, useRef, useState, type ReactNode, type RefObject, type ToggleEvent } from "react";
 import { anchorTo, type Align } from "./place";
-import "./ui.css";
 
 export interface PopoverTrigger {
   ref: RefObject<HTMLButtonElement | null>;
