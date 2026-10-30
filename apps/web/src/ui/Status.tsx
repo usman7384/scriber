@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useT } from "../i18n";
 import { Icon } from "./icons";
+import "./ui.css";
 
 export type StatusState = "pass" | "warn" | "fail";
 

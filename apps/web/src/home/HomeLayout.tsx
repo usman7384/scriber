@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Project } from "../api";
 import { HomeNav } from "./HomeNav";
+import "./home.css";
 
 interface Props {
   projects?: Project[] | undefined;

@@ -8,6 +8,7 @@ import { Kbd } from "../../ui/Kbd";
 import { useActions, type Action, type ActionGroup } from "../actions";
 import { isMac, keyCaps } from "../keys";
 import { outOfBounds, parseAssignment, rank, remember, type Row } from "./match";
+import "./palette.css";
 
 const RECENT = "palette-recent";
 const loadRecent = () => localStorage.getItem(RECENT)?.split("\n").filter(Boolean) ?? [];

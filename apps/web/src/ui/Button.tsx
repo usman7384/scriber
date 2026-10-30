@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { cx } from "./cx";
 import { Icon, type IconName } from "./icons";
+import "./ui.css";
 
 export interface ButtonProps extends ComponentProps<"button"> {
   variant?: "default" | "primary" | "ghost";

@@ -15,6 +15,7 @@ import { usePalette } from "./palette";
 import { PartScene, type Hit } from "./PartScene";
 import { isOrtho, type Frame, type View } from "./scene";
 import { TriadSvg } from "./Triad";
+import "./viewer.css";
 
 const views: [View, string][] = [
   ["top", "1"],

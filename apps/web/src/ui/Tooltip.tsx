@@ -1,5 +1,6 @@
 import { cloneElement, useId, useRef, type ReactElement, type SyntheticEvent } from "react";
 import { anchorTo, type Side } from "./place";
+import "./ui.css";
 
 interface Props {
   text: string;

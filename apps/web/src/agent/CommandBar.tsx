@@ -9,6 +9,7 @@ import { ProcessChip, QuantityField, SourceChips, TargetChip, type Target } from
 import { StarterCards } from "./StarterCards";
 import { useAttachments } from "./useAttachments";
 import { useSubmit, type OnJob } from "./useSubmit";
+import "./agent.css";
 
 interface Shared {
   onJob: OnJob;
