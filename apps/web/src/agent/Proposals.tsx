@@ -4,6 +4,7 @@ import { useResource } from "../hooks";
 import { useT } from "../i18n";
 import { Button } from "../ui/Button";
 import { changeText, proposedChanges } from "./diff";
+import "./agent.css";
 
 interface Props {
   modelId: string;

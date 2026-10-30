@@ -1,3 +1,5 @@
+import "./ui.css";
+
 export function Kbd({ keys }: { keys: string[] }) {
   return (
     <span className="ui-kbd">

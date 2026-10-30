@@ -1,12 +1,199 @@
-/* The only file with colour literals. Plain until the new design lands: the 3D scene reads these. */
+/* The only file with colour literals. Values from the Sci-fi UI Kit (docs/design/figma-kit-spec.md, D-042). */
 :root {
-  --part: #c0c0c0;
-  --part-edge: #000000;
-  --accent: #0000ee;
-  --faint: #808080;
-  --grid-minor: rgb(0 0 0 / 10%);
-  --grid-major: rgb(0 0 0 / 25%);
-  --axis-x: #ff0000;
-  --axis-y: #008000;
-  --axis-z: #0000ff;
+  color-scheme: dark;
+  --font: "Exo 2", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --display: "Nippo", "Tektur", "Exo 2", system-ui, sans-serif;
+  --mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
+
+  --viewport: #000000;
+  --bg: #000000;
+  --surface: rgb(23 23 23 / 92%);
+  --surface-solid: #171717;
+  --raised: #262626;
+  --field: #171717;
+  --line: #404040;
+  --line-strong: #525252;
+  --text: #f5f5f5;
+  --text-2: #e5e5e5;
+  --muted: #a3a3a3;
+  --faint: #737373;
+
+  --accent: #d55d5d;
+  --accent-ink: #f5f5f5;
+  --accent-fill: #ca3535;
+  --accent-soft: rgb(202 53 53 / 18%);
+  --accent-line: rgb(213 93 93 / 60%);
+  --accent-press: #e7a2a2;
+  --pass: #30dd10;
+  --warn: #ffb800;
+  --fail: #ff4d80;
+  --info: #00c3c3;
+  --pass-soft: rgb(48 221 16 / 12%);
+  --warn-soft: rgb(255 184 0 / 14%);
+  --fail-soft: rgb(230 0 76 / 18%);
+  --warn-line: rgb(255 184 0 / 50%);
+  --axis-x: #ff4d80;
+  --axis-y: #8cff66;
+  --axis-z: #66ffff;
+
+  --btn-fill: #ffffff;
+  --btn-fill-hover: #d4d4d4;
+  --btn-fill-press: #a3a3a3;
+  --btn-fill-off: #525252;
+  --btn-ink: #171717;
+  --btn-ink-off: #a3a3a3;
+  --btn-stroke: #ffffff;
+  --btn-stroke-off: #737373;
+
+  --grid-minor: rgb(163 163 163 / 10%);
+  --grid-major: rgb(163 163 163 / 22%);
+  --part: #a3a3a3;
+  --part-edge: #171717;
+  --backdrop-dot: rgb(163 163 163 / 16%);
+  --glow: rgb(202 53 53 / 14%);
+
+  --scrim: rgb(0 0 0 / 65%);
+  --shadow-float: inset 0 0 0 1px var(--line);
+  --blur: blur(10px);
+
+  /* The kit's corner: square top-left and bottom-right, 45° cuts at top-right and bottom-left. */
+  --cut: 6px;
+  --chamfer: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+  /* The 1px line along both cuts, as background layers: in the border colour, or in the text colour. */
+  --chamfer-line:
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 0.5px),
+        var(--line) 0 calc(50% + 0.5px),
+        transparent 0
+      )
+      top right / var(--cut) var(--cut) no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 0.5px),
+        var(--line) 0 calc(50% + 0.5px),
+        transparent 0
+      )
+      bottom left / var(--cut) var(--cut) no-repeat;
+  --chamfer-ink:
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 0.5px),
+        currentColor 0 calc(50% + 0.5px),
+        transparent 0
+      )
+      top right / var(--cut) var(--cut) no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 0.5px),
+        currentColor 0 calc(50% + 0.5px),
+        transparent 0
+      )
+      bottom left / var(--cut) var(--cut) no-repeat;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --r-1: 0px;
+  --r-2: 0px;
+  --r-3: 0px;
+  --control: 32px;
+  --control-dense: 28px;
+  --touch: 44px;
+
+  --t-xs: 12px;
+  --lh-xs: 16px;
+  --t-sm: 12px;
+  --lh-sm: 16px;
+  --t-md: 14px;
+  --lh-md: 20px;
+  --t-lg: 16px;
+  --lh-lg: 24px;
+  --t-xl: 20px;
+  --lh-xl: 30px;
+  --t-2xl: 34px;
+  --lh-2xl: 38px;
+
+  --d-fast: 80ms;
+  --d-mid: 140ms;
+  --d-slow: 220ms;
+  --d-camera: 320ms;
+  --ease-in: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.3, 0, 1, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --viewport: #fafafa;
+  --bg: #f5f5f5;
+  --surface: rgb(255 255 255 / 94%);
+  --surface-solid: #ffffff;
+  --raised: #fafafa;
+  --field: #ffffff;
+  --line: #d4d4d4;
+  --line-strong: #a3a3a3;
+  --text: #171717;
+  --text-2: #262626;
+  --muted: #525252;
+  --faint: #737373;
+
+  --accent: #b83030;
+  --accent-ink: #ffffff;
+  --accent-fill: #b83030;
+  --accent-soft: rgb(184 48 48 / 10%);
+  --accent-line: rgb(184 48 48 / 45%);
+  --accent-press: #6f1d1d;
+  --pass: #1e6600;
+  --warn: #b85c00;
+  --fail: #7d0036;
+  --info: #004666;
+  --pass-soft: rgb(30 102 0 / 10%);
+  --warn-soft: rgb(184 92 0 / 10%);
+  --fail-soft: rgb(125 0 54 / 10%);
+  --warn-line: rgb(184 92 0 / 50%);
+
+  --btn-fill: #000000;
+  --btn-fill-hover: #404040;
+  --btn-fill-press: #262626;
+  --btn-fill-off: #a3a3a3;
+  --btn-ink: #f5f5f5;
+  --btn-ink-off: #525252;
+  --btn-stroke: #000000;
+  --btn-stroke-off: #a3a3a3;
+
+  --grid-minor: rgb(23 23 23 / 8%);
+  --grid-major: rgb(23 23 23 / 16%);
+  --part: #d4d4d4;
+  --part-edge: #262626;
+  --backdrop-dot: rgb(23 23 23 / 14%);
+  --glow: rgb(202 53 53 / 8%);
+
+  --shadow-float: inset 0 0 0 1px var(--line);
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="light"] {
+    --line: var(--line-strong);
+    --blur: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-mid: 80ms;
+    --d-slow: 80ms;
+    --d-camera: 0ms;
+  }
 }

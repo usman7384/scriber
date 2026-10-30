@@ -4,6 +4,7 @@ import { useT } from "../i18n";
 import { SearchButton } from "../shell/SearchButton";
 import { IconButton } from "../ui/IconButton";
 import { Icon } from "../ui/icons";
+import "./workspace.css";
 
 type Snap = "peek" | "half" | "full";
 type Tab = "inspect" | "activity" | "versions";

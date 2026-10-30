@@ -4,6 +4,7 @@ import { useResource } from "../hooks";
 import { useT } from "../i18n";
 import { Icon } from "../ui/icons";
 import { QuantityText } from "./QuantityText";
+import "./agent.css";
 
 export interface Target {
   id: string;

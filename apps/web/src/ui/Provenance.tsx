@@ -1,4 +1,5 @@
 import { useT } from "../i18n";
+import "./ui.css";
 
 const monograms: Record<string, string> = {
   prompt: "PRM",

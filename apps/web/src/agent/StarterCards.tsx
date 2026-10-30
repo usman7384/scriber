@@ -1,5 +1,6 @@
 import { useT } from "../i18n";
 import { QuantityText } from "./QuantityText";
+import "./agent.css";
 
 const starters = [
   "Mounting plate 100 x 60 x 5 mm with four M5 clearance holes 8 mm from each edge",
