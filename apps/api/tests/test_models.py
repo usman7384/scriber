@@ -215,3 +215,17 @@ def test_thinking_level_reaches_the_model(api: Api) -> None:
         job = api.wait(api.ok(api.client.post(f"/projects/{project}/generate", json={"prompt": "plate", "thinking": level}))["id"])
         assert job["status"] == "done" and api.llm.budgets[-1] == budget
         assert job["steps"][1]["message"].endswith(f"thinking {level} with a {budget} token reasoning budget")
+
+
+def test_structure_lists_features_with_their_faces_and_params_and_is_cached(api: Api) -> None:
+    job = api.generate(api.project())
+    url = f"/models/{job['model_id']}/versions/1/structure"
+    part = api.ok(api.client.get(url))["parts"][0]
+    features = {f["id"]: f for f in part["features"]}
+    assert sorted(i for f in features.values() for i in f["faces"]) == list(range(len(part["faces"])))
+    assert (len(features["body"]["faces"]), len(features["holes"]["faces"])) == (6, 4)
+    assert features["body"]["params"] == ["length", "width", "thickness"]
+    assert "hole_d" in features["holes"]["params"] and "bolt_spacing_x" in features["holes"]["params"]
+    assert part["explode"] is None
+    assert (disk.version_dir(api.deps.settings.data_dir, job["model_id"], 1) / disk.STRUCTURE).exists()
+    assert api.ok(api.client.get(url)) == {"parts": [part]}

@@ -156,6 +156,28 @@ export interface Component {
   joint: string | null;
 }
 
+export interface FaceMesh {
+  positions: number[];
+  indices: number[];
+}
+
+export interface FeatureNode {
+  id: string;
+  name: string;
+  kind: string;
+  intent: string;
+  params: string[];
+  faces: number[];
+}
+
+export interface PartTree {
+  id: string;
+  name: string;
+  features: FeatureNode[];
+  faces: FaceMesh[];
+  explode: Vec3 | null;
+}
+
 export interface Suggestion {
   id: string;
   target: string;
@@ -312,6 +334,8 @@ export const api = {
     return { blob: await res.blob(), name: name ?? `${id}-v${version}.${fmt}` };
   },
   slice: (id: string, version: number) => post<Printability>(`/models/${id}/slice?version=${version}`),
+  structure: (id: string, version: number) =>
+    request<{ parts: PartTree[] }>(`/models/${id}/versions/${version}/structure`).then((r) => r.parts),
   faceDriver: (id: string, pick: FacePick) => post<FaceDriver>(`/models/${id}/face-driver`, pick),
   suggestions: (id: string) => request<Suggestion[]>(`/models/${id}/suggestions`),
   suggest: (id: string) => post<Suggestion[]>(`/models/${id}/suggestions`),

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { api, apiUrl, exportUrl, type ExportFormat, type Finding, type Job } from "../api";
 import { AgentStatus } from "../agent/AgentStatus";
@@ -42,6 +42,10 @@ export function EditorPage() {
   const components = useResource(`components:${modelId}:${shown}`, () =>
     shown ? api.components(modelId, shown) : Promise.resolve([]),
   );
+  // Features with the faces they made, and joint axes for exploding; the server computes these once per version.
+  const structure = useResource(`structure:${modelId}:${shown}`, () =>
+    shown ? api.structure(modelId, shown) : Promise.resolve([]),
+  );
   // The job this session started: streamed in the dock while it runs, then summed up by the status line.
   const [job, setJob] = useState<{ id: string; ended?: Job }>();
   const [selection, setSelection] = useState<Selection>();
@@ -53,7 +57,7 @@ export function EditorPage() {
   const { openPalette } = useShell();
   const all = versions.data ?? [];
   const version = all.find((v) => v.number === shown) ?? all.at(-1);
-  const parts = components.data ?? [];
+  const parts = useMemo(() => components.data ?? [], [components.data]);
   const nameOf = (id?: string | null) => parts.find((c) => c.id === id)?.name;
   const selectedPart =
     selection?.kind === "part"
@@ -62,8 +66,26 @@ export function EditorPage() {
         ? selection.driver.part
         : selection?.kind === "finding"
           ? version?.findings[selection.index]?.part
-          : undefined;
+          : selection?.kind === "feature"
+            ? selection.part
+            : undefined;
   const target = parts.find((c) => c.id === selectedPart)?.id;
+  const trees = useMemo(() => structure.data ?? [], [structure.data]);
+  const assembly = useMemo(
+    () =>
+      parts.map((c) => ({
+        id: c.id,
+        name: c.name,
+        parent: c.parent,
+        axis: trees.find((x) => x.id === c.id)?.explode,
+      })),
+    [parts, trees],
+  );
+  const highlight = useMemo(() => {
+    if (selection?.kind !== "feature") return undefined;
+    const faces = trees.find((x) => x.id === selection.part)?.faces ?? [];
+    return { part: selection.part, faces: faces.filter((_, i) => selection.feature.faces.includes(i)) };
+  }, [selection, trees]);
   const busy = job !== undefined && !job.ended;
   const fail = (e: Error) => setError(e.message);
   const start = (request: Promise<Job>) => {
@@ -210,6 +232,7 @@ export function EditorPage() {
                 face &&
                 driven && {
                   at: face.hit.point,
+                  part: face.driver.part,
                   normal: face.hit.normal,
                   value: driven.value,
                   unit: driven.unit,
@@ -218,6 +241,8 @@ export function EditorPage() {
                   onCommit: (value) => setParams({ [driven.name]: value }),
                 }
               }
+              assembly={assembly}
+              highlight={highlight}
               pinActions={{
                 onSelect: (index) => setSelection({ kind: "finding", index }),
                 onAsk: ask,
@@ -247,6 +272,11 @@ export function EditorPage() {
           selected={target}
           face={face && { part: face.driver.part, param: driven?.label ?? face.driver.param }}
           hidden={hidden}
+          features={Object.fromEntries(trees.map((x) => [x.id, x.features]))}
+          feature={
+            selection?.kind === "feature" ? { part: selection.part, id: selection.feature.id } : undefined
+          }
+          onFeature={(part, feature) => setSelection({ kind: "feature", part, feature })}
           counts={{
             files: project.data?.file_count,
             checks: `${n.pass} / ${version.checks.length + version.findings.length}`,

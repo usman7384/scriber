@@ -82,6 +82,9 @@ const glyphs = {
     </>
   ),
   grid: <path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z" />,
+  explode: (
+    <path d="M6 6h4v4H6zM8 1.5V4M8 12v2.5M1.5 8H4M12 8h2.5M6.5 3 8 1.5 9.5 3M6.5 13 8 14.5 9.5 13M3 6.5 1.5 8 3 9.5M13 6.5 14.5 8 13 9.5" />
+  ),
   globe: (
     <>
       <circle cx="8" cy="8" r="6" />

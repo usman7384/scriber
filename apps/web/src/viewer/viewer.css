@@ -226,3 +226,41 @@
   display: flex;
   gap: 6px;
 }
+
+/* Explode distance: the same tick scale and red needle as a parameter. */
+.ws-explode {
+  width: 120px;
+  height: 20px;
+  margin: 0 var(--s-1);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  cursor: ew-resize;
+}
+.ws-explode::-webkit-slider-runnable-track {
+  height: 10px;
+  background: var(--scale);
+}
+.ws-explode::-moz-range-track {
+  height: 10px;
+  background: var(--scale);
+}
+.ws-explode::-webkit-slider-thumb {
+  width: 2px;
+  height: 20px;
+  margin-top: -10px;
+  border: 0;
+  border-radius: 0;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-fill);
+  appearance: none;
+}
+.ws-explode::-moz-range-thumb {
+  width: 2px;
+  height: 20px;
+  border: 0;
+  border-radius: 0;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-fill);
+}

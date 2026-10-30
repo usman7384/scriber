@@ -12,7 +12,7 @@ import { IconButton } from "../ui/IconButton";
 import type { Driving } from "./DrivingChip";
 import type { PinActions } from "./FindingPins";
 import { usePalette } from "./palette";
-import { PartScene, type Hit } from "./PartScene";
+import { PartScene, type AssemblyPart, type Highlight, type Hit } from "./PartScene";
 import { isOrtho, type Frame, type View } from "./scene";
 import { TriadSvg } from "./Triad";
 import "./viewer.css";
@@ -32,6 +32,8 @@ interface Props {
   finding?: number | undefined;
   driving?: Driving | undefined;
   pinActions?: PinActions | undefined;
+  assembly?: AssemblyPart[] | undefined;
+  highlight?: Highlight | undefined;
   onSelect: (part: string | undefined) => void;
   onPickFace?: ((hit: Hit) => void) | undefined;
 }
@@ -69,6 +71,8 @@ export function Viewer({
   finding,
   driving,
   pinActions,
+  assembly,
+  highlight,
   onSelect,
   onPickFace,
 }: Props) {
@@ -76,6 +80,10 @@ export function Viewer({
   const [edges, setEdges] = useState(true);
   const [dims, setDims] = useState(true);
   const [faceMode, setFaceMode] = useState(false);
+  // undefined while assembled; otherwise how far apart, 0 to 1
+  const [explode, setExplode] = useState<number>();
+  const canExplode = (assembly?.length ?? 0) > 1;
+  const toggleExplode = () => setExplode((on) => (on === undefined ? 0.6 : undefined));
   const [size, setSize] = useState<Vector3>();
   const { root, free, frame } = useFreeFrame();
   const triad = useRef<SVGSVGElement>(null);
@@ -110,6 +118,18 @@ export function Viewer({
         label: (t) => t.viewer.measure,
         run: () => setDims((on) => !on),
       },
+      ...(canExplode
+        ? [
+            {
+              id: "view.explode",
+              group: "view",
+              icon: "explode",
+              shortcut: "x",
+              label: (t) => t.viewer.explode,
+              run: toggleExplode,
+            } satisfies Action,
+          ]
+        : []),
       ...(canPick
         ? [
             {
@@ -123,7 +143,7 @@ export function Viewer({
           ]
         : []),
     ],
-    [canPick],
+    [canPick, canExplode],
   );
   useRegisterActions(actions);
   const pinText = {
@@ -176,6 +196,27 @@ export function Viewer({
               onClick={pickFace}
             />
           )}
+          {canExplode && (
+            <IconButton
+              icon="explode"
+              label={v.explode}
+              aria-pressed={explode !== undefined}
+              aria-keyshortcuts="X"
+              onClick={toggleExplode}
+            />
+          )}
+          {explode !== undefined && (
+            <input
+              type="range"
+              className="ws-explode"
+              aria-label={v.explodeBy}
+              min={0}
+              max={1}
+              step={0.01}
+              value={explode}
+              onChange={(e) => setExplode(Number(e.target.value))}
+            />
+          )}
           {size && (
             <span className="ws-hud-bbox mono" aria-label={v.bbox}>
               {mm(size.x)} × {mm(size.y)} × {mm(size.z)}
@@ -211,6 +252,9 @@ export function Viewer({
                 pinText={pinText}
                 finding={finding}
                 pinActions={pinActions}
+                assembly={assembly}
+                explode={explode}
+                highlight={highlight}
                 triad={triad}
                 onPick={(part, hit) => (faceMode ? onPickFace?.(hit) : onSelect(part))}
                 onLoad={setSize}

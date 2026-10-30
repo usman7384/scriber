@@ -7,6 +7,7 @@ from partwright_ir import Design, label
 
 FILE_NAMES = {"step": "model.step", "stl": "model.stl", "glb": "model.glb", "py": "model.py", "ir": "design.json"}
 THUMBNAIL = "thumbnail.png"
+STRUCTURE = "structure.json"
 OK_MARKER = "OK"
 MEDIA_TYPES = {"step": "model/step", "stl": "model/stl", "glb": "model/gltf-binary", "py": "text/x-python", "ir": "application/json"}
 

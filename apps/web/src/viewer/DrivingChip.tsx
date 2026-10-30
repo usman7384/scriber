@@ -7,6 +7,7 @@ import { ownPointer } from "./stop";
 
 export interface Driving {
   at: Vec3;
+  part?: string | undefined;
   normal: Vec3;
   value: number;
   unit: string;

@@ -7,6 +7,7 @@ import type {
   GraphView,
   Model,
   Param,
+  PartTree,
   Printability,
   Project,
   Publication,
@@ -67,6 +68,7 @@ type SliceReport = Omit<Printability, "model_id" | "version" | "ok">;
 
 export interface Built {
   glb: Buffer;
+  structure?: PartTree[];
   thumbnail: Buffer;
   findings: Finding[];
   metrics?: Metrics;
@@ -188,6 +190,7 @@ interface Made {
   params: Param[];
   metrics: Metrics;
   findings: Finding[];
+  structure: PartTree[];
 }
 
 const made = (name: string) => ({

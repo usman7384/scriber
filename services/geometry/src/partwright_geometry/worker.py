@@ -14,6 +14,7 @@ from partwright_geometry.joints import interferences, mate_checks
 from partwright_geometry.metrics import part_metrics
 from partwright_geometry.sections import span_sections
 from partwright_geometry.step_meta import read_step, write_step
+from partwright_geometry.structure import part_structure
 from partwright_geometry.thumbnail import render_thumbnail
 from partwright_ir import RuleSet
 
@@ -93,6 +94,14 @@ def sketch_frames(source: str) -> list[dict[str, Any]]:
     return seen
 
 
+def structure(source: str) -> dict[str, Any]:
+    namespace = _load(source)
+    seen: dict[str, list[tuple[str, Shape[Any]]]] = {}
+    namespace["_trace"] = lambda pid, fid, part: seen.setdefault(pid, []).append((fid, part))
+    parts: dict[str, Shape[Any]] = namespace["build"]()
+    return {pid: part_structure(seen[pid], shape) for pid, shape in parts.items() if pid in seen}
+
+
 def _load(source: str) -> dict[str, Any]:
     namespace: dict[str, Any] = {"__builtins__": _sandbox_builtins(), "__name__": "partwright_model"}
     exec(compile(source, "model.py", "exec"), namespace)
@@ -110,6 +119,7 @@ OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "import_step": lambda r: {"parts": [p.model_dump() for p in step_parts(Path(r["path"]))]},
     "step_metadata": lambda r: {"metadata": read_step(Path(r["path"])).model_dump()},
     "frames": lambda r: {"frames": sketch_frames(r["source"])},
+    "structure": lambda r: {"parts": structure(r["source"])},
     "sections": lambda r: {"sections": span_sections(Path(r["path"]), r["ys"])},
     "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"]))},
 }

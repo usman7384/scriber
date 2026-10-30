@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from partwright_api.structure import structure
 from partwright_evals.tools import FREECAD, PRUSASLICER, missing, tool
 from partwright_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, slice_stl
 from partwright_ir import Design, label
@@ -129,6 +130,7 @@ def build(geometry: LocalGeometry, name: str, data: dict[str, Any], stl: bool = 
             "holes": sum(len(p.holes) for p in art.parts),
         },
         "findings": [f.model_dump(mode="json") for f in art.findings],
+        "structure": structure(design, geometry.structure(design)).model_dump(mode="json")["parts"],
     }
     (HERE / f"{name}.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 

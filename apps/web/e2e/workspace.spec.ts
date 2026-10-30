@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Param } from "../src/api";
-import { basePlate, edgePlate, sensorPlate, type Scenario } from "./fixtures";
+import { basePlate, edgePlate, sensorPlate, stackScenario, type Scenario } from "./fixtures";
 import { MockApi } from "./mock-api";
 
 async function open(page: Page, scenario: Scenario = sensorPlate) {
@@ -158,4 +158,73 @@ test("mobile: a bottom sheet with three snap points, no horizontal scroll", asyn
   await page.getByRole("tab", { name: "Versions" }).click();
   await expect(page.getByRole("list", { name: "Version history" })).toBeVisible();
   await expect(inspector(page)).toBeHidden();
+});
+
+// Where each named part mesh sits, and how many triangles the feature highlight draws.
+const scene = (page: Page) =>
+  page.evaluate(async () => {
+    interface Obj {
+      isMesh?: boolean;
+      name: string;
+      position: { x: number; y: number; z: number };
+      material?: { type: string };
+      geometry?: { index: { count: number } | null };
+      traverse(fn: (o: Obj) => void): void;
+    }
+    type Roots = Map<Element, { store: { getState(): { scene: Obj } } }>;
+    const url = performance
+      .getEntriesByType("resource")
+      .map((e) => e.name)
+      .find((n) => n.includes("/@react-three_fiber.js"));
+    const canvas = document.querySelector(".viewer canvas");
+    if (!url || !canvas) throw new Error("viewer not loaded");
+    const { _roots } = (await import(url)) as { _roots: Roots };
+    const root = _roots.get(canvas)?.store.getState().scene;
+    if (!root) throw new Error("no viewer state");
+    const at: Record<string, [number, number, number]> = {};
+    let lit = 0;
+    root.traverse((o) => {
+      if (o.isMesh && o.name) at[o.name] = [o.position.x, o.position.y, o.position.z];
+      if (o.isMesh && o.material?.type === "MeshBasicMaterial") lit += (o.geometry?.index?.count ?? 0) / 3;
+    });
+    return { at, lit };
+  });
+
+test("the feature tree lists a part's features in build order and lights up the faces one made", async ({
+  page,
+}) => {
+  await open(page, basePlate);
+  await page.getByRole("button", { name: "Show the features of Plate" }).click();
+  const features = page.getByRole("list", { name: "Features of Plate" }).getByRole("button");
+  await expect(features).toHaveText([/^Plate\s*extrude$/, /^Bolt holes\s*hole$/]);
+  await features.nth(1).click();
+  await expect(features.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await expect(inspector(page).getByRole("heading", { name: "Bolt holes" })).toBeVisible();
+  await expect(inspector(page)).toContainText("4 faces, highlighted");
+  // the parameters behind the holes lead the panel
+  await expect(inspector(page).getByRole("heading", { name: "Driving" })).toBeVisible();
+  await expect(inspector(page).locator(".ws-param[data-pinned] label")).toHaveText([/Thickness/, /Hole D/]);
+  await expect.poll(async () => (await scene(page)).lit).toBeGreaterThan(0);
+  await page.keyboard.press("Escape");
+  await expect.poll(async () => (await scene(page)).lit).toBe(0);
+});
+
+test("explode slides a mated part along its joint axis and back", async ({ page }) => {
+  await open(page, stackScenario);
+  await expect(page.locator(".measure-label")).toHaveCount(3);
+  await page.keyboard.press("x");
+  const amount = page.getByLabel("Explode distance");
+  await expect(amount).toHaveValue("0.6");
+  await expect(page.locator(".measure-label")).toHaveCount(0);
+  const part = await scene(page);
+  expect(part.at.Plate).toEqual([0, 0, 0]);
+  const [x, y, z] = part.at.Cube ?? [NaN, NaN, NaN];
+  expect([x, y]).toEqual([0, 0]);
+  expect(z).toBeGreaterThan(0);
+  await amount.fill("1");
+  await expect.poll(async () => (await scene(page)).at.Cube?.[2]).toBeCloseTo(z / 0.6, 3);
+  await page.getByRole("button", { name: "Explode" }).click();
+  await expect(amount).toBeHidden();
+  await expect.poll(async () => (await scene(page)).at.Cube).toEqual([0, 0, 0]);
+  await expect(page.locator(".measure-label")).toHaveCount(3);
 });

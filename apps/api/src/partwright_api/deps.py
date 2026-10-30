@@ -12,7 +12,7 @@ from partwright_api.hooks import Hooks
 from partwright_api.jobs import Jobs
 from partwright_api.settings import Settings
 from partwright_context import Context
-from partwright_geometry import Artifact, PartMetrics, SketchFrame
+from partwright_geometry import Artifact, PartMetrics, PartStructure, SketchFrame
 from partwright_ir import Design, Process, RuleSet, ShapeDescriptor
 
 NO_RULES = RuleSet()
@@ -28,6 +28,8 @@ class Geometry(Protocol):
     def measure(self, design: Design) -> list[PartMetrics]: ...
 
     def frames(self, design: Design) -> list[SketchFrame]: ...
+
+    def structure(self, design: Design) -> dict[str, PartStructure]: ...
 
 
 class SerialGeometry:
@@ -55,6 +57,10 @@ class SerialGeometry:
     def frames(self, design: Design) -> list[SketchFrame]:
         with self._lock:
             return self._inner.frames(design)
+
+    def structure(self, design: Design) -> dict[str, PartStructure]:
+        with self._lock:
+            return self._inner.structure(design)
 
 
 @dataclass(frozen=True)

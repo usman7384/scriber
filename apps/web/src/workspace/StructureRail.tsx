@@ -1,6 +1,6 @@
-import type { MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import { Link } from "react-router";
-import type { Component } from "../api";
+import type { Component, FeatureNode } from "../api";
 import { useT } from "../i18n";
 import { Icon, type IconName } from "../ui/icons";
 
@@ -9,6 +9,9 @@ interface Props {
   selected?: string | undefined;
   face?: { part: string; param: string } | undefined;
   hidden: string[];
+  features?: Record<string, FeatureNode[]> | undefined;
+  feature?: { part: string; id: string } | undefined;
+  onFeature?: ((part: string, feature: FeatureNode) => void) | undefined;
   counts: { files?: number | undefined; checks: string; assumed: number };
   sourcesHref?: string | undefined;
   onSelect: (id: string | undefined) => void;
@@ -18,10 +21,48 @@ interface Props {
   onProposals: () => void;
 }
 
-// The component tree (nested by parent, Alt-click isolates) and counted links to what surrounds the part.
+// The component tree (nested by parent, Alt-click isolates), each part's features in build order, and counted
+// links to what surrounds the part.
 export function StructureRail(p: Props) {
   const t = useT();
   const e = t.editor;
+  const [open, setOpen] = useState<string[]>([]);
+  const toggle = (id: string) => setOpen((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]));
+  const features = (c: Component) => {
+    const list = p.features?.[c.id] ?? [];
+    const shown = open.includes(c.id) || p.feature?.part === c.id;
+    if (list.length === 0) return null;
+    return (
+      <>
+        <button
+          type="button"
+          className="ws-tree-toggle"
+          aria-expanded={shown}
+          aria-label={e.showFeatures(c.name)}
+          onClick={() => toggle(c.id)}
+        >
+          <Icon name={shown ? "chevronDown" : "chevronRight"} size={12} />
+        </button>
+        {shown && (
+          <ol className="ws-features" aria-label={e.features(c.name)}>
+            {list.map((f) => (
+              <li key={f.id}>
+                <button
+                  type="button"
+                  aria-pressed={p.feature?.part === c.id && p.feature.id === f.id}
+                  title={f.intent || undefined}
+                  onClick={() => p.onFeature?.(c.id, f)}
+                >
+                  <span className="ws-label">{f.name}</span>
+                  <span className="ws-id">{f.kind.replaceAll("_", " ")}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+      </>
+    );
+  };
   const pick = (c: Component) => (ev: MouseEvent) => {
     if (!ev.altKey) return p.onSelect(c.id === p.selected ? undefined : c.id);
     const others = p.components.filter((x) => x.id !== c.id).map((x) => x.id);
@@ -54,6 +95,7 @@ export function StructureRail(p: Props) {
               />
               <Icon name={p.hidden.includes(c.id) ? "eyeOff" : "eye"} size={14} />
             </label>
+            {features(c)}
             {p.face?.part === c.id && (
               <span className="ws-tree-face">
                 <Icon name="face" size={14} />
