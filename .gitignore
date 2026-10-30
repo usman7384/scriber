@@ -13,3 +13,4 @@ data/
 out/
 evals/results/*/*/
 .claude/worktrees/
+*.FCBak
