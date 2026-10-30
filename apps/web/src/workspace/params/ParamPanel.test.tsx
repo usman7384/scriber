@@ -76,7 +76,7 @@ describe("ParamPanel", () => {
   });
 
   it("pins the driving parameter on top", () => {
-    render(<ParamPanel params={params} pinned="thickness" busy={false} onApply={vi.fn()} />);
+    render(<ParamPanel params={params} pinned={["thickness"]} busy={false} onApply={vi.fn()} />);
     expect(screen.getAllByRole("spinbutton").map((f) => f.id)).toEqual([
       "param-thickness",
       "param-plate_length",

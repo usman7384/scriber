@@ -1,6 +1,8 @@
 export const en = {
   editor: {
     components: "Components",
+    features: (name: string) => `Features of ${name}`,
+    showFeatures: (name: string) => `Show the features of ${name}`,
     noVersion: "This model has no version yet: its generation is still running or was interrupted.",
     backToProject: "Back to the project",
     failed: "This version failed to build; its checks and history show why.",
@@ -33,6 +35,10 @@ export const en = {
   },
   inspector: {
     id: "Id",
+    kind: "Feature type",
+    facesMade: "Faces",
+    intent: "Intent",
+    faces: (n: number) => (n === 1 ? "1 face, highlighted" : `${n} faces, highlighted`),
     parent: "Parent",
     joint: "Joint",
     unset: "not set",
@@ -78,6 +84,8 @@ export const en = {
     views: { top: "Top", front: "Front", right: "Right", iso: "Iso" },
     edges: "Edges",
     measure: "Dimensions",
+    explode: "Explode",
+    explodeBy: "Explode distance",
     face: "Select face",
     bbox: "Bounding box",
     axes: ["L", "W", "H"] as [string, string, string],
@@ -134,6 +142,8 @@ export const en = {
 export const de: typeof en = {
   editor: {
     components: "Bauteile",
+    features: (name: string) => `Features von ${name}`,
+    showFeatures: (name: string) => `Features von ${name} zeigen`,
     noVersion: "Dieses Modell hat noch keine Version: Die Generierung läuft noch oder wurde unterbrochen.",
     backToProject: "Zurück zum Projekt",
     failed: "Diese Version ließ sich nicht erzeugen; Prüfungen und Verlauf zeigen den Grund.",
@@ -166,6 +176,10 @@ export const de: typeof en = {
   },
   inspector: {
     id: "Kennung",
+    kind: "Feature-Typ",
+    facesMade: "Flächen",
+    intent: "Absicht",
+    faces: (n: number) => (n === 1 ? "1 Fläche, hervorgehoben" : `${n} Flächen, hervorgehoben`),
     parent: "Übergeordnet",
     joint: "Verbindung",
     unset: "nicht festgelegt",
@@ -211,6 +225,8 @@ export const de: typeof en = {
     views: { top: "Oben", front: "Vorne", right: "Rechts", iso: "Isometrisch" },
     edges: "Kanten",
     measure: "Maße",
+    explode: "Explosionsansicht",
+    explodeBy: "Explosionsabstand",
     face: "Fläche wählen",
     bbox: "Hüllquader",
     axes: ["L", "B", "H"],

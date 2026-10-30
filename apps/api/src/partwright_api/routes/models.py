@@ -32,10 +32,13 @@ from partwright_api.schemas import (
     Printability,
     RefineIn,
     Sensitivities,
+    Structure,
     VariantsIn,
     Version,
 )
+from partwright_api.structure import structure as design_structure
 from partwright_api.work import Rebuild
+from partwright_geometry import BuildError
 from partwright_ir import ParamError, apply_params, diff, joint_tree, material
 
 router = APIRouter(prefix="/models/{model_id}", dependencies=[Depends(require_token)])
@@ -62,6 +65,27 @@ def get_version(model_id: str, number: int, d: DepsDep) -> Version:
 @router.get("/versions/{number}/thumbnail")
 def thumbnail(model_id: str, number: int, d: DepsDep) -> FileResponse:
     return thumbnail_file(d, model_id, number)
+
+
+# Feature tree with the faces each feature made, and joint axes for exploding; computed once per version.
+@router.get("/versions/{number}/structure")
+async def get_structure(model_id: str, number: int, d: DepsDep) -> Structure:
+    need_model(d, model_id)
+    n, _ = need_version(d, model_id, number)
+    version = disk.version_dir(d.settings.data_dir, model_id, n)
+    cached = version / disk.STRUCTURE
+    if cached.exists():
+        return Structure.model_validate_json(cached.read_text(encoding="utf-8"))
+    if not (version / disk.FILE_NAMES["ir"]).exists():
+        raise HTTPException(404, f"version {n} of model {model_id} has no design")
+    design = disk.design(version)
+    try:
+        parts = await asyncio.to_thread(d.geometry.structure, design)
+    except BuildError as e:
+        raise HTTPException(422, str(e)) from e
+    result = design_structure(design, parts)
+    cached.write_text(result.model_dump_json(), encoding="utf-8")
+    return result
 
 
 @router.post("/versions/{number}/restore", status_code=201)

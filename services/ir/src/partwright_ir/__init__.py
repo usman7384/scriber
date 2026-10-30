@@ -10,7 +10,7 @@ from partwright_ir.normalize import drop_unused_params, normalize
 from partwright_ir.params import ParamError, apply_params, label
 from partwright_ir.rules import Rule, RuleKind, RuleSet, ShapeDescriptor
 from partwright_ir.schema import answer_json, design_hash, json_schema
-from partwright_ir.validate import IrError, validate
+from partwright_ir.validate import IrError, feature_params, validate
 
 __all__ = [
     "Assembly",
@@ -39,6 +39,7 @@ __all__ = [
     "drop_unused_params",
     "evaluate",
     "face_driver",
+    "feature_params",
     "insert",
     "joint_tree",
     "json_schema",

@@ -187,6 +187,17 @@ class SketchFrame(Frozen):
     normal: int = 1
 
 
+class FaceMesh(Frozen):
+    positions: list[float]
+    indices: list[int]
+
+
+class PartStructure(Frozen):
+    faces: list[FaceMesh]
+    features: dict[str, list[int]]
+    placement: list[float] = Field(description="3x4 row-major transform from the part's own frame to the assembly")
+
+
 class FeatureEntry(Frozen):
     part: str
     id: str

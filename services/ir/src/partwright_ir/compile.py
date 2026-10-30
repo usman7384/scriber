@@ -43,11 +43,12 @@ from partwright_ir.prelude import AIRFOIL_PRELUDE, PRELUDE
 from partwright_ir.prelude_features import FEATURE_PRELUDE
 
 
-def compile_design(design: Design) -> str:
+# trace=True adds a _trace(part, feature, shape) call after every feature, for the caller to define.
+def compile_design(design: Design, trace: bool = False) -> str:
     params = "\n".join(f"    {p.name!r}: {p.value!r},  # {p.unit or 'count'} {p.description}".rstrip() for p in design.params)
     values = design.param_values()
     enclosures = {p.id: f for p in design.parts for f in p.features if isinstance(f, ShellWithLid)}
-    parts = "\n\n\n".join(_part(i, p, values, enclosures) for i, p in enumerate(design.parts))
+    parts = "\n\n\n".join(_part(i, p, values, enclosures, trace) for i, p in enumerate(design.parts))
     table = ", ".join(f"{p.id!r}: part_{i}()" for i, p in enumerate(design.parts))
     airfoils = any(isinstance(f, AirfoilSection) for p in design.parts for f in p.features)
     prelude = PRELUDE + AIRFOIL_PRELUDE if airfoils else PRELUDE
@@ -60,10 +61,14 @@ def compile_design(design: Design) -> str:
     return f"{prelude}\n\nP = {{\n{params}\n}}\n{faces}\n\n{parts}\n\n\n{build}"
 
 
-def _part(index: int, part: Part, values: dict[str, float], enclosures: dict[str, ShellWithLid]) -> str:
+def _part(index: int, part: Part, values: dict[str, float], enclosures: dict[str, ShellWithLid], trace: bool) -> str:
     sketches = {s.id: s for s in part.sketches}
     datums = ", ".join(_datum(d) for d in part.datums)
-    body = [line for f in part.features for line in _feature(f, sketches, values, enclosures)]
+    body = []
+    for f in part.features:
+        body += _feature(f, sketches, values, enclosures)
+        if trace:
+            body.append(f"    _trace({part.id!r}, {f.id!r}, part)")
     head = [f"def part_{index}():", "    part = None", "    T = {}", f"    D = {{{datums}}}"]
     groups = ", ".join(f"{g.name!r}: {_select('faces', g.faces)}" for g in part.face_groups)
     faces = [f"    FACES[{part.id!r}] = {{{groups}}}"] if groups else []

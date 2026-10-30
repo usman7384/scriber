@@ -78,6 +78,20 @@ def used_params(design: Design) -> set[str]:
     return {n for node in nodes for n in _names(node)} | assembly_names(design)
 
 
+# The parameters each feature's expressions use, its sketch's included, in the design's parameter order.
+def feature_params(design: Design) -> dict[tuple[str, str], list[str]]:
+    order = [p.name for p in design.params]
+    out: dict[tuple[str, str], list[str]] = {}
+    for part in design.parts:
+        sketches = {s.id: s for s in part.sketches}
+        for f in part.features:
+            sketch = getattr(f, "sketch", None)
+            nodes = [f, *([sketches[sketch]] if isinstance(sketch, str) and sketch in sketches else [])]
+            used = {n for node in nodes for n in _names(node)}
+            out[(part.id, f.id)] = [n for n in order if n in used]
+    return out
+
+
 def _param_errors(design: Design) -> Iterator[IrError]:
     seen: set[str] = set()
     for p in design.params:

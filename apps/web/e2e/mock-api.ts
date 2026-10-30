@@ -372,6 +372,14 @@ export class MockApi {
     ],
     [
       "GET",
+      /^\/models\/m1\/versions\/(\d+)\/structure$/,
+      (m) => {
+        const v = this.version(m[1] ?? null);
+        return v ? json({ parts: this.build(v)?.structure ?? [] }) : missing("version");
+      },
+    ],
+    [
+      "GET",
       /^\/models\/m1\/components$/,
       (_, req) =>
         this.version(new URL(req.url()).searchParams.get("version"))

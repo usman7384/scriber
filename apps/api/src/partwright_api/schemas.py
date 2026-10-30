@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from partwright_context import KbStats
-from partwright_geometry import Finding
+from partwright_geometry import FaceMesh, Finding
 from partwright_ir import Design, DesignDiff, Process, Provenance, RuleKind
 
 JobKind = Literal["generate", "refine", "edit", "params", "ingest", "batch", "build"]
@@ -435,3 +435,26 @@ class SimulationIn(Frozen):
     solver: str = ""
     load_case: str = ""
     results: list[FaceStress] = Field(min_length=1)
+
+
+class FeatureNode(Frozen):
+    id: str
+    name: str
+    kind: str
+    intent: str
+    params: list[str] = Field(description="parameters this feature's expressions use, in design order")
+    faces: list[int] = Field(description="indices into the part's faces that this feature made")
+
+
+class PartTree(Frozen):
+    id: str
+    name: str
+    features: list[FeatureNode]
+    faces: list[FaceMesh] = Field(description="the part's faces in assembly coordinates, mm, Z up")
+    explode: tuple[float, float, float] | None = Field(
+        description="unit joint axis the part slides along when exploded; none for a root part"
+    )
+
+
+class Structure(Frozen):
+    parts: list[PartTree]

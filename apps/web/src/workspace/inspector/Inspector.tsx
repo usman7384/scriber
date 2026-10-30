@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Component, FaceDriver, Finding, Version } from "../../api";
+import type { Component, FaceDriver, FeatureNode, Finding, Version } from "../../api";
 import { useT } from "../../i18n";
 import { Button } from "../../ui/Button";
 import { Icon, type IconName } from "../../ui/icons";
@@ -14,7 +14,8 @@ import { ParamTable } from "./ParamTable";
 export type Selection =
   | { kind: "part"; id: string }
   | { kind: "face"; driver: FaceDriver; hit: Hit }
-  | { kind: "finding"; index: number };
+  | { kind: "finding"; index: number }
+  | { kind: "feature"; part: string; feature: FeatureNode };
 
 interface Props {
   title: string;
@@ -63,6 +64,7 @@ export function Inspector(p: Props) {
   const part = selection?.kind === "part" ? components.find((c) => c.id === selection.id) : undefined;
   const face = selection?.kind === "face" ? selection : undefined;
   const driven = face && version.params.find((x) => x.name === face.driver.param);
+  const feature = selection?.kind === "feature" ? selection : undefined;
 
   const overview: Head = { icon: "part", title: p.title, sub: `v${version.number}` };
   let head = overview;
@@ -124,6 +126,18 @@ export function Inspector(p: Props) {
         )}
       </>
     );
+  } else if (feature) {
+    const f = feature.feature;
+    head = { icon: "face", title: f.name, sub: components.find((c) => c.id === feature.part)?.name };
+    detail = (
+      <Rows
+        rows={[
+          [t.inspector.kind, f.kind.replaceAll("_", " ")],
+          [t.inspector.intent, f.intent],
+          [t.inspector.facesMade, t.inspector.faces(f.faces.length)],
+        ]}
+      />
+    );
   } else if (part) {
     head = { icon: "part", title: part.name, sub: part.id };
     detail = (
@@ -159,7 +173,7 @@ export function Inspector(p: Props) {
           <ParamPanel
             params={version.params}
             busy={p.busy ?? false}
-            pinned={driven?.name}
+            pinned={driven ? [driven.name] : feature?.feature.params}
             sourcesHref={p.sourcesHref}
             onApply={p.onApply}
           />

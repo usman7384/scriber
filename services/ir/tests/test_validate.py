@@ -166,3 +166,37 @@ def test_untabulated_sizes_interpolate() -> None:
     assert 26.0 < clearance[1] < 30.0
     assert pitch == 3.0
     assert parse("M40") is None
+
+
+def test_feature_params_follow_each_feature_and_its_sketch() -> None:
+    from partwright_ir import Design, feature_params
+
+    design = Design.model_validate(
+        {
+            "title": "Plate",
+            "params": [
+                {"name": "length", "value": 80, "unit": "mm"},
+                {"name": "thickness", "value": 5, "unit": "mm"},
+                {"name": "hole_d", "value": 6, "unit": "mm"},
+            ],
+            "parts": [
+                {
+                    "id": "p",
+                    "name": "Plate",
+                    "sketches": [{"id": "s", "entities": [{"kind": "rect", "width": "length", "height": 60}]}],
+                    "features": [
+                        {"kind": "extrude", "id": "body", "name": "Body", "sketch": "s", "distance": "thickness"},
+                        {
+                            "kind": "hole",
+                            "id": "h",
+                            "name": "Hole",
+                            "plane": {"offset": "thickness"},
+                            "at": {"kind": "points", "points": [[0, 0]]},
+                            "diameter": "hole_d",
+                        },
+                    ],
+                }
+            ],
+        }
+    )
+    assert feature_params(design) == {("p", "body"): ["length", "thickness"], ("p", "h"): ["thickness", "hole_d"]}

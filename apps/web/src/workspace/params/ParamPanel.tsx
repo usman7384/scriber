@@ -10,7 +10,7 @@ const DEBOUNCE_MS = 400;
 interface Props {
   params: Param[];
   busy: boolean;
-  pinned?: string | undefined;
+  pinned?: string[] | undefined;
   sourcesHref?: string | undefined;
   onApply: (values: Record<string, number>) => void;
 }
@@ -44,11 +44,12 @@ export function ParamPanel({ params, busy, pinned, sourcesHref, onApply }: Props
   };
 
   if (params.length === 0) return <p className="ws-muted">{t.params.none}</p>;
-  const ordered = [...params].sort((a, b) => Number(b.name === pinned) - Number(a.name === pinned));
+  const on = (name: string) => pinned?.includes(name) ?? false;
+  const ordered = [...params].sort((a, b) => Number(on(b.name)) - Number(on(a.name)));
   return (
     <form className="ws-params" onSubmit={submit} aria-label={t.params.form}>
       <div className="ws-section-head">
-        <h3 className="eyebrow">{pinned ? t.params.driving : t.params.form}</h3>
+        <h3 className="eyebrow">{pinned?.length ? t.params.driving : t.params.form}</h3>
         <label className="ws-live">
           {t.params.live}
           <input
@@ -64,7 +65,7 @@ export function ParamPanel({ params, busy, pinned, sourcesHref, onApply }: Props
         <ParamRow
           key={p.name}
           param={p}
-          pinned={p.name === pinned}
+          pinned={on(p.name)}
           sourcesHref={sourcesHref}
           draft={drafts[p.name] ?? String(p.value)}
           onChange={(d) => setEdit({ of: params, drafts: { ...drafts, [p.name]: d } })}
