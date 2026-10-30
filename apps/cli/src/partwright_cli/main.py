@@ -10,7 +10,7 @@ import httpx
 import uvicorn
 
 from partwright_agent import Result, Step, generate, refine
-from partwright_api import SerialGeometry, Settings, create_app
+from partwright_api import SerialGeometry, Settings, create_app, thumbnail_targets
 from partwright_cli import project, store
 from partwright_cli.config import Config, llm_for, load, tool_path
 from partwright_cli.pipe import pipe
@@ -153,6 +153,14 @@ def _run(steps: Iterator[Step], version: Path) -> tuple[int, Result | None]:
     return 1, final
 
 
+def _thumbnails(args: argparse.Namespace, config: Config, geometry: LocalGeometry) -> int:
+    targets = thumbnail_targets(config.data_dir)
+    for glb, png in targets:
+        geometry.thumbnail(glb, png)
+    print(f"rendered {len(targets)} thumbnails")
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="partwright")
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
@@ -190,6 +198,8 @@ def _parser() -> argparse.ArgumentParser:
     pi.set_defaults(run=_pipe)
     s = sub.add_parser("serve", help="run the HTTP API (host, port and auth from the api section of config)")
     s.set_defaults(run=_serve)
+    t = sub.add_parser("thumbnails", help="re-render every saved version's thumbnail")
+    t.set_defaults(run=_thumbnails)
     v = sub.add_parser("view", help="open a 3D viewer for the models in the output folder")
     v.add_argument("root", type=Path, nargs="?", help="folder of model folders; defaults to output_dir in config")
     v.add_argument("--port", type=int, default=8765)

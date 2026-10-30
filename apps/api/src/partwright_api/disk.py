@@ -19,6 +19,10 @@ def version_dir(data_dir: Path, model_id: str, number: int) -> Path:
     return model_dir(data_dir, model_id) / f"v{number}"
 
 
+def thumbnail_targets(data_dir: Path) -> list[tuple[Path, Path]]:
+    return [(glb, glb.with_name(THUMBNAIL)) for glb in sorted((data_dir / "models").glob("*/v*/model.glb"))]
+
+
 def next_number(data_dir: Path, model_id: str) -> int:
     root = model_dir(data_dir, model_id)
     return len([p for p in root.glob("v*") if p.is_dir() and p.name[1:].isdigit()]) + 1

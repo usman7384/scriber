@@ -9,7 +9,8 @@ import { useResource } from "../hooks";
 import { useT } from "../i18n";
 import { useShell } from "../shell/context";
 import { HomeLayout } from "./HomeLayout";
-import { PartsGrid, type Part } from "./PartsGrid";
+import type { Part } from "./PartsGrid";
+import { PartsOrbit } from "./PartsOrbit";
 import { NewProject } from "./ProjectList";
 
 // The sheet and its graph layout load only when Sources opens.
@@ -59,7 +60,7 @@ export function HomePage() {
       <p className="home-lead">{target ? t.home.lead : t.projects.none}</p>
       {target ? <Composer key={target.id} project={target} onEnd={reload} /> : <NewProject startOpen />}
       {models.data ? (
-        <PartsGrid
+        <PartsOrbit
           label={t.gallery.region}
           parts={models.data.map((m) => modelPart(m, current ? undefined : names[m.project_id]))}
           empty={t.gallery.none}
