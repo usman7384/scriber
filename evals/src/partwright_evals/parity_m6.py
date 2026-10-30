@@ -1,5 +1,6 @@
 import json
 import statistics
+import time
 from pathlib import Path
 
 from partwright_evals.parity import Evidence, Measured, Rig, evidence
@@ -28,8 +29,32 @@ def attempt(rig: Rig, case: Case) -> CaseResult:
     return r
 
 
+def recorded(rig: Rig, case: Case) -> CaseResult:
+    start = time.monotonic()
+    try:
+        return attempt(rig, case)
+    except Exception as e:  # a model-server error (e.g. CUDA out of memory) fails this case, not the benchmark
+        total = len(case.checks) + len(case.shape) + 2 * len(case.params)
+        error = f"{type(e).__name__}: {e}"[:300]
+        seconds = round(time.monotonic() - start, 1)
+        return CaseResult(
+            id=case.id,
+            model=rig.llm.name,
+            built=False,
+            valid=False,
+            agent_ok=False,
+            checks_passed=0,
+            checks_total=total,
+            failed_checks=[error],
+            attempts=0,
+            repairs=0,
+            seconds=seconds,
+            final_step=error,
+        )
+
+
 def showcase(rig: Rig) -> Evidence:
-    results = [attempt(rig, c) for c in load_cases(SHOWCASE)]
+    results = [recorded(rig, c) for c in load_cases(SHOWCASE)]
     (rig.out / "results.json").write_text(json.dumps([r.model_dump() for r in results], indent=2), encoding="utf-8")
     (rig.out / "SCORECARD.md").write_text(scorecard(results), encoding="utf-8")
     passed = [r.id for r in results if correct(r)]

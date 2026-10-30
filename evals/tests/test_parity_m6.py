@@ -1,6 +1,7 @@
 import json
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -81,6 +82,26 @@ def test_showcase_demo_fails_below_three_quarters(geometry: LocalGeometry, tmp_p
     ev = run_row("M6-SHOWCASE", ROWS["M6-SHOWCASE"], rig(tmp_path / "run", geometry, [a for s in swapped for a in (NO_REQS, s)]))
     assert not ev.passed
     assert ev.measured["fully_correct"] == "2/3" and ev.measured["failed"] == "sc15-hub-gear"
+
+
+class FlakyLLM(FakeLLM):
+    def chat(self, *args: Any, **kwargs: Any) -> str:
+        reply = super().chat(*args, **kwargs)
+        if reply == "OOM":
+            raise RuntimeError("CUDA error: out of memory")
+        return reply
+
+
+def test_showcase_demo_records_a_crashing_case_and_carries_on(
+    geometry: LocalGeometry, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    subset(tmp_path, monkeypatch, DEMO)
+    answers = [NO_REQS, reference(DEMO[0]), "OOM", NO_REQS, reference(DEMO[2])]
+    demo = Rig(tmp_path / "run", geometry, FlakyLLM(answers), load(ROOT / "config.yaml"))
+    ev = run_row("M6-SHOWCASE", ROWS["M6-SHOWCASE"], demo)
+    assert ev.measured["fully_correct"] == "2/3" and ev.measured["failed"] == "sc15-hub-gear"
+    results = json.loads((tmp_path / "run" / "M6-SHOWCASE" / "results.json").read_text(encoding="utf-8"))
+    assert results[1]["failed_checks"] == ["RuntimeError: CUDA error: out of memory"]
 
 
 def test_teeth_check_reads_the_built_gear(geometry: LocalGeometry, tmp_path: Path) -> None:
