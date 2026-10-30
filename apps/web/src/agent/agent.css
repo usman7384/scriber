@@ -45,11 +45,6 @@
 .agent-stream,
 .agent-status,
 .agent-scrub {
-  border-radius: var(--r-2);
-  background: var(--chamfer-line), var(--surface);
-  backdrop-filter: var(--blur);
-  box-shadow: var(--shadow-float);
-  clip-path: var(--chamfer);
   color: var(--text);
 }
 
@@ -59,11 +54,15 @@
   gap: var(--s-3);
   min-width: 0;
 }
+/* The kit's single stroke: a rule across the right half over one across the whole width. */
 .agent-bar {
   display: grid;
   gap: var(--s-2);
   min-width: 0;
-  padding: var(--s-2) 10px;
+  padding: 0 0 12px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) right bottom 3px / 50% 1px no-repeat,
+    linear-gradient(var(--muted), var(--muted)) left bottom / 100% 1px no-repeat;
 }
 .agent-bar-row {
   display: flex;
@@ -104,8 +103,13 @@
   field-sizing: content;
   overflow: auto;
 }
+.agent-bar[data-mode="generate"] .agent-field textarea,
+.agent-bar[data-mode="generate"] .agent-field-marks {
+  font-size: 22px;
+  line-height: 32px;
+}
 .agent-bar[data-mode="generate"] textarea {
-  min-height: calc(3 * var(--lh-lg) + 8px);
+  min-height: calc(2 * 32px + 8px);
 }
 .agent-field textarea::placeholder {
   color: var(--muted);
@@ -115,7 +119,9 @@
   box-shadow: none;
 }
 .agent-bar:focus-within {
-  box-shadow: inset 0 0 0 1px var(--accent);
+  background:
+    linear-gradient(var(--accent), var(--accent)) right bottom 3px / 50% 1px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) left bottom / 100% 1px no-repeat;
 }
 .agent-field-marks {
   position: absolute;
@@ -283,18 +289,19 @@
 }
 
 /* Starter cards */
+/* Example prompts: quiet lines under the prompt, marked by a short rule. */
 .agent-starters {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--s-2);
+  gap: var(--s-2) var(--s-5);
 }
 .agent-starter {
   display: block;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-2);
-  background: var(--raised);
-  color: var(--text-2);
+  padding: 2px 0 2px 12px;
+  border: 0;
+  border-left: 1px solid var(--line-strong);
+  background: none;
+  color: var(--muted);
   font-size: var(--t-sm);
   line-height: var(--lh-sm);
   text-align: left;
@@ -303,7 +310,8 @@
   transition: border-color var(--d-fast) var(--ease-in);
 }
 .agent-starter:hover {
-  border-color: var(--accent-line);
+  border-color: var(--accent);
+  color: var(--text);
 }
 .agent-starter .mono {
   color: var(--text);
@@ -317,8 +325,7 @@
   overflow: hidden;
 }
 .agent-stream[data-variant="card"] {
-  background: var(--raised);
-  backdrop-filter: none;
+  border-left: 1px solid var(--line-strong);
 }
 .agent-stream[data-variant="dock"] {
   max-height: min(60vh, 520px);
@@ -480,11 +487,12 @@ details:not([open]) > summary.agent-step-head::after {
 }
 
 /* Version scrubber */
+/* Versions read off a ruler along the bottom edge. */
 .agent-scrub {
   display: grid;
   gap: 6px;
   min-width: 0;
-  padding: 4px 6px 4px 12px;
+  padding: 0;
 }
 .agent-scrub-row,
 .agent-scrub-banner {
@@ -523,11 +531,11 @@ details:not([open]) > summary.agent-step-head::after {
 .agent-lane::before {
   content: "";
   position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 9px;
-  height: 1px;
-  background: var(--line-strong);
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 10px;
+  background: var(--scale);
 }
 .agent-tick-item {
   position: relative;
@@ -552,24 +560,21 @@ details:not([open]) > summary.agent-step-head::after {
 }
 .agent-tick-mark {
   position: relative;
-  width: 7px;
-  height: 7px;
-  border-radius: 0;
+  width: 1px;
+  height: 16px;
   background: var(--muted);
 }
 .agent-tick-item[data-agent] .agent-tick-mark {
-  border: 1.5px solid var(--muted);
-  border-radius: 50%;
-  background: var(--bg);
+  background: repeating-linear-gradient(var(--muted) 0 3px, transparent 3px 5px);
 }
 .agent-tick[aria-current="true"] {
   color: var(--accent);
 }
 .agent-tick[aria-current="true"] .agent-tick-mark {
-  width: 10px;
-  height: 10px;
-  border-color: var(--accent);
+  width: 2px;
+  height: 20px;
   background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-fill);
 }
 .agent-tick-item[data-other] .agent-tick-mark {
   outline: 1.5px dashed var(--accent);

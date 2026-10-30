@@ -1,26 +1,57 @@
+/* Home is one question on a horizon, inside the same measuring frame as the workspace (D-042). */
 .home {
-  display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  align-items: start;
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+}
+.home::before {
+  content: "";
+  position: fixed;
+  inset: 18px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--line-strong), var(--line-strong)) top left / 22px 1px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) top left / 1px 22px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) top right / 22px 1px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) top right / 1px 22px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) bottom left / 22px 1px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) bottom left / 1px 22px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) bottom right / 22px 1px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) bottom right / 1px 22px no-repeat,
+    repeating-linear-gradient(var(--line) 0 1px, transparent 1px 12px) left center / 8px calc(100% - 128px)
+      no-repeat,
+    repeating-linear-gradient(var(--line) 0 1px, transparent 1px 12px) right center / 8px calc(100% - 128px)
+      no-repeat;
+}
+.home-horizon {
+  position: fixed;
+  left: 50%;
+  top: 72vh;
+  z-index: 0;
+  width: 170vw;
+  height: 170vw;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--horizon);
+  box-shadow: var(--horizon-glow);
+  pointer-events: none;
 }
 
+/* Navigation is quiet text along the frame's top edge. */
 .home-nav {
-  position: sticky;
-  top: 0;
+  position: relative;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  height: 100vh;
-  overflow: auto;
-  padding: var(--s-3) var(--s-2);
-  border-right: 1px solid var(--line);
-  background: var(--surface);
-  backdrop-filter: var(--blur);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 22px;
+  padding: 28px 44px 0;
 }
 .home-nav ul {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-wrap: wrap;
+  gap: 6px 22px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -29,9 +60,8 @@
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  padding: var(--s-1) var(--s-2) 14px;
   color: var(--text);
-  font-weight: 600;
+  font: 700 18px / 1 var(--display);
   text-decoration: none;
 }
 .home-brand svg {
@@ -39,9 +69,6 @@
 }
 .home-group {
   display: block;
-  padding: 10px 10px var(--s-1);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 a.home-group {
@@ -51,48 +78,41 @@ a.home-group:hover,
 a.home-group[aria-current="page"] {
   color: var(--text);
 }
-.home-nav .shell-search {
-  margin: 0 2px 6px;
-}
 .home-project {
-  display: flex;
-  flex-direction: column;
+  display: contents;
+}
+.home-project > .home-group {
+  display: none;
 }
 .home-link {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  width: 100%;
-  min-height: 30px;
-  padding: 0 10px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 0 0;
   border: 0;
-  border-radius: var(--r-1);
   background: none;
-  color: var(--text-2);
-  text-align: left;
+  color: var(--muted);
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--d-fast) var(--ease-in);
+  transition: color var(--d-fast) var(--ease-in);
+}
+.home-link .ui-icon {
+  display: none;
 }
 .home-link:hover {
-  background: var(--raised);
   color: var(--text);
 }
 .home-link[aria-current="page"] {
-  background: var(--raised);
   color: var(--text);
-  box-shadow: inset 2px 0 0 var(--accent);
+  box-shadow: inset 0 -1px 0 var(--accent);
 }
 .home-link-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .home-count {
   color: var(--faint);
-  font: var(--t-xs) / var(--lh-xs) var(--mono);
+  font-size: var(--t-xs);
 }
 .home-new {
   color: var(--muted);
@@ -128,11 +148,11 @@ a.home-group[aria-current="page"] {
 
 .home-main {
   position: relative;
-  isolation: isolate;
-  overflow-x: clip;
+  z-index: 1;
   width: 100%;
-  max-width: 1180px;
-  padding: 40px var(--s-7);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 13vh 44px 34vh;
 }
 .home-eyebrow h1 {
   color: var(--accent);
@@ -149,10 +169,10 @@ a.home-group[aria-current="page"] {
 }
 .home-lead,
 .home-title {
-  margin: var(--s-1) 0 var(--s-4);
+  margin: var(--s-2) 0 var(--s-6);
   font-family: var(--display);
-  font-size: var(--t-2xl);
-  line-height: var(--lh-2xl);
+  font-size: 60px;
+  line-height: 64px;
   font-weight: 700;
   letter-spacing: 0;
 }
@@ -185,23 +205,22 @@ a.home-group[aria-current="page"] {
 .parts-bar h2 {
   flex: 1;
   margin: 0;
-  font-size: var(--t-lg);
-  line-height: var(--lh-lg);
-  font-weight: 600;
+  font-size: var(--t-xl);
+  line-height: 28px;
 }
 .parts-bar select {
   height: var(--control);
-  padding: 0 var(--s-2);
+  padding: 0;
   border: 0;
-  border-radius: var(--r-1);
-  background: var(--raised);
+  background: none;
   color: var(--muted);
   font-size: var(--t-sm);
 }
+/* Parts are specimens: the part itself on the backdrop, no card around it. */
 .parts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--s-6) var(--s-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -210,35 +229,32 @@ a.home-group[aria-current="page"] {
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   min-width: 0;
-  overflow: hidden;
-  border-radius: var(--r-2);
-  background: var(--surface-solid);
-  box-shadow: 0 0 0 1px var(--line);
-  transition: box-shadow var(--d-fast) var(--ease-in);
-}
-.part-card:hover,
-.part-card:focus-within {
-  box-shadow: 0 0 0 1px var(--line-strong);
+  text-align: center;
 }
 .part-thumb {
   display: grid;
   place-items: center;
+  width: 100%;
   aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: var(--viewport);
   color: var(--faint);
 }
 .part-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+.part-card:hover .card-title {
+  color: var(--accent);
 }
 .part-body {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
-  padding: 10px var(--s-3);
+  max-width: 100%;
+  padding: var(--s-2) 0 0;
 }
 .card-title {
   overflow: hidden;
@@ -264,7 +280,7 @@ a.home-group[aria-current="page"] {
 .part-sub {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0 var(--s-2);
   margin: 0;
   color: var(--muted);
@@ -341,6 +357,12 @@ a.home-group[aria-current="page"] {
     min-height: var(--touch);
     padding: 0;
   }
+  .home-link {
+    align-items: center;
+  }
+  .home-link .ui-icon {
+    display: block;
+  }
   .home-nav .home-link-text {
     position: absolute;
     width: 1px;
@@ -353,12 +375,16 @@ a.home-group[aria-current="page"] {
     flex-basis: 100%;
   }
   .home-main {
-    padding: 20px var(--s-4);
+    padding: 48px 28px 30vh;
   }
   .home-lead,
   .home-title {
-    font-size: var(--t-xl);
-    line-height: var(--lh-xl);
+    font-size: 34px;
+    line-height: 38px;
+  }
+  .home-horizon {
+    width: 260vw;
+    height: 260vw;
   }
   .parts-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

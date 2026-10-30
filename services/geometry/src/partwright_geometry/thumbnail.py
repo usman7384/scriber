@@ -4,8 +4,8 @@ import numpy as np
 import trimesh
 from PIL import Image
 
-BACKGROUND = (0.96, 0.96, 0.97, 1.0)
-COLOUR = (0.55, 0.62, 0.72, 1.0)
+BACKGROUND = (0.0, 0.0, 0.0, 0.0)
+COLOUR = (0.64, 0.64, 0.64, 1.0)
 
 
 def render_thumbnail(glb: Path, png: Path, size: int = 256) -> Path:
@@ -22,7 +22,8 @@ def render_thumbnail(glb: Path, png: Path, size: int = 256) -> Path:
     scene.add(pyrender.DirectionalLight(intensity=3.0), pose=pose)
     renderer = pyrender.OffscreenRenderer(size, size)
     try:
-        colour, _ = renderer.render(scene)
+        # Transparent background, so the part sits on whatever the page draws behind it.
+        colour, _ = renderer.render(scene, flags=pyrender.RenderFlags.RGBA)
     finally:
         renderer.delete()
     Image.fromarray(colour).save(png)
