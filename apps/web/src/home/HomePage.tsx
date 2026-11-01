@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useEffectEvent, useState } from "react";
 import { useMatch, useNavigate, useParams, useSearchParams } from "react-router";
 import { AgentStream } from "../agent/AgentStream";
 import { CommandBar } from "../agent/CommandBar";
@@ -29,6 +29,8 @@ export function HomePage() {
   );
   const navigate = useNavigate();
   const t = useT();
+  // A run sends the horizon to the corner so the agent's log has the screen; a click brings it back.
+  const [docked, setDocked] = useState(false);
 
   if (!projects.data)
     return (
@@ -58,12 +60,18 @@ export function HomePage() {
         {target && <span>· {current ? t.home.newPart : t.home.newPartIn(target.name)}</span>}
       </div>
       <p className="home-lead">{target ? t.home.lead : t.projects.none}</p>
-      {target ? <Composer key={target.id} project={target} onEnd={reload} /> : <NewProject startOpen />}
+      {target ? (
+        <Composer key={target.id} project={target} onRun={() => setDocked(true)} onEnd={reload} />
+      ) : (
+        <NewProject startOpen />
+      )}
       {models.data ? (
         <PartsOrbit
           label={t.gallery.region}
           parts={models.data.map((m) => modelPart(m, current ? undefined : names[m.project_id]))}
           empty={t.gallery.none}
+          docked={docked}
+          onRestore={() => setDocked(false)}
         />
       ) : (
         <Pending error={models.error} />
@@ -121,7 +129,13 @@ interface Run {
   resend?: () => Promise<Job>;
 }
 
-function Composer({ project, onEnd }: { project: Project; onEnd: () => void }) {
+interface ComposerProps {
+  project: Project;
+  onRun: () => void;
+  onEnd: () => void;
+}
+
+function Composer({ project, onRun, onEnd }: ComposerProps) {
   const active = useResource(`active-jobs:${project.id}`, () => api.activeJobs(project.id));
   const [search] = useSearchParams();
   const contextIds = search.get("context")?.split(",").filter(Boolean) ?? [];
@@ -129,6 +143,10 @@ function Composer({ project, onEnd }: { project: Project; onEnd: () => void }) {
   const { openPalette } = useShell();
   const jobId = run?.id ?? active.data?.[0]?.id;
   const resend = run?.resend;
+  const started = useEffectEvent(onRun);
+  useEffect(() => {
+    if (jobId) started();
+  }, [jobId]);
   return (
     <div className="home-composer">
       <CommandBar

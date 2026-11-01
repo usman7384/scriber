@@ -17,6 +17,7 @@ export const en = {
     sort: "Sort parts",
     sorts: { newest: "Newest first", name: "Name A–Z" },
     turn: "Scroll or swipe to turn the horizon",
+    restore: "Bring the horizon back",
   },
   gallery: {
     region: "Models",
@@ -97,6 +98,7 @@ export const de: typeof en = {
     sort: "Teile sortieren",
     sorts: { newest: "Neueste zuerst", name: "Name A–Z" },
     turn: "Scrollen oder wischen dreht den Horizont",
+    restore: "Horizont zurückholen",
   },
   gallery: {
     region: "Modelle",

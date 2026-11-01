@@ -38,6 +38,11 @@ test("open project, generate, watch timeline, edit a parameter, restore", async 
   expect(api.requests.find((r) => r.path.endsWith("/generate"))?.body).toMatchObject({
     process: "milling_3axis",
   });
+  const orbit = page.locator(".orbit");
+  await expect(orbit).toHaveAttribute("data-docked", "true");
+  await expect(timeline.getByText("attempt 2").first()).toBeInViewport();
+  await page.getByRole("button", { name: "Bring the horizon back" }).click();
+  await expect(orbit).not.toHaveAttribute("data-docked");
   await expect(
     page.getByRole("list", { name: "Models" }).getByRole("link", { name: "Sensor plate" }),
   ).toBeVisible();
