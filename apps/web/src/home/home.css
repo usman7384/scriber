@@ -36,6 +36,59 @@
   z-index: 1;
   overflow: hidden;
   pointer-events: none;
+  transform-origin: bottom right;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* During a run the same horizon shrinks into the bottom-right corner, still turning, so the log has the screen. */
+.orbit[data-docked] {
+  transform: translate(-36px, -36px) scale(0.3);
+  mask: linear-gradient(to right, transparent, black 25% 75%, transparent);
+}
+.orbit[data-docked] .orbit-title,
+.orbit[data-docked] .orbit-caption {
+  visibility: hidden;
+}
+.orbit-restore {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.home:has(.orbit[data-docked]) {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+.home-main:has(.orbit[data-docked]) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 3vh;
+  padding-bottom: 130px;
+}
+.home-main:has(.orbit[data-docked]) .home-lead {
+  margin-bottom: var(--s-3);
+  font-size: 34px;
+  line-height: 38px;
+}
+.home-main:has(.orbit[data-docked]) .agent-starters {
+  display: none;
+}
+.home-main:has(.orbit[data-docked]) .home-composer {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 0;
+}
+.home-composer .agent-stream {
+  min-height: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit {
+    transition: none;
+  }
 }
 .home-horizon {
   position: absolute;
@@ -505,6 +558,11 @@ a.home-group[aria-current="page"] {
     height: 300px;
     margin: var(--s-6) -28px 0;
     touch-action: pan-y;
+  }
+  .orbit[data-docked] {
+    position: fixed;
+    margin: 0;
+    bottom: 0;
   }
   .parts-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

@@ -16,7 +16,16 @@ const TURNS_ON_WHEEL = "(min-width: 721px) and (min-height: 640px)";
 const OWN_SCROLL = "textarea, select, dialog, .agent-stream";
 
 // Past parts ride the horizon; scrolling turns it, and it drifts on its own to show there is more.
-export function PartsOrbit({ label, parts, empty }: { label: string; parts: Part[]; empty: string }) {
+interface Props {
+  label: string;
+  parts: Part[];
+  empty: string;
+  docked?: boolean;
+  onRestore?: () => void;
+}
+
+// Docked, the horizon shrinks into the bottom-right corner and keeps turning until clicked.
+export function PartsOrbit({ label, parts, empty, docked = false, onRestore }: Props) {
   const t = useT().home;
   const section = useRef<HTMLElement>(null);
   const [sort, setSort] = useState<"newest" | "name">("newest");
@@ -24,12 +33,15 @@ export function PartsOrbit({ label, parts, empty }: { label: string; parts: Part
     sort === "newest" ? byNewest(parts) : [...parts].sort((a, b) => a.title.localeCompare(b.title));
   const bring = useOrbit(section, shown.length);
   return (
-    <section ref={section} className="orbit">
+    <section ref={section} className="orbit" data-docked={docked || undefined}>
       <div className="home-horizon" aria-hidden="true" />
+      {docked && (
+        <button type="button" className="orbit-restore" aria-label={t.restore} onClick={onRestore} />
+      )}
       {shown.length === 0 ? (
         <p className="orbit-empty">{empty}</p>
       ) : (
-        <ul className="orbit-ring" aria-label={label}>
+        <ul className="orbit-ring" aria-label={label} inert={docked}>
           {shown.map((p, i) => (
             <li
               key={p.id}
@@ -55,7 +67,7 @@ export function PartsOrbit({ label, parts, empty }: { label: string; parts: Part
           ))}
         </ul>
       )}
-      <div className="orbit-caption">
+      <div className="orbit-caption" inert={docked}>
         <select
           aria-label={t.sort}
           value={sort}
@@ -101,7 +113,7 @@ function useOrbit(section: RefObject<HTMLElement | null>, count: number) {
     measure();
 
     const wheel = (e: WheelEvent) => {
-      if (!matchMedia(TURNS_ON_WHEEL).matches) return;
+      if (!matchMedia(TURNS_ON_WHEEL).matches || el.dataset.docked) return;
       if (e.target instanceof Element && e.target.closest(OWN_SCROLL)) return;
       e.preventDefault();
       turn(e.deltaY);

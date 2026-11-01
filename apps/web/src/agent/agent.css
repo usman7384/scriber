@@ -358,6 +358,8 @@
 }
 .agent-steps {
   display: grid;
+  align-content: start;
+  min-height: 0;
   gap: 2px;
   margin: 0;
   padding: var(--s-2) var(--s-3) var(--s-3);

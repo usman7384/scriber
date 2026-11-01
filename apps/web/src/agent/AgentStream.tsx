@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Link } from "react-router";
 import { api, apiUrl, exportUrl, type Job } from "../api";
 import { seconds } from "../format";
@@ -43,11 +43,13 @@ export function AgentStream({ jobId, variant, onDone, onRetry }: Props) {
   const expanded = open ?? !(variant === "dock" && end);
   const changes = useChanges(job);
   const list = useRef<HTMLOListElement>(null);
-
-  useEffect(() => {
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (list.current && !reduce) list.current.scrollTop = list.current.scrollHeight;
-  }, [steps.length]);
+  // The log follows the newest step until the reader scrolls up, and again once they scroll back down.
+  const following = useRef(true);
+  const follow = () => {
+    if (list.current && following.current) list.current.scrollTop = list.current.scrollHeight;
+  };
+  const followSteps = useEffectEvent(follow);
+  useEffect(() => followSteps(), [steps, expanded]);
 
   const title =
     end === "done" && job?.version
@@ -84,7 +86,15 @@ export function AgentStream({ jobId, variant, onDone, onRetry }: Props) {
           aria-label={t.timeline.progress}
         />
       )}
-      <ol ref={list} className="agent-steps" hidden={!expanded}>
+      <ol
+        ref={list}
+        className="agent-steps"
+        hidden={!expanded}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+        }}
+      >
         {steps.map((step, i) => {
           const state = states[i] ?? "pass";
           const head = (
@@ -117,6 +127,7 @@ export function AgentStream({ jobId, variant, onDone, onRetry }: Props) {
                   alt={t.timeline.preview(step.kind)}
                   width={64}
                   height={64}
+                  onLoad={follow}
                 />
               )}
             </li>
