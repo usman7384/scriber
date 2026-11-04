@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 import trimesh
 
-from partwright_cli.pipe import Http, ok, wait
+from scriber_cli.pipe import Http, ok, wait
 
 Point = tuple[float, float]
 

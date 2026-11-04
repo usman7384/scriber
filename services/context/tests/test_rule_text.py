@@ -1,7 +1,7 @@
 import pytest
 
-from partwright_context.parsed import Line
-from partwright_context.rule_text import extract_rule, sentences
+from scriber_context.parsed import Line
+from scriber_context.rule_text import extract_rule, sentences
 
 
 def rule(text: str) -> tuple[str, str, float, str, str, str] | None:

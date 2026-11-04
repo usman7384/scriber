@@ -2,8 +2,8 @@ import ast
 
 import pytest
 
-from partwright_ir import Design, compile_design, validate
-from partwright_ir.airfoil import naca4
+from scriber_ir import Design, compile_design, validate
+from scriber_ir.airfoil import naca4
 
 
 def test_symmetric_section_is_twelve_percent_thick_near_thirty_percent_chord() -> None:

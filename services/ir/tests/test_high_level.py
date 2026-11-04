@@ -3,10 +3,10 @@ from typing import Any
 
 import pytest
 
-from partwright_ir import Design, compile_design, joint_tree, validate
-from partwright_ir.fasteners import boss_diameter, screw_holes
-from partwright_ir.gear import gear_flank, gear_problems, involute
-from partwright_ir.keys import din6885
+from scriber_ir import Design, compile_design, joint_tree, validate
+from scriber_ir.fasteners import boss_diameter, screw_holes
+from scriber_ir.gear import gear_flank, gear_problems, involute
+from scriber_ir.keys import din6885
 
 
 def part(pid: str, *features: dict[str, Any], sketches: list[dict[str, Any]] | None = None) -> dict[str, Any]:

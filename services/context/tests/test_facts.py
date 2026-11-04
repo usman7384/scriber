@@ -1,9 +1,9 @@
 import pytest
 
-from partwright_context.facts import line_facts
-from partwright_context.models import Fact
-from partwright_context.parsed import Line
-from partwright_context.quantities import normalise, quantities
+from scriber_context.facts import line_facts
+from scriber_context.models import Fact
+from scriber_context.parsed import Line
+from scriber_context.quantities import normalise, quantities
 
 
 def facts(text: str, page: int = 1, number: int = 1) -> list[Fact]:

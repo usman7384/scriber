@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from partwright_context.aircraft import aircraft_design
-from partwright_context.sizing import XmlSizing
-from partwright_ir import validate
+from scriber_context.aircraft import aircraft_design
+from scriber_context.sizing import XmlSizing
+from scriber_ir import validate
 
 WING = """<wing><airfoil>NACA 2412</airfoil><span unit="m">1.0</span><root_chord unit="mm">250</root_chord>
 <tip_chord>120 mm</tip_chord><sweep unit="deg">20</sweep><dihedral unit="deg">5</dihedral><twist unit="deg">2</twist></wing>"""

@@ -3,8 +3,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design
 
 
 def block(pid: str, size: float, material: str) -> dict[str, Any]:

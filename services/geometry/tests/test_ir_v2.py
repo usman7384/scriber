@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import Artifact, BuildError, LocalGeometry
-from partwright_ir import Design, validate
+from scriber_geometry import Artifact, BuildError, LocalGeometry
+from scriber_ir import Design, validate
 
 BLOCK: dict[str, Any] = {"kind": "extrude", "id": "block", "name": "Block", "sketch": "base", "distance": 20}
 BASE: dict[str, Any] = {"id": "base", "entities": [{"kind": "rect", "width": 60, "height": 40}]}

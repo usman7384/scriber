@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import AgentConfig, Config, EmbeddingsConfig, GeometryConfig, LLMConfig
-from partwright_evals.parity import Evidence, Rig
-from partwright_evals.parity_m2 import FIXTURES, ROWS, fixture, pocket, spec_holes
-from partwright_geometry import LocalGeometry
+from scriber_agent import FakeLLM
+from scriber_cli.config import AgentConfig, Config, EmbeddingsConfig, GeometryConfig, LLMConfig
+from scriber_evals.parity import Evidence, Rig
+from scriber_evals.parity_m2 import FIXTURES, ROWS, fixture, pocket, spec_holes
+from scriber_geometry import LocalGeometry
 
 NONE = json.dumps({"requirements": []})
 

@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent.prompts import EXAMPLES
-from partwright_ir import Design, answer_json, compile_design
+from scriber_agent.prompts import EXAMPLES
+from scriber_ir import Design, answer_json, compile_design
 
 M1 = Path(__file__).parents[1] / "parity" / "m1"
 DESIGNS = {d["title"]: Design.model_validate(d) for _, d in EXAMPLES} | {

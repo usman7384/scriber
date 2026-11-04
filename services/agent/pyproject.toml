@@ -1,13 +1,13 @@
 [project]
-name = "partwright-agent"
+name = "scriber-agent"
 version = "0.1.0"
 description = "Design agent loop: intent, IR emission, checks, repair"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
 dependencies = [
-    "partwright-ir",
-    "partwright-geometry",
-    "partwright-context",
+    "scriber-ir",
+    "scriber-geometry",
+    "scriber-context",
     "ollama==0.6.3",
     "anthropic==2.3.0",
 ]
@@ -17,7 +17,7 @@ requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-context = { workspace = true }
-partwright-agent = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-context = { workspace = true }
+scriber-agent = { workspace = true }

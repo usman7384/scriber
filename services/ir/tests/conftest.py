@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 import pytest
 
-from partwright_ir import Design
+from scriber_ir import Design
 
 
 @pytest.fixture

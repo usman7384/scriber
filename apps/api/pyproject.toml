@@ -1,14 +1,14 @@
 [project]
-name = "partwright-api"
+name = "scriber-api"
 version = "0.1.0"
 description = "HTTP API: projects, context, jobs, versions, shares and webhooks"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
 dependencies = [
-    "partwright-ir",
-    "partwright-geometry",
-    "partwright-context",
-    "partwright-agent",
+    "scriber-ir",
+    "scriber-geometry",
+    "scriber-context",
+    "scriber-agent",
     "fastapi==0.162.0",
     "uvicorn==0.54.0",
     "sse-starlette==3.5.1",
@@ -23,7 +23,7 @@ requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-context = { workspace = true }
-partwright-agent = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-context = { workspace = true }
+scriber-agent = { workspace = true }

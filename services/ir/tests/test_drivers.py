@@ -1,6 +1,6 @@
 from typing import Any
 
-from partwright_ir import Design, FaceDriver, face_driver
+from scriber_ir import Design, FaceDriver, face_driver
 
 
 def stacked(bracket: Design, **boss: Any) -> Design:

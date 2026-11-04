@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 import trimesh
 
-from partwright_geometry import Artifact, BuildError, LocalGeometry
-from partwright_ir import Design
+from scriber_geometry import Artifact, BuildError, LocalGeometry
+from scriber_ir import Design
 
 PLATE_WITH_HOLES: dict[str, Any] = {
     "title": "Plate",

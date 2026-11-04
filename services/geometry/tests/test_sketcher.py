@@ -4,10 +4,10 @@ from typing import Any
 import pytest
 from build123d import Pos, Shape, SlotOverall
 
-from partwright_geometry.models import SketchDof, SketchGeo
-from partwright_geometry.sketcher import remaining_dof, sketch_dof
-from partwright_ir import Design
-from partwright_ir.prelude import PRELUDE
+from scriber_geometry.models import SketchDof, SketchGeo
+from scriber_geometry.sketcher import remaining_dof, sketch_dof
+from scriber_ir import Design
+from scriber_ir.prelude import PRELUDE
 
 HELPERS: dict[str, Any] = {}
 exec(PRELUDE, HELPERS)

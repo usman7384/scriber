@@ -1,6 +1,6 @@
 # Apps on the API
 
-Small scripts in `examples/` that build parts through the HTTP API (`docs/API.md`) without the model: they compute a design in our IR and post it to `POST /projects/{id}/designs`, then wait for the job and download the result. Start the API with `uv run partwright serve` and create a project first (`POST /projects`).
+Small scripts in `examples/` that build parts through the HTTP API (`docs/API.md`) without the model: they compute a design in our IR and post it to `POST /projects/{id}/designs`, then wait for the job and download the result. Start the API with `uv run scriber serve` and create a project first (`POST /projects`).
 
 ## Shadow-box insert from a tool STL (`examples/shadow_box.py`)
 
@@ -21,10 +21,10 @@ uv run python examples/phone_holder.py 75 --project <id> --out holder.stl
 
 A U-shaped cradle extruded along Y whose inner width is the expression `phone_width + clearance` (clearance 0.5 mm total by default). `phone_width` carries the input as its provenance. Measured on a 75 mm phone (DP-19): inner width 75.5 mm.
 
-## Sizing XML with no manual step (`partwright pipe`)
+## Sizing XML with no manual step (`scriber pipe`)
 
 ```bash
-cat sizing.xml | uv run partwright pipe --project <id> --out wing.step
+cat sizing.xml | uv run scriber pipe --project <id> --out wing.step
 ```
 
 Posts the XML to `POST /projects/{id}/sizing` (the D-031 adapter turns it into IR on the server), waits for the job and saves the STEP. Without `--project` it creates a project named `pipe`.

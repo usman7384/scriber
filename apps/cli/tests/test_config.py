@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from partwright_cli.config import llm_for, load, tool_path
+from scriber_cli.config import llm_for, load, tool_path
 
 ROOT = Path(__file__).parents[3]
 
@@ -14,7 +14,7 @@ def test_image_requests_have_their_own_vision_model() -> None:
 
 
 def test_tool_paths_come_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("PARTWRIGHT_FREECAD", "C:/tools/freecadcmd.exe")
-    monkeypatch.setenv("PARTWRIGHT_PRUSASLICER", "")
-    assert tool_path("PARTWRIGHT_FREECAD") == Path("C:/tools/freecadcmd.exe")
-    assert tool_path("PARTWRIGHT_PRUSASLICER") is None
+    monkeypatch.setenv("SCRIBER_FREECAD", "C:/tools/freecadcmd.exe")
+    monkeypatch.setenv("SCRIBER_PRUSASLICER", "")
+    assert tool_path("SCRIBER_FREECAD") == Path("C:/tools/freecadcmd.exe")
+    assert tool_path("SCRIBER_PRUSASLICER") is None

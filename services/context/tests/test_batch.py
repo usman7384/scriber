@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from pathlib import Path
 
-from partwright_context import LocalContext, archive_files, ingest_all
+from scriber_context import LocalContext, archive_files, ingest_all
 
 
 def test_archive_reports_each_file_and_keeps_going(

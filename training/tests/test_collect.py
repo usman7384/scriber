@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from partwright_agent import FakeLLM
-from partwright_geometry import LocalGeometry
-from partwright_training.collect import collect
+from scriber_agent import FakeLLM
+from scriber_geometry import LocalGeometry
+from scriber_training.collect import collect
 
 
 def test_failing_answers_become_repairs_with_the_verified_target(geometry: LocalGeometry, tmp_path: Path) -> None:

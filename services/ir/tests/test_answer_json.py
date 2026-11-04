@@ -1,6 +1,6 @@
 import json
 
-from partwright_ir import Design, answer_json
+from scriber_ir import Design, answer_json
 
 SKETCH = {"id": "s", "plane": {"ref": "XZ"}, "entities": [{"kind": "rect", "width": 10, "height": 5}]}
 PART = {

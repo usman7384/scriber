@@ -17,7 +17,7 @@ const runDir = fileURLToPath(
   new URL(`../../../../evals/results/parity-web-${process.env.PARITY_RUN ?? "local"}/`, import.meta.url),
 );
 
-// Evidence has the shape of partwright_evals.parity.Evidence; passed is the Playwright verdict of the row's test.
+// Evidence has the shape of scriber_evals.parity.Evidence; passed is the Playwright verdict of the row's test.
 export const test = base.extend<{ row: Row }>({
   row: async ({ page }, provide, info) => {
     const id = info.title.split(" ")[0] ?? info.title;

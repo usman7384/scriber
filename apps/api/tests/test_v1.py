@@ -7,7 +7,7 @@ import trimesh
 
 from apps.api.tests.conftest import NO_REQS, Api, plate
 from apps.api.tests.test_models import holes
-from partwright_api import disk
+from scriber_api import disk
 
 BASE_AND_BOSS = json.dumps(
     {

@@ -1,4 +1,4 @@
-from partwright_ir import Design, normalize, validate
+from scriber_ir import Design, normalize, validate
 
 
 def plate(params: list[dict[str, object]], diameter: object, count: object = 2) -> Design:

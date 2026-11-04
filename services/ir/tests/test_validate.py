@@ -1,4 +1,4 @@
-from partwright_ir import Design, validate
+from scriber_ir import Design, validate
 
 
 def test_valid_design_has_no_errors(bracket: Design) -> None:
@@ -159,7 +159,7 @@ def test_bad_expression_in_a_revolved_sketch_is_reported_not_raised() -> None:
 
 
 def test_untabulated_sizes_interpolate() -> None:
-    from partwright_ir.fasteners import parse, row
+    from scriber_ir.fasteners import parse, row
 
     assert parse("M25x1.5") == (25.0, 1.5)
     clearance, pitch, _ = row(25)
@@ -169,7 +169,7 @@ def test_untabulated_sizes_interpolate() -> None:
 
 
 def test_feature_params_follow_each_feature_and_its_sketch() -> None:
-    from partwright_ir import Design, feature_params
+    from scriber_ir import Design, feature_params
 
     design = Design.model_validate(
         {

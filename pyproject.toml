@@ -1,22 +1,22 @@
 [project]
-name = "partwright"
+name = "scriber"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "partwright-api", "partwright-cli", "partwright-evals", "partwright-training"]
+dependencies = ["scriber-ir", "scriber-geometry", "scriber-context", "scriber-agent", "scriber-api", "scriber-cli", "scriber-evals", "scriber-training"]
 
 [tool.uv.workspace]
 members = ["services/ir", "services/geometry", "services/context", "services/agent", "apps/api", "apps/cli", "evals", "training"]
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-context = { workspace = true }
-partwright-agent = { workspace = true }
-partwright-api = { workspace = true }
-partwright-cli = { workspace = true }
-partwright-evals = { workspace = true }
-partwright-training = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-context = { workspace = true }
+scriber-agent = { workspace = true }
+scriber-api = { workspace = true }
+scriber-cli = { workspace = true }
+scriber-evals = { workspace = true }
+scriber-training = { workspace = true }
 
 [dependency-groups]
 dev = ["pytest", "ruff", "mypy", "import-linter", "trimesh", "types-pyyaml"]
@@ -33,7 +33,7 @@ ignore = ["PT018"]
 "**/prompts.py" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["partwright_ir", "partwright_geometry", "partwright_context", "partwright_agent", "partwright_api", "partwright_cli", "partwright_evals", "partwright_training"]
+known-first-party = ["scriber_ir", "scriber_geometry", "scriber_context", "scriber_agent", "scriber_api", "scriber_cli", "scriber_evals", "scriber_training"]
 
 [tool.mypy]
 strict = true
@@ -54,28 +54,28 @@ addopts = "--import-mode=importlib"
 markers = ["llm: needs a running Ollama with the CI model"]
 
 [tool.importlinter]
-root_packages = ["partwright_ir", "partwright_geometry", "partwright_context", "partwright_agent", "partwright_api", "partwright_cli", "partwright_evals", "partwright_training"]
+root_packages = ["scriber_ir", "scriber_geometry", "scriber_context", "scriber_agent", "scriber_api", "scriber_cli", "scriber_evals", "scriber_training"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "Service layering"
 type = "layers"
-layers = ["partwright_evals | partwright_training", "partwright_cli", "partwright_api", "partwright_agent", "partwright_geometry | partwright_context", "partwright_ir"]
+layers = ["scriber_evals | scriber_training", "scriber_cli", "scriber_api", "scriber_agent", "scriber_geometry | scriber_context", "scriber_ir"]
 
 [[tool.importlinter.contracts]]
 name = "Kernel stays inside geometry"
 type = "forbidden"
-source_modules = ["partwright_ir", "partwright_agent", "partwright_api", "partwright_cli", "partwright_evals", "partwright_training"]
+source_modules = ["scriber_ir", "scriber_agent", "scriber_api", "scriber_cli", "scriber_evals", "scriber_training"]
 forbidden_modules = ["build123d", "OCP"]
 
 [[tool.importlinter.contracts]]
 name = "Model runtime stays behind the agent's LLM interface"
 type = "forbidden"
-source_modules = ["partwright_ir", "partwright_geometry"]
+source_modules = ["scriber_ir", "scriber_geometry"]
 forbidden_modules = ["ollama", "anthropic"]
 
 [[tool.importlinter.contracts]]
 name = "Context sees neither geometry, the agent nor the kernel"
 type = "forbidden"
-source_modules = ["partwright_context"]
-forbidden_modules = ["partwright_geometry", "partwright_agent", "build123d", "OCP"]
+source_modules = ["scriber_context"]
+forbidden_modules = ["scriber_geometry", "scriber_agent", "build123d", "OCP"]

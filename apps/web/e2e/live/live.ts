@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { expect, type APIRequestContext } from "@playwright/test";
 import type { Job, Version } from "../../src/api";
 
-export const API = process.env.PARTWRIGHT_LIVE_API ?? "http://127.0.0.1:8765";
+export const API = process.env.SCRIBER_LIVE_API ?? "http://127.0.0.1:8765";
 export const root = fileURLToPath(new URL("../../../../", import.meta.url));
 export const repoFile = (path: string) => readFileSync(`${root}${path}`);
 

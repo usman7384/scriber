@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 
-from partwright_agent import FakeLLM, generate, refine
-from partwright_geometry import Artifact, BuildError, Finding, HoleInfo, PartMetrics
-from partwright_ir import Design, Process, RuleSet
+from scriber_agent import FakeLLM, generate, refine
+from scriber_geometry import Artifact, BuildError, Finding, HoleInfo, PartMetrics
+from scriber_ir import Design, Process, RuleSet
 
 NO_RULES = RuleSet()
 

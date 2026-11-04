@@ -1,22 +1,22 @@
 [project]
-name = "partwright-training"
+name = "scriber-training"
 version = "0.1.0"
 description = "Verified synthetic IR data for fine-tuning"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-agent", "partwright-cli", "pyyaml"]
+dependencies = ["scriber-ir", "scriber-geometry", "scriber-agent", "scriber-cli", "pyyaml"]
 
 [project.scripts]
-partwright-dataset = "partwright_training.dataset:main"
-partwright-collect = "partwright_training.collect:main"
-partwright-conventions = "partwright_training.conventions:main"
+scriber-dataset = "scriber_training.dataset:main"
+scriber-collect = "scriber_training.collect:main"
+scriber-conventions = "scriber_training.conventions:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-agent = { workspace = true }
-partwright-cli = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-agent = { workspace = true }
+scriber-cli = { workspace = true }

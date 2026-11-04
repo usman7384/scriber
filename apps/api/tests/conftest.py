@@ -12,11 +12,11 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from partwright_agent import FakeLLM
-from partwright_api import SerialGeometry, Settings, create_app
-from partwright_api.deps import Deps
-from partwright_context import HashEmbedder, LocalContext
-from partwright_geometry import LocalGeometry
+from scriber_agent import FakeLLM
+from scriber_api import SerialGeometry, Settings, create_app
+from scriber_api.deps import Deps
+from scriber_context import HashEmbedder, LocalContext
+from scriber_geometry import LocalGeometry
 
 PROMPT = "Base plate 120 x 80 x 5 mm with four 6.6 mm bolt holes"
 REQS = json.dumps({"requirements": [{"kind": "extent", "description": "plate 120 mm", "value": 120}]})

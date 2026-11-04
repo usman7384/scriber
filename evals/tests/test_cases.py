@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from partwright_evals.run import CaseResult, load_cases, scorecard
+from scriber_evals.run import CaseResult, load_cases, scorecard
 
 CASES = Path(__file__).parents[1] / "cases" / "m1.yaml"
 

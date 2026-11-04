@@ -6,16 +6,16 @@ from typing import Any
 import pytest
 import yaml
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_context import DEFAULT_RULES
-from partwright_evals import parity_m6
-from partwright_evals.parity import Rig, run_row
-from partwright_evals.parity_m6 import REFERENCE, ROWS, SHOWCASE, attempt, correct
-from partwright_evals.run import load_cases
-from partwright_evals.shapes import ShapeCheck, shape_check
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design, apply_params
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_context import DEFAULT_RULES
+from scriber_evals import parity_m6
+from scriber_evals.parity import Rig, run_row
+from scriber_evals.parity_m6 import REFERENCE, ROWS, SHOWCASE, attempt, correct
+from scriber_evals.run import load_cases
+from scriber_evals.shapes import ShapeCheck, shape_check
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design, apply_params
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})

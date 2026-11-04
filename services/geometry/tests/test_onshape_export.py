@@ -4,10 +4,10 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry.onshape import OnshapeRef, RecordedOnshape, import_onshape
-from partwright_geometry.onshape_export import UnsupportedExportError, export_onshape
-from partwright_ir import Design
-from partwright_ir.model import Circle, Polygon
+from scriber_geometry.onshape import OnshapeRef, RecordedOnshape, import_onshape
+from scriber_geometry.onshape_export import UnsupportedExportError, export_onshape
+from scriber_ir import Design
+from scriber_ir.model import Circle, Polygon
 
 STUDIO = "/api/v10/partstudios/d/D/w/W/e/E"
 

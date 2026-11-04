@@ -1,16 +1,16 @@
 [project]
-name = "partwright-geometry"
+name = "scriber-geometry"
 version = "0.1.0"
 description = "Sandboxed build123d execution, export and geometric checks"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "build123d==0.13.0", "trimesh==5.2.0", "pyrender==0.1.45", "pyglet==2.1.19", "pillow==13.0.0", "scipy==1.18.1"]
+dependencies = ["scriber-ir", "build123d==0.13.0", "trimesh==5.2.0", "pyrender==0.1.45", "pyglet==2.1.19", "pillow==13.0.0", "scipy==1.18.1"]
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-agent = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-agent = { workspace = true }

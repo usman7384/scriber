@@ -5,12 +5,12 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_evals.parity import Rig, run_row
-from partwright_evals.parity_m4_assembly import FIXTURES, ROWS, fixture
-from partwright_geometry import LocalGeometry
-from partwright_ir import scope
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_evals.parity import Rig, run_row
+from scriber_evals.parity_m4_assembly import FIXTURES, ROWS, fixture
+from scriber_geometry import LocalGeometry
+from scriber_ir import scope
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})

@@ -295,7 +295,7 @@ export class MockApi {
   // Status codes and wording of apps/api tools.py and routes/models.py
   private fcstd(n: string | null, built: Built | undefined): Reply {
     if (!this.tools.freecad)
-      return json({ detail: "FreeCAD is not configured: set PARTWRIGHT_FREECAD to its executable" }, 503);
+      return json({ detail: "FreeCAD is not configured: set SCRIBER_FREECAD to its executable" }, 503);
     if (built?.fcstdError)
       return json({ detail: `this design has no FreeCAD export: ${built.fcstdError}` }, 422);
     if (!built?.fcstd) return missing("FreeCAD file");
@@ -310,7 +310,7 @@ export class MockApi {
   private slice(req: Request): Reply {
     if (!this.tools.prusaslicer)
       return json(
-        { detail: "PrusaSlicer is not configured: set PARTWRIGHT_PRUSASLICER to its executable" },
+        { detail: "PrusaSlicer is not configured: set SCRIBER_PRUSASLICER to its executable" },
         503,
       );
     const n = new URL(req.url()).searchParams.get("version");

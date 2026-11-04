@@ -3,12 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import FakeLLM, Grounding, context_block, generate
-from partwright_agent.project_context import coverage, fact_requirements, overridden
-from partwright_agent.requirements import CheckResult, Requirement
-from partwright_context import ContextPack, Fact
-from partwright_geometry import Artifact, HoleInfo, PartMetrics
-from partwright_ir import Design, Process, Provenance, Rule, RuleSet
+from scriber_agent import FakeLLM, Grounding, context_block, generate
+from scriber_agent.project_context import coverage, fact_requirements, overridden
+from scriber_agent.requirements import CheckResult, Requirement
+from scriber_context import ContextPack, Fact
+from scriber_geometry import Artifact, HoleInfo, PartMetrics
+from scriber_ir import Design, Process, Provenance, Rule, RuleSet
 
 NO_RULES = RuleSet()
 SOURCE = Provenance(source="document", ref="d1#p1:l3", quote="4 x M6 mounting holes")

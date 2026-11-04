@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import LLM, FakeLLM
-from partwright_cli.config import Config, load
-from partwright_evals import parity_m5_conventions
-from partwright_evals.parity import Rig, run_row
-from partwright_evals.parity_m5_conventions import BASE_ENV, CASES, ROWS, gate, load_cases
-from partwright_geometry import LocalGeometry
+from scriber_agent import LLM, FakeLLM
+from scriber_cli.config import Config, load
+from scriber_evals import parity_m5_conventions
+from scriber_evals.parity import Rig, run_row
+from scriber_evals.parity_m5_conventions import BASE_ENV, CASES, ROWS, gate, load_cases
+from scriber_geometry import LocalGeometry
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})

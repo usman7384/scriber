@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry
+from scriber_geometry import LocalGeometry
 
 
 @pytest.fixture(scope="session")

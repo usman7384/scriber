@@ -4,15 +4,15 @@ requires-python = "==3.12.*"
 
 [manifest]
 members = [
-    "partwright",
-    "partwright-agent",
-    "partwright-api",
-    "partwright-cli",
-    "partwright-context",
-    "partwright-evals",
-    "partwright-geometry",
-    "partwright-ir",
-    "partwright-training",
+    "scriber",
+    "scriber-agent",
+    "scriber-api",
+    "scriber-cli",
+    "scriber-context",
+    "scriber-evals",
+    "scriber-geometry",
+    "scriber-ir",
+    "scriber-training",
 ]
 
 [[package]]
@@ -983,18 +983,18 @@ wheels = [
 ]
 
 [[package]]
-name = "partwright"
+name = "scriber"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "partwright-agent" },
-    { name = "partwright-api" },
-    { name = "partwright-cli" },
-    { name = "partwright-context" },
-    { name = "partwright-evals" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
-    { name = "partwright-training" },
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-cli" },
+    { name = "scriber-context" },
+    { name = "scriber-evals" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+    { name = "scriber-training" },
 ]
 
 [package.dev-dependencies]
@@ -1009,14 +1009,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "partwright-agent", editable = "services/agent" },
-    { name = "partwright-api", editable = "apps/api" },
-    { name = "partwright-cli", editable = "apps/cli" },
-    { name = "partwright-context", editable = "services/context" },
-    { name = "partwright-evals", editable = "evals" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
-    { name = "partwright-training", editable = "training" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-evals", editable = "evals" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "scriber-training", editable = "training" },
 ]
 
 [package.metadata.requires-dev]
@@ -1030,37 +1030,37 @@ dev = [
 ]
 
 [[package]]
-name = "partwright-agent"
+name = "scriber-agent"
 version = "0.1.0"
 source = { editable = "services/agent" }
 dependencies = [
     { name = "anthropic" },
     { name = "ollama" },
-    { name = "partwright-context" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = "==2.3.0" },
     { name = "ollama", specifier = "==0.6.3" },
-    { name = "partwright-context", editable = "services/context" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
 ]
 
 [[package]]
-name = "partwright-api"
+name = "scriber-api"
 version = "0.1.0"
 source = { editable = "apps/api" }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
-    { name = "partwright-agent" },
-    { name = "partwright-context" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
+    { name = "scriber-agent" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
     { name = "python-multipart" },
     { name = "sqlalchemy" },
     { name = "sse-starlette" },
@@ -1072,10 +1072,10 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", specifier = "==0.162.0" },
     { name = "httpx", specifier = "==0.28.1" },
-    { name = "partwright-agent", editable = "services/agent" },
-    { name = "partwright-context", editable = "services/context" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "python-multipart", specifier = "==0.0.32" },
     { name = "sqlalchemy", specifier = "==2.1.6" },
     { name = "sse-starlette", specifier = "==3.5.1" },
@@ -1084,16 +1084,16 @@ requires-dist = [
 ]
 
 [[package]]
-name = "partwright-cli"
+name = "scriber-cli"
 version = "0.1.0"
 source = { editable = "apps/cli" }
 dependencies = [
     { name = "httpx" },
-    { name = "partwright-agent" },
-    { name = "partwright-api" },
-    { name = "partwright-context" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
     { name = "pyyaml" },
     { name = "uvicorn" },
 ]
@@ -1101,24 +1101,24 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = "==0.28.1" },
-    { name = "partwright-agent", editable = "services/agent" },
-    { name = "partwright-api", editable = "apps/api" },
-    { name = "partwright-context", editable = "services/context" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "pyyaml" },
     { name = "uvicorn", specifier = "==0.54.0" },
 ]
 
 [[package]]
-name = "partwright-context"
+name = "scriber-context"
 version = "0.1.0"
 source = { editable = "services/context" }
 dependencies = [
     { name = "networkx" },
     { name = "ollama" },
     { name = "openpyxl" },
-    { name = "partwright-ir" },
+    { name = "scriber-ir" },
     { name = "pdfplumber" },
     { name = "pint" },
     { name = "pydantic" },
@@ -1134,7 +1134,7 @@ requires-dist = [
     { name = "networkx", specifier = "==3.7" },
     { name = "ollama", specifier = "==0.6.3" },
     { name = "openpyxl", specifier = "==3.1.5" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "pdfplumber", specifier = "==0.11.10" },
     { name = "pint", specifier = "==0.26.2" },
     { name = "pydantic", specifier = "==2.14.1" },
@@ -1146,39 +1146,39 @@ requires-dist = [
 ]
 
 [[package]]
-name = "partwright-evals"
+name = "scriber-evals"
 version = "0.1.0"
 source = { editable = "evals" }
 dependencies = [
-    { name = "partwright-agent" },
-    { name = "partwright-api" },
-    { name = "partwright-cli" },
-    { name = "partwright-context" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-cli" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
     { name = "pyyaml" },
     { name = "trimesh" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "partwright-agent", editable = "services/agent" },
-    { name = "partwright-api", editable = "apps/api" },
-    { name = "partwright-cli", editable = "apps/cli" },
-    { name = "partwright-context", editable = "services/context" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "pyyaml" },
     { name = "trimesh", specifier = "==5.2.0" },
 ]
 
 [[package]]
-name = "partwright-geometry"
+name = "scriber-geometry"
 version = "0.1.0"
 source = { editable = "services/geometry" }
 dependencies = [
     { name = "build123d" },
-    { name = "partwright-ir" },
+    { name = "scriber-ir" },
     { name = "pillow" },
     { name = "pyglet" },
     { name = "pyrender" },
@@ -1189,7 +1189,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "build123d", specifier = "==0.13.0" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "pillow", specifier = "==13.0.0" },
     { name = "pyglet", specifier = "==2.1.19" },
     { name = "pyrender", specifier = "==0.1.45" },
@@ -1198,7 +1198,7 @@ requires-dist = [
 ]
 
 [[package]]
-name = "partwright-ir"
+name = "scriber-ir"
 version = "0.1.0"
 source = { editable = "services/ir" }
 dependencies = [
@@ -1209,23 +1209,23 @@ dependencies = [
 requires-dist = [{ name = "pydantic" }]
 
 [[package]]
-name = "partwright-training"
+name = "scriber-training"
 version = "0.1.0"
 source = { editable = "training" }
 dependencies = [
-    { name = "partwright-agent" },
-    { name = "partwright-cli" },
-    { name = "partwright-geometry" },
-    { name = "partwright-ir" },
+    { name = "scriber-agent" },
+    { name = "scriber-cli" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
     { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "partwright-agent", editable = "services/agent" },
-    { name = "partwright-cli", editable = "apps/cli" },
-    { name = "partwright-geometry", editable = "services/geometry" },
-    { name = "partwright-ir", editable = "services/ir" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
     { name = "pyyaml" },
 ]
 

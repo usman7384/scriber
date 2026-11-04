@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import Finding, LocalGeometry
-from partwright_ir import Design, Process, Rule, RuleSet
+from scriber_geometry import Finding, LocalGeometry
+from scriber_ir import Design, Process, Rule, RuleSet
 
 EDGE = Rule(id="hole-edge", kind="min_hole_edge_ratio", value=1.5, unit="")
 WALL = Rule(id="min-wall", kind="min_wall_thickness", value=1.0, unit="mm")

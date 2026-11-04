@@ -16,3 +16,4 @@ evals/results/*/*/
 apps/web/tsconfig.tsbuildinfo
 .claude/*
 !.claude/launch.json
+.import_linter_cache/

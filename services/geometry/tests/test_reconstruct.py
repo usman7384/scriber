@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 import trimesh
 
-from partwright_geometry import LocalGeometry, hausdorff, reconstruct_mesh
-from partwright_ir import Design, apply_params, validate
+from scriber_geometry import LocalGeometry, hausdorff, reconstruct_mesh
+from scriber_ir import Design, apply_params, validate
 
 STEPPED: dict[str, Any] = {
     "title": "Stepped plate",

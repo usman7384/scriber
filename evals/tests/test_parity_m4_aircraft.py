@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_evals.parity import Rig, run_row
-from partwright_evals.parity_m4_aircraft import ROWS, fit_section
-from partwright_geometry import LocalGeometry
-from partwright_ir.airfoil import naca4
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_evals.parity import Rig, run_row
+from scriber_evals.parity_m4_aircraft import ROWS, fit_section
+from scriber_geometry import LocalGeometry
+from scriber_ir.airfoil import naca4
 
 ROOT = Path(__file__).parents[2]
 

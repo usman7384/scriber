@@ -3,8 +3,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design, Rule, RuleSet, validate
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design, Rule, RuleSet, validate
 
 W, D, WALL, FLOOR, LID_T, LIP, GAP = 80.0, 60.0, 2.0, 2.0, 2.0, 4.0, 0.2
 RULES = RuleSet(

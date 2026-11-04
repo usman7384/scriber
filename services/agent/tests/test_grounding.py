@@ -1,6 +1,6 @@
-from partwright_agent.grounding import grounded, measurable, misquoted
-from partwright_agent.requirements import Requirement
-from partwright_ir import Design
+from scriber_agent.grounding import grounded, measurable, misquoted
+from scriber_agent.requirements import Requirement
+from scriber_ir import Design
 
 
 def test_drops_requirements_copied_from_elsewhere() -> None:

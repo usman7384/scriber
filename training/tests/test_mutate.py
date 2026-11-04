@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import evaluate
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design
-from partwright_training.families import FAMILIES
-from partwright_training.mutate import MUTATIONS, mutate
-from partwright_training.samples import target
+from scriber_agent import evaluate
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design
+from scriber_training.families import FAMILIES
+from scriber_training.mutate import MUTATIONS, mutate
+from scriber_training.samples import target
 
 
 def _first(name: str) -> tuple[dict[str, object], dict[str, object]]:

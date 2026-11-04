@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from partwright_api import thumbnail_targets
+from scriber_api import thumbnail_targets
 
 
 def test_thumbnail_targets_are_every_built_version(tmp_path: Path) -> None:

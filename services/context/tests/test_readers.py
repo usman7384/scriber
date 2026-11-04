@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from partwright_context.readers import kind_of, read
-from partwright_context.tables import hole_facts
-from partwright_ir import ShapeDescriptor
+from scriber_context.readers import kind_of, read
+from scriber_context.tables import hole_facts
+from scriber_ir import ShapeDescriptor
 
 WritePdf = Callable[[str, list[list[str]], list[list[str]] | None], Path]
 

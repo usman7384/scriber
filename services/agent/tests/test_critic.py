@@ -3,7 +3,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from partwright_agent import FakeLLM, critique
+from scriber_agent import FakeLLM, critique
 
 
 def test_critic_sends_the_views_and_reads_the_verdict() -> None:

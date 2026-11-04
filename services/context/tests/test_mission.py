@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from partwright_context.aircraft import aircraft_design
-from partwright_context.mission import ALL, read_mission, size
-from partwright_ir import validate
+from scriber_context.aircraft import aircraft_design
+from scriber_context.mission import ALL, read_mission, size
+from scriber_ir import validate
 
 MISSION = """mission:
   name: Survey UAV

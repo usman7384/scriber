@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design, validate
+from scriber_geometry import BuildError, LocalGeometry
+from scriber_ir import Design, validate
 
 TIP_LE = ["wing_span / 2 * tan(sweep)", "wing_span / 2 * tan(dihedral)"]
 

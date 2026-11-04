@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design
+from scriber_geometry import BuildError, LocalGeometry
+from scriber_ir import Design
 
 
 def test_face_groups_and_material_round_trip_through_step(geometry: LocalGeometry, plate: dict[str, Any], tmp_path: Path) -> None:

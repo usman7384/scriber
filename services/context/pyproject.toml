@@ -1,11 +1,11 @@
 [project]
-name = "partwright-context"
+name = "scriber-context"
 version = "0.1.0"
 description = "Engineering file ingestion, fact and rule extraction, project knowledge graph and retrieval"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
 dependencies = [
-    "partwright-ir",
+    "scriber-ir",
     "pydantic==2.14.1",
     "pypdfium2==5.14.0",
     "pdfplumber==0.11.10",
@@ -24,4 +24,4 @@ requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
+scriber-ir = { workspace = true }

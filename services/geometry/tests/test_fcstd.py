@@ -4,13 +4,13 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, inspect_fcstd
-from partwright_geometry.fcstd import _endpoint_tangents, _expr
-from partwright_geometry.models import Constraint, SketchFrame
-from partwright_ir import Design, apply_params
+from scriber_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, inspect_fcstd
+from scriber_geometry.fcstd import _endpoint_tangents, _expr
+from scriber_geometry.models import Constraint, SketchFrame
+from scriber_ir import Design, apply_params
 
-FREECAD = os.environ.get("PARTWRIGHT_FREECAD")
-needs_freecad = pytest.mark.skipif(not FREECAD, reason="PARTWRIGHT_FREECAD is unset")
+FREECAD = os.environ.get("SCRIBER_FREECAD")
+needs_freecad = pytest.mark.skipif(not FREECAD, reason="SCRIBER_FREECAD is unset")
 XY = SketchFrame(ref="XY", origin=(0, 0, 0), x_dir=(1, 0, 0), z_dir=(0, 0, 1), out=0)
 PARAMS = [
     {"name": "t", "value": 6, "unit": "mm"},

@@ -1,19 +1,19 @@
 llm:
   host: http://127.0.0.1:11434
-  # built locally, not pulled (D-027, D-036; rebuild steps in docs/agents/training.md); without it use --model qwen3.5:4b
-  default: partwright-ir:4b-s3
+  # fine-tuned here (D-027, D-036): install it from huggingface.co/usman7384/scriber-ir-4b-s3-GGUF (README) or rebuild it (docs/agents/training.md); without it use --model qwen3.5:4b
+  default: scriber-ir:4b-s3
   ci: qwen3.5:0.8b-q8_0
   # requests with images (sketch, photo, drawing, critic) go here; the default has no vision projector (D-027)
   vision: qwen3.5:4b
   models:
     qwen3.5:4b: {num_ctx: 16384, think: false}
     qwen3.5:0.8b-q8_0: {num_ctx: 8192, think: false}
-    partwright-ir:0.8b-s0b: {num_ctx: 8192, think: false, few_shot: false}
-    partwright-ir:0.8b-s1: {num_ctx: 8192, think: false, few_shot: false}
-    partwright-ir:4b-s1: {num_ctx: 16384, think: false, few_shot: false}
-    partwright-ir:4b-s2: {num_ctx: 16384, think: false, few_shot: false}
-    partwright-ir:4b-s3: {num_ctx: 16384, think: false, few_shot: false}
-    partwright-ir:0.8b-cx13: {num_ctx: 8192, think: false, few_shot: false}
+    scriber-ir:0.8b-s0b: {num_ctx: 8192, think: false, few_shot: false}
+    scriber-ir:0.8b-s1: {num_ctx: 8192, think: false, few_shot: false}
+    scriber-ir:4b-s1: {num_ctx: 16384, think: false, few_shot: false}
+    scriber-ir:4b-s2: {num_ctx: 16384, think: false, few_shot: false}
+    scriber-ir:4b-s3: {num_ctx: 16384, think: false, few_shot: false}
+    scriber-ir:0.8b-cx13: {num_ctx: 8192, think: false, few_shot: false}
     qwen2.5-coder:7b-instruct-q4_K_M: {num_ctx: 8192}
     # hosted reference models for comparison runs only (need ANTHROPIC_API_KEY or `ant auth login`; never the default)
     claude-sonnet-5-5: {provider: anthropic, effort: high}

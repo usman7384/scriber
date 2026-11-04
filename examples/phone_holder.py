@@ -4,7 +4,7 @@ from typing import Any
 
 import httpx
 
-from partwright_cli.pipe import Http, ok, wait
+from scriber_cli.pipe import Http, ok, wait
 
 INNER = "(phone_width + clearance) / 2"
 OUTER = f"{INNER} + wall"

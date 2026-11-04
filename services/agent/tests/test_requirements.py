@@ -1,5 +1,5 @@
-from partwright_agent import Requirement, check
-from partwright_geometry import Artifact, HoleInfo, PartMetrics
+from scriber_agent import Requirement, check
+from scriber_geometry import Artifact, HoleInfo, PartMetrics
 
 
 def artifact(holes: list[HoleInfo], bbox_min: tuple[float, float, float], size: tuple[float, float, float]) -> Artifact:

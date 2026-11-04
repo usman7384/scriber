@@ -1,10 +1,10 @@
 import random
 from pathlib import Path
 
-from partwright_agent import FakeLLM
-from partwright_training.families import FAMILIES
-from partwright_training.paraphrase import Paraphraser, defaults, numbers, requote
-from partwright_training.render import render
+from scriber_agent import FakeLLM
+from scriber_training.families import FAMILIES
+from scriber_training.paraphrase import Paraphraser, defaults, numbers, requote
+from scriber_training.render import render
 
 SLEEVE = "Spacer sleeve, 24 mm outside diameter, 15.2 mm bore, 20 mm long, 0.5 mm chamfer"
 
