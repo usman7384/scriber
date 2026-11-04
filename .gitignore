@@ -12,5 +12,7 @@ data/
 *.safetensors
 out/
 evals/results/*/*/
-.claude/worktrees/
 *.FCBak
+apps/web/tsconfig.tsbuildinfo
+.claude/*
+!.claude/launch.json
