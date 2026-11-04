@@ -1,11 +1,11 @@
-Model: `partwright-ir:4b-s2`
+Model: `scriber-ir:4b-s2`
 
 | row | result | measured | note |
 |---|---|---|---|
 | GE-13 | FAIL | low_valid=3, high_valid=3, low_log=low with a 0 token reasoning budget | low with a 0 token reasoning budget, re-sampled because it repeated an earlier answer, high_log=high with a 8192 token reasoning budget | high with a 8192 token reasoning budget, re-sampled because it repeated an earlier answer |  |
 | AP-7 | FAIL | jobs=10, done=8, listed=10, failed=gave up after 6 attempts, gave up after 6 attempts |  |
 | WP-15 | FAIL | prompts=10, completed=9, errors=b17-cup: gave up after 6 attempts, blocked=, model_host=127.0.0.1 | outbound sockets and name lookups to anything but loopback raise inside the run |
-| PF-8 | pass | model=partwright-ir:4b-s2, eval_tokens=256, tokens_per_s=20.4, loaded_size_gib=2.76 | Ollama eval counters on this machine, not the reference laptop |
+| PF-8 | pass | model=scriber-ir:4b-s2, eval_tokens=256, tokens_per_s=20.4, loaded_size_gib=2.76 | Ollama eval counters on this machine, not the reference laptop |
 | GE-8 | FAIL | parts=30, dims_within_tolerance=98/152, share=0.6447 | dims of parts that failed to build count as missed |
 | VM-8 | pass | reference_parts=30, references_failing_spec=, cases_scored=20/30, mean_param_accuracy=0.9174, median_hausdorff_mm=0.0 | per-case param accuracy and Hausdorff in ../benchmark.json; a case whose generation did not build has no Hausdorff |
 | PF-1 | pass | cases=30, median_s=33.45, max_s=239.8 | measured on this machine, not the reference laptop of docs/HARDWARE.md |

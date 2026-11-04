@@ -5,8 +5,8 @@ import docx
 import openpyxl
 import pytest
 
-from partwright_context import HashEmbedder, LocalContext
-from partwright_ir import ShapeDescriptor
+from scriber_context import HashEmbedder, LocalContext
+from scriber_ir import ShapeDescriptor
 
 FIXTURES = Path(__file__).parent / "fixtures"
 HOLES = [(f"H{i + 1}", 20 + 40 * (i % 5), 15 if i < 5 else 105, 6.6) for i in range(10)]

@@ -1,6 +1,6 @@
 import pytest
 
-from partwright_ir.expr import ExprError, evaluate, names, to_python
+from scriber_ir.expr import ExprError, evaluate, names, to_python
 
 
 def test_evaluates_arithmetic_with_params() -> None:

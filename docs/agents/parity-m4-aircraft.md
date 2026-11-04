@@ -1,13 +1,13 @@
 # Parity M4: aircraft from sizing XML
 
-Branch `feat/m4-aircraft`. Closes (offline, with the real geometry worker): **IN-11, CD-6, GE-4, DP-9, DP-10**. None of these rows uses the model, so the offline test and the live `partwright-parity` run measure the same thing.
+Branch `feat/m4-aircraft`. Closes (offline, with the real geometry worker): **IN-11, CD-6, GE-4, DP-9, DP-10**. None of these rows uses the model, so the offline test and the live `scriber-parity` run measure the same thing.
 
 ## What landed
 
-- **IR** (additive): `airfoil_section` feature (plane, NACA 4-digit code, chord, leading-edge position in the plane, twist about the leading edge, positive nose-up) and `loft` feature (ordered section ids, `ruled`). Lofts can be patterned (mirror). `Part.sketches` may be empty. The NACA generator `partwright_ir.airfoil.naca4` is a pure function; the compiler embeds its source in model code only when a design has airfoil sections, so every existing design compiles byte-identically (`evals/tests/test_compile_golden.py`).
+- **IR** (additive): `airfoil_section` feature (plane, NACA 4-digit code, chord, leading-edge position in the plane, twist about the leading edge, positive nose-up) and `loft` feature (ordered section ids, `ruled`). Lofts can be patterned (mirror). `Part.sketches` may be empty. The NACA generator `scriber_ir.airfoil.naca4` is a pure function; the compiler embeds its source in model code only when a design has airfoil sections, so every existing design compiles byte-identically (`evals/tests/test_compile_golden.py`).
 - **Geometry**: `LocalGeometry.sections(step, ys)` cuts the built STEP with planes `y = const` and returns the outline points.
 - **Context**: `SizingAdapter` protocol (`read(path) -> AircraftSpec`), reference `XmlSizing` adapter, and `aircraft_design(spec)`, a deterministic template that emits typed IR (no LLM). Every parameter carries the XML element as provenance. Wing only: `root_airfoil`, `tip_airfoil`, `main_wing`, `full_aircraft`. With `<body>` and `<tail>`: a blended wing body with `mid_airfoil` at the body edge and wing-tip fins (`winglet_*`, `winglet_assembly`).
-- **Evals**: `partwright_evals.parity_m4_aircraft.ROWS`. Sections are compared with NACA by a best-fit similarity transform (ICP); chord, leading edge and incidence come from the fit, deviation is the worst point-to-curve residual in % chord.
+- **Evals**: `scriber_evals.parity_m4_aircraft.ROWS`. Sections are compared with NACA by a best-fit similarity transform (ICP); chord, leading edge and incidence come from the fit, deviation is the worst point-to-curve residual in % chord.
 
 XML format (units on every value; mm/cm/m, deg/rad, l/mm3/cm3/dm3/m3): see `evals/parity/m4/aircraft/bwb.xml`. Sweep and dihedral are leading-edge angles of the outer wing; twist is washout at the tip.
 
@@ -25,7 +25,7 @@ XML format (units on every value; mm/cm/m, deg/rad, l/mm3/cm3/dm3/m3): see `eval
 
 ```
 uv run pytest evals/tests/test_parity_m4_aircraft.py evals/tests/test_compile_golden.py
-uv run partwright-parity IN-11 CD-6 GE-4 DP-9 DP-10   # after the module is registered in parity.registry()
+uv run scriber-parity IN-11 CD-6 GE-4 DP-9 DP-10   # after the module is registered in parity.registry()
 ```
 
 ## Gaps

@@ -9,8 +9,8 @@ import trimesh
 from PIL import Image
 
 from apps.api.tests.conftest import NO_REQS, REQS, Api, plate
-from partwright_api import SerialGeometry, disk
-from partwright_geometry import BuildError
+from scriber_api import SerialGeometry, disk
+from scriber_geometry import BuildError
 
 
 def holes(api: Api, model_id: str, number: int) -> list[dict[str, Any]]:

@@ -1,4 +1,4 @@
-# Held-out synthetic cases from partwright-dataset (generator seeds disjoint from training). Regenerate, do not edit.
+# Held-out synthetic cases from scriber-dataset (generator seeds disjoint from training). Regenerate, do not edit.
 - id: s0-plate-000
   rows:
   - FT-1

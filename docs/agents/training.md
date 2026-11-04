@@ -3,7 +3,7 @@
 Plan: `docs/FINE_TUNING_PLAN.md`. Local only (decided 2026-10-26): every stage runs on this laptop (RTX 3060 Laptop, 6 GB; 16 GB RAM; WSL2 Ubuntu 24.04).
 Closes: FT-1 (fine-tune pipeline, toy run) once the S0 gate below is recorded.
 
-## S0 data (`partwright-dataset`, seed 0)
+## S0 data (`scriber-dataset`, seed 0)
 
 | | |
 |---|---|
@@ -16,7 +16,7 @@ Closes: FT-1 (fine-tune pipeline, toy run) once the S0 gate below is recorded.
 | Leakage guard | samples sharing an 8-word sequence with the M1, grounded or challenge prompts are dropped (none were) |
 | Licence | all generated here; no third-party data |
 
-Regenerate with `uv run partwright-dataset` (about 45 s with 8 kernel workers). Data lands in `data/training/s0/` (git-ignored) with `card.json`.
+Regenerate with `uv run scriber-dataset` (about 45 s with 8 kernel workers). Data lands in `data/training/s0/` (git-ignored) with `card.json`.
 
 Training prompts are the inference prompts without the five worked examples (`few_shot: false` in `config.yaml`): the system rules, the request, and for repairs the same repair message the agent sends.
 
@@ -31,18 +31,18 @@ Training prompts are the inference prompts without the five worked examples (`fe
 | Loss | 0.43 at step 10, about 0.002 from mid-epoch, mean 0.032 |
 | Stack | `training/wsl/requirements.txt` (Unsloth 2026.10.8, torch 2.14.1+cu130, transformers 5.17.0, TRL 1.15.0, PEFT 0.21.2), WSL2 Ubuntu 24.04 |
 
-Reproduce (WSL, `~/partwright-train` with the pinned venv):
+Reproduce (WSL, `~/scriber-train` with the pinned venv):
 
 ```
 python train.py --data <repo>/data/training/s0/train.jsonl --model <repo>/data/models/Qwen3.5-0.8B --out runs/s0
-python llama.cpp/convert_hf_to_gguf.py runs/s0/merged --outtype q8_0 --outfile <repo>/data/training/s0/run/partwright-ir-0.8b-s0-q8_0.gguf
+python llama.cpp/convert_hf_to_gguf.py runs/s0/merged --outtype q8_0 --outfile <repo>/data/training/s0/run/scriber-ir-0.8b-s0-q8_0.gguf
 ```
 
-llama.cpp is pinned to release b11898 (commit 8b28c2394324). Then on Windows: `ollama create partwright-ir:0.8b-s0b -f training/wsl/Modelfile` (833 MB). Ollama cannot import Qwen3.5 safetensors on Windows (its MLX runtime is missing), so the GGUF step is required.
+llama.cpp is pinned to release b11898 (commit 8b28c2394324). Then on Windows: `ollama create scriber-ir:0.8b-s0b -f training/wsl/Modelfile` (833 MB). Ollama cannot import Qwen3.5 safetensors on Windows (its MLX runtime is missing), so the GGUF step is required.
 
 ## S0b (after the answer-order fix, D-022) and the gates
 
-S0 was trained on answers whose key order the decoding grammar cannot produce; it is superseded. S0b uses the same recipe on regenerated data: 1972 samples, 59% with a project block (default rules, sometimes contradicting document facts, sometimes a prior design), every design verified under the default rules, plus an edge-distance repair mutation. 56 min, mean loss 0.034. Served as `partwright-ir:0.8b-s0b` (`training/wsl/Modelfile`).
+S0 was trained on answers whose key order the decoding grammar cannot produce; it is superseded. S0b uses the same recipe on regenerated data: 1972 samples, 59% with a project block (default rules, sometimes contradicting document facts, sometimes a prior design), every design verified under the default rules, plus an edge-distance repair mutation. 56 min, mean loss 0.034. Served as `scriber-ir:0.8b-s0b` (`training/wsl/Modelfile`).
 
 All runs go through the full agent (requirements, constrained decoding, up to 3 repairs) via Ollama, 2026-10-26.
 
@@ -60,7 +60,7 @@ Reading:
 
 ## Reference: Claude Sonnet 5.5 as the agent's model (comparison only)
 
-Run 2026-10-26 on the user's Claude subscription, not part of the product path. Each attempt was a fresh Sonnet 5.5 subagent that saw only what the agent's model sees: the system rules, the five worked examples, the request, the IR JSON schema and, for repairs, the agent's own repair message quoting its previous answer. It never saw the case checks. Requirement extraction used one Sonnet subagent with the agent's extraction prompt. Answers were scored with our own validator, kernel, requirement checks, parameter and +5 % robustness checks, up to 4 attempts, as `partwright-evals` does. Differences from the Ollama path: no constrained decoding (answers were plain JSON) and Claude Code's own system prompt around the task. Harness, scorecard and final designs: `evals/results/sonnet-5-5-subagents-20261026/`.
+Run 2026-10-26 on the user's Claude subscription, not part of the product path. Each attempt was a fresh Sonnet 5.5 subagent that saw only what the agent's model sees: the system rules, the five worked examples, the request, the IR JSON schema and, for repairs, the agent's own repair message quoting its previous answer. It never saw the case checks. Requirement extraction used one Sonnet subagent with the agent's extraction prompt. Answers were scored with our own validator, kernel, requirement checks, parameter and +5 % robustness checks, up to 4 attempts, as `scriber-evals` does. Differences from the Ollama path: no constrained decoding (answers were plain JSON) and Claude Code's own system prompt around the task. Harness, scorecard and final designs: `evals/results/sonnet-5-5-subagents-20261026/`.
 
 | Set | Sonnet 5.5 | qwen3.5:4b (prompted) | tuned 0.8B S0b |
 |---|---|---|---|
@@ -74,7 +74,7 @@ What it shows:
 
 ## S1 and the stop rule
 
-S1 data (`partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b`): 4898 verified samples, 2821 generate / 1429 repair / 648 requirement; 1110 local paraphrases (terse, chatty, engineer, messy) that passed the number and meaning checks, 345 vague requests, 760 document-grounded requests, open boxes added. Same recipe as S0b, 608 steps, 2 h 12 min, mean loss 0.027. Served as `partwright-ir:0.8b-s1`.
+S1 data (`scriber-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b`): 4898 verified samples, 2821 generate / 1429 repair / 648 requirement; 1110 local paraphrases (terse, chatty, engineer, messy) that passed the number and meaning checks, 345 vague requests, 760 document-grounded requests, open boxes added. Same recipe as S0b, 608 steps, 2 h 12 min, mean loss 0.027. Served as `scriber-ir:0.8b-s1`.
 
 | Gate | tuned 0.8B S1 | tuned 0.8B S0b | qwen3.5:4b (prompted, after the key-order fix) |
 |---|---|---|---|
@@ -102,7 +102,7 @@ After dropping requirements the checks cannot measure (bent-part stock thickness
 
 bf16 LoRA on Qwen3.5-4B needs about 10 GB, so the run uses QLoRA (base weights 4-bit, Unsloth advises against it for Qwen3.5 on quality grounds; the gates decide). Probes, 20 steps, batch 1 x 8 accumulation: 4,096 tokens peaks at 5.17 GB and 52 s per step, 2,048 tokens at 4.57 GB and 36 s. The full run uses 4,096 so the long spec-sheet and repair samples stay in: 608 steps, about 9 hours, a checkpoint every 100 steps, adapter only (merging a 4B to bf16 needs more RAM than WSL has, so it is a separate step). Base weights: `Qwen/Qwen3.5-4B` from Hugging Face in WSL (`~/models/Qwen3.5-4B`, 9.3 GB). Same gates and stop rule as S1.
 
-Run: 608 steps in 7 h 58 min, mean loss 0.018, peak 6.15 GB reserved. The adapter was merged afterwards with Unsloth, shard by shard, which fits in WSL's 7 GB. It was then converted to a bf16 GGUF and quantised with llama.cpp's `llama-quantize` (b11898, CPU build) to Q4_K_M, the base 4B's format, giving 2.8 GB. Served as `partwright-ir:4b-s1` (`training/wsl/Modelfile.4b`, the base 4B's renderer, parser and sampling parameters).
+Run: 608 steps in 7 h 58 min, mean loss 0.018, peak 6.15 GB reserved. The adapter was merged afterwards with Unsloth, shard by shard, which fits in WSL's 7 GB. It was then converted to a bf16 GGUF and quantised with llama.cpp's `llama-quantize` (b11898, CPU build) to Q4_K_M, the base 4B's format, giving 2.8 GB. Served as `scriber-ir:4b-s1` (`training/wsl/Modelfile.4b`, the base 4B's renderer, parser and sampling parameters).
 
 | Gate | tuned 4B S1 (QLoRA) | qwen3.5:4b (prompted, `m1-20261026-222758`, `grounded-20261026-223718`) |
 |---|---|---|
@@ -158,7 +158,7 @@ On the same code, the tuned 4B is ahead on both gates: M1 by one case and one ch
 
 Each model was run on M1 and the grounded set three times, back to back, with the fixes in place.
 
-| Gate | tuned 4B (`partwright-ir:4b-s1`) | prompted `qwen3.5:4b` |
+| Gate | tuned 4B (`scriber-ir:4b-s1`) | prompted `qwen3.5:4b` |
 |---|---|---|
 | M1, fully passing | **5, 5, 5** of 10 | 4, 4, 4 |
 | M1, checks | **16, 15, 16** of 35 | 15, 15, 15 |
@@ -176,23 +176,23 @@ The M1 passes differ by case:
 - the tuned model passes dp6 (2020 T-plate) and dp7 (angled bracket);
 - only the prompted model passes nema17, which the tuned model reads as an edge margin.
 
-`partwright-ir:4b-s1` became the default on this basis (D-027).
+`scriber-ir:4b-s1` became the default on this basis (D-027).
 
 ## Rebuilding the default model on a fresh clone
 
-`partwright-ir:4b-s1` is not published, so it is built from the repo. It takes about 9 h on an RTX 3060 6 GB, needs about 20 GB free on the WSL disk while merging, and ends as a 2.8 GB GGUF. Same stack as the S0 run (`training/wsl/requirements.txt`), plus llama.cpp b11898 built with `cmake -B build -DGGML_CUDA=OFF && cmake --build build --target llama-quantize`.
+`scriber-ir:4b-s1` is not published, so it is built from the repo. It takes about 9 h on an RTX 3060 6 GB, needs about 20 GB free on the WSL disk while merging, and ends as a 2.8 GB GGUF. Same stack as the S0 run (`training/wsl/requirements.txt`), plus llama.cpp b11898 built with `cmake -B build -DGGML_CUDA=OFF && cmake --build build --target llama-quantize`.
 
-1. Data (Windows, Ollama running with `qwen3.5:4b`): `uv run partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b --out data/training/s1`. Paraphrases come from the local 4B, so the samples are close to ours, not byte-identical.
+1. Data (Windows, Ollama running with `qwen3.5:4b`): `uv run scriber-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b --out data/training/s1`. Paraphrases come from the local 4B, so the samples are close to ours, not byte-identical.
 2. Base weights in WSL: `Qwen/Qwen3.5-4B` from Hugging Face into `~/models/Qwen3.5-4B` (9.3 GB).
-3. Train (WSL, `~/partwright-train`):
+3. Train (WSL, `~/scriber-train`):
    `python train.py --data <repo>/data/training/s1/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s1-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
 4. Merge: `python merge.py --lora runs/s1-4b/lora --out runs/s1-4b/merged` (`training/wsl/merge.py`).
 5. Convert and quantise:
    `python llama.cpp/convert_hf_to_gguf.py runs/s1-4b/merged --outtype bf16 --outfile runs/s1-4b/s1-4b-bf16.gguf`
-   `llama.cpp/build/bin/llama-quantize runs/s1-4b/s1-4b-bf16.gguf <repo>/data/training/s1-4b/run/partwright-ir-4b-s1-q4_k_m.gguf Q4_K_M`
-6. Import (Windows, from `training/wsl`): `ollama create partwright-ir:4b-s1 -f Modelfile.4b`.
+   `llama.cpp/build/bin/llama-quantize runs/s1-4b/s1-4b-bf16.gguf <repo>/data/training/s1-4b/run/scriber-ir-4b-s1-q4_k_m.gguf Q4_K_M`
+6. Import (Windows, from `training/wsl`): `ollama create scriber-ir:4b-s1 -f Modelfile.4b`.
 
-Check the result with `uv run partwright-evals evals/cases/m1.yaml --models partwright-ir:4b-s1` (5/10 expected). The LoRA adapter of the run recorded here (85 MB) is kept at `~/partwright-train/runs/s1-4b/lora` on the training laptop; with it, steps 1 and 3 can be skipped.
+Check the result with `uv run scriber-evals evals/cases/m1.yaml --models scriber-ir:4b-s1` (5/10 expected). The LoRA adapter of the run recorded here (85 MB) is kept at `~/scriber-train/runs/s1-4b/lora` on the training laptop; with it, steps 1 and 3 can be skipped.
 
 ## S2 data (built 2026-10-27, D-029)
 
@@ -205,13 +205,13 @@ What changed in `training/` (S2 items in `docs/FINE_TUNING_PLAN.md`):
 | 3. New outlines and families | `families/profiles.py` | flat L, T, U, gusset and slotted plates from a corner; rounded inside corners as paths |
 | 4. Standard parts | `families/standards.py` | EN 1092-1 flanges, NEMA 8/11/14 plates, 30 and 40 series extrusion plates; eval sizes left out |
 | 5. Names decoupled | `names.py` | parameters renamed to synonyms in about half the specs |
-| 6. Real repairs | `collect.py` (`partwright-collect`), `mutate.py` | first answers of a real model, plus fillet-too-large and overlapping-hole mutations |
+| 6. Real repairs | `collect.py` (`scriber-collect`), `mutate.py` | first answers of a real model, plus fillet-too-large and overlapping-hole mutations |
 | 7. Honest provenance | `dataset.py` | samples whose target quotes words not in the request are dropped |
 | 8. Edits that keep values | `context.py` (`edited`) | previous design in context, one value changed, the rest carried over |
 
 The prompts also carry the agent's reference lines (EN 1092-1, NEMA, extrusions), as inference does; S1 prompts did not. Fix found on the way: the agent's extrusion lookup missed 30-series profiles such as 3030.
 
-Draft card (`partwright-dataset --seed 2 --specs 700`, no paraphrasing, `data/training/s2-draft`): 684 of 700 specs verified, 1,153 samples (679 generate, 307 repair, 167 requirement), 54 edits. The families are balanced at about 160 samples each.
+Draft card (`scriber-dataset --seed 2 --specs 700`, no paraphrasing, `data/training/s2-draft`): 684 of 700 specs verified, 1,153 samples (679 generate, 307 repair, 167 requirement), 54 edits. The families are balanced at about 160 samples each.
 
 | Coverage | S1 | S2 draft |
 |---|---|---|
@@ -226,11 +226,11 @@ Through-all cuts stay rare (about 0.4 %), below the plan's 2 %.
 
 The 8-gram leak guard dropped most L-plates at first, because one phrase ("mm apart on the centre line of the") matched dev case d07. The generators were reworded until leak drops fell to a handful of number-specific matches. For dev case d19, the dev wording was changed instead, because it repeated a long-standing generator phrase.
 
-Dev-set baseline, default `partwright-ir:4b-s1` (`dev-20261027-164441`): 7/20 cases, 43/95 checks. Its misses are the S2 targets: 11 mm holes made 12.2, 5 mm made 7, 18 mm made 17.5, and the wrong slot pitch.
+Dev-set baseline, default `scriber-ir:4b-s1` (`dev-20261027-164441`): 7/20 cases, 43/95 checks. Its misses are the S2 targets: 11 mm holes made 12.2, 5 mm made 7, 18 mm made 17.5, and the wrong slot pitch.
 
-On-policy collection (200 specs each, temperature 0): `qwen3.5:4b` failed its first answer on 164, `partwright-ir:4b-s1` on 90.
+On-policy collection (200 specs each, temperature 0): `qwen3.5:4b` failed its first answer on 164, `scriber-ir:4b-s1` on 90.
 
-Full S2 set (`partwright-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...`, `data/training/s2`): 2,845 of 2,900 specs verified, 5,034 samples (2,834 generate, 1,534 repair, 666 requirement); S1 had 4,898. Repairs include 163 and 90 on-policy ones. 173 edits, 1,432 paraphrased or vague prompts, 0 eval sizes. Holes by stated diameter 2,138 against 1,475 by fastener; through-all cuts 11. The first attempt ran out of memory beside another process; it was rerun with `--workers 4` and `OPENBLAS_NUM_THREADS=1`, which does not change the data.
+Full S2 set (`scriber-dataset --seed 2 --specs 2900 --paraphrase-model qwen3.5:4b --onpolicy ...`, `data/training/s2`): 2,845 of 2,900 specs verified, 5,034 samples (2,834 generate, 1,534 repair, 666 requirement); S1 had 4,898. Repairs include 163 and 90 on-policy ones. 173 edits, 1,432 paraphrased or vague prompts, 0 eval sizes. Holes by stated diameter 2,138 against 1,475 by fastener; through-all cuts 11. The first attempt ran out of memory beside another process; it was rerun with `--workers 4` and `OPENBLAS_NUM_THREADS=1`, which does not change the data.
 
 ## S2 on the 4B (2026-10-29, D-036)
 
@@ -238,7 +238,7 @@ Run: `training/wsl/s2.sh`, same flags as S1-4B (QLoRA, 4,096 tokens, batch 1 x 8
 
 Gates, one run per model in the same session (D-028), `training/wsl/s2_gates.sh`:
 
-| Gate | `partwright-ir:4b-s1` | `partwright-ir:4b-s2` |
+| Gate | `scriber-ir:4b-s1` | `scriber-ir:4b-s2` |
 |---|---|---|
 | Dev (`dev-20261029-095455`) | 8/20, 44/95 checks, 12/20 built, 37 repairs, median 71 s | **14/20, 70/95**, 16/20 built, 17 repairs, median 22 s |
 | M1 (`m1-20261029-102900`) | 5/10, 16/35, 7/10 built, median 66 s | **6/10, 22/35**, 6/10 built, median 27 s |
@@ -249,7 +249,7 @@ S2 wins every gate, so it becomes the default (D-036). It is not better everywhe
 
 ## S3 data (generators built 2026-10-29, not trained)
 
-Plan: `docs/FINE_TUNING_PLAN.md` (S3). Everything is behind `--s3` on `partwright-dataset` and `partwright-collect`; without the flag the families, seeds and samples are those of S2.
+Plan: `docs/FINE_TUNING_PLAN.md` (S3). Everything is behind `--s3` on `scriber-dataset` and `scriber-collect`; without the flag the families, seeds and samples are those of S2.
 
 | What | Where | Done |
 |---|---|---|
@@ -272,7 +272,7 @@ Limits found while verifying every target under the default rules were fixed in 
 - `shell_with_lid` enclosures take 2-5 mm walls with any screw (was a per-screw list); the screw-spacing check follows the shell's corner inset, max((wall + boss) / 2, 1.5 x clearance), with `boss_diameter` from the IR.
 - 30 % of gear pairs state a 0.05-0.15 mm backlash carried by both gears; zero and nonzero backlash both pass the mesh checks.
 
-Dry run after these changes (`partwright-dataset --s3 --seed 3 --specs 200 --workers 4`, no paraphrasing, into a temp folder and deleted afterwards; 39 s on this laptop): 198 of 200 specs verified. The 2 rejects are not S3 limits: a support whose M4 counterbore and upright hole sizes fell in the same check range, and a plate chamfer too long for its edge. 322 samples: 195 generate, 71 repair, 56 requirement extraction; 20-26 per family. Generate targets carry spur_gear 18, keyway 24, groove 11, rib 13, boss_pattern 11, shell_with_lid 13, lid 13; 29 assemblies of 2 parts and 2 of 6, joints 18 fastened, 8 revolute, 13 implied lid mates; hole tables 10 in the request and 3 as uploaded facts; 650 of 650 features with intent; 107 titles, 209 parameter names; 0 eval sizes in prompts.
+Dry run after these changes (`scriber-dataset --s3 --seed 3 --specs 200 --workers 4`, no paraphrasing, into a temp folder and deleted afterwards; 39 s on this laptop): 198 of 200 specs verified. The 2 rejects are not S3 limits: a support whose M4 counterbore and upright hole sizes fell in the same check range, and a plate chamfer too long for its edge. 322 samples: 195 generate, 71 repair, 56 requirement extraction; 20-26 per family. Generate targets carry spur_gear 18, keyway 24, groove 11, rib 13, boss_pattern 11, shell_with_lid 13, lid 13; 29 assemblies of 2 parts and 2 of 6, joints 18 fastened, 8 revolute, 13 implied lid mates; hole tables 10 in the request and 3 as uploaded facts; 650 of 650 features with intent; 107 titles, 209 parameter names; 0 eval sizes in prompts.
 
 The earlier dry run before D-039 (300 specs, 8 workers, 8 min): 294 verified, 493 samples.
 
@@ -292,15 +292,15 @@ The 8-gram guard covers the showcase set as well. One coupling phrase matched sh
 ### Full S3 build and training (not run)
 
 1. On-policy repairs on S3 prompts (Windows, Ollama running; about 4 h for both, as for S2):
-   `uv run partwright-collect --s3 --model partwright-ir:4b-s2 --specs 200 --seed 3 --out data/training/s3/onpolicy-4b-s2.jsonl`
-   `uv run partwright-collect --s3 --model qwen3.5:4b --specs 200 --seed 3 --out data/training/s3/onpolicy-qwen3.5-4b.jsonl`
+   `uv run scriber-collect --s3 --model scriber-ir:4b-s2 --specs 200 --seed 3 --out data/training/s3/onpolicy-4b-s2.jsonl`
+   `uv run scriber-collect --s3 --model qwen3.5:4b --specs 200 --seed 3 --out data/training/s3/onpolicy-qwen3.5-4b.jsonl`
 2. Dataset with paraphrasing (as for S2: 4 workers, single-threaded BLAS so it fits beside Ollama; gears now build in seconds, so expect a few hours as for S2):
-   `OPENBLAS_NUM_THREADS=1 uv run partwright-dataset --s3 --seed 3 --specs 2900 --workers 4 --paraphrase-model qwen3.5:4b --onpolicy data/training/s3/onpolicy-4b-s2.jsonl data/training/s3/onpolicy-qwen3.5-4b.jsonl --out data/training/s3`
+   `OPENBLAS_NUM_THREADS=1 uv run scriber-dataset --s3 --seed 3 --specs 2900 --workers 4 --paraphrase-model qwen3.5:4b --onpolicy data/training/s3/onpolicy-4b-s2.jsonl data/training/s3/onpolicy-qwen3.5-4b.jsonl --out data/training/s3`
    2,900 specs give about 5,000 samples, so the run stays one night like S2 (626 steps).
-3. Train, merge, convert and quantise (WSL, `~/partwright-train`): `training/wsl/s2.sh` with `s2` replaced by `s3`, that is
+3. Train, merge, convert and quantise (WSL, `~/scriber-train`): `training/wsl/s2.sh` with `s2` replaced by `s3`, that is
    `python train.py --data <repo>/data/training/s3/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s3-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
    `python <repo>/training/wsl/merge.py --lora runs/s3-4b/lora --out runs/s3-4b/merged`
    `python llama.cpp/convert_hf_to_gguf.py runs/s3-4b/merged --outtype bf16 --outfile runs/s3-4b/s3-4b-bf16.gguf`
-   `llama.cpp/build/bin/llama-quantize runs/s3-4b/s3-4b-bf16.gguf <repo>/data/training/s3-4b/run/partwright-ir-4b-s3-q4_k_m.gguf Q4_K_M`
-4. Import (Windows, `training/wsl`): a `Modelfile.4b-s3` that is `Modelfile.4b-s2` with the `FROM` path pointing to the S3 GGUF, then `ollama create partwright-ir:4b-s3 -f Modelfile.4b-s3`.
-5. Gates in one session (D-028), as in `training/wsl/s2_gates.sh` with `4b-s3` against `4b-s2`: dev, M1 and grounded, plus `uv run partwright-parity M6-SHOWCASE --model partwright-ir:4b-s3` and the same for `partwright-ir:4b-s2`.
+   `llama.cpp/build/bin/llama-quantize runs/s3-4b/s3-4b-bf16.gguf <repo>/data/training/s3-4b/run/scriber-ir-4b-s3-q4_k_m.gguf Q4_K_M`
+4. Import (Windows, `training/wsl`): a `Modelfile.4b-s3` that is `Modelfile.4b-s2` with the `FROM` path pointing to the S3 GGUF, then `ollama create scriber-ir:4b-s3 -f Modelfile.4b-s3`.
+5. Gates in one session (D-028), as in `training/wsl/s2_gates.sh` with `4b-s3` against `4b-s2`: dev, M1 and grounded, plus `uv run scriber-parity M6-SHOWCASE --model scriber-ir:4b-s3` and the same for `scriber-ir:4b-s2`.

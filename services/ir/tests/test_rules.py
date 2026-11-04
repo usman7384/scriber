@@ -1,4 +1,4 @@
-from partwright_ir import Rule, RuleSet
+from scriber_ir import Rule, RuleSet
 
 EDGE = Rule(id="hole-edge", kind="min_hole_edge_ratio", value=1.5, unit="")
 CORNER = Rule(id="mill-corner", kind="min_internal_corner_radius", value=3, unit="mm", process="milling_3axis")

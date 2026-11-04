@@ -1,14 +1,14 @@
 # Parity: FreeCAD and PrusaSlicer checks
 
-Closes **EX-4**, **EX-5** and **VM-9** when the integrator's live `partwright-parity EX-4 EX-5 VM-9` run passes with `PARTWRIGHT_FREECAD` and `PARTWRIGHT_PRUSASLICER` set (none of the three uses the model, so the offline tests and the live run measure the same thing). Tools, versions and licences: `docs/INTEROP.md#external-tools`.
+Closes **EX-4**, **EX-5** and **VM-9** when the integrator's live `scriber-parity EX-4 EX-5 VM-9` run passes with `SCRIBER_FREECAD` and `SCRIBER_PRUSASLICER` set (none of the three uses the model, so the offline tests and the live run measure the same thing). Tools, versions and licences: `docs/INTEROP.md#external-tools`.
 
 ## What landed
 
-- `partwright_geometry.freecad`: `run_freecad` (subprocess runner; arguments and answer travel as JSON files), `step_in_freecad` (read a STEP, report solids, validity, volume, write it back) and `inspect_fcstd` (reopen an `.FCStd` in a fresh process, recompute everything, report each body's features, sketch DOF/redundant/conflicting counts per FreeCAD's solver, volume; then edit each named spreadsheet parameter and write a STEP per edit). The FreeCAD-side code is three `*.FCMacro` scripts next to the module.
-- `partwright_geometry.fcstd`: `fcstd_plan` (IR → PartDesign plan, pure) and `export_fcstd` (writes it through FreeCAD). Sketch geometry and constraints come from `analyse_sketch` (the GE-3 sets), with each tangency and its coincidence merged into one endpoint tangency, because FreeCAD's edge-to-edge tangency is degenerate there. Sketch planes come from the kernel: the worker's new `frames` op runs the compiled model with `_ref` and `_extrude` wrapped and records every sketch plane (origin, axes, face side) and whether the profile's face normal opposes the plane (a clockwise outline extrudes the other way). Unmapped constructs raise `UnsupportedExportError`.
-- `partwright_geometry.slicer.slice_stl`: PrusaSlicer `--info --export-gcode` with a throwaway datadir; exit code, manifold flag, layer count, G-code size, warning and error lines.
+- `scriber_geometry.freecad`: `run_freecad` (subprocess runner; arguments and answer travel as JSON files), `step_in_freecad` (read a STEP, report solids, validity, volume, write it back) and `inspect_fcstd` (reopen an `.FCStd` in a fresh process, recompute everything, report each body's features, sketch DOF/redundant/conflicting counts per FreeCAD's solver, volume; then edit each named spreadsheet parameter and write a STEP per edit). The FreeCAD-side code is three `*.FCMacro` scripts next to the module.
+- `scriber_geometry.fcstd`: `fcstd_plan` (IR → PartDesign plan, pure) and `export_fcstd` (writes it through FreeCAD). Sketch geometry and constraints come from `analyse_sketch` (the GE-3 sets), with each tangency and its coincidence merged into one endpoint tangency, because FreeCAD's edge-to-edge tangency is degenerate there. Sketch planes come from the kernel: the worker's new `frames` op runs the compiled model with `_ref` and `_extrude` wrapped and records every sketch plane (origin, axes, face side) and whether the profile's face normal opposes the plane (a clockwise outline extrudes the other way). Unmapped constructs raise `UnsupportedExportError`.
+- `scriber_geometry.slicer.slice_stl`: PrusaSlicer `--info --export-gcode` with a throwaway datadir; exit code, manifold flag, layer count, G-code size, warning and error lines.
 - `sketcher._slot` now pins the slot by an IR expression for its first arc centre instead of a plain position, so a slot follows edits of its centre, length, width and angle.
-- Demos: EX-4 (`parity_m4_interop`) adds the FCStd half (bracket and IN-7 flange) and runs the AP-8 Onshape exporter on the recorded mock without the model; EX-5 (`parity_m5_platform`) round-trips the AP214 plate and the AP242 bracket through FreeCAD; VM-9 (`parity_m5_platform`, new) slices five reference parts and opens their STEP in FreeCAD. `partwright_evals.tools` reads the two variables.
+- Demos: EX-4 (`parity_m4_interop`) adds the FCStd half (bracket and IN-7 flange) and runs the AP-8 Onshape exporter on the recorded mock without the model; EX-5 (`parity_m5_platform`) round-trips the AP214 plate and the AP242 bracket through FreeCAD; VM-9 (`parity_m5_platform`, new) slices five reference parts and opens their STEP in FreeCAD. `scriber_evals.tools` reads the two variables.
 
 ## Measured (offline, FreeCAD 1.1.4, PrusaSlicer 2.9.6)
 
@@ -23,10 +23,10 @@ Closes **EX-4**, **EX-5** and **VM-9** when the integrator's live `partwright-pa
 ## Run
 
 ```
-export PARTWRIGHT_FREECAD=.../FreeCAD_1.1.4-Windows-x86_64-py311/bin/freecadcmd.exe
-export PARTWRIGHT_PRUSASLICER=.../PrusaSlicer-2.9.6/prusa-slicer-console.exe
+export SCRIBER_FREECAD=.../FreeCAD_1.1.4-Windows-x86_64-py311/bin/freecadcmd.exe
+export SCRIBER_PRUSASLICER=.../PrusaSlicer-2.9.6/prusa-slicer-console.exe
 uv run pytest services/geometry/tests/test_fcstd.py evals/tests/test_parity_m4_interop.py evals/tests/test_parity_m5_platform.py
-uv run partwright-parity EX-4 EX-5 VM-9
+uv run scriber-parity EX-4 EX-5 VM-9
 ```
 
 Without the variables the tool-backed tests skip and the demos report the rows open with `not configured: ... is unset`.

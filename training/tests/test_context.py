@@ -1,11 +1,11 @@
 import random
 from pathlib import Path
 
-from partwright_agent import misquoted
-from partwright_geometry import LocalGeometry
-from partwright_training.context import edited
-from partwright_training.families import FAMILIES
-from partwright_training.verify import design_failures
+from scriber_agent import misquoted
+from scriber_geometry import LocalGeometry
+from scriber_training.context import edited
+from scriber_training.families import FAMILIES
+from scriber_training.verify import design_failures
 
 
 def test_an_edit_changes_one_value_and_keeps_the_rest(geometry: LocalGeometry, tmp_path: Path) -> None:

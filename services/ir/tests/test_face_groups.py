@@ -1,6 +1,6 @@
 from typing import Any
 
-from partwright_ir import Design, compile_design, validate
+from scriber_ir import Design, compile_design, validate
 
 
 def with_groups(bracket: Design, groups: list[dict[str, Any]]) -> Design:

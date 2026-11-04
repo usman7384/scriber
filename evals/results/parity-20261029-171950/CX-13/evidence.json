@@ -2,7 +2,7 @@
   "row": "CX-13",
   "passed": true,
   "measured": {
-    "candidate": "partwright-ir:0.8b-cx13",
+    "candidate": "scriber-ir:0.8b-cx13",
     "base": "qwen3.5:0.8b-q8_0",
     "cases": 20,
     "candidate_score": 60.3,

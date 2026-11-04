@@ -1,9 +1,9 @@
-Model: `partwright-ir:4b-s1`
+Model: `scriber-ir:4b-s1`
 
 | row | result | measured | note |
 |---|---|---|---|
 | AP-6 | pass | tool_vertices=12, tool_thickness=6.0, pocket_samples=1074, offset_min=0.9997, offset_max=1.0, job=done, documented=True | pocket section at half depth of the exported STL, vertices and chord midpoints, distance to the tool's mid-height outline |
-| AP-9 | pass | solids=1, valid=True, span=1000.0, root_chord=250.036, tip_chord=120.017, sweep_deg=20.002, dihedral_deg=5.0, twist_deg=2.0, airfoil_deviation_pct_chord=0.015, origin=sizing, llm_calls=0, job=done | partwright_cli.pipe.pipe (the `partwright pipe` command) against the in-process API; IN-11 checks on the downloaded STEP |
+| AP-9 | pass | solids=1, valid=True, span=1000.0, root_chord=250.036, tip_chord=120.017, sweep_deg=20.002, dihedral_deg=5.0, twist_deg=2.0, airfoil_deviation_pct_chord=0.015, origin=sizing, llm_calls=0, job=done | scriber_cli.pipe.pipe (the `scriber pipe` command) against the in-process API; IN-11 checks on the downloaded STEP |
 | DP-19 | pass | phone_width=75.0, source=phone width 75 mm, inner_width=75.5, expected=75.5, job=done | cut across the cradle at mid-depth, mid-lip height |
 | WP-10 | pass | author=alice, visible_to_bob=True, fork_project=True, forked_from=m72bbc5195572 v1 by alice, fork_versions=2, fork_thickness=8.0, original_thickness=5.0 | API half; the web Community tab is not built |
 | WP-11 | pass | model_id=ma277bcd79171, version=1, text=the left hole is off by 2 mm, user=local, screenshot_bytes=1539, screenshot_matches=True | API half: the web dialog posts this shape (apps/web BugReport); no end-to-end browser run against the live API |

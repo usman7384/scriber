@@ -1,6 +1,6 @@
 # Parity M4: interop and downstream metadata
 
-Branch `feat/m4-interop`. Closes offline, with the real geometry worker: **GE-12, GE-3, IN-10**. Advances **EX-4** (IR bundle half only; the FreeCAD `.FCStd` half is blocked). None of these rows uses the model, so the offline test and a live `partwright-parity` run measure the same thing.
+Branch `feat/m4-interop`. Closes offline, with the real geometry worker: **GE-12, GE-3, IN-10**. Advances **EX-4** (IR bundle half only; the FreeCAD `.FCStd` half is blocked). None of these rows uses the model, so the offline test and a live `scriber-parity` run measure the same thing.
 
 ## What landed
 
@@ -10,7 +10,7 @@ Branch `feat/m4-interop`. Closes offline, with the real geometry worker: **GE-12
 - **Geometry, bundle**: `export_bundle` / `open_bundle` (zip: manifest, `design.json`, `model.py`, `params.json`, `features.json`, `sketches.json`, `model.step`). Opening checks the hash, that `model.py` replays from `design.json`, and recounts every sketch's DOF.
 - **Geometry, Onshape**: `import_onshape(api, ref, step)` behind an `OnshapeApi` protocol, with `RecordedOnshape` replaying recorded responses. Sketches on default planes (lines, circles) and solid extrudes become IR with depth parameters cited to the feature; every other feature stays in the imported list unmapped.
 - **Docs**: `docs/INTEROP.md` (supported paths, gaps, proprietary formats out of scope).
-- **Evals**: `partwright_evals.parity_m4_interop.ROWS`; fixtures in `evals/parity/m4/interop/` (`make_fixtures.py` writes both STEP files; the Onshape responses are hand-written from the public API docs).
+- **Evals**: `scriber_evals.parity_m4_interop.ROWS`; fixtures in `evals/parity/m4/interop/` (`make_fixtures.py` writes both STEP files; the Onshape responses are hand-written from the public API docs).
 
 ## Measured (offline run)
 

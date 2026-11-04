@@ -1,4 +1,4 @@
-from partwright_ir import Design, compile_design
+from scriber_ir import Design, compile_design
 
 
 def v1() -> dict[str, object]:

@@ -11,7 +11,7 @@ services/context/   ingestion, extraction (facts, rules), project DB (chunks, FT
 services/agent/     LLM interface + adapters, generate/refine/edit/critique loop, vision path
 apps/api/           FastAPI, jobs, projects/files/models/versions, REST + SSE, tokens, webhooks
 apps/web/           Vite + React + TS + react-three-fiber
-apps/cli/           `partwright generate | refine | params`; reads config.yaml
+apps/cli/           `scriber generate | refine | params`; reads config.yaml
 training/           procedural dataset generators, LoRA pipeline, GGUF export
 evals/              benchmark specs + fixtures, harness, scorecard, parity demo suite
 config.yaml         models, runtime, paths, limits
@@ -129,7 +129,7 @@ Reference-compatible aliases under `/api/v1`: `generate`, `modify`, `edit`, `dow
 
 | M | Exit criteria |
 |---|---|
-| M1 vertical slice | `partwright generate "mounting bracket, 4x M6 holes, 80x60 plate, 5 mm thick"` → valid STEP/STL/GLB + params via local Qwen with ≥1 automatic repair logged; `partwright refine`; eval harness A/B of `qwen3.5:4b` vs 7B on the M1 eval set; CI green |
+| M1 vertical slice | `scriber generate "mounting bracket, 4x M6 holes, 80x60 plate, 5 mm thick"` → valid STEP/STL/GLB + params via local Qwen with ≥1 automatic repair logged; `scriber refine`; eval harness A/B of `qwen3.5:4b` vs 7B on the M1 eval set; CI green |
 | M2 context | spec PDF + past STEP + rules doc → graph built → generation cites sources → rule violation caught and repaired → similar past part used as prior |
 | M2b grounded eval | 10 cases with spec files (PDF, DOCX, XLSX, YAML, CSV, TXT), rules documents and past STEP parts, each with labelled facts and rules; scored for extraction precision/recall, retrieval fact recall, and generation run prompt-only (spec pasted as text) vs grounded (files in a project) on the same checks, rule compliance and citation correctness; scorecard committed |
 | M3 web + API | viewer, param panel with live regen, chat refine, timeline, versions, context browser, API tokens, SSE progress, OpenAPI docs |

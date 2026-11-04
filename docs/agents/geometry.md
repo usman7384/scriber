@@ -4,7 +4,7 @@ Branch `feat/geometry-m2`. Only `services/geometry` changed.
 
 ## What exists
 
-- DFM checks measured on the built B-rep inside the sandboxed worker, driven by a `partwright_ir.RuleSet` and a `Process`.
+- DFM checks measured on the built B-rep inside the sandboxed worker, driven by a `scriber_ir.RuleSet` and a `Process`.
 - `describe(path)` for STEP, STL and OBJ, and `import_step(path)`, also run in the worker with the same timeout and crash handling.
 - Per-part centre of gravity and mass from a small density table keyed by the part's `material`, plus an assembly total.
 - One warm worker shared by every geometry test module (`tests/conftest.py`). The geometry suite takes about 30 s instead of 58 s.

@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from apps.api.tests.conftest import NO_REQS, Api
-from partwright_api import disk
+from scriber_api import disk
 
 
 def block(pid: str, size: float) -> dict[str, Any]:

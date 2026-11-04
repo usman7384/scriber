@@ -6,7 +6,7 @@
       "runtimeExecutable": "uv",
       "runtimeArgs": [
         "run",
-        "partwright",
+        "scriber",
         "serve"
       ],
       "port": 8000

@@ -3,13 +3,13 @@ import json
 import sys
 from pathlib import Path
 
-from partwright_agent import design_messages, evaluate, repair_message, requirement_messages
-from partwright_agent.grounding import grounded
-from partwright_agent.requirements import Requirement, RequirementList, check
-from partwright_agent.standards import reference_data
-from partwright_evals.run import design_checks, load_cases
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design, json_schema
+from scriber_agent import design_messages, evaluate, repair_message, requirement_messages
+from scriber_agent.grounding import grounded
+from scriber_agent.requirements import Requirement, RequirementList, check
+from scriber_agent.standards import reference_data
+from scriber_evals.run import design_checks, load_cases
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design, json_schema
 
 ROOT = Path(__file__).parent
 REPO = Path(__file__).resolve().parents[3]

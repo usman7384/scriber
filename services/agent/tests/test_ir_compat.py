@@ -2,8 +2,8 @@ import hashlib
 
 import pytest
 
-from partwright_agent.prompts import EXAMPLES
-from partwright_ir import Design, answer_json, compile_design, design_hash
+from scriber_agent.prompts import EXAMPLES
+from scriber_ir import Design, answer_json, compile_design, design_hash
 
 # compiled source, design hash and answer JSON of the worked examples before assemblies were added to the IR
 GOLDEN = {

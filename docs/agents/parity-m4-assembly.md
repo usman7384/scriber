@@ -12,7 +12,7 @@ Branch `feat/m4-assembly`. Rows: AS-2, AS-3, AS-4, GE-5, GE-6, PR-5, PR-8, and t
 
 ## Demos
 
-`evals/src/partwright_evals/parity_m4_assembly.py` (`ROWS`, not yet in `parity.registry()`); fixtures in `evals/parity/m4/assembly/` (drone, enclosure, servo mount, servo). Offline: `uv run pytest evals/tests/test_parity_m4_assembly.py`. Recorded run of the model-free rows (AS-2, AS-4, PR-8, real geometry worker): `evals/results/parity-m4-assembly-20261029-030241/`.
+`evals/src/scriber_evals/parity_m4_assembly.py` (`ROWS`, not yet in `parity.registry()`); fixtures in `evals/parity/m4/assembly/` (drone, enclosure, servo mount, servo). Offline: `uv run pytest evals/tests/test_parity_m4_assembly.py`. Recorded run of the model-free rows (AS-2, AS-4, PR-8, real geometry worker): `evals/results/parity-m4-assembly-20261029-030241/`.
 
 | Row | Demo | Offline (FakeLLM) | Live model needed |
 |---|---|---|---|

@@ -55,7 +55,7 @@ Training uses the same chat format as inference, but with the short v2 rules onl
 | S3 | High-level features, assemblies, hole tables and feature intent, QLoRA on the 4B (section below) | laptop | one night | beat S2 on dev, M1, grounded and the showcase set |
 | S4 | Preference step using our checks as reward (repair outcomes as chosen/rejected); was S3 before the M6 data round took the name | laptop | free | only if the gates stall |
 
-Each stage records its data card (counts per family and type, licence: all ours), training config, and scorecards in `docs/agents/training.md`, and the served model tag goes into `config.yaml` (`partwright-ir:0.8b`, `partwright-ir:4b`) beside the base model so either can be selected.
+Each stage records its data card (counts per family and type, licence: all ours), training config, and scorecards in `docs/agents/training.md`, and the served model tag goes into `config.yaml` (`scriber-ir:0.8b`, `scriber-ir:4b`) beside the base model so either can be selected.
 
 ## S1 within 6 GB
 
@@ -114,7 +114,7 @@ Data changes, about 5k samples so the 4B run stays one night (608 steps, 8 h):
 4. **Standard-referenced parts** from a small public table (`standards.py`, like `fasteners.py`, each row citing its source): EN 1092-1 PN10/PN16 flanges, NEMA motor faces, aluminium-extrusion slot pitches and 6000-series bearings. The sizes the eval sets use are left out of training (DN50, NEMA 17, NEMA 23, 2020), so the model learns to use the table rather than memorise eval answers.
 5. **Names decoupled from shapes.** About 300 titles and an open parameter vocabulary: synonyms, and names taken from the request's own words. The same name is used for different shapes ("bracket" can be a plate, an L or a gusseted angle).
 6. **On-policy repairs.**
-   - Run the prompted `qwen3.5:4b` and `partwright-ir:4b-s1` on about 600 new generated prompts (about 4 h at night), and keep each failing answer with the agent's real error text, paired with the verified design.
+   - Run the prompted `qwen3.5:4b` and `scriber-ir:4b-s1` on about 600 new generated prompts (about 4 h at night), and keep each failing answer with the agent's real error text, paired with the verified design.
    - Add kernel-error repairs that the mutator cannot produce: fillets too large, holes outside the part, overlapping holes.
    - About a quarter of the repair samples come from this source.
 7. **Honest provenance.** Every training quote must appear verbatim in the request, and samples that fail are dropped.
@@ -141,7 +141,7 @@ Rough cost: generator and pipeline code over a few sessions, one night of on-pol
 
 S2 (D-036) fails what M6 needs (`docs/agents/integration-2026-10-29.md`, `docs/M6_SHOWCASE_PLAN.md`): 4 of 16 bracket variants (DP-14), hole positions from spec tables 25 mm off (IN-2, IN-3), no assemblies (GE-5, GE-6, AS-3, PR-5), no design intent on features (CX-10), and nothing that uses the new IR features (`spur_gear`, `rib`, `boss_pattern`, `shell_with_lid` and `lid`, `keyway`, `groove`).
 
-Data, behind `--s3` on `partwright-dataset` and `partwright-collect` (without it the S1/S2 data is unchanged):
+Data, behind `--s3` on `scriber-dataset` and `scriber-collect` (without it the S1/S2 data is unchanged):
 
 1. **Families on the high-level features**: spur gears and meshing pairs, V-belt pulleys, stepped shafts with keyways and circlip grooves, ribbed housings with screw-boss patterns, pillow blocks, enclosures with a mated lid.
 2. **Assemblies of 2-6 parts** (D-033 connectors and joints): standoff stacks, split clamps, a servo on its mounting plate, hinges, flange couplings; the enclosure lid through its implied mate.
@@ -152,7 +152,7 @@ Data, behind `--s3` on `partwright-dataset` and `partwright-collect` (without it
 
 The S1/S2 families stay in the rotation (7 of 15), so S3 keeps what S2 learned; mix, leak guard (now including the showcase set) and gates as in D-028 and D-029. Commands for the full build, the dry-run card and the generator limits found on the way: `docs/agents/training.md` (S3 data).
 
-Gate: the same-session protocol (D-028) against `partwright-ir:4b-s2` on dev, M1 and grounded, plus the showcase set (`partwright-parity M6-SHOWCASE`); S3 must not lose dev, M1 or grounded and must gain on the showcase.
+Gate: the same-session protocol (D-028) against `scriber-ir:4b-s2` on dev, M1 and grounded, plus the showcase set (`scriber-parity M6-SHOWCASE`); S3 must not lose dev, M1 or grounded and must gain on the showcase.
 
 ## Risks
 

@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from partwright_agent import FakeLLM, plan_variants, suggest
-from partwright_geometry import Finding
-from partwright_ir import Design
+from scriber_agent import FakeLLM, plan_variants, suggest
+from scriber_geometry import Finding
+from scriber_ir import Design
 
 DESIGN = Design.model_validate(
     {

@@ -1,12 +1,12 @@
 # Parity M4: aircraft from a mission definition
 
-Branch `feat/m4-mission`. Closes offline, with the real geometry worker: **IN-14**, **PF-2**, **PF-6**. None of them uses the model, so the offline test and the live `partwright-parity` run measure the same thing (PF-6 offline runs a 16-variant slice; the 1,000-variant timing is the live run).
+Branch `feat/m4-mission`. Closes offline, with the real geometry worker: **IN-14**, **PF-2**, **PF-6**. None of them uses the model, so the offline test and the live `scriber-parity` run measure the same thing (PF-6 offline runs a 16-variant slice; the 1,000-variant timing is the live run).
 
 ## What landed
 
-- **Context** `partwright_context.mission`: `read_mission(path)` reads `mission.yaml` (`payload.mass`, `endurance`, `constraints.max_span`, any pint unit) with each field's YAML key as provenance; `size(mission)` is a pure first-order sizing that returns the configuration, the estimates (MTOM, battery Wh, cruise power, aspect ratio) and an `AircraftSpec` for `aircraft_design`. Every value has `Provenance(source="rule", ref="mission.yaml#<fields>", quote=<formula>)`.
+- **Context** `scriber_context.mission`: `read_mission(path)` reads `mission.yaml` (`payload.mass`, `endurance`, `constraints.max_span`, any pint unit) with each field's YAML key as provenance; `size(mission)` is a pure first-order sizing that returns the configuration, the estimates (MTOM, battery Wh, cruise power, aspect ratio) and an `AircraftSpec` for `aircraft_design`. Every value has `Provenance(source="rule", ref="mission.yaml#<fields>", quote=<formula>)`.
 - **Geometry** `LocalGeometry.measure(design)`: compile, rebuild and return part metrics without writing STEP/STL/GLB.
-- **Evals** `partwright_evals.parity_m4_mission.ROWS`: IN-14, PF-2, PF-6. Fixture `evals/parity/m4/mission/mission.yaml`.
+- **Evals** `scriber_evals.parity_m4_mission.ROWS`: IN-14, PF-2, PF-6. Fixture `evals/parity/m4/mission/mission.yaml`.
 
 ## Sizing (first order, all constants in `mission.py`)
 
@@ -40,7 +40,7 @@ Sweep, dihedral and fin sweep are configuration defaults: they reach the mission
 
 ```
 uv run pytest services/context/tests/test_mission.py evals/tests/test_parity_m4_mission.py
-uv run partwright-parity IN-14 PF-2 PF-6   # after the module is registered in parity.registry()
+uv run scriber-parity IN-14 PF-2 PF-6   # after the module is registered in parity.registry()
 ```
 
 ## Gaps

@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_evals.parity import Evidence, Rig, run_row
-from partwright_evals.parity_m5_platform import ROWS
-from partwright_evals.tools import FREECAD, PRUSASLICER, missing, tool
-from partwright_geometry import LocalGeometry
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_evals.parity import Evidence, Rig, run_row
+from scriber_evals.parity_m5_platform import ROWS
+from scriber_evals.tools import FREECAD, PRUSASLICER, missing, tool
+from scriber_geometry import LocalGeometry
 
 ROOT = Path(__file__).parents[2]
 THICKER = json.dumps({"suggestions": [{"target": "thickness", "change": {"thickness": 5}, "rationale": "stress at the mount face"}]})

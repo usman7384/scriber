@@ -76,13 +76,13 @@ Ollama import (Windows side):
 
 ```
 # Modelfile
-FROM D:/partwright/models/ir-1.5b/unsloth.Q4_K_M.gguf
+FROM D:/scriber/models/ir-1.5b/unsloth.Q4_K_M.gguf
 TEMPLATE """<copy from: ollama show --modelfile qwen2.5-coder:1.5b>"""
 PARAMETER temperature 0
 PARAMETER num_ctx 8192
 ```
 
-Then `ollama create partwright-ir:1.5b-q4 -f Modelfile`. The output is about 1.0 GB.
+Then `ollama create scriber-ir:1.5b-q4 -f Modelfile`. The output is about 1.0 GB.
 
 Alternative without Unsloth: `merge_and_unload()` (PEFT), then llama.cpp `convert_hf_to_gguf.py` and `llama-quantize … Q4_K_M`.
 

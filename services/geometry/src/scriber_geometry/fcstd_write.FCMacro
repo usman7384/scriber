@@ -1,0 +1,58 @@
+# Runs inside FreeCAD (see fcstd.py): build a PartDesign body per part from the plan in ARGS and save it.
+import json
+
+import FreeCAD as App
+import Part
+import Sketcher
+
+
+def placement(frame):
+    o, x, z = (App.Vector(*frame[k]) for k in ("origin", "x_dir", "z_dir"))
+    y = z.cross(x)
+    return App.Placement(App.Matrix(x.x, y.x, z.x, o.x, x.y, y.y, z.y, o.y, x.z, y.z, z.z, o.z, 0, 0, 0, 1))
+
+
+def curve(geo):
+    v = geo["values"]
+    if geo["kind"] == "point":
+        return Part.Point(App.Vector(v[0], v[1], 0))
+    if geo["kind"] == "line":
+        return Part.LineSegment(App.Vector(v[0], v[1], 0), App.Vector(v[2], v[3], 0))
+    circle = Part.Circle(App.Vector(v[0], v[1], 0), App.Vector(0, 0, 1), v[2])
+    return circle if geo["kind"] == "circle" else Part.ArcOfCircle(circle, v[3], v[4])
+
+
+doc = App.newDocument("Scriber")
+sheet = doc.addObject("Spreadsheet::Sheet", "Parameters")
+for row, param in enumerate(ARGS["params"], start=1):
+    sheet.set(f"A{row}", param["name"])
+    sheet.set(f"B{row}", repr(param["value"]))
+    sheet.setAlias(f"B{row}", param["alias"])
+doc.recompute()
+
+for spec in ARGS["bodies"]:
+    body = doc.addObject("PartDesign::Body", spec["name"])
+    body.Label = spec["label"]
+    made = {}
+    for o in spec["objects"]:
+        obj = body.newObject(o["type"], o["name"])
+        if obj.Name != o["name"]:
+            raise ValueError(f"FreeCAD renamed {o['name']!r} to {obj.Name!r}; expressions refer to the planned name")
+        obj.Label = o["label"]
+        if o["type"] == "Sketcher::SketchObject":
+            obj.Placement = placement(o["frame"])
+            for geo in o["geometry"]:
+                obj.addGeometry(curve(geo), geo["kind"] == "point")
+            for c in o["constraints"]:
+                obj.addConstraint(Sketcher.Constraint(c["type"], *c["args"]))
+        else:
+            obj.Profile = made[o["profile"]]
+            for key, value in o["props"].items():
+                setattr(obj, key, value)
+        for path, expression in o["expressions"].items():
+            obj.setExpression(path, expression)
+        made[o["name"]] = obj
+doc.recompute()
+doc.saveAs(ARGS["out"])
+with open(ARGS["result"], "w", encoding="utf-8") as out:
+    json.dump({"errors": [f"{o.Label}: {o.State}" for o in doc.Objects if not o.isValid()]}, out)

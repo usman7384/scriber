@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from partwright_cli.pipe import pipe
+from scriber_cli.pipe import pipe
 
 
 @dataclass

@@ -3,12 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_geometry import LocalGeometry
-from partwright_ir import drop_unused_params, normalize, validate
-from partwright_training.conventions import PLAIN_STYLES
-from partwright_training.house import BORE, HOUSE, PROFILE, WALL
-from partwright_training.render import render
-from partwright_training.verify import failures
+from scriber_geometry import LocalGeometry
+from scriber_ir import drop_unused_params, normalize, validate
+from scriber_training.conventions import PLAIN_STYLES
+from scriber_training.house import BORE, HOUSE, PROFILE, WALL
+from scriber_training.render import render
+from scriber_training.verify import failures
 
 SEEDS = range(40)
 SUFFIX = {"mm": "_mm", "deg": "_deg", "": "_n"}

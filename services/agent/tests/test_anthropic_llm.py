@@ -5,11 +5,11 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import AnthropicLLM, Message
-from partwright_agent.anthropic_llm import UNSUPPORTED, strict_schema
-from partwright_agent.loop import RefineAnswer
-from partwright_agent.requirements import RequirementList
-from partwright_ir import json_schema
+from scriber_agent import AnthropicLLM, Message
+from scriber_agent.anthropic_llm import UNSUPPORTED, strict_schema
+from scriber_agent.loop import RefineAnswer
+from scriber_agent.requirements import RequirementList
+from scriber_ir import json_schema
 
 
 def _nodes(node: Any) -> Iterator[dict[str, Any]]:

@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design, validate
+from scriber_geometry import BuildError, LocalGeometry
+from scriber_ir import Design, validate
 
 W, D, H, T = 60.0, 40.0, 20.0, 2.0
 TRAY = [

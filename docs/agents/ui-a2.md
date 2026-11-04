@@ -4,7 +4,7 @@ Spec: [`docs/design/UI_DIRECTION.md`](../design/UI_DIRECTION.md) §2, §3 (Comma
 
 ## What is there
 
-- **Shell** (`components/Shell.tsx`, `shell/shell.css`): no top nav. Home routes get a 224 px sidebar, `navigation "Main"` (brand, Search, Projects, Library, a slot, Community, Settings with the language code, Help); below 768 px it is a 44 px icon bar with the same accessible names. `/m/*` and `/shared/*` get a floating top bar (mark linking home as "Partwright home", a slot, "Search or run…") over a full-bleed stage.
+- **Shell** (`components/Shell.tsx`, `shell/shell.css`): no top nav. Home routes get a 224 px sidebar, `navigation "Main"` (brand, Search, Projects, Library, a slot, Community, Settings with the language code, Help); below 768 px it is a 44 px icon bar with the same accessible names. `/m/*` and `/shared/*` get a floating top bar (mark linking home as "Scriber home", a slot, "Search or run…") over a full-bleed stage.
 - **Routes** (`App.tsx`): `/settings` and `/help` are sheets over the page they were opened from (`location.state.backdrop`), or over Home for a deep link; Esc goes back. Links into a sheet pass `sheetLinkState(location)`; code calls `useOpenSheet()("settings" | "help")`.
 - **Provider** (`shell/ShellProvider.tsx`): theme, language, the action registry, the palette and the bug sheet for every route. Theme is `system | light | dark`, stored as `theme`; `system` follows `prefers-color-scheme` in JS so `<html data-theme>` is always `light` or `dark`.
 - **Settings sheet**: theme (System / Light / Dark), Language, API server and the API docs link. **Help sheet**: shortcut table, four how-tos, Report a bug (enabled when a part registered the bug action).

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from partwright_context import Fact
-from partwright_evals.grounded import LabelFact, LabelRule, load_cases, score_facts, score_rules
-from partwright_ir import Provenance, Rule, RuleSet
+from scriber_context import Fact
+from scriber_evals.grounded import LabelFact, LabelRule, load_cases, score_facts, score_rules
+from scriber_ir import Provenance, Rule, RuleSet
 
 SRC = Provenance(source="document", ref="d#p1:l1")
 

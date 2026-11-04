@@ -1,4 +1,4 @@
-from partwright_agent.standards import reference_data
+from scriber_agent.standards import reference_data
 
 
 def test_dn50_flange() -> None:

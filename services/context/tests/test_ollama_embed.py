@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from partwright_context import LocalContext, OllamaEmbedder
+from scriber_context import LocalContext, OllamaEmbedder
 
-MODEL = os.environ.get("PARTWRIGHT_EMBED_MODEL", "qwen3-embedding:0.6b")
+MODEL = os.environ.get("SCRIBER_EMBED_MODEL", "qwen3-embedding:0.6b")
 
 
 @pytest.mark.llm

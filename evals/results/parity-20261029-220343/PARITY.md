@@ -1,4 +1,4 @@
-Model: `partwright-ir:4b-s2`
+Model: `scriber-ir:4b-s2`
 
 | row | result | measured | note |
 |---|---|---|---|

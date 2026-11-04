@@ -1,7 +1,7 @@
 [
   {
     "id": "m1-bracket",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -15,7 +15,7 @@
   },
   {
     "id": "dp2-flanged-adapter",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -34,7 +34,7 @@
   },
   {
     "id": "dp5-hollow-cylinder",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -51,7 +51,7 @@
   },
   {
     "id": "dp7-angled-bracket",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -65,7 +65,7 @@
   },
   {
     "id": "dp21-l-bracket",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -79,7 +79,7 @@
   },
   {
     "id": "in2-ten-hole-plate",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -93,7 +93,7 @@
   },
   {
     "id": "dp3-dn50-flange",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -110,7 +110,7 @@
   },
   {
     "id": "wp-open-box",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -124,7 +124,7 @@
   },
   {
     "id": "dp6-2020-t-plate",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -138,7 +138,7 @@
   },
   {
     "id": "nema17-plate",
-    "model": "partwright-ir:0.8b-s1",
+    "model": "scriber-ir:0.8b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,

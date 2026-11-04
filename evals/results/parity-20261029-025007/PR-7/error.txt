@@ -1,14 +1,14 @@
 Traceback (most recent call last):
-  File "<repo>\evals\src\partwright_evals\parity.py", line 52, in run_row
+  File "<repo>\evals\src\scriber_evals\parity.py", line 52, in run_row
     ev = demo(Rig(out, rig.geometry, rig.llm, rig.config))
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\evals\src\partwright_evals\parity_m3.py", line 515, in pr_7
+  File "<repo>\evals\src\scriber_evals\parity_m3.py", line 515, in pr_7
     made = api.ok("POST", f"/models/{model_id}/suggestions")
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\evals\src\partwright_evals\parity_api.py", line 84, in ok
+  File "<repo>\evals\src\scriber_evals\parity_api.py", line 84, in ok
     response = self.call(method, path, **kwargs)
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\evals\src\partwright_evals\parity_api.py", line 79, in call
+  File "<repo>\evals\src\scriber_evals\parity_api.py", line 79, in call
     response: Response = self.client.request(method, path, **kwargs)
                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<repo>\.venv\Lib\site-packages\starlette\testclient.py", line 518, in request
@@ -58,7 +58,7 @@ Traceback (most recent call last):
     await self.app(scope, receive, _send)
   File "<repo>\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
     await self.app(scope, receive, send)
-  File "<repo>\apps\api\src\partwright_api\logs.py", line 47, in __call__
+  File "<repo>\apps\api\src\scriber_api\logs.py", line 47, in __call__
     await self.app(scope, receive, tagged)
   File "<repo>\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
@@ -95,7 +95,7 @@ Traceback (most recent call last):
   File "<repo>\.venv\Lib\site-packages\fastapi\routing.py", line 372, in run_endpoint_function
     return await dependant.call(**values)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\apps\api\src\partwright_api\routes\suggestions.py", line 27, in create
+  File "<repo>\apps\api\src\scriber_api\routes\suggestions.py", line 27, in create
     found = await asyncio.to_thread(suggest, design, data.findings, d.llm, d.settings.seed)
             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "~\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\asyncio\threads.py", line 25, in to_thread
@@ -104,13 +104,13 @@ Traceback (most recent call last):
   File "~\AppData\Roaming\uv\python\cpython-3.12.12-windows-x86_64-none\Lib\concurrent\futures\thread.py", line 59, in run
     result = self.fn(*self.args, **self.kwargs)
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\services\agent\src\partwright_agent\suggestions.py", line 26, in suggest
+  File "<repo>\services\agent\src\scriber_agent\suggestions.py", line 26, in suggest
     raw = llm.chat([Message(role="user", content=message)], SuggestionList.model_json_schema(), seed)
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\evals\src\partwright_evals\parity_api.py", line 57, in chat
+  File "<repo>\evals\src\scriber_evals\parity_api.py", line 57, in chat
     return self.then.chat(messages, schema, seed, temperature, think)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<repo>\services\agent\src\partwright_agent\ollama_llm.py", line 32, in chat
+  File "<repo>\services\agent\src\scriber_agent\ollama_llm.py", line 32, in chat
     response = self._client.chat(
                ^^^^^^^^^^^^^^^^^^
   File "<repo>\.venv\Lib\site-packages\ollama\_client.py", line 391, in chat

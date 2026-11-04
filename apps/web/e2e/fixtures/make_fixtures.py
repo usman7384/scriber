@@ -6,10 +6,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from partwright_api.structure import structure
-from partwright_evals.tools import FREECAD, PRUSASLICER, missing, tool
-from partwright_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, slice_stl
-from partwright_ir import Design, label
+from scriber_api.structure import structure
+from scriber_evals.tools import FREECAD, PRUSASLICER, missing, tool
+from scriber_geometry import LocalGeometry, UnsupportedExportError, export_fcstd, fcstd_plan, slice_stl
+from scriber_ir import Design, label
 
 HERE = Path(__file__).parent
 

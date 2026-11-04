@@ -1,12 +1,12 @@
 # M3 parity: API and agent rows
 
-Demos for the M3 rows owned by api, agent, context (CX-1/3/6), geometry (PR-10) and eval (PF-4), in `evals/src/partwright_evals/parity_m3.py` (`ROWS`). Each demo drives the real FastAPI app in-process (`parity_api.serve`: `create_app` with a `TestClient`, the rig's geometry, a `LocalContext` with the hash embedder) and writes `transcript.jsonl` (every request and response), `api.log` (the structlog JSON lines) and row artifacts (`sse.jsonl`, `plm.jsonl`, `change_report.md`, `validator.json`, exported files) next to `evidence.json`.
+Demos for the M3 rows owned by api, agent, context (CX-1/3/6), geometry (PR-10) and eval (PF-4), in `evals/src/scriber_evals/parity_m3.py` (`ROWS`). Each demo drives the real FastAPI app in-process (`parity_api.serve`: `create_app` with a `TestClient`, the rig's geometry, a `LocalContext` with the hash embedder) and writes `transcript.jsonl` (every request and response), `api.log` (the structlog JSON lines) and row artifacts (`sse.jsonl`, `plm.jsonl`, `change_report.md`, `validator.json`, exported files) next to `evidence.json`.
 
 ## Run
 
 ```bash
 uv run pytest evals/tests/test_parity_m3.py          # offline, FakeLLM, about 3 min (the 100-variant sweep is 70 s)
-uv run partwright-parity IN-16 AP-2 ...              # live, once the integrator registers parity_m3.ROWS
+uv run scriber-parity IN-16 AP-2 ...              # live, once the integrator registers parity_m3.ROWS
 ```
 
 ## Model use

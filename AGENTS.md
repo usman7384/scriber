@@ -1,6 +1,6 @@
-# Partwright — rules for every agent and session
+# Scriber — rules for every agent and session
 
-Partwright is an open-source AI design agent for mechanical CAD: text, specs, sketches, photos, meshes and past designs in; parametric, editable B-rep parts and assemblies out. Local open-weight Qwen models, open geometry (OCCT via build123d). Offline by default.
+Scriber is an open-source AI design agent for mechanical CAD: text, specs, sketches, photos, meshes and past designs in; parametric, editable B-rep parts and assemblies out. Local open-weight Qwen models, open geometry (OCCT via build123d). Offline by default.
 
 ## Product constraints
 

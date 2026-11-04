@@ -1,5 +1,5 @@
 # Same renderer, parser and sampling defaults as qwen3.5:0.8b-q8_0, so the weights are the only difference.
-FROM ../../data/training/s1/run/partwright-ir-0.8b-s1-q8_0.gguf
+FROM ../../data/training/s1/run/scriber-ir-0.8b-s1-q8_0.gguf
 RENDERER qwen3.5
 PARSER qwen3.5
 PARAMETER presence_penalty 1.5

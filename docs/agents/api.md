@@ -1,6 +1,6 @@
 # M3 API (build agent)
 
-Branch `feat/api-m3`. New `apps/api` (distribution `partwright-api`, import `partwright_api`): a FastAPI app implementing `docs/API.md`, plus a thumbnail renderer in `services/geometry` and `partwright serve` in the CLI.
+Branch `feat/api-m3`. New `apps/api` (distribution `scriber-api`, import `scriber_api`): a FastAPI app implementing `docs/API.md`, plus a thumbnail renderer in `services/geometry` and `scriber serve` in the CLI.
 
 ## What was built
 
@@ -13,12 +13,12 @@ Branch `feat/api-m3`. New `apps/api` (distribution `partwright-api`, import `par
 - Webhooks: `version.created` `{model_id, version, files}` (absolute URLs from `settings.public_url`), `job.failed` `{job}`, `version.stale` `{project_id, file_id, model_id, versions, changed_facts}`. Delivery retries 5xx and connection errors with exponential backoff (`hook_attempts`, default 4).
 - Tokens: stored as SHA-256 digests; `Authorization: Bearer` or `X-API-Token`. When `auth: tokens` and no token exists yet, `POST /tokens` is open so the first token can be created.
 - Observability: structlog JSON lines on stderr; an ASGI middleware binds `request_id` (from `X-Request-ID` or generated, echoed in the response) and logs each request; job tasks inherit it and bind `job_id`, including in worker threads. OpenTelemetry is not wired.
-- Thumbnails (WP-8): `partwright_geometry.thumbnail.render_thumbnail` (trimesh + pyrender offscreen, 256 px, isometric, Y-up glTF) runs as the worker op `thumbnail`; `LocalGeometry.thumbnail()` calls it. pyrender is imported inside the function, so a machine without OpenGL still builds parts. Any failure logs `thumbnail_unavailable` and the version has no thumbnail; the job never fails for it. Measured here: 5 s for the first render in a worker (GL init), about 0.15 s after.
+- Thumbnails (WP-8): `scriber_geometry.thumbnail.render_thumbnail` (trimesh + pyrender offscreen, 256 px, isometric, Y-up glTF) runs as the worker op `thumbnail`; `LocalGeometry.thumbnail()` calls it. pyrender is imported inside the function, so a machine without OpenGL still builds parts. Any failure logs `thumbnail_unavailable` and the version has no thumbnail; the job never fails for it. Measured here: 5 s for the first render in a worker (GL init), about 0.15 s after.
 
 ## Run it
 
 ```bash
-uv run partwright serve          # host, port and auth from the api: section of config.yaml
+uv run scriber serve          # host, port and auth from the api: section of config.yaml
 # http://127.0.0.1:8000/docs for the OpenAPI UI, /openapi.json for the schema
 ```
 
@@ -40,15 +40,15 @@ All additive except the status codes:
 
 ## Decisions
 
-- Own version store instead of sharing `partwright_cli.store`: the CLI now imports the API (`serve`), so the API cannot import the CLI, and `services/agent` is off limits. `disk.py` repeats the CLI's 20-line save routine and keeps the same layout. Moving `store` into a shared module (agent or a small `partwright_store`) is the clean fix; it is the integrator's call.
-- Layering: `partwright_evals > partwright_cli > partwright_api > partwright_agent > geometry | context > ir`. Only the CLI imports the API.
+- Own version store instead of sharing `scriber_cli.store`: the CLI now imports the API (`serve`), so the API cannot import the CLI, and `services/agent` is off limits. `disk.py` repeats the CLI's 20-line save routine and keeps the same layout. Moving `store` into a shared module (agent or a small `scriber_store`) is the clean fix; it is the integrator's call.
+- Layering: `scriber_evals > scriber_cli > scriber_api > scriber_agent > geometry | context > ir`. Only the CLI imports the API.
 - Version numbers come from the folders on disk (as in the CLI), so a crashed job leaves a gap instead of reusing a number.
 - The job table and steps are portable SQLAlchemy Core; the only SQLite-specific code is the URL and WAL pragma in `db.py`.
 
 ## Changes outside `apps/api`
 
 - `services/geometry`: new `thumbnail.py`, worker op `thumbnail`, a three-line `LocalGeometry.thumbnail()` method (the brief named only the module and the op, but the API cannot reach the op without it), `tests/test_thumbnail.py`, and deps `pyrender==0.1.45`, `pyglet==2.1.19`, `pillow==13.0.0`.
-- `apps/cli`: `partwright serve`, an `api:` section in `Config` and `config.yaml`, deps `partwright-api` and `uvicorn==0.54.0`.
+- `apps/cli`: `scriber serve`, an `api:` section in `Config` and `config.yaml`, deps `scriber-api` and `uvicorn==0.54.0`.
 - Root `pyproject.toml`: workspace member, sources, mypy path, isort, import-linter root package, layers, kernel contract.
 
 ## Rows advanced (evidence in `apps/api/tests`)

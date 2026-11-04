@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-from partwright_agent import FakeLLM, place, refine
-from partwright_geometry import Artifact
-from partwright_ir import Design, Process, RuleSet, joint_tree, part_hash
+from scriber_agent import FakeLLM, place, refine
+from scriber_geometry import Artifact
+from scriber_ir import Design, Process, RuleSet, joint_tree, part_hash
 
 NO_REQS = json.dumps({"requirements": []})
 NO_RULES = RuleSet()

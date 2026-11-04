@@ -8,9 +8,9 @@ S2 trained overnight and replaced S1 (D-036); results in `docs/agents/training.m
 
 ## Parity suite (D-030)
 
-`partwright-parity` registers 121 row demos across `evals/src/partwright_evals/parity_m1.py` … `parity_m5_*.py`; each also runs offline in `evals/tests/test_parity_*.py` with a scripted model. Agent notes: `parity-m2.md`, `parity-m3-api.md`, `parity-web.md`, `parity-m4-*.md`, `parity-m5-*.md`. Status per row: `docs/reference/PARITY_CHECKLIST.md`; summary: `docs/PARITY_REPORT.md`.
+`scriber-parity` registers 121 row demos across `evals/src/scriber_evals/parity_m1.py` … `parity_m5_*.py`; each also runs offline in `evals/tests/test_parity_*.py` with a scripted model. Agent notes: `parity-m2.md`, `parity-m3-api.md`, `parity-web.md`, `parity-m4-*.md`, `parity-m5-*.md`. Status per row: `docs/reference/PARITY_CHECKLIST.md`; summary: `docs/PARITY_REPORT.md`.
 
-Live runs on `partwright-ir:4b-s2` (vision rows on `qwen3.5:4b`): `parity-20261029-112255` (51 rows, 13 pass) and `parity-20261029-132754` (11 rows, 4 pass). Rows that need no model were recorded earlier the same day.
+Live runs on `scriber-ir:4b-s2` (vision rows on `qwen3.5:4b`): `parity-20261029-112255` (51 rows, 13 pass) and `parity-20261029-132754` (11 rows, 4 pass). Rows that need no model were recorded earlier the same day.
 
 ## What the live runs show
 

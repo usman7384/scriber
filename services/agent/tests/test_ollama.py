@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 from ollama import ResponseError
 
-from partwright_agent import OllamaLLM, generate
-from partwright_geometry import LocalGeometry
+from scriber_agent import OllamaLLM, generate
+from scriber_geometry import LocalGeometry
 
-CI_MODEL = os.environ.get("PARTWRIGHT_CI_MODEL", "qwen3.5:0.8b-q8_0")
+CI_MODEL = os.environ.get("SCRIBER_CI_MODEL", "qwen3.5:0.8b-q8_0")
 
 
 @pytest.mark.llm

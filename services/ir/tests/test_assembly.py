@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from partwright_ir import (
+from scriber_ir import (
     ComponentError,
     Design,
     compile_design,

@@ -1,13 +1,13 @@
 # M5 parity: API, app and context rows
 
-Branch `feat/m5-platform`. Demos in `evals/src/partwright_evals/parity_m5_platform.py` (`ROWS`, not yet in `parity.registry()`), offline tests in `evals/tests/test_parity_m5_platform.py` (about 1 min), fixtures in `evals/parity/m5/platform/`. Each API demo drives the in-process app through `parity_api.serve` and writes `transcript.jsonl`.
+Branch `feat/m5-platform`. Demos in `evals/src/scriber_evals/parity_m5_platform.py` (`ROWS`, not yet in `parity.registry()`), offline tests in `evals/tests/test_parity_m5_platform.py` (about 1 min), fixtures in `evals/parity/m5/platform/`. Each API demo drives the in-process app through `parity_api.serve` and writes `transcript.jsonl`.
 
 ## What was built
 
 - API (`docs/API.md`): `POST /projects/{id}/designs` (build posted IR, no model), `POST /projects/{id}/sizing` (sizing XML through the D-031 adapter), `GET /materials`, `PUT /models/{id}/material`, `GET /models/{id}/sensitivities`, `POST /models/{id}/simulation`, `POST|GET /bugs`, `GET /bugs/{id}/screenshot`, `GET /usage`, `/community` (publish, list, get, unpublish, fork). Users are token names; `generation_limit` (default unset) gives 429 per user. Components carry the material's properties; models carry `forked_from`.
-- IR: `partwright_ir.materials`, a table of eight materials (density, E, yield) with the datasheet or standard each value comes from. Geometry's `density()` now reads it (same values as before). It sits in the IR because geometry (mass) and the API (properties) both need it and may only share the IR.
-- Context: `ingest_all` and `archive_files` ingest a folder and return a per-file outcome; one bad file is recorded, not raised. `partwright context add` takes folders and `--report`.
-- CLI: `partwright pipe` posts sizing XML from stdin to a running API and saves the STEP.
+- IR: `scriber_ir.materials`, a table of eight materials (density, E, yield) with the datasheet or standard each value comes from. Geometry's `density()` now reads it (same values as before). It sits in the IR because geometry (mass) and the API (properties) both need it and may only share the IR.
+- Context: `ingest_all` and `archive_files` ingest a folder and return a per-file outcome; one bad file is recorded, not raised. `scriber context add` takes folders and `--report`.
+- CLI: `scriber pipe` posts sizing XML from stdin to a running API and saves the STEP.
 - Geometry: describing a STEP with no faces now fails (a truncated file used to come back as an empty shape and count as parsed).
 - Agent: the suggestion prompt's findings heading also names simulation.
 - `examples/shadow_box.py`, `examples/phone_holder.py` and `docs/EXAMPLES.md`; an "Export to other CAD systems" section in `docs/INTEROP.md`.
@@ -39,6 +39,6 @@ Branch `feat/m5-platform`. Demos in `evals/src/partwright_evals/parity_m5_platfo
 - EX-5's FreeCAD half was built later with FreeCAD 1.1.4 (`docs/agents/parity-freecad-tools.md`).
 - Projects and models are not user-scoped; any token can read every project. The community listing is the shared space, not an access boundary.
 - The shadow-box outline is the mid-height section, so it suits flat tools only.
-- `partwright pipe` is tested against the in-process app, not a running server.
+- `scriber pipe` is tested against the in-process app, not a running server.
 - `examples/` is type-checked with `mypy examples`; CI's mypy target list should add it.
 - The parity rows are not registered in `parity.registry()` (integrator).

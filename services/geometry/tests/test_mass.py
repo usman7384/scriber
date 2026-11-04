@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry, assembly_mass, density
-from partwright_ir import Design
+from scriber_geometry import LocalGeometry, assembly_mass, density
+from scriber_ir import Design
 
 BASE_AND_PUCK: dict[str, Any] = {
     "title": "Base and puck",

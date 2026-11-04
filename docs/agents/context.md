@@ -1,6 +1,6 @@
 # Context service (M2)
 
-Branch `feat/context-m2`. New package `services/context` (`partwright-context`, import `partwright_context`). It turns uploaded engineering files into cited facts, rules and a per-project knowledge graph, and returns a `ContextPack` for generation.
+Branch `feat/context-m2`. New package `services/context` (`scriber-context`, import `scriber_context`). It turns uploaded engineering files into cited facts, rules and a per-project knowledge graph, and returns a `ContextPack` for generation.
 
 ## What exists
 
@@ -8,7 +8,7 @@ Branch `feat/context-m2`. New package `services/context` (`partwright-context`, 
 |---|---|
 | `readers.py`, `pdf.py`, `office.py`, `plain.py` | PDF (pypdfium2 text per page and line, pdfplumber ruled tables), DOCX (paragraphs and tables in document order), MD/TXT (Markdown tables become rows), CSV, XLSX (one page per sheet), XML (expat, element path and source line), YAML (composed nodes, source line), images (stored, no text), STEP/STL/OBJ through an injected `describe: Callable[[Path], ShapeDescriptor]` |
 | `quantities.py`, `facts.py`, `tables.py`, `entities.py` | Deterministic extraction: quantities with pint (lengths in mm, angles in deg, N, kg, MPa, N*m), symmetric and asymmetric tolerances, hole callouts (`4×M6`, `4x M6`, `6 x Ø6.6`), size chains (`200 × 120 × 5 mm`), `key: value` / `key = value`, materials gazetteer, ISO/DIN/EN/ASME/ANSI standards, hole tables (x, y, Ø) |
-| `rule_text.py`, `defaults.py` | Sentence assembly across wrapped lines and rule extraction into `partwright_ir.Rule` for the six `RuleKind`s; default rule set |
+| `rule_text.py`, `defaults.py` | Sentence assembly across wrapped lines and rule extraction into `scriber_ir.Rule` for the six `RuleKind`s; default rule set |
 | `proposals.py`, `extract.py` | Optional LLM pass through an injected `propose(chunk_text) -> list[ProposedFact]`; a proposal is kept only if its quote is in the chunk and its number is in the quote |
 | `chunking.py`, `embed.py` | Chunks with page and line span; `Embedder` protocol, `OllamaEmbedder` (`qwen3-embedding:0.6b`), `HashEmbedder` for tests |
 | `db.py`, `store.py`, `index.py` | One SQLite file per project under the injected data directory |
@@ -87,4 +87,4 @@ All in `services/context/tests`. None is done: each still needs the generation s
 - A changed file is a new document; computing which facts changed between versions (input to `stale`) is left to the caller. Deleting a document drops the lineage edges into it, and `related_to` edges survive while both entities are still mentioned elsewhere.
 - Hole-table facts link to features only through parameters or provenance, not by matching coordinates in point lists.
 - The `@pytest.mark.llm` test (`test_ollama_embed.py`) was not run: `OllamaEmbedder` passes `dimensions=1024` and its behaviour with `qwen3-embedding:0.6b` is unverified.
-- No IR change was needed. `Part` and `Feature` are not exported from `partwright_ir`, so `lineage.py` works on `design.parts[i]` instead of naming the type; exporting them would simplify it.
+- No IR change was needed. `Part` and `Feature` are not exported from `scriber_ir`, so `lineage.py` works on `design.parts[i]` instead of naming the type; exporting them would simplify it.

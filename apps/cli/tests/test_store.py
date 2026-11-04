@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import Result
-from partwright_cli import store
-from partwright_geometry import Artifact, PartMetrics
-from partwright_ir import Design
+from scriber_agent import Result
+from scriber_cli import store
+from scriber_geometry import Artifact, PartMetrics
+from scriber_ir import Design
 
 DESIGN = Design.model_validate(
     {

@@ -9,10 +9,10 @@ import pytest
 
 from apps.api.tests.conftest import Api, MakeApi, plate
 from apps.api.tests.test_designs import post_design
-from partwright_geometry import SliceReport
+from scriber_geometry import SliceReport
 
-FREECAD = os.environ.get("PARTWRIGHT_FREECAD")
-PRUSASLICER = os.environ.get("PARTWRIGHT_PRUSASLICER")
+FREECAD = os.environ.get("SCRIBER_FREECAD")
+PRUSASLICER = os.environ.get("SCRIBER_PRUSASLICER")
 FAKE = Path("tool.exe")
 REPORT = SliceReport(exit_code=0, manifold=True, layers=17, gcode_bytes=4096, warnings=[], errors=[])
 
@@ -32,7 +32,7 @@ def fake_freecad(monkeypatch: pytest.MonkeyPatch, errors: list[str]) -> list[dic
         Path(args["out"]).write_bytes(b"PK fcstd")
         return {"errors": errors}
 
-    monkeypatch.setattr("partwright_geometry.fcstd.run_freecad", run)
+    monkeypatch.setattr("scriber_geometry.fcstd.run_freecad", run)
     return plans
 
 
@@ -46,8 +46,8 @@ def test_tool_routes_say_when_the_tool_is_not_configured(api: Api) -> None:
     model_id = plate_model(api)
     export = api.client.get(f"/models/{model_id}/export", params={"fmt": "fcstd"})
     sliced = api.client.post(f"/models/{model_id}/slice")
-    assert export.status_code == 503 and "PARTWRIGHT_FREECAD" in export.json()["detail"]
-    assert sliced.status_code == 503 and "PARTWRIGHT_PRUSASLICER" in sliced.json()["detail"]
+    assert export.status_code == 503 and "SCRIBER_FREECAD" in export.json()["detail"]
+    assert sliced.status_code == 503 and "SCRIBER_PRUSASLICER" in sliced.json()["detail"]
 
 
 def test_fcstd_export_sends_the_version_plan_to_freecad(make_api: MakeApi, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -86,7 +86,7 @@ def test_slice_reports_printability_of_the_version_stl(make_api: MakeApi, monkey
         sliced.append(stl)
         return REPORT
 
-    monkeypatch.setattr("partwright_api.tools.slice_stl", slice_stl)
+    monkeypatch.setattr("scriber_api.tools.slice_stl", slice_stl)
     model_id = plate_model(api)
     report = api.ok(api.client.post(f"/models/{model_id}/slice", params={"version": 1}))
     assert report == {"model_id": model_id, "version": 1, "ok": True, **REPORT.model_dump()}
@@ -94,7 +94,7 @@ def test_slice_reports_printability_of_the_version_stl(make_api: MakeApi, monkey
     assert api.client.post(f"/models/{model_id}/slice", params={"version": 9}).status_code == 404
 
 
-@pytest.mark.skipif(not FREECAD, reason="PARTWRIGHT_FREECAD is unset")
+@pytest.mark.skipif(not FREECAD, reason="SCRIBER_FREECAD is unset")
 def test_fcstd_export_with_freecad(make_api: MakeApi) -> None:
     api = make_api(freecad=Path(str(FREECAD)))
     response = api.client.get(f"/models/{plate_model(api)}/export", params={"fmt": "fcstd"})
@@ -102,7 +102,7 @@ def test_fcstd_export_with_freecad(make_api: MakeApi) -> None:
     assert "Document.xml" in zipfile.ZipFile(io.BytesIO(response.content)).namelist()
 
 
-@pytest.mark.skipif(not PRUSASLICER, reason="PARTWRIGHT_PRUSASLICER is unset")
+@pytest.mark.skipif(not PRUSASLICER, reason="SCRIBER_PRUSASLICER is unset")
 def test_slice_with_prusaslicer(make_api: MakeApi) -> None:
     api = make_api(prusaslicer=Path(str(PRUSASLICER)))
     report = api.ok(api.client.post(f"/models/{plate_model(api)}/slice"))

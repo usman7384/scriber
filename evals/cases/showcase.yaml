@@ -1,5 +1,5 @@
 # M6 showcase benchmark: one-line prompts for recognisable parts and small assemblies. Our own wording.
-# Reference designs: evals/parity/m6/reference/<id>.json; the gate is partwright_evals.parity_m6 (M6-SHOWCASE).
+# Reference designs: evals/parity/m6/reference/<id>.json; the gate is scriber_evals.parity_m6 (M6-SHOWCASE).
 - id: sc01-gear-pair
   rows: [M6-SHOWCASE]
   prompt: "Spur gear pair, module 2: a 20-tooth pinion and a 40-tooth wheel, both 12 mm wide with 8 mm bores, meshing at the correct centre distance; expose module, pinion_teeth and wheel_teeth as parameters."

@@ -5,11 +5,11 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_evals import parity_m4_vision
-from partwright_evals.parity import Rig, run_row
-from partwright_geometry import LocalGeometry
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_evals import parity_m4_vision
+from scriber_evals.parity import Rig, run_row
+from scriber_geometry import LocalGeometry
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})

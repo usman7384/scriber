@@ -62,10 +62,10 @@ test("AP-9 live: sizing XML piped to the API builds a model with no UI input; th
 }) => {
   const xml = "evals/parity/m4/aircraft/sizing.xml";
   const step = join(row.dir, "wing.step");
-  const config = process.env.PARTWRIGHT_LIVE_CONFIG ?? "config.yaml";
+  const config = process.env.SCRIBER_LIVE_CONFIG ?? "config.yaml";
   const out = execFileSync(
     "uv",
-    ["run", "partwright", "--config", config, "pipe", "--api", API, "--out", step],
+    ["run", "scriber", "--config", config, "pipe", "--api", API, "--out", step],
     {
       cwd: root,
       input: repoFile(xml),
@@ -91,5 +91,5 @@ test("AP-9 live: sizing XML piped to the API builds a model with no UI input; th
   expect(origin).toBe("sizing");
   expect(wing.in_11_checks_passed).toBe(wing.in_11_checks);
   row.note =
-    "Live: `partwright pipe` posts the sizing XML to the running API (POST /projects/{id}/sizing, no model call); IN-11 checks on the STEP it saved; the editor opens the built model.";
+    "Live: `scriber pipe` posts the sizing XML to the running API (POST /projects/{id}/sizing, no model call); IN-11 checks on the STEP it saved; the editor opens the built model.";
 });

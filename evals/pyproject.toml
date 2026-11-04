@@ -1,34 +1,34 @@
 [project]
-name = "partwright-evals"
+name = "scriber-evals"
 version = "0.1.0"
 description = "Benchmark specs, harness and scorecard"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
 dependencies = [
-    "partwright-ir",
-    "partwright-geometry",
-    "partwright-context",
-    "partwright-agent",
-    "partwright-api",
-    "partwright-cli",
+    "scriber-ir",
+    "scriber-geometry",
+    "scriber-context",
+    "scriber-agent",
+    "scriber-api",
+    "scriber-cli",
     "pyyaml",
     "trimesh==5.2.0",
 ]
 
 [project.scripts]
-partwright-evals = "partwright_evals.run:main"
-partwright-grounded = "partwright_evals.grounded:main"
-partwright-parity = "partwright_evals.parity:main"
-partwright-parity-report = "partwright_evals.parity_report:main"
+scriber-evals = "scriber_evals.run:main"
+scriber-grounded = "scriber_evals.grounded:main"
+scriber-parity = "scriber_evals.parity:main"
+scriber-parity-report = "scriber_evals.parity_report:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-context = { workspace = true }
-partwright-agent = { workspace = true }
-partwright-api = { workspace = true }
-partwright-cli = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-context = { workspace = true }
+scriber-agent = { workspace = true }
+scriber-api = { workspace = true }
+scriber-cli = { workspace = true }

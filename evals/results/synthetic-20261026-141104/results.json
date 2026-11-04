@@ -1,7 +1,7 @@
 [
   {
     "id": "s0-plate-000",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -15,7 +15,7 @@
   },
   {
     "id": "s0-block-001",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -29,7 +29,7 @@
   },
   {
     "id": "s0-turned-002",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -43,7 +43,7 @@
   },
   {
     "id": "s0-bracket-003",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -57,7 +57,7 @@
   },
   {
     "id": "s0-plate-004",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -71,7 +71,7 @@
   },
   {
     "id": "s0-block-005",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -85,7 +85,7 @@
   },
   {
     "id": "s0-turned-006",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -99,7 +99,7 @@
   },
   {
     "id": "s0-bracket-007",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -113,7 +113,7 @@
   },
   {
     "id": "s0-plate-008",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -127,7 +127,7 @@
   },
   {
     "id": "s0-block-009",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -141,7 +141,7 @@
   },
   {
     "id": "s0-turned-010",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -155,7 +155,7 @@
   },
   {
     "id": "s0-bracket-011",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -169,7 +169,7 @@
   },
   {
     "id": "s0-plate-012",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -183,7 +183,7 @@
   },
   {
     "id": "s0-block-013",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -197,7 +197,7 @@
   },
   {
     "id": "s0-turned-014",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -211,7 +211,7 @@
   },
   {
     "id": "s0-bracket-015",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -225,7 +225,7 @@
   },
   {
     "id": "s0-plate-016",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -239,7 +239,7 @@
   },
   {
     "id": "s0-block-017",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -253,7 +253,7 @@
   },
   {
     "id": "s0-turned-018",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -267,7 +267,7 @@
   },
   {
     "id": "s0-bracket-019",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -281,7 +281,7 @@
   },
   {
     "id": "s0-plate-020",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -295,7 +295,7 @@
   },
   {
     "id": "s0-block-021",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -309,7 +309,7 @@
   },
   {
     "id": "s0-turned-022",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -323,7 +323,7 @@
   },
   {
     "id": "s0-bracket-023",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -337,7 +337,7 @@
   },
   {
     "id": "s0-plate-024",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -351,7 +351,7 @@
   },
   {
     "id": "s0-block-025",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -365,7 +365,7 @@
   },
   {
     "id": "s0-turned-026",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -379,7 +379,7 @@
   },
   {
     "id": "s0-bracket-027",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -393,7 +393,7 @@
   },
   {
     "id": "s0-plate-028",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -407,7 +407,7 @@
   },
   {
     "id": "s0-block-029",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -421,7 +421,7 @@
   },
   {
     "id": "s0-turned-030",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -435,7 +435,7 @@
   },
   {
     "id": "s0-bracket-031",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -449,7 +449,7 @@
   },
   {
     "id": "s0-plate-032",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -463,7 +463,7 @@
   },
   {
     "id": "s0-block-033",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -477,7 +477,7 @@
   },
   {
     "id": "s0-turned-034",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -491,7 +491,7 @@
   },
   {
     "id": "s0-bracket-035",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -505,7 +505,7 @@
   },
   {
     "id": "s0-plate-036",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -519,7 +519,7 @@
   },
   {
     "id": "s0-block-037",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -533,7 +533,7 @@
   },
   {
     "id": "s0-turned-038",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -549,7 +549,7 @@
   },
   {
     "id": "s0-bracket-039",
-    "model": "partwright-ir:0.8b-s0b",
+    "model": "scriber-ir:0.8b-s0b",
     "built": true,
     "valid": true,
     "agent_ok": true,

@@ -4,17 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent import misquoted
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design, drop_unused_params, normalize, validate
-from partwright_training.context import tabled
-from partwright_training.dataset import _ngrams, eval_ngrams
-from partwright_training.families import FAMILIES, S3_FAMILIES
-from partwright_training.intent import intended
-from partwright_training.names import renamed
-from partwright_training.render import STYLES, render
-from partwright_training.spec import Spec
-from partwright_training.verify import failures
+from scriber_agent import misquoted
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design, drop_unused_params, normalize, validate
+from scriber_training.context import tabled
+from scriber_training.dataset import _ngrams, eval_ngrams
+from scriber_training.families import FAMILIES, S3_FAMILIES
+from scriber_training.intent import intended
+from scriber_training.names import renamed
+from scriber_training.render import STYLES, render
+from scriber_training.spec import Spec
+from scriber_training.verify import failures
 
 NEW = {k: v for k, v in S3_FAMILIES.items() if k not in FAMILIES}
 ROOT = Path(__file__).resolve().parents[2]

@@ -15,5 +15,5 @@
     "llm_calls": 0,
     "job": "done"
   },
-  "note": "partwright_cli.pipe.pipe (the `partwright pipe` command) against the in-process API; IN-11 checks on the downloaded STEP"
+  "note": "scriber_cli.pipe.pipe (the `scriber pipe` command) against the in-process API; IN-11 checks on the downloaded STEP"
 }

@@ -5,8 +5,8 @@ import pytest
 import trimesh
 from build123d import import_step
 
-from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design, apply_params
+from scriber_geometry import BuildError, LocalGeometry
+from scriber_ir import Design, apply_params
 
 BRACKET: dict[str, Any] = {
     "title": "Mounting bracket",

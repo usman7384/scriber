@@ -1,18 +1,18 @@
 # Web parity rows run live (`apps/web/e2e/live`)
 
-The web half of twelve rows, run end to end: the Vite dev server against `partwright serve` with the configured default model (`partwright-ir:4b-s2` through Ollama), a fresh context store, the real geometry worker and real thumbnails. No route is mocked. Evidence has the shape of the mocked suite (`docs/agents/parity-web.md`): screenshots, a video and `evidence.json` per row under `evals/results/parity-web-live-<stamp>/<ROW>/`.
+The web half of twelve rows, run end to end: the Vite dev server against `scriber serve` with the configured default model (`scriber-ir:4b-s2` through Ollama), a fresh context store, the real geometry worker and real thumbnails. No route is mocked. Evidence has the shape of the mocked suite (`docs/agents/parity-web.md`): screenshots, a video and `evidence.json` per row under `evals/results/parity-web-live-<stamp>/<ROW>/`.
 
 ## Run
 
 ```bash
 cd apps/web
-export PARTWRIGHT_PRUSASLICER=.../PrusaSlicer-2.9.6/prusa-slicer-console.exe   # WP-14 slices the downloaded STL
+export SCRIBER_PRUSASLICER=.../PrusaSlicer-2.9.6/prusa-slicer-console.exe   # WP-14 slices the downloaded STL
 npx playwright test -c playwright.live.config.ts                             # ~8 min on a 6 GB GPU
 ```
 
-`playwright.live.config.ts` copies `config.yaml` into a new `%TEMP%/partwright-live-*` folder with `data_dir`, `output_dir` and `api.port` (8765) pointed there, starts the API and a Vite server on 5198 (`PARTWRIGHT_API_URL` sets the dev proxy target), and stops both after the run. The user's `data/` is never touched; the next run deletes earlier temp folders (the API holds its SQLite files until Playwright stops it, after global teardown). One worker, since generations share the GPU. Kernel-side checks (trimesh, PrusaSlicer, IN-11 section fits) run through `e2e/live/checks.py` in the repo's Python environment. `npm run e2e` ignores `e2e/live/`.
+`playwright.live.config.ts` copies `config.yaml` into a new `%TEMP%/scriber-live-*` folder with `data_dir`, `output_dir` and `api.port` (8765) pointed there, starts the API and a Vite server on 5198 (`SCRIBER_API_URL` sets the dev proxy target), and stops both after the run. The user's `data/` is never touched; the next run deletes earlier temp folders (the API holds its SQLite files until Playwright stops it, after global teardown). One worker, since generations share the GPU. Kernel-side checks (trimesh, PrusaSlicer, IN-11 section fits) run through `e2e/live/checks.py` in the repo's Python environment. `npm run e2e` ignores `e2e/live/`.
 
-Setup goes through the deterministic routes where the row is not about generation: IR posted to `POST /projects/{id}/designs` (`e2e/live/designs.ts`), multipart uploads, sizing XML through `partwright pipe`. The model is used in CX-6 (one grounded generation) and WP-14 (prompt to STL).
+Setup goes through the deterministic routes where the row is not about generation: IR posted to `POST /projects/{id}/designs` (`e2e/live/designs.ts`), multipart uploads, sizing XML through `scriber pipe`. The model is used in CX-6 (one grounded generation) and WP-14 (prompt to STL).
 
 ## Rows
 
@@ -26,7 +26,7 @@ Run `evals/results/parity-web-live-20261029-200716/`: 12/12 pass.
 | EX-6 | link `/shared/{id}`; the visitor page makes only `GET /s/{id}` and `GET /s/{id}/files/glb`; 0 editable fields, 0 edit buttons; write on the share 405; after Revoke the page shows "share link not found or revoked" and the API 404 |
 | WP-11 | one stored bug `{model_id, version 1, text, user local}`; the 662 x 516 PNG read back from `/bugs/{id}/screenshot` is byte-identical to the one the dialog sent |
 | WP-14 | 3 UI steps; generation done in 99 s, 5/5 requirement checks; STL 60 x 40 x 4 mm, 1028 triangles, watertight, consistent winding; PrusaSlicer exit 0, manifold, 13 layers, no warnings or errors |
-| AP-9 | `partwright pipe` with no UI input: model v1 origin `sizing`; IN-11 9/9 on the saved STEP (span 1000, chords 250.04/120.02, sweep 20.00, dihedral 5, twist 2, airfoil 0.015 % chord); the editor shows it at 301.9 x 1000.0 x 65.3 mm |
+| AP-9 | `scriber pipe` with no UI input: model v1 origin `sizing`; IN-11 9/9 on the saved STEP (span 1000, chords 250.04/120.02, sweep 20.00, dihedral 5, twist 2, airfoil 0.015 % chord); the editor shows it at 301.9 x 1000.0 x 65.3 mm |
 | PR-6 | top face picked at z 5, normal (0, 0, 1); `PATCH {values: {thickness: 7}}`; v2 origin params, only thickness changed (5 to 7), API bbox 120 x 80 x 7, GLB height 7 |
 | PR-10 | base plate labels L 120.0 / W 80.0 / H 5.0 mm, stack 40.0 / 40.0 / 50.0 mm, inside the view; GLB box equals `metrics.bbox` |
 | VM-4 | API finding `min_hole_edge_ratio` (required 15 mm) and its suggestion shown in the pop-up; marker 0.19 mm from the hole centre; hole Ø9.25 mm, 10.42 mm from the edge (pixels) |

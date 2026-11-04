@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from partwright_agent.prompts import EXAMPLES
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design, validate
+from scriber_agent.prompts import EXAMPLES
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design, validate
 
 
 @pytest.fixture(scope="module")

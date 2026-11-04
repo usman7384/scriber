@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import BuildError, LocalGeometry
-from partwright_ir import Design, Rule, RuleSet, validate
+from scriber_geometry import BuildError, LocalGeometry
+from scriber_ir import Design, Rule, RuleSet, validate
 
 R, L = 10.0, 60.0
 WALL = RuleSet(rules=[Rule(id="min-wall", kind="min_wall_thickness", value=0.8, unit="mm")])

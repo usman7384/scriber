@@ -1,13 +1,13 @@
 # M4 parity: vision rows
 
-Demos for IN-4, IN-5, IN-6 and VM-10 in `evals/src/partwright_evals/parity_m4_vision.py` (`ROWS`). Requirement extraction runs on `rig.llm`; every call that carries an image goes to the configured vision model (`llm.vision` in `config.yaml`, `qwen3.5:4b`), built with `llm_for`.
+Demos for IN-4, IN-5, IN-6 and VM-10 in `evals/src/scriber_evals/parity_m4_vision.py` (`ROWS`). Requirement extraction runs on `rig.llm`; every call that carries an image goes to the configured vision model (`llm.vision` in `config.yaml`, `qwen3.5:4b`), built with `llm_for`.
 
 ## Run
 
 ```bash
 uv run python evals/parity/m4/vision/make_fixtures.py   # regenerates the images, the drawing PDF and critic_cases.json
 uv run pytest evals/tests/test_parity_m4_vision.py      # offline, FakeLLM, about 25 s
-uv run partwright-parity IN-4 IN-5 IN-6 VM-10            # live, once the integrator registers parity_m4_vision.ROWS
+uv run scriber-parity IN-4 IN-5 IN-6 VM-10            # live, once the integrator registers parity_m4_vision.ROWS
 ```
 
 ## Product changes
@@ -38,7 +38,7 @@ VM-10 adds a control the checklist does not state: the correct parts must mostly
 ## Gaps
 
 - The API does not route images to the vision model yet: `work.py` must pass `vision=` to `generate`/`refine` (an `llm_for(config, config.llm.vision)` held next to `d.llm`). Until then IN-16/IN-17 image jobs go to the text-only default.
-- The API does not rasterise PDF drawings; the demo does it with pypdfium2, which evals use without declaring it (it comes with `partwright-context`).
+- The API does not rasterise PDF drawings; the demo does it with pypdfium2, which evals use without declaring it (it comes with `scriber-context`).
 - The thumbnail renderer has one fixed camera. The plan view is made by turning the mesh onto that camera in the demo; named views belong in geometry.
 - `AnthropicLLM` drops images, so hosted reference runs cannot do these rows.
 - Not run live: the GPU was busy, so every number above is from scripted answers.

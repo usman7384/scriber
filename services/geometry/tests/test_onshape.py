@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry.onshape import OnshapeRef, import_onshape
-from partwright_ir import validate
-from partwright_ir.model import Extrude, Polygon
+from scriber_geometry.onshape import OnshapeRef, import_onshape
+from scriber_ir import validate
+from scriber_ir.model import Extrude, Polygon
 
 REF = OnshapeRef(document="d1", workspace="w1", element="e1")
 STUDIO = "/api/v10/partstudios/d/d1/w/w1/e/e1"

@@ -23,7 +23,7 @@ export function HomeNav({ projects, current, allCurrent = false }: Props) {
     <nav className="home-nav" aria-label={t.nav.main}>
       <Link to="/" className="home-brand">
         <Icon name="mark" />
-        <span className="home-link-text">Partwright</span>
+        <span className="home-link-text">Scriber</span>
       </Link>
       <SearchButton label={t.nav.search} />
       <select

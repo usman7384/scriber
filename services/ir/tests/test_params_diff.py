@@ -1,6 +1,6 @@
 import pytest
 
-from partwright_ir import Design, ParamError, apply_params, diff, label
+from scriber_ir import Design, ParamError, apply_params, diff, label
 
 
 def test_apply_params_changes_value_and_provenance(bracket: Design) -> None:

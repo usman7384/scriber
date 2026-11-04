@@ -7,8 +7,8 @@ model=$repo/data/models/Qwen3.5-0.8B
 run=runs/cx13-0.8b
 out=$data/run
 # the generator needs the Windows workspace (OCCT kernel), so it runs there through WSL interop
-[ -f "$data/train.jsonl" ] || powershell.exe -NoProfile -Command "Set-Location '$(wslpath -w "$repo")'; uv run partwright-conventions --out data/training/cx13"
-cd ~/partwright-train
+[ -f "$data/train.jsonl" ] || powershell.exe -NoProfile -Command "Set-Location '$(wslpath -w "$repo")'; uv run scriber-conventions --out data/training/cx13"
+cd ~/scriber-train
 source .venv/bin/activate
 mkdir -p "$run" "$out"
 [ -f "$model/config.json" ] || hf download Qwen/Qwen3.5-0.8B --local-dir "$model" > "$run/download.log" 2>&1
@@ -18,12 +18,12 @@ echo "merge $(date)"
 python $repo/training/wsl/merge.py --lora "$run/lora" --out "$run/merged" > "$run/merge.log" 2>&1
 echo "convert $(date)"
 python llama.cpp/convert_hf_to_gguf.py "$run/merged" --outtype bf16 --outfile "$run/cx13-bf16.gguf" > "$run/convert.log" 2>&1
-llama.cpp/build/bin/llama-quantize "$run/cx13-bf16.gguf" "$out/partwright-ir-0.8b-cx13-q8_0.gguf" Q8_0 > "$run/quantize.log" 2>&1
+llama.cpp/build/bin/llama-quantize "$run/cx13-bf16.gguf" "$out/scriber-ir-0.8b-cx13-q8_0.gguf" Q8_0 > "$run/quantize.log" 2>&1
 rm -rf "$run/merged" "$run/cx13-bf16.gguf"
 echo "done $(date)"
 cat <<'EOF'
 Then on Windows, from the repo (Ollama running, qwen3.5:0.8b-q8_0 pulled):
-  cd training\wsl; ollama create partwright-ir:0.8b-cx13 -f Modelfile.0.8b-cx13; cd ..\..
-  $env:PARTWRIGHT_CX13_BASE = "qwen3.5:0.8b-q8_0"
-  uv run partwright-parity CX-13 --model partwright-ir:0.8b-cx13
+  cd training\wsl; ollama create scriber-ir:0.8b-cx13 -f Modelfile.0.8b-cx13; cd ..\..
+  $env:SCRIBER_CX13_BASE = "qwen3.5:0.8b-q8_0"
+  uv run scriber-parity CX-13 --model scriber-ir:0.8b-cx13
 EOF

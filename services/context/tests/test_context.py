@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from partwright_context import HashEmbedder, LocalContext, derived_from, to_networkx
-from partwright_ir import Design, Rule, ShapeDescriptor
+from scriber_context import HashEmbedder, LocalContext, derived_from, to_networkx
+from scriber_ir import Design, Rule, ShapeDescriptor
 
 WritePdf = Callable[[str, list[list[str]], list[list[str]] | None], Path]
 REQUIREMENTS = ["Requirements", "REQ-1: mount 4×M6", "REQ-2: bore Ø82 ±0.2 mm", "REQ-3: plate thickness 8 mm"]  # noqa: RUF001

@@ -1,4 +1,4 @@
-# Demo-part rows (M5). Our own wording; the demos in partwright_evals.parity_m5_parts add the row-specific geometry checks.
+# Demo-part rows (M5). Our own wording; the demos in scriber_evals.parity_m5_parts add the row-specific geometry checks.
 - id: dp1-quad-frame
   rows: [DP-1]
   prompt: 5-inch X quad frame, 4 mm carbon plate, 16x16 M2 FC mount, M3 motor mounts 16/19 mm

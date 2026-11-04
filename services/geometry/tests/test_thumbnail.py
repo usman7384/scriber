@@ -2,9 +2,9 @@ from pathlib import Path
 
 from PIL import Image
 
-from partwright_geometry import LocalGeometry
-from partwright_geometry.worker import handle
-from partwright_ir import Design
+from scriber_geometry import LocalGeometry
+from scriber_geometry.worker import handle
+from scriber_ir import Design
 
 PLATE = Design.model_validate(
     {

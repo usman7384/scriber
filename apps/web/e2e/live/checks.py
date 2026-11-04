@@ -8,11 +8,11 @@ from typing import Any
 
 import trimesh
 
-from partwright_context.sizing import XmlSizing
-from partwright_evals.parity import Rig
-from partwright_evals.parity_m4_aircraft import wing_checks
-from partwright_evals.tools import PRUSASLICER, missing, tool
-from partwright_geometry import Artifact, LocalGeometry, slice_stl
+from scriber_context.sizing import XmlSizing
+from scriber_evals.parity import Rig
+from scriber_evals.parity_m4_aircraft import wing_checks
+from scriber_evals.tools import PRUSASLICER, missing, tool
+from scriber_geometry import Artifact, LocalGeometry, slice_stl
 
 
 def stl(path: Path) -> dict[str, Any]:

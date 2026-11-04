@@ -1,6 +1,6 @@
 # Web parity demos (M3 and M5, `apps/web`)
 
-Playwright specs under `apps/web/e2e/parity/`, one `test()` per checklist row, named with the row id first. They run against the mocked API (`e2e/mock-api.ts`), offline and deterministic. Each row writes screenshots, a video and `evidence.json` (`{row, passed, measured, note}`, the `Evidence` shape of `partwright_evals.parity`) to `evals/results/parity-web-<YYYYMMDD-HHMMSS>/<ROW>/`; `passed` is the Playwright verdict of that test.
+Playwright specs under `apps/web/e2e/parity/`, one `test()` per checklist row, named with the row id first. They run against the mocked API (`e2e/mock-api.ts`), offline and deterministic. Each row writes screenshots, a video and `evidence.json` (`{row, passed, measured, note}`, the `Evidence` shape of `scriber_evals.parity`) to `evals/results/parity-web-<YYYYMMDD-HHMMSS>/<ROW>/`; `passed` is the Playwright verdict of that test.
 
 ## Run
 
@@ -42,7 +42,7 @@ Latest run: `evals/results/parity-web-20261029-191556/`, 27/27 pass (adds EX-4 a
 | CX-3 | `context.spec.ts` CX-3 | chosen `nema17-motor.step`, `plate-design-rules.md`; generate sends `context_ids` f2, f3 exactly; both show Used in "Sensor plate", others unchanged; the link opens the model | web half; recording the ids on the generation is apps/api |
 | CX-6 | `context.spec.ts` CX-6 | before: 6 files, 21 facts, 2 rules, 1 used, score 132/400, level 1; after 2 uploads and 1 generation: 8, 23, 2, 2, score 176/400, level 1; delta 44 = 10·2 + 2·2 + 20·1; UI equals the formula both times | web half; API half is `parity-20261029-025007` |
 | WP-14 | `project.spec.ts` WP-14 | 3 UI steps (type the prompt, Generate, Download STL); `motor-holder-v1.stl`, 2036 triangles, 60 x 40 x 24 mm, 15481 mm³, watertight and consistently oriented | web half; generation is mocked and VM-9 (slicer) is not run |
-| EX-4 | `tools.spec.ts` EX-4 | Export, FreeCAD (.FCStd) on the base plate saves `base-plate-v1.FCStd`, 15265 bytes, identical to FreeCAD 1.1.4's output, a zip with `Document.xml`; on the stack assembly the editor shows "this design has no FreeCAD export: assembly joints and placements have no FreeCAD export yet"; with `tools.freecad` false the item is absent | web half; the route is real in `apps/api/tests/test_tools.py` (FreeCAD faked, plus a real run when `PARTWRIGHT_FREECAD` is set) |
+| EX-4 | `tools.spec.ts` EX-4 | Export, FreeCAD (.FCStd) on the base plate saves `base-plate-v1.FCStd`, 15265 bytes, identical to FreeCAD 1.1.4's output, a zip with `Document.xml`; on the stack assembly the editor shows "this design has no FreeCAD export: assembly joints and placements have no FreeCAD export yet"; with `tools.freecad` false the item is absent | web half; the route is real in `apps/api/tests/test_tools.py` (FreeCAD faked, plus a real run when `SCRIBER_FREECAD` is set) |
 | VM-9 | `tools.spec.ts` VM-9 | Check printability on the motor holder: 1 `POST /models/m1/slice`, shows PASS "80 layers, 1.98 MB of G-code", watertight, 0 warnings, 0 errors, placed after the findings; with `tools.prusaslicer` false the button is absent | web half; report is PrusaSlicer 2.9.6 output, the route is real in `apps/api/tests/test_tools.py` |
 
 ## How the mock stays honest
@@ -72,7 +72,7 @@ Latest run: `evals/results/parity-web-20261029-191556/`, 27/27 pass (adds EX-4 a
 - Project page: a finished generation offers Download STL next to Open model.
 - Language: EN/DE selector in the top bar (`src/i18n.ts`), remembered in localStorage.
 - Community: a Community tab (`/explore`, since `/community` is the API path the dev proxy forwards) lists every publication with thumbnail, title, version, author and date, and forks one into the project picked in "Fork into project"; the editor has Publish and shows "Forked from ... by ..." for a fork, as does its card in the project. A production server must serve `index.html` for `/explore`.
-- API: `POST /models/{id}/face-driver` (`apps/api/.../routes/faces.py`, lookup `partwright_ir.face_driver`, tests `test_faces.py` and `services/ir/tests/test_drivers.py`).
+- API: `POST /models/{id}/face-driver` (`apps/api/.../routes/faces.py`, lookup `scriber_ir.face_driver`, tests `test_faces.py` and `services/ir/tests/test_drivers.py`).
 
 ## Gaps
 

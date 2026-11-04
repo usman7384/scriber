@@ -1,4 +1,4 @@
-from partwright_evals.parity_report import report, rows
+from scriber_evals.parity_report import report, rows
 
 CHECKLIST = """## Inputs
 

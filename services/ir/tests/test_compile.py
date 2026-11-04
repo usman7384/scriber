@@ -1,6 +1,6 @@
 import ast
 
-from partwright_ir import Design, compile_design
+from scriber_ir import Design, compile_design
 
 
 def test_compiled_source_is_python_and_parametric(bracket: Design) -> None:

@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from partwright_context import ProposedFact
-from partwright_context.extract import process
-from partwright_context.parsed import Line
-from partwright_context.proposals import grounded
+from scriber_context import ProposedFact
+from scriber_context.extract import process
+from scriber_context.parsed import Line
+from scriber_context.proposals import grounded
 
 LINES = [Line(1, 1, "Bracket report"), Line(1, 2, "The design load is two thousand newtons, i.e. 2000 N, applied at the tip.")]
 

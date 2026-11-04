@@ -1,7 +1,7 @@
 import random
 
-from partwright_training.holes import Bore, bore, corner_grid
-from partwright_training.spec import Draft
+from scriber_training.holes import Bore, bore, corner_grid
+from scriber_training.spec import Draft
 
 
 def test_holes_are_asked_for_by_size_by_diameter_or_both() -> None:

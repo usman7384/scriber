@@ -1,5 +1,5 @@
 {
-  "name": "partwright-parity-tools",
+  "name": "scriber-parity-tools",
   "private": true,
   "type": "module",
   "dependencies": {

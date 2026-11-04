@@ -1,7 +1,7 @@
 import pytest
 
-from partwright_geometry import LocalGeometry
-from partwright_ir import Design
+from scriber_geometry import LocalGeometry
+from scriber_ir import Design
 
 PLATE = Design.model_validate(
     {

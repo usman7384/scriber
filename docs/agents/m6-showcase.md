@@ -29,13 +29,13 @@ Closes nothing yet: it adds the gate for M6 (`docs/M6_SHOWCASE_PLAN.md`), the ro
 | sc19-handwheel | 125 mm wheel, five spokes, hub with bore | polar pattern |
 | sc20-flange-bearing | square flange housing, 62 mm seat over a 50 mm bore | counterbore |
 
-Checks are the harness requirement kinds plus three new ones in `partwright_evals.shapes` (case field `shape`): `teeth` (a closed section outline with that many lobes over its mid radius and that tip diameter, cut across x, y and z), `parts` (part count) and `mates` (that many joints, none broken, no interference).
+Checks are the harness requirement kinds plus three new ones in `scriber_evals.shapes` (case field `shape`): `teeth` (a closed section outline with that many lobes over its mid radius and that tip diameter, cut across x, y and z), `parts` (part count) and `mates` (that many joints, none broken, no interference).
 
 ## Gate
 
-`partwright_evals.parity_m6.showcase` runs every case through the agent with `rig.llm`, then the checks, the parameter names and a +5 % edit of each named parameter that must rebuild valid. A case is fully correct when it is valid and every one of those passes. The row passes at 15/20 (75 %) fully correct and a median agent time under 120 s (edit rebuilds are not timed). Per-case output, `results.json`, `SCORECARD.md` and a PNG per built case go to the row's folder.
+`scriber_evals.parity_m6.showcase` runs every case through the agent with `rig.llm`, then the checks, the parameter names and a +5 % edit of each named parameter that must rebuild valid. A case is fully correct when it is valid and every one of those passes. The row passes at 15/20 (75 %) fully correct and a median agent time under 120 s (edit rebuilds are not timed). Per-case output, `results.json`, `SCORECARD.md` and a PNG per built case go to the row's folder.
 
-Run (once the module is in `parity.registry()`): `uv run partwright-parity M6-SHOWCASE --model partwright-ir:4b-s2`. Without the edits, the plain harness also takes the file: `uv run partwright-evals evals/cases/showcase.yaml --models partwright-ir:4b-s2`.
+Run (once the module is in `parity.registry()`): `uv run scriber-parity M6-SHOWCASE --model scriber-ir:4b-s2`. Without the edits, the plain harness also takes the file: `uv run scriber-evals evals/cases/showcase.yaml --models scriber-ir:4b-s2`.
 
 ## References
 

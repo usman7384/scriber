@@ -6,8 +6,8 @@ from typing import Any
 from sqlalchemy import inspect
 
 from apps.api.tests.conftest import PROMPT, REQS, Api, MakeApi, plate
-from partwright_api import jobs_db
-from partwright_api.db import open_engine
+from scriber_api import jobs_db
+from scriber_api.db import open_engine
 
 
 def sse(lines: list[str]) -> list[tuple[str, str, dict[str, Any]]]:

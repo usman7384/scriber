@@ -8,13 +8,13 @@ from typing import Any
 
 import pytest
 
-from partwright_agent import FakeLLM
-from partwright_cli.config import load
-from partwright_evals import parity_m4_vision, parity_m5_parts
-from partwright_evals.parity import Demo, Rig, run_row
-from partwright_evals.parity_m5_parts import BENCHMARK, FIXTURES, OFFLINE, PARTS, ROWS, bench, offline, part
-from partwright_evals.run import load_cases
-from partwright_geometry import LocalGeometry
+from scriber_agent import FakeLLM
+from scriber_cli.config import load
+from scriber_evals import parity_m4_vision, parity_m5_parts
+from scriber_evals.parity import Demo, Rig, run_row
+from scriber_evals.parity_m5_parts import BENCHMARK, FIXTURES, OFFLINE, PARTS, ROWS, bench, offline, part
+from scriber_evals.run import load_cases
+from scriber_geometry import LocalGeometry
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})

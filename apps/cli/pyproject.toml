@@ -1,21 +1,21 @@
 [project]
-name = "partwright-cli"
+name = "scriber-cli"
 version = "0.1.0"
 description = "Command-line interface"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
-dependencies = ["partwright-ir", "partwright-geometry", "partwright-context", "partwright-agent", "partwright-api", "pyyaml", "uvicorn==0.54.0", "httpx==0.28.1"]
+dependencies = ["scriber-ir", "scriber-geometry", "scriber-context", "scriber-agent", "scriber-api", "pyyaml", "uvicorn==0.54.0", "httpx==0.28.1"]
 
 [project.scripts]
-partwright = "partwright_cli.main:main"
+scriber = "scriber_cli.main:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-partwright-ir = { workspace = true }
-partwright-geometry = { workspace = true }
-partwright-context = { workspace = true }
-partwright-agent = { workspace = true }
-partwright-api = { workspace = true }
+scriber-ir = { workspace = true }
+scriber-geometry = { workspace = true }
+scriber-context = { workspace = true }
+scriber-agent = { workspace = true }
+scriber-api = { workspace = true }

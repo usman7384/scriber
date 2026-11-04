@@ -5,7 +5,7 @@ from functools import partial
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
-from partwright_cli.view import Handler, models
+from scriber_cli.view import Handler, models
 
 
 def tree(root: Path) -> None:

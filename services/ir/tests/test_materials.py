@@ -1,6 +1,6 @@
 import pytest
 
-from partwright_ir import material
+from scriber_ir import material
 
 
 @pytest.mark.parametrize(

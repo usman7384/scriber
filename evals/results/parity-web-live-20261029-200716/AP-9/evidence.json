@@ -17,5 +17,5 @@
     "in_11_checks_passed": 9,
     "in_11_checks": 9
   },
-  "note": "Live: `partwright pipe` posts the sizing XML to the running API (POST /projects/{id}/sizing, no model call); IN-11 checks on the STEP it saved; the editor opens the built model."
+  "note": "Live: `scriber pipe` posts the sizing XML to the running API (POST /projects/{id}/sizing, no model call); IN-11 checks on the STEP it saved; the editor opens the built model."
 }

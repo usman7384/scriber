@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 from build123d import Align, Cylinder, GeomType, Shape, import_step
 
-from partwright_geometry import LocalGeometry, PartMetrics
-from partwright_ir import Design, Rule, RuleSet, validate
+from scriber_geometry import LocalGeometry, PartMetrics
+from scriber_ir import Design, Rule, RuleSet, validate
 
 M, Z1, Z2, WIDTH = 2.0, 20, 30, 10.0
 MODULE = {"name": "m", "value": M, "unit": "mm"}

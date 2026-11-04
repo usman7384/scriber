@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from partwright_geometry.service import failing_feature
-from partwright_geometry.worker import handle
+from scriber_geometry.service import failing_feature
+from scriber_geometry.worker import handle
 
 
 def test_model_code_cannot_import_os(tmp_path: Path) -> None:

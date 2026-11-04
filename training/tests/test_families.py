@@ -3,12 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from partwright_geometry import LocalGeometry
-from partwright_ir import drop_unused_params, normalize, validate
-from partwright_training.families import FAMILIES
-from partwright_training.names import renamed
-from partwright_training.render import STYLES, render
-from partwright_training.verify import failures
+from scriber_geometry import LocalGeometry
+from scriber_ir import drop_unused_params, normalize, validate
+from scriber_training.families import FAMILIES
+from scriber_training.names import renamed
+from scriber_training.render import STYLES, render
+from scriber_training.verify import failures
 
 SEEDS = range(60)
 

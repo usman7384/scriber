@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 import trimesh
 
-from partwright_geometry.deviation import distance_bounds, hausdorff
-from partwright_geometry.fits import fit_circle, grid, polar, robust_circle, simplify
-from partwright_geometry.mesh_sections import depths, section_loops
+from scriber_geometry.deviation import distance_bounds, hausdorff
+from scriber_geometry.fits import fit_circle, grid, polar, robust_circle, simplify
+from scriber_geometry.mesh_sections import depths, section_loops
 
 
 def ring(cx: float, cy: float, r: float, n: int = 64, noise: float = 0.0) -> np.ndarray:

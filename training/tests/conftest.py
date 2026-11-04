@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from partwright_geometry import LocalGeometry
+from scriber_geometry import LocalGeometry
 
 
 @pytest.fixture(scope="session")

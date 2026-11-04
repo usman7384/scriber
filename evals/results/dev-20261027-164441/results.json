@@ -1,7 +1,7 @@
 [
   {
     "id": "d01-cover-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -15,7 +15,7 @@
   },
   {
     "id": "d02-spacer-ring",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -29,7 +29,7 @@
   },
   {
     "id": "d03-square-adapter",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -43,7 +43,7 @@
   },
   {
     "id": "d04-nema14-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -59,7 +59,7 @@
   },
   {
     "id": "d05-dn80-flange",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -77,7 +77,7 @@
   },
   {
     "id": "d06-base-plate-pocket",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -95,7 +95,7 @@
   },
   {
     "id": "d07-flat-l-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -109,7 +109,7 @@
   },
   {
     "id": "d08-u-bracket",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -123,7 +123,7 @@
   },
   {
     "id": "d09-shaft-collar",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -137,7 +137,7 @@
   },
   {
     "id": "d10-gusset",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -151,7 +151,7 @@
   },
   {
     "id": "d11-tray",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -165,7 +165,7 @@
   },
   {
     "id": "d12-bearing-block",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -179,7 +179,7 @@
   },
   {
     "id": "d13-3030-joining-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -195,7 +195,7 @@
   },
   {
     "id": "d14-slotted-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -209,7 +209,7 @@
   },
   {
     "id": "d15-drilled-bar",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -226,7 +226,7 @@
   },
   {
     "id": "d16-round-cover",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,
@@ -240,7 +240,7 @@
   },
   {
     "id": "d17-mounting-block",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -254,7 +254,7 @@
   },
   {
     "id": "d18-fan-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": false,
@@ -268,7 +268,7 @@
   },
   {
     "id": "d19-spec-motor-bracket",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": false,
     "valid": false,
     "agent_ok": false,
@@ -282,7 +282,7 @@
   },
   {
     "id": "d20-washer-plate",
-    "model": "partwright-ir:4b-s1",
+    "model": "scriber-ir:4b-s1",
     "built": true,
     "valid": true,
     "agent_ok": true,

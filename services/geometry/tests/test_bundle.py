@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from partwright_geometry import LocalGeometry, export_bundle, feature_tree, open_bundle
-from partwright_ir import Design
+from scriber_geometry import LocalGeometry, export_bundle, feature_tree, open_bundle
+from scriber_ir import Design
 
 
 def test_bundle_reopens_with_features_constraints_and_step(geometry: LocalGeometry, plate: dict[str, Any], tmp_path: Path) -> None:
