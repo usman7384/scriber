@@ -48,6 +48,8 @@ jobs:
         with:
           version: "0.9.13"
       - run: curl -fsSL https://ollama.com/install.sh | sh
+      # the installer returns before the server listens; a pull right after it can find nothing to connect to
+      - run: timeout 60 bash -c 'until ollama list >/dev/null 2>&1; do sleep 1; done'
       - run: ollama pull qwen3.5:0.8b-q8_0
       - run: ollama pull qwen3-embedding:0.6b
       - run: uv sync --locked
