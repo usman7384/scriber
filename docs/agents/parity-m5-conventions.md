@@ -37,7 +37,7 @@ A case with no design scores 0, and the geometric conventions need a built part.
 
 ## Run
 
-1. WSL (`~/partwright-train`, pinned venv, llama.cpp b11898 with `llama-quantize`): `bash /mnt/d/Projects/bye-kyrall/training/wsl/cx13.sh`. It generates the corpus on Windows through interop if `data/training/cx13/train.jsonl` is missing. Then it trains QLoRA r16 on Qwen3.5-0.8B (4-bit base, batch 2 × 4, 4,096 tokens, 1 epoch, about 186 steps), merges with `merge.py`, converts to a bf16 GGUF and quantises to Q8_0, the base 0.8B's format.
+1. WSL (`~/partwright-train`, pinned venv, llama.cpp b11898 with `llama-quantize`): `bash <repo>/training/wsl/cx13.sh`. It generates the corpus on Windows through interop if `data/training/cx13/train.jsonl` is missing. Then it trains QLoRA r16 on Qwen3.5-0.8B (4-bit base, batch 2 × 4, 4,096 tokens, 1 epoch, about 186 steps), merges with `merge.py`, converts to a bf16 GGUF and quantises to Q8_0, the base 0.8B's format.
 2. Windows: `ollama create partwright-ir:0.8b-cx13 -f training/wsl/Modelfile.0.8b-cx13`.
 3. Windows: `uv run partwright-parity CX-13 --model partwright-ir:0.8b-cx13`.
 

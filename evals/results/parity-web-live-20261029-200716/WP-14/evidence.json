@@ -16,7 +16,7 @@
     "volume_mm3": 9527.4,
     "watertight": true,
     "winding_consistent": true,
-    "slicer": "C:\\Users\\mu393\\tools\\PrusaSlicer-2.9.6\\PrusaSlicer-2.9.6\\prusa-slicer-console.exe",
+    "slicer": "~\\tools\\PrusaSlicer-2.9.6\\PrusaSlicer-2.9.6\\prusa-slicer-console.exe",
     "exit_code": 0,
     "manifold": true,
     "layers": 13,

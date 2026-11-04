@@ -2,8 +2,8 @@
   "row": "VM-9",
   "passed": true,
   "measured": {
-    "prusaslicer": "C:\\Users\\mu393\\tools\\PrusaSlicer-2.9.6\\PrusaSlicer-2.9.6\\prusa-slicer-console.exe",
-    "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+    "prusaslicer": "~\\tools\\PrusaSlicer-2.9.6\\PrusaSlicer-2.9.6\\prusa-slicer-console.exe",
+    "freecad": "~\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
     "b05-shaft-collar": "exit 0, manifold True, 33 layers, 672892 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 5.1e-06",
     "b11-lightened-disc": "exit 0, manifold True, 50 layers, 2305336 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 4.4e-14",
     "b17-cup": "exit 0, manifold True, 133 layers, 3581609 B gcode, 0 warnings, 0 errors; FreeCAD 1 solid, valid True, volume drift 1.6e-14",

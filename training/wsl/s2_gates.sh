@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # after s2.sh: import the S2 GGUF and run the gates for S2 and the current default in one session (D-028)
 set -uo pipefail
-cd /d/Projects/bye-kyrall || exit 1
+cd "$(dirname "$0")/../.." || exit 1
 export PYTHONIOENCODING=utf-8
 until grep -q "^done" data/training/s2/pipeline.log; do grep -q "^exit [1-9]" data/training/s2/pipeline.log && { echo "pipeline failed"; exit 1; }; sleep 30; done
 (cd training/wsl && ollama create partwright-ir:4b-s2 -f Modelfile.4b-s2) || exit 1

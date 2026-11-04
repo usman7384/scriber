@@ -1,0 +1,13 @@
+[
+  {
+    "row": "M6-SHOWCASE",
+    "passed": false,
+    "measured": {
+      "fully_correct": "1/20",
+      "editable": "2/20",
+      "median_s": 206.05,
+      "failed": "sc01-gear-pair, sc02-vbelt-pulley, sc03-keyed-shaft, sc04-pillow-block, sc05-gearbox-housing, sc06-nema17-mount, sc07-camera-mount, sc08-gripper-finger, sc09-electronics-enclosure, sc10-hinge, sc11-shaft-clamp, sc12-servo-horn-bracket, sc13-flange-coupling, sc14-angle-bracket, sc15-hub-gear, sc16-heat-sink, sc18-pi-tray, sc19-handwheel, sc20-flange-bearing"
+    },
+    "note": ""
+  }
+]

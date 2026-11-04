@@ -12,7 +12,7 @@ from partwright_geometry import LocalGeometry
 from partwright_ir import Design, json_schema
 
 ROOT = Path(__file__).parent
-REPO = Path("D:/Projects/bye-kyrall")
+REPO = Path(__file__).resolve().parents[3]
 CASES = [*load_cases(REPO / "evals/cases/m1.yaml"), *load_cases(REPO / "evals/cases/challenge.yaml")]
 MAX_ATTEMPTS = 4
 HEADER = (

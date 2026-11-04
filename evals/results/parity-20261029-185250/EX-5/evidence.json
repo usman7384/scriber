@@ -3,7 +3,7 @@
   "passed": true,
   "measured": {
     "documented": true,
-    "freecad": "C:\\Users\\mu393\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
+    "freecad": "~\\tools\\FreeCAD_1.1.4-Windows-x86_64-py311\\bin\\freecadcmd.exe",
     "ap214_schema": "AUTOMOTIVE_DESIGN",
     "ap214_occt_volume_drift": 1.537745022366455e-16,
     "ap214_material": null,

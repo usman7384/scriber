@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # CX-13 end to end: house-style corpus, QLoRA on Qwen3.5-0.8B, merge, bf16 GGUF, Q8_0 into the repo's data folder
 set -euo pipefail
-repo=/mnt/d/Projects/bye-kyrall
+repo=$(cd "$(dirname "$0")/../.." && pwd)
 data=$repo/data/training/cx13
 model=$repo/data/models/Qwen3.5-0.8B
 run=runs/cx13-0.8b
 out=$data/run
 # the generator needs the Windows workspace (OCCT kernel), so it runs there through WSL interop
-[ -f "$data/train.jsonl" ] || powershell.exe -NoProfile -Command "Set-Location D:\\Projects\\bye-kyrall; uv run partwright-conventions --out data/training/cx13"
+[ -f "$data/train.jsonl" ] || powershell.exe -NoProfile -Command "Set-Location '$(wslpath -w "$repo")'; uv run partwright-conventions --out data/training/cx13"
 cd ~/partwright-train
 source .venv/bin/activate
 mkdir -p "$run" "$out"
@@ -22,7 +22,7 @@ llama.cpp/build/bin/llama-quantize "$run/cx13-bf16.gguf" "$out/partwright-ir-0.8
 rm -rf "$run/merged" "$run/cx13-bf16.gguf"
 echo "done $(date)"
 cat <<'EOF'
-Then on Windows, from D:\Projects\bye-kyrall (Ollama running, qwen3.5:0.8b-q8_0 pulled):
+Then on Windows, from the repo (Ollama running, qwen3.5:0.8b-q8_0 pulled):
   cd training\wsl; ollama create partwright-ir:0.8b-cx13 -f Modelfile.0.8b-cx13; cd ..\..
   $env:PARTWRIGHT_CX13_BASE = "qwen3.5:0.8b-q8_0"
   uv run partwright-parity CX-13 --model partwright-ir:0.8b-cx13

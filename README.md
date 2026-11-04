@@ -18,17 +18,35 @@ The model never writes geometry. It writes a typed design IR (`services/ir`) in 
 
 ## Quick start
 
+Needs Python 3.12 with [uv](https://docs.astral.sh/uv/), Node 22, [Ollama](https://ollama.com) and about 6 GB of GPU memory for the 4B models (CPU works, slowly).
+
 ```bash
 uv sync
 ollama pull qwen3.5:4b
+ollama pull qwen3-embedding:0.6b
 uv run partwright --model qwen3.5:4b generate "mounting bracket, 4x M6 holes, 80x60 plate, 5 mm thick"
-uv run partwright serve
 ```
 
-The default model in `config.yaml`, `partwright-ir:4b-*`, is fine-tuned here and not published; build it with `docs/agents/training.md` or pass `--model qwen3.5:4b`. Images go to `llm.vision` (`qwen3.5:4b`).
+The API and the web editor:
+
+```bash
+uv run partwright --model qwen3.5:4b serve
+npm ci --prefix apps/web
+npm run dev --prefix apps/web
+```
+
+The API listens on `http://127.0.0.1:8000`, the editor on `http://127.0.0.1:5173`. Outputs go to `out/`, projects and models to `data/`.
+
+The default model in `config.yaml`, `partwright-ir:4b-s3`, is fine-tuned here and not published yet; build it with `docs/agents/training.md` or pass `--model qwen3.5:4b` as above. Requests with images go to `llm.vision` (`qwen3.5:4b`).
+
+## Checks
+
+The steps in `.github/workflows/ci.yml`: `ruff`, `mypy`, `lint-imports` and `pytest -m "not llm"` for Python; `npm run lint`, `typecheck`, `test`, `e2e` and `parity` in `apps/web`. The `llm` tests need Ollama with `qwen3.5:0.8b-q8_0`.
 
 ## Status
 
 Capability parity is tracked row by row in `docs/reference/PARITY_CHECKLIST.md` and summarised in `docs/PARITY_REPORT.md` (`uv run partwright-parity-report`). A row is done only with a passing acceptance test and a recorded demo (`uv run partwright-parity <rows>`, evidence under `evals/results/`). Decisions are in `docs/DECISIONS.md`, open problems in `docs/KNOWN_ISSUES.md`, the rules for contributors in `AGENTS.md`.
 
-Apache-2.0.
+## Licence
+
+Apache-2.0, see `LICENSE`.

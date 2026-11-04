@@ -34,8 +34,8 @@ Training prompts are the inference prompts without the five worked examples (`fe
 Reproduce (WSL, `~/partwright-train` with the pinned venv):
 
 ```
-python train.py --data /mnt/d/Projects/bye-kyrall/data/training/s0/train.jsonl --model /mnt/d/Projects/bye-kyrall/data/models/Qwen3.5-0.8B --out runs/s0
-python llama.cpp/convert_hf_to_gguf.py runs/s0/merged --outtype q8_0 --outfile /mnt/d/Projects/bye-kyrall/data/training/s0/run/partwright-ir-0.8b-s0-q8_0.gguf
+python train.py --data <repo>/data/training/s0/train.jsonl --model <repo>/data/models/Qwen3.5-0.8B --out runs/s0
+python llama.cpp/convert_hf_to_gguf.py runs/s0/merged --outtype q8_0 --outfile <repo>/data/training/s0/run/partwright-ir-0.8b-s0-q8_0.gguf
 ```
 
 llama.cpp is pinned to release b11898 (commit 8b28c2394324). Then on Windows: `ollama create partwright-ir:0.8b-s0b -f training/wsl/Modelfile` (833 MB). Ollama cannot import Qwen3.5 safetensors on Windows (its MLX runtime is missing), so the GGUF step is required.
@@ -185,11 +185,11 @@ The M1 passes differ by case:
 1. Data (Windows, Ollama running with `qwen3.5:4b`): `uv run partwright-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b --out data/training/s1`. Paraphrases come from the local 4B, so the samples are close to ours, not byte-identical.
 2. Base weights in WSL: `Qwen/Qwen3.5-4B` from Hugging Face into `~/models/Qwen3.5-4B` (9.3 GB).
 3. Train (WSL, `~/partwright-train`):
-   `python train.py --data /mnt/d/Projects/bye-kyrall/data/training/s1/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s1-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
+   `python train.py --data <repo>/data/training/s1/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s1-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
 4. Merge: `python merge.py --lora runs/s1-4b/lora --out runs/s1-4b/merged` (`training/wsl/merge.py`).
 5. Convert and quantise:
    `python llama.cpp/convert_hf_to_gguf.py runs/s1-4b/merged --outtype bf16 --outfile runs/s1-4b/s1-4b-bf16.gguf`
-   `llama.cpp/build/bin/llama-quantize runs/s1-4b/s1-4b-bf16.gguf /mnt/d/Projects/bye-kyrall/data/training/s1-4b/run/partwright-ir-4b-s1-q4_k_m.gguf Q4_K_M`
+   `llama.cpp/build/bin/llama-quantize runs/s1-4b/s1-4b-bf16.gguf <repo>/data/training/s1-4b/run/partwright-ir-4b-s1-q4_k_m.gguf Q4_K_M`
 6. Import (Windows, from `training/wsl`): `ollama create partwright-ir:4b-s1 -f Modelfile.4b`.
 
 Check the result with `uv run partwright-evals evals/cases/m1.yaml --models partwright-ir:4b-s1` (5/10 expected). The LoRA adapter of the run recorded here (85 MB) is kept at `~/partwright-train/runs/s1-4b/lora` on the training laptop; with it, steps 1 and 3 can be skipped.
@@ -298,9 +298,9 @@ The 8-gram guard covers the showcase set as well. One coupling phrase matched sh
    `OPENBLAS_NUM_THREADS=1 uv run partwright-dataset --s3 --seed 3 --specs 2900 --workers 4 --paraphrase-model qwen3.5:4b --onpolicy data/training/s3/onpolicy-4b-s2.jsonl data/training/s3/onpolicy-qwen3.5-4b.jsonl --out data/training/s3`
    2,900 specs give about 5,000 samples, so the run stays one night like S2 (626 steps).
 3. Train, merge, convert and quantise (WSL, `~/partwright-train`): `training/wsl/s2.sh` with `s2` replaced by `s3`, that is
-   `python train.py --data /mnt/d/Projects/bye-kyrall/data/training/s3/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s3-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
-   `python /mnt/d/Projects/bye-kyrall/training/wsl/merge.py --lora runs/s3-4b/lora --out runs/s3-4b/merged`
+   `python train.py --data <repo>/data/training/s3/train.jsonl --model ~/models/Qwen3.5-4B --out runs/s3-4b --load-4bit --max-seq 4096 --batch 1 --accum 8 --save-steps 100 --no-merge`
+   `python <repo>/training/wsl/merge.py --lora runs/s3-4b/lora --out runs/s3-4b/merged`
    `python llama.cpp/convert_hf_to_gguf.py runs/s3-4b/merged --outtype bf16 --outfile runs/s3-4b/s3-4b-bf16.gguf`
-   `llama.cpp/build/bin/llama-quantize runs/s3-4b/s3-4b-bf16.gguf /mnt/d/Projects/bye-kyrall/data/training/s3-4b/run/partwright-ir-4b-s3-q4_k_m.gguf Q4_K_M`
+   `llama.cpp/build/bin/llama-quantize runs/s3-4b/s3-4b-bf16.gguf <repo>/data/training/s3-4b/run/partwright-ir-4b-s3-q4_k_m.gguf Q4_K_M`
 4. Import (Windows, `training/wsl`): a `Modelfile.4b-s3` that is `Modelfile.4b-s2` with the `FROM` path pointing to the S3 GGUF, then `ollama create partwright-ir:4b-s3 -f Modelfile.4b-s3`.
 5. Gates in one session (D-028), as in `training/wsl/s2_gates.sh` with `4b-s3` against `4b-s2`: dev, M1 and grounded, plus `uv run partwright-parity M6-SHOWCASE --model partwright-ir:4b-s3` and the same for `partwright-ir:4b-s2`.
