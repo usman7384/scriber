@@ -108,8 +108,8 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   await page.getByRole("link", { name: "Bracket lab" }).click();
   await expect(page).toHaveURL(/\/p\/p1$/);
   const models = page.getByRole("list", { name: "Models" }).getByRole("listitem");
-  // allTextContents does not wait, so a slow models reply read as an empty list
-  await expect(models.first()).toBeVisible();
+  // the previous page's list lingers for a frame and none is shown while this project's loads
+  await expect(models).toHaveText([/Sensor plate/]);
   const generations = await models.allTextContents();
   await row.shot(`${reached.length + 1}-project-models`);
   reached.push("Project models");
