@@ -86,5 +86,5 @@ All in `services/context/tests`. None is done: each still needs the generation s
 - PDF tables need ruling lines (pdfplumber default strategy); their rows are mapped to the first page line holding all cells.
 - A changed file is a new document; computing which facts changed between versions (input to `stale`) is left to the caller. Deleting a document drops the lineage edges into it, and `related_to` edges survive while both entities are still mentioned elsewhere.
 - Hole-table facts link to features only through parameters or provenance, not by matching coordinates in point lists.
-- The `@pytest.mark.llm` test (`test_ollama_embed.py`) was not run: `OllamaEmbedder` passes `dimensions=1024` and its behaviour with `qwen3-embedding:0.6b` is unverified.
+- The `@pytest.mark.llm` test (`test_ollama_embed.py`) passes locally with `qwen3-embedding:0.6b` pulled (2026-11-04), so `dimensions=1024` works with that model. Its first CI run failed because the workflow pulled only the chat model; the workflow now pulls both.
 - No IR change was needed. `Part` and `Feature` are not exported from `scriber_ir`, so `lineage.py` works on `design.parts[i]` instead of naming the type; exporting them would simplify it.
