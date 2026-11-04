@@ -4,8 +4,8 @@ jobs:
   python:
     runs-on: ubuntu-24.04
     env:
-      # thumbnails render offscreen without a display
-      PYOPENGL_PLATFORM: osmesa
+      # thumbnails render offscreen without a display; pyrender's OSMesa path needs a newer PyOpenGL than it pins
+      PYOPENGL_PLATFORM: egl
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22.22.3"
-      - run: sudo apt-get update && sudo apt-get install -y libosmesa6 libgl1
+      - run: sudo apt-get update && sudo apt-get install -y libegl1 libegl-mesa0 libgl1-mesa-dri libgl1
       - run: npm ci --prefix evals/parity/tools
       - run: uv sync --locked
       - run: uv run ruff check .

@@ -107,10 +107,10 @@ test("WP-5 navigation reaches every dashboard page and lists generations per pro
   await nav.getByRole("link", { name: "Projects" }).click();
   await page.getByRole("link", { name: "Bracket lab" }).click();
   await expect(page).toHaveURL(/\/p\/p1$/);
-  const generations = await page
-    .getByRole("list", { name: "Models" })
-    .getByRole("listitem")
-    .allTextContents();
+  const models = page.getByRole("list", { name: "Models" }).getByRole("listitem");
+  // allTextContents does not wait, so a slow models reply read as an empty list
+  await expect(models.first()).toBeVisible();
+  const generations = await models.allTextContents();
   await row.shot(`${reached.length + 1}-project-models`);
   reached.push("Project models");
   await page.getByRole("navigation", { name: "Project" }).getByRole("link", { name: "Sources" }).click();

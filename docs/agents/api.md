@@ -81,6 +81,6 @@ All additive except the status codes:
 - A replaced file gets a new document id, so models derived from its unchanged facts lose their graph links (they are not marked stale, which is right, but later changes to those facts will not find them).
 - Rule edits (`PUT /rules`) do not mark models stale; rules link to parts by `constrains`, which `stale()` does not follow.
 - Shutdown does not wait for running jobs; they come back as `interrupted`.
-- Thumbnails on headless Linux need `PYOPENGL_PLATFORM=egl` or `osmesa`; not tried. `test_thumbnail_is_a_256_px_png` and the WP-8 API test need OpenGL.
+- Thumbnails on headless Linux use `PYOPENGL_PLATFORM=egl` with Mesa's software renderer (`libegl1 libegl-mesa0 libgl1-mesa-dri`), as CI sets it (D-048). `osmesa` fails: pyrender 0.1.45 imports `OSMesaCreateContextAttribs`, which the PyOpenGL 3.1.0 it pins does not have. `test_thumbnail_is_a_256_px_png` and the WP-8 API test need OpenGL.
 - Step thumbnails (optional) are not rendered.
 - Starlette warns that its TestClient will move to `httpx2`; harmless for now.
