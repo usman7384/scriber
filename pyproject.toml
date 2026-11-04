@@ -24,6 +24,8 @@ dev = ["pytest", "ruff", "mypy", "import-linter", "trimesh", "types-pyyaml"]
 [tool.ruff]
 line-length = 140
 target-version = "py312"
+# the README quotes compiler output verbatim; ruff would reformat code blocks in Markdown
+extend-exclude = ["*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "PT", "N"]
