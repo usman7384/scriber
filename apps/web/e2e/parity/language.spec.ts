@@ -92,6 +92,8 @@ test("WP-13 language selector switches every UI label between EN and DE and pers
   page,
   row,
 }) => {
+  // two full tours with screenshots and video take about a minute on the CI runner
+  test.setTimeout(180_000);
   const api = new MockApi();
   api.seed();
   await api.install(page);
