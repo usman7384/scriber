@@ -1,0 +1,16 @@
+Scriber
+Copyright 2026 The Scriber authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It depends on, and does not include, the following third-party software, which is
+installed separately as unmodified wheels from PyPI:
+
+- Open CASCADE Technology (OCCT), bundled as shared libraries in the cadquery-ocp-novtk
+  wheel. Licensed under the GNU Lesser General Public License version 2.1 with the
+  Open CASCADE exception. https://dev.opencascade.org/resources/licensing
+- certifi and pathspec, licensed under the Mozilla Public License 2.0.
+
+The published model weights (scriber-ir-4b-s3) are a fine-tune of Qwen3.5-4B by the
+Qwen team, licensed under the Apache License, Version 2.0, and were trained only on
+data generated in this repository.
