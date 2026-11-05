@@ -20,6 +20,7 @@ The model never draws geometry. It writes a typed design, a compiler turns that 
 - [Where it stands](#where-it-stands)
 - [Next steps](#next-steps)
 - [Quick start](#quick-start)
+- [Bring your own model](#bring-your-own-model)
 - [Checks](#checks)
 - [Project records](#project-records)
 - [Licence](#licence)
@@ -290,6 +291,7 @@ Limits worth knowing before you rely on a result:
 | Image inputs in two steps: read the dimensions, then write the design | Dimensions are read from sketches and drawings, but the designs often fail to build |
 | Mesh to CAD in the app, with the result compared against the mesh | The reconstructor exists but is not connected, so an uploaded mesh is only a size hint |
 | Text edits that stay on the picked component | Picking a face already finds the parameter that drives it, but an edit in words aimed at one component can still change another |
+| An adapter for OpenAI-compatible APIs | Only Ollama and Anthropic models can be used today, so OpenAI's API and servers like vLLM or LM Studio are out of reach |
 | A score on a public text-to-CAD benchmark | Every number here comes from this repository's own gates |
 
 ## Quick start
@@ -321,6 +323,71 @@ cd scriber-ir-4b-s3 && ollama create scriber-ir:4b-s3 -f Modelfile
 ```
 
 With it installed, drop `--model qwen3.5:4b` from the commands above. `docs/agents/training.md` has the steps to rebuild it. Requests with images go to `llm.vision` (`qwen3.5:4b`).
+
+## Bring your own model
+
+The agent talks to a model through one small interface, so the model is a setting, not part of the code. Two kinds work today: open-weight models served by Ollama, and Claude through Anthropic's API.
+
+### An open-weight model through Ollama
+
+Any model Ollama can serve works. Pull it and pass its name:
+
+```bash
+ollama pull qwen2.5-coder:7b-instruct-q4_K_M
+uv run scriber --model qwen2.5-coder:7b-instruct-q4_K_M generate "Spacer ring, 30 mm outer diameter, 12 mm bore, 8 mm tall"
+```
+
+To tune it, give it an entry in `config.yaml`. A model without one runs with an 8,192-token context and the worked examples on.
+
+```yaml
+llm:
+  host: http://127.0.0.1:11434   # or another machine running Ollama
+  default: qwen2.5-coder:7b-instruct-q4_K_M   # used when --model is not given
+  models:
+    qwen2.5-coder:7b-instruct-q4_K_M: {num_ctx: 16384, few_shot: true}
+```
+
+| Option | What it does |
+|---|---|
+| `num_ctx` | Context window in tokens; the prompt carries the IR schema, worked examples and project knowledge, so 16,384 is a good start |
+| `few_shot` | Whether the prompt includes worked examples; turn it off for a model fine-tuned on the IR |
+| `think` | Turns the model's reasoning mode on or off, where it has one |
+| `max_tokens` | Longest reply allowed |
+
+Your own weights work the same way: put the GGUF next to a `Modelfile` and run `ollama create my-model -f Modelfile`, as in the Quick start. `training/wsl/Modelfile.4b-s3` is a working example.
+
+### A model behind an API
+
+Claude models are supported through Anthropic's API. Add an entry with `provider: anthropic`:
+
+```yaml
+llm:
+  models:
+    claude-opus-5-5: {provider: anthropic, effort: high}
+```
+
+```bash
+export ANTHROPIC_API_KEY=...   # read from the environment, never from config.yaml
+uv run scriber --model claude-opus-5-5 generate "L-bracket, legs 40 and 30 mm, 4 mm thick, 25 mm wide, two M4 holes per leg"
+```
+
+`effort` is one of `low`, `medium`, `high`, `xhigh` or `max`. Requests then leave your machine, so this is for comparison runs and is never the default.
+
+### Which model does what
+
+| Setting | Used for |
+|---|---|
+| `--model`, else `llm.default` | Writing and repairing designs |
+| `llm.vision` | Requests with images: sketches, photos, drawings |
+| `embeddings.model` | Searching project knowledge; always served by Ollama |
+
+All three work with `scriber serve` too: the API uses the models it was started with. The web app has no model picker yet.
+
+### Not supported yet
+
+OpenAI's API and servers that copy it (vLLM, llama.cpp's server, LM Studio, OpenRouter) need an adapter that does not exist yet. One is a small job: a class with a single `chat` method, as in `services/agent/src/scriber_agent/llm.py`, chosen by a new `provider` value in `apps/cli/src/scriber_cli/config.py`.
+
+The prompts and worked examples were tuned on the 4B model, so a different model may need `few_shot` changed. Run the gates to see whether it actually does better: `uv run scriber-evals evals/cases/dev.yaml --models <name>`.
 
 ## Checks
 
