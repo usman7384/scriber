@@ -178,9 +178,9 @@ The M1 passes differ by case:
 
 `scriber-ir:4b-s1` became the default on this basis (D-027).
 
-## Rebuilding the default model on a fresh clone
+## Rebuilding the S1 model on a fresh clone
 
-`scriber-ir:4b-s1` is not published, so it is built from the repo. It takes about 9 h on an RTX 3060 6 GB, needs about 20 GB free on the WSL disk while merging, and ends as a 2.8 GB GGUF. Same stack as the S0 run (`training/wsl/requirements.txt`), plus llama.cpp b11898 built with `cmake -B build -DGGML_CUDA=OFF && cmake --build build --target llama-quantize`.
+The default is now `scriber-ir:4b-s3` (D-044), published at `usman7384/scriber-ir-4b-s3-GGUF` (README); it is rebuilt with `training/wsl/s3_pipeline.sh`, as in "Full S3 build and training" below. These are the steps for S1, which was not published. It takes about 9 h on an RTX 3060 6 GB, needs about 20 GB free on the WSL disk while merging, and ends as a 2.8 GB GGUF. Same stack as the S0 run (`training/wsl/requirements.txt`), plus llama.cpp b11898 built with `cmake -B build -DGGML_CUDA=OFF && cmake --build build --target llama-quantize`.
 
 1. Data (Windows, Ollama running with `qwen3.5:4b`): `uv run scriber-dataset --seed 1 --specs 2900 --paraphrase-model qwen3.5:4b --out data/training/s1`. Paraphrases come from the local 4B, so the samples are close to ours, not byte-identical.
 2. Base weights in WSL: `Qwen/Qwen3.5-4B` from Hugging Face into `~/models/Qwen3.5-4B` (9.3 GB).
@@ -247,7 +247,7 @@ Gates, one run per model in the same session (D-028), `training/wsl/s2_gates.sh`
 
 S2 wins every gate, so it becomes the default (D-036). It is not better everywhere: grounded mode shows 4 project-rule errors in final designs against 0 for S1, and on M1 one more case fails to build (6 against 7) while more checks pass. The dev cases it fixed are the S2 targets: stated hole diameters kept (d19 7/7, NEMA 17 5/5).
 
-## S3 data (generators built 2026-10-29, not trained)
+## S3 data (generators built 2026-10-29, trained 2026-10-30)
 
 Plan: `docs/FINE_TUNING_PLAN.md` (S3). Everything is behind `--s3` on `scriber-dataset` and `scriber-collect`; without the flag the families, seeds and samples are those of S2.
 
@@ -289,7 +289,7 @@ The earlier dry run before D-039 (300 specs, 8 workers, 8 min): 294 verified, 49
 
 The 8-gram guard covers the showcase set as well. One coupling phrase matched showcase sc13 while the generators were written, so it was reworded; `test_s3.py` now holds the S3 families to at most 2 matches in 60 seeds x 4 styles. The six showcase prompts changed for the default rules (`docs/agents/showcase-default-rules.md`) add no match: over 300 seeds x 4 styles of every family, 62 of 18,000 texts share an 8-gram with an eval case, none of them with a changed prompt.
 
-### Full S3 build and training (not run)
+### Full S3 build and training (run 2026-10-30 through `training/wsl/s3_pipeline.sh`; gates in `docs/agents/s3-gates-2026-10-30.md`)
 
 1. On-policy repairs on S3 prompts (Windows, Ollama running; about 4 h for both, as for S2):
    `uv run scriber-collect --s3 --model scriber-ir:4b-s2 --specs 200 --seed 3 --out data/training/s3/onpolicy-4b-s2.jsonl`

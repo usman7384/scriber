@@ -15,7 +15,7 @@ Ollama is installed, serves the 7B fully on GPU, and supports JSON-schema `forma
 M0 research (reference and technical) runs as parallel background sub-agents whose results feed the parity checklist and plan in this session. Build agents (M1+) work on separate git branches/worktrees per `docs/PLAN.md`.
 
 ## D-005 Licence: Apache-2.0 (2026-10-25)
-Dependency check in `docs/research/SUMMARY.md`. OCCT and planegcs (LGPL) are used only as separately installed wheels with a NOTICE entry. Excluded: PyMuPDF (AGPL), marker, python-solvespace, BOLTS, FreeCAD Fasteners WB, CADAM code, Neo4j server. Non-commercial datasets (Fusion 360 Gallery, Text2CAD, CAD-Recode) are eval-only; published weights train on our procedural corpus and permissive data.
+Dependency check in `docs/research/SUMMARY.md`. OCCT and planegcs (LGPL) are used only as separately installed wheels with a NOTICE entry. (2026-11-05: `NOTICE` added; planegcs is not a dependency, OCCT comes bundled in the `cadquery-ocp-novtk` wheel.) Excluded: PyMuPDF (AGPL), marker, python-solvespace, BOLTS, FreeCAD Fasteners WB, CADAM code, Neo4j server. Non-commercial datasets (Fusion 360 Gallery, Text2CAD, CAD-Recode) are eval-only; published weights train on our procedural corpus and permissive data.
 
 ## D-006 Python 3.12, build123d only (2026-10-25)
 `planegcs` (sketch constraint solver) ships cp312+ wheels only. build123d 0.13.0 on OCP 8.0.1 is the single CAD library; CadQuery 2.8 pins OCP 7.9 and breaks when co-installed (verified), so CadQuery is not a dependency. The kernel sits behind `services/geometry`'s interface, so a CadQuery backend could still be added in its own environment.
