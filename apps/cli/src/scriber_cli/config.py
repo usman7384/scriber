@@ -5,7 +5,7 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel
 
-from scriber_agent import LLM, AnthropicLLM, OllamaLLM
+from scriber_agent import LLM, AnthropicLLM, OllamaLLM, OpenAILLM
 from scriber_agent.anthropic_llm import Effort
 
 
@@ -14,8 +14,10 @@ class ModelOptions(BaseModel):
     think: bool | None = None
     max_tokens: int = 6144
     few_shot: bool = True
-    provider: Literal["ollama", "anthropic"] = "ollama"
+    provider: Literal["ollama", "anthropic", "openai"] = "ollama"
     effort: Effort | None = None
+    base_url: str | None = None
+    api_key_env: str | None = None
 
 
 class LLMConfig(BaseModel):
@@ -64,6 +66,10 @@ def llm_for(config: Config, model: str | None) -> LLM:
     options = config.llm.models.get(name, ModelOptions())
     if options.provider == "anthropic":
         return AnthropicLLM(name, effort=options.effort, few_shot=options.few_shot)
+    if options.provider == "openai":
+        if options.base_url is None:
+            raise ValueError(f"{name} uses provider openai, which needs base_url in config.yaml")
+        return OpenAILLM(name, options.base_url, options.api_key_env, max_tokens=options.max_tokens, few_shot=options.few_shot)
     return OllamaLLM(
         name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens, few_shot=options.few_shot
     )

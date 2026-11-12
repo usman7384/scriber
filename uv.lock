@@ -983,253 +983,6 @@ wheels = [
 ]
 
 [[package]]
-name = "scriber"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "scriber-agent" },
-    { name = "scriber-api" },
-    { name = "scriber-cli" },
-    { name = "scriber-context" },
-    { name = "scriber-evals" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-    { name = "scriber-training" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "import-linter" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "ruff" },
-    { name = "trimesh" },
-    { name = "types-pyyaml" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "scriber-agent", editable = "services/agent" },
-    { name = "scriber-api", editable = "apps/api" },
-    { name = "scriber-cli", editable = "apps/cli" },
-    { name = "scriber-context", editable = "services/context" },
-    { name = "scriber-evals", editable = "evals" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "scriber-training", editable = "training" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "import-linter" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "ruff" },
-    { name = "trimesh" },
-    { name = "types-pyyaml" },
-]
-
-[[package]]
-name = "scriber-agent"
-version = "0.1.0"
-source = { editable = "services/agent" }
-dependencies = [
-    { name = "anthropic" },
-    { name = "ollama" },
-    { name = "scriber-context" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "anthropic", specifier = "==2.3.0" },
-    { name = "ollama", specifier = "==0.6.3" },
-    { name = "scriber-context", editable = "services/context" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-]
-
-[[package]]
-name = "scriber-api"
-version = "0.1.0"
-source = { editable = "apps/api" }
-dependencies = [
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "scriber-agent" },
-    { name = "scriber-context" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-    { name = "python-multipart" },
-    { name = "sqlalchemy" },
-    { name = "sse-starlette" },
-    { name = "structlog" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", specifier = "==0.162.0" },
-    { name = "httpx", specifier = "==0.28.1" },
-    { name = "scriber-agent", editable = "services/agent" },
-    { name = "scriber-context", editable = "services/context" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "python-multipart", specifier = "==0.0.32" },
-    { name = "sqlalchemy", specifier = "==2.1.6" },
-    { name = "sse-starlette", specifier = "==3.5.1" },
-    { name = "structlog", specifier = "==26.1.0" },
-    { name = "uvicorn", specifier = "==0.54.0" },
-]
-
-[[package]]
-name = "scriber-cli"
-version = "0.1.0"
-source = { editable = "apps/cli" }
-dependencies = [
-    { name = "httpx" },
-    { name = "scriber-agent" },
-    { name = "scriber-api" },
-    { name = "scriber-context" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-    { name = "pyyaml" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = "==0.28.1" },
-    { name = "scriber-agent", editable = "services/agent" },
-    { name = "scriber-api", editable = "apps/api" },
-    { name = "scriber-context", editable = "services/context" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "pyyaml" },
-    { name = "uvicorn", specifier = "==0.54.0" },
-]
-
-[[package]]
-name = "scriber-context"
-version = "0.1.0"
-source = { editable = "services/context" }
-dependencies = [
-    { name = "networkx" },
-    { name = "ollama" },
-    { name = "openpyxl" },
-    { name = "scriber-ir" },
-    { name = "pdfplumber" },
-    { name = "pint" },
-    { name = "pydantic" },
-    { name = "pypdfium2" },
-    { name = "python-docx" },
-    { name = "pyyaml" },
-    { name = "sqlalchemy" },
-    { name = "sqlite-vec" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "networkx", specifier = "==3.7" },
-    { name = "ollama", specifier = "==0.6.3" },
-    { name = "openpyxl", specifier = "==3.1.5" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "pdfplumber", specifier = "==0.11.10" },
-    { name = "pint", specifier = "==0.26.2" },
-    { name = "pydantic", specifier = "==2.14.1" },
-    { name = "pypdfium2", specifier = "==5.14.0" },
-    { name = "python-docx", specifier = "==1.2.0" },
-    { name = "pyyaml", specifier = "==6.0.3" },
-    { name = "sqlalchemy", specifier = "==2.1.6" },
-    { name = "sqlite-vec", specifier = "==0.1.9" },
-]
-
-[[package]]
-name = "scriber-evals"
-version = "0.1.0"
-source = { editable = "evals" }
-dependencies = [
-    { name = "scriber-agent" },
-    { name = "scriber-api" },
-    { name = "scriber-cli" },
-    { name = "scriber-context" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-    { name = "pyyaml" },
-    { name = "trimesh" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "scriber-agent", editable = "services/agent" },
-    { name = "scriber-api", editable = "apps/api" },
-    { name = "scriber-cli", editable = "apps/cli" },
-    { name = "scriber-context", editable = "services/context" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "pyyaml" },
-    { name = "trimesh", specifier = "==5.2.0" },
-]
-
-[[package]]
-name = "scriber-geometry"
-version = "0.1.0"
-source = { editable = "services/geometry" }
-dependencies = [
-    { name = "build123d" },
-    { name = "scriber-ir" },
-    { name = "pillow" },
-    { name = "pyglet" },
-    { name = "pyrender" },
-    { name = "scipy" },
-    { name = "trimesh" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "build123d", specifier = "==0.13.0" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "pillow", specifier = "==13.0.0" },
-    { name = "pyglet", specifier = "==2.1.19" },
-    { name = "pyrender", specifier = "==0.1.45" },
-    { name = "scipy", specifier = "==1.18.1" },
-    { name = "trimesh", specifier = "==5.2.0" },
-]
-
-[[package]]
-name = "scriber-ir"
-version = "0.1.0"
-source = { editable = "services/ir" }
-dependencies = [
-    { name = "pydantic" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic" }]
-
-[[package]]
-name = "scriber-training"
-version = "0.1.0"
-source = { editable = "training" }
-dependencies = [
-    { name = "scriber-agent" },
-    { name = "scriber-cli" },
-    { name = "scriber-geometry" },
-    { name = "scriber-ir" },
-    { name = "pyyaml" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "scriber-agent", editable = "services/agent" },
-    { name = "scriber-cli", editable = "apps/cli" },
-    { name = "scriber-geometry", editable = "services/geometry" },
-    { name = "scriber-ir", editable = "services/ir" },
-    { name = "pyyaml" },
-]
-
-[[package]]
 name = "pathspec"
 version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1686,6 +1439,255 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/91/4c/075e4f66471bac101141ac739e9e135549be1bae584571bd03a530c056e1/scipy-1.18.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:d2924a03db38dc2e848bca2fe9f077dafb891480b91a00a0963a8cf86dfc31c1", size = 37480330, upload-time = "2026-08-21T23:24:19.608Z" },
     { url = "https://files.pythonhosted.org/packages/39/e7/979fd14e75008623df31ba70d6bb144700f68feadcea042021c06a05bf82/scipy-1.18.1-cp312-cp312-win_amd64.whl", hash = "sha256:5e4d44984abc0020154ea81b247adeddcc3ac5527b975ff798bd1ba0adc513c2", size = 36658278, upload-time = "2026-08-21T23:24:25.463Z" },
     { url = "https://files.pythonhosted.org/packages/c7/0b/e1525354ff9d7d5feb6d1b31af6d14072e5c91e9607b421fa1ec889660b3/scipy-1.18.1-cp312-cp312-win_arm64.whl", hash = "sha256:d65d448389b8436493abcf629cc94ad0cf32aecaf06e1acca1de53cc795f2f12", size = 24400588, upload-time = "2026-08-21T23:24:30.579Z" },
+]
+
+[[package]]
+name = "scriber"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-cli" },
+    { name = "scriber-context" },
+    { name = "scriber-evals" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+    { name = "scriber-training" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "import-linter" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
+    { name = "trimesh" },
+    { name = "types-pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-evals", editable = "evals" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "scriber-training", editable = "training" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "import-linter" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "ruff" },
+    { name = "trimesh" },
+    { name = "types-pyyaml" },
+]
+
+[[package]]
+name = "scriber-agent"
+version = "0.1.0"
+source = { editable = "services/agent" }
+dependencies = [
+    { name = "anthropic" },
+    { name = "httpx" },
+    { name = "ollama" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = "==2.3.0" },
+    { name = "httpx", specifier = "==0.28.1" },
+    { name = "ollama", specifier = "==0.6.3" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+]
+
+[[package]]
+name = "scriber-api"
+version = "0.1.0"
+source = { editable = "apps/api" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "python-multipart" },
+    { name = "scriber-agent" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+    { name = "sqlalchemy" },
+    { name = "sse-starlette" },
+    { name = "structlog" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = "==0.162.0" },
+    { name = "httpx", specifier = "==0.28.1" },
+    { name = "python-multipart", specifier = "==0.0.32" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "sqlalchemy", specifier = "==2.1.6" },
+    { name = "sse-starlette", specifier = "==3.5.1" },
+    { name = "structlog", specifier = "==26.1.0" },
+    { name = "uvicorn", specifier = "==0.54.0" },
+]
+
+[[package]]
+name = "scriber-cli"
+version = "0.1.0"
+source = { editable = "apps/cli" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pyyaml" },
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = "==0.28.1" },
+    { name = "pyyaml" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "uvicorn", specifier = "==0.54.0" },
+]
+
+[[package]]
+name = "scriber-context"
+version = "0.1.0"
+source = { editable = "services/context" }
+dependencies = [
+    { name = "networkx" },
+    { name = "ollama" },
+    { name = "openpyxl" },
+    { name = "pdfplumber" },
+    { name = "pint" },
+    { name = "pydantic" },
+    { name = "pypdfium2" },
+    { name = "python-docx" },
+    { name = "pyyaml" },
+    { name = "scriber-ir" },
+    { name = "sqlalchemy" },
+    { name = "sqlite-vec" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "networkx", specifier = "==3.7" },
+    { name = "ollama", specifier = "==0.6.3" },
+    { name = "openpyxl", specifier = "==3.1.5" },
+    { name = "pdfplumber", specifier = "==0.11.10" },
+    { name = "pint", specifier = "==0.26.2" },
+    { name = "pydantic", specifier = "==2.14.1" },
+    { name = "pypdfium2", specifier = "==5.14.0" },
+    { name = "python-docx", specifier = "==1.2.0" },
+    { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "sqlalchemy", specifier = "==2.1.6" },
+    { name = "sqlite-vec", specifier = "==0.1.9" },
+]
+
+[[package]]
+name = "scriber-evals"
+version = "0.1.0"
+source = { editable = "evals" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "scriber-agent" },
+    { name = "scriber-api" },
+    { name = "scriber-cli" },
+    { name = "scriber-context" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+    { name = "trimesh" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pyyaml" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-api", editable = "apps/api" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-context", editable = "services/context" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "trimesh", specifier = "==5.2.0" },
+]
+
+[[package]]
+name = "scriber-geometry"
+version = "0.1.0"
+source = { editable = "services/geometry" }
+dependencies = [
+    { name = "build123d" },
+    { name = "pillow" },
+    { name = "pyglet" },
+    { name = "pyrender" },
+    { name = "scipy" },
+    { name = "scriber-ir" },
+    { name = "trimesh" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "build123d", specifier = "==0.13.0" },
+    { name = "pillow", specifier = "==13.0.0" },
+    { name = "pyglet", specifier = "==2.1.19" },
+    { name = "pyrender", specifier = "==0.1.45" },
+    { name = "scipy", specifier = "==1.18.1" },
+    { name = "scriber-ir", editable = "services/ir" },
+    { name = "trimesh", specifier = "==5.2.0" },
+]
+
+[[package]]
+name = "scriber-ir"
+version = "0.1.0"
+source = { editable = "services/ir" }
+dependencies = [
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pydantic" }]
+
+[[package]]
+name = "scriber-training"
+version = "0.1.0"
+source = { editable = "training" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "scriber-agent" },
+    { name = "scriber-cli" },
+    { name = "scriber-geometry" },
+    { name = "scriber-ir" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pyyaml" },
+    { name = "scriber-agent", editable = "services/agent" },
+    { name = "scriber-cli", editable = "apps/cli" },
+    { name = "scriber-geometry", editable = "services/geometry" },
+    { name = "scriber-ir", editable = "services/ir" },
 ]
 
 [[package]]

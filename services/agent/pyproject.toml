@@ -10,6 +10,7 @@ dependencies = [
     "scriber-context",
     "ollama==0.6.3",
     "anthropic==2.3.0",
+    "httpx==0.28.1",
 ]
 
 [build-system]

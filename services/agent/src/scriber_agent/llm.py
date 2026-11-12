@@ -12,6 +12,8 @@ class Message(BaseModel):
 
 Thinking = Literal["low", "high"]
 THINKING_BUDGET: dict[Thinking, int] = {"low": 0, "high": 8192}
+# JSON Schema keywords hosted structured-output APIs reject
+UNSUPPORTED = frozenset(("discriminator", "minItems", "maxItems", "minLength", "maxLength", "pattern", "minimum", "maximum", "default"))
 
 
 class LLM(Protocol):
@@ -22,3 +24,16 @@ class LLM(Protocol):
     def chat(
         self, messages: list[Message], schema: dict[str, Any] | None, seed: int = 0, temperature: float = 0.0, think: int | None = None
     ) -> str: ...
+
+
+def strict_schema(node: Any) -> Any:
+    if isinstance(node, list):
+        return [strict_schema(n) for n in node]
+    if not isinstance(node, dict):
+        return node
+    out = {("anyOf" if k == "oneOf" else k): strict_schema(v) for k, v in node.items() if k not in UNSUPPORTED and k != "prefixItems"}
+    if "prefixItems" in node:
+        out["items"] = {"anyOf": strict_schema(node["prefixItems"])}
+    if out.get("type") == "object" and "properties" in out:
+        out["additionalProperties"] = False
+    return out

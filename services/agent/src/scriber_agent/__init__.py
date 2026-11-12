@@ -5,6 +5,7 @@ from scriber_agent.grounding import misquoted
 from scriber_agent.llm import LLM, Message, Thinking
 from scriber_agent.loop import Result, Step, dump_steps, evaluate, extract_requirements, generate, place, refine
 from scriber_agent.ollama_llm import OllamaLLM
+from scriber_agent.openai_llm import OpenAILLM
 from scriber_agent.project_context import Grounding, context_block
 from scriber_agent.prompts import design_messages, repair_message, requirement_messages
 from scriber_agent.requirements import CheckResult, Requirement, check, overall_size
@@ -24,6 +25,7 @@ __all__ = [
     "Grounding",
     "Message",
     "OllamaLLM",
+    "OpenAILLM",
     "Requirement",
     "Result",
     "Step",

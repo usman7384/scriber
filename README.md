@@ -292,7 +292,6 @@ Limits worth knowing before you rely on a result:
 | Mesh to CAD in the app, with the result compared against the mesh | The reconstructor exists but is not connected, so an uploaded mesh is only a size hint |
 | Mesh reconstruction beyond parts stacked along Z: any main axis, turned parts, tilted holes, fillets, gears | Today only plate-like parts lying on Z rebuild, with blends made sharp; the phases are in [`docs/MESH_TO_CAD_PLAN.md`](docs/MESH_TO_CAD_PLAN.md) |
 | Text edits that stay on the picked component | Picking a face already finds the parameter that drives it, but an edit in words aimed at one component can still change another |
-| An adapter for OpenAI-compatible APIs | Only Ollama and Anthropic models can be used today, so OpenAI's API and servers like vLLM or LM Studio are out of reach |
 | A score on a public text-to-CAD benchmark | Every number here comes from this repository's own gates |
 
 ## Quick start
@@ -327,7 +326,7 @@ With it installed, drop `--model qwen3.5:4b` from the commands above. `docs/agen
 
 ## Bring your own model
 
-The agent talks to a model through one small interface, so the model is a setting, not part of the code. Two kinds work today: open-weight models served by Ollama, and Claude through Anthropic's API.
+The agent talks to a model through one small interface, so the model is a setting, not part of the code. Three kinds work today: open-weight models served by Ollama, Claude through Anthropic's API, and any model behind an OpenAI-compatible API.
 
 ### An open-weight model through Ollama
 
@@ -384,9 +383,23 @@ uv run scriber --model claude-opus-5-5 generate "L-bracket, legs 40 and 30 mm, 4
 
 All three work with `scriber serve` too: the API uses the models it was started with. The web app has no model picker yet.
 
-### Not supported yet
+### A model behind an OpenAI-compatible API
 
-OpenAI's API and servers that copy it (vLLM, llama.cpp's server, LM Studio, OpenRouter) need an adapter that does not exist yet. One is a small job: a class with a single `chat` method, as in `services/agent/src/scriber_agent/llm.py`, chosen by a new `provider` value in `apps/cli/src/scriber_cli/config.py`.
+OpenAI's API and the many servers that copy it work with `provider: openai`: Google's Gemini, Groq, OpenRouter, Mistral, and local servers such as vLLM, llama.cpp's server and LM Studio. Give the base URL and the name of the environment variable that holds the key; a local server needs no key.
+
+```yaml
+llm:
+  models:
+    gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    my-local-model: {provider: openai, base_url: "http://127.0.0.1:1234/v1"}
+```
+
+```bash
+export GEMINI_API_KEY=...   # read from the environment, never from config.yaml
+uv run scriber --model gemini-3.8-flash generate "Spacer ring, 30 mm outer diameter, 12 mm bore, 8 mm tall"
+```
+
+The design schema is sent as `response_format` JSON schema, images as data URLs, and a rate-limited or overloaded request (HTTP 429 or 5xx) waits and retries up to four times, which free tiers need. Requests leave your machine, so as with Claude this is for comparison runs.
 
 The prompts and worked examples were tuned on the 4B model, so a different model may need `few_shot` changed. Run the gates to see whether it actually does better: `uv run scriber-evals evals/cases/dev.yaml --models <name>`.
 

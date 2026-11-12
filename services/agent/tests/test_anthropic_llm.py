@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 
 from scriber_agent import AnthropicLLM, Message
-from scriber_agent.anthropic_llm import UNSUPPORTED, strict_schema
+from scriber_agent.llm import UNSUPPORTED, strict_schema
 from scriber_agent.loop import RefineAnswer
 from scriber_agent.requirements import RequirementList
 from scriber_ir import json_schema

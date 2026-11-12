@@ -3,11 +3,10 @@ from typing import Any, Literal
 import anthropic
 from anthropic.types.beta import BetaMessageParam, BetaOutputConfigParam
 
-from scriber_agent.llm import Message
+from scriber_agent.llm import Message, strict_schema
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
-UNSUPPORTED = frozenset(("discriminator", "minItems", "maxItems", "minLength", "maxLength", "pattern", "minimum", "maximum", "default"))
 
 
 class AnthropicLLM:
@@ -47,16 +46,3 @@ def _turn(m: Message) -> BetaMessageParam:
     if m.role == "assistant":
         return {"role": "assistant", "content": m.content}
     return {"role": "user", "content": m.content}
-
-
-def strict_schema(node: Any) -> Any:
-    if isinstance(node, list):
-        return [strict_schema(n) for n in node]
-    if not isinstance(node, dict):
-        return node
-    out = {("anyOf" if k == "oneOf" else k): strict_schema(v) for k, v in node.items() if k not in UNSUPPORTED and k != "prefixItems"}
-    if "prefixItems" in node:
-        out["items"] = {"anyOf": strict_schema(node["prefixItems"])}
-    if out.get("type") == "object" and "properties" in out:
-        out["additionalProperties"] = False
-    return out
