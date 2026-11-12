@@ -25,7 +25,8 @@ TABLE: dict[float, tuple[tuple[float, float, float], float, float]] = {
     30: ((31.0, 33.0, 35.0), 3.5, 45.0),
 }
 FITS = ("close", "normal", "loose")
-DESIGNATION = re.compile(r"^M(\d+(?:\.\d+)?)(?:x(\d+(?:\.\d+)?))?$")
+# an ISO 965 tolerance class (6H, 6g, 5g6g) as written on drawings is accepted and does not change the hole size
+DESIGNATION = re.compile(r"^M(\d+(?:\.\d+)?)(?:x(\d+(?:\.\d+)?))?(?:-\d[A-Za-z](?:\d[A-Za-z])?)?$")
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,7 @@
+import pytest
+
 from scriber_ir import Design, validate
+from scriber_ir.fasteners import parse
 
 
 def test_valid_design_has_no_errors(bracket: Design) -> None:
@@ -200,3 +203,10 @@ def test_feature_params_follow_each_feature_and_its_sketch() -> None:
         }
     )
     assert feature_params(design) == {("p", "body"): ["length", "thickness"], ("p", "h"): ["thickness", "hole_d"]}
+
+
+@pytest.mark.parametrize("callout", ["M12x1.75-6H", "M8-6g", "M10x1.25-5g6g"])
+def test_thread_callouts_with_a_tolerance_class_size_like_the_plain_thread(callout: str) -> None:
+    plain = callout.split("-")[0]
+    assert parse(callout) == parse(plain) is not None
+    assert parse("M12x1.75-H6") is None and parse("M12-6H-6g") is None
