@@ -60,7 +60,37 @@
       "name": "wall",
       "value": 6,
       "unit": "mm",
-      "description": "casing wall, floor and cover thickness"
+      "description": "casing wall and end-face thickness"
+    },
+    {
+      "name": "small_end_radius",
+      "value": 46,
+      "unit": "mm",
+      "description": "inside radius of the casing's small end, around the input shaft, ratchet and pawl"
+    },
+    {
+      "name": "lug_diameter",
+      "value": 14,
+      "unit": "mm",
+      "description": "bolt lug diameter"
+    },
+    {
+      "name": "lug_offset",
+      "value": 1,
+      "unit": "mm",
+      "description": "bolt lug centres outside the casing wall"
+    },
+    {
+      "name": "bolt_hole",
+      "value": 4.5,
+      "unit": "mm",
+      "description": "M4 clearance hole through the lugs"
+    },
+    {
+      "name": "breather_hole",
+      "value": 4,
+      "unit": "mm",
+      "description": "breather hole in the upper half"
     },
     {
       "name": "boss_height",
@@ -78,7 +108,7 @@
       "name": "clearance_hole",
       "value": 22,
       "unit": "mm",
-      "description": "shaft hole through the floor and cover"
+      "description": "shaft hole through each casing half"
     },
     {
       "name": "gear_clearance",
@@ -96,7 +126,7 @@
       "name": "layer_gap",
       "value": 5,
       "unit": "mm",
-      "description": "axial gap between the gear layers and to the cover"
+      "description": "axial gap between the gear layers and to the upper half"
     },
     {
       "name": "stub_length",
@@ -162,7 +192,7 @@
   "parts": [
     {
       "id": "casing",
-      "name": "Gearbox casing",
+      "name": "Gearbox casing, lower half",
       "material": "aluminium 6082",
       "process": "casting",
       "sketches": [
@@ -174,14 +204,160 @@
           },
           "entities": [
             {
-              "kind": "rect",
-              "center": [
-                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
-                0
+              "kind": "path",
+              "start": [
+                "(small_end_radius + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                "(small_end_radius + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
               ],
-              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * wall",
-              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * wall",
-              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + wall"
+              "segments": [
+                {
+                  "to": [
+                    "-(small_end_radius + wall)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + wall)"
+                },
+                {
+                  "to": [
+                    "(small_end_radius + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-(small_end_radius + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + wall)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ]
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lugs",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                "-(small_end_radius + wall + lug_offset)",
+                "0"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "-(((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)",
+                "0"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
             }
           ]
         },
@@ -193,14 +369,79 @@
           },
           "entities": [
             {
-              "kind": "rect",
-              "center": [
-                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
-                0
+              "kind": "path",
+              "start": [
+                "(small_end_radius + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                "(small_end_radius + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
               ],
-              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * 0",
-              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * 0",
-              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + 0"
+              "segments": [
+                {
+                  "to": [
+                    "-(small_end_radius + 0)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + 0)"
+                },
+                {
+                  "to": [
+                    "(small_end_radius + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-(small_end_radius + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + 0)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ]
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                }
+              ]
             }
           ]
         }
@@ -208,10 +449,19 @@
       "features": [
         {
           "kind": "extrude",
-          "id": "body",
-          "name": "Casing body",
+          "id": "shell",
+          "name": "Half shell",
           "sketch": "outer",
-          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap)",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "lugs",
+          "name": "Bolt lugs",
+          "sketch": "lugs",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)",
           "mode": "add",
           "extent": "blind"
         },
@@ -220,13 +470,13 @@
           "id": "cavity",
           "name": "Cavity",
           "sketch": "inner",
-          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap) - wall",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2) - wall",
           "mode": "cut",
           "extent": "blind"
         },
         {
           "kind": "boss_pattern",
-          "id": "floor_bosses",
+          "id": "bearing_bosses",
           "name": "Bearing bosses",
           "plane": {
             "ref": "part.bottom"
@@ -253,7 +503,7 @@
         },
         {
           "kind": "hole",
-          "id": "floor_seats",
+          "id": "bearing_seats",
           "name": "Bearing seats",
           "plane": {
             "ref": "part.bottom"
@@ -279,31 +529,307 @@
           "diameter": "clearance_hole",
           "cb_diameter": "bearing_od",
           "cb_depth": "bearing_width"
+        },
+        {
+          "kind": "hole",
+          "id": "bolt_holes",
+          "name": "Bolt holes",
+          "plane": {
+            "ref": "part.top"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-(small_end_radius + wall + lug_offset)",
+                "0"
+              ],
+              [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2"
+              ],
+              [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "-(((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2)"
+              ],
+              [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)",
+                "0"
+              ]
+            ]
+          },
+          "diameter": "bolt_hole"
         }
       ]
     },
     {
       "id": "cover",
-      "name": "Casing cover",
+      "name": "Gearbox casing, upper half",
       "material": "aluminium 6082",
       "process": "casting",
       "sketches": [
         {
-          "id": "plate",
+          "id": "outer",
           "plane": {
             "ref": "XY",
             "offset": 0
           },
           "entities": [
             {
-              "kind": "rect",
-              "center": [
-                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
-                0
+              "kind": "path",
+              "start": [
+                "(small_end_radius + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                "(small_end_radius + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
               ],
-              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * wall",
-              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * wall",
-              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + wall"
+              "segments": [
+                {
+                  "to": [
+                    "-(small_end_radius + wall)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + wall)"
+                },
+                {
+                  "to": [
+                    "(small_end_radius + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-(small_end_radius + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + wall)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ]
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lugs",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                "-(small_end_radius + wall + lug_offset)",
+                "0"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "-(((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)",
+                "0"
+              ],
+              "diameter": "lug_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "inner",
+          "plane": {
+            "ref": "XY",
+            "offset": "wall"
+          },
+          "entities": [
+            {
+              "kind": "path",
+              "start": [
+                "(small_end_radius + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                "(small_end_radius + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+              ],
+              "segments": [
+                {
+                  "to": [
+                    "-(small_end_radius + 0)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + 0)"
+                },
+                {
+                  "to": [
+                    "(small_end_radius + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-(small_end_radius + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "(small_end_radius + 0)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ]
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)",
+                    "0"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2)",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                  ]
+                },
+                {
+                  "to": [
+                    "(module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))",
+                    "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)"
+                  ],
+                  "arc": "ccw",
+                  "radius": "((module * (wheel_teeth + 2) / 2 + gear_clearance) + 0)"
+                }
+              ]
             }
           ]
         }
@@ -311,19 +837,37 @@
       "features": [
         {
           "kind": "extrude",
-          "id": "plate",
-          "name": "Cover plate",
-          "sketch": "plate",
-          "distance": "wall",
+          "id": "shell",
+          "name": "Half shell",
+          "sketch": "outer",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)",
           "mode": "add",
           "extent": "blind"
         },
         {
+          "kind": "extrude",
+          "id": "lugs",
+          "name": "Bolt lugs",
+          "sketch": "lugs",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "cavity",
+          "name": "Cavity",
+          "sketch": "inner",
+          "distance": "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2) - wall",
+          "mode": "cut",
+          "extent": "blind"
+        },
+        {
           "kind": "boss_pattern",
-          "id": "cover_bosses",
+          "id": "bearing_bosses",
           "name": "Bearing bosses",
           "plane": {
-            "ref": "part.top"
+            "ref": "part.bottom"
           },
           "at": {
             "kind": "points",
@@ -347,10 +891,10 @@
         },
         {
           "kind": "hole",
-          "id": "cover_seats",
+          "id": "bearing_seats",
           "name": "Bearing seats",
           "plane": {
-            "ref": "part.top"
+            "ref": "part.bottom"
           },
           "at": {
             "kind": "points",
@@ -373,6 +917,70 @@
           "diameter": "clearance_hole",
           "cb_diameter": "bearing_od",
           "cb_depth": "bearing_width"
+        },
+        {
+          "kind": "hole",
+          "id": "bolt_holes",
+          "name": "Bolt holes",
+          "plane": {
+            "ref": "part.top"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-(small_end_radius + wall + lug_offset)",
+                "0"
+              ],
+              [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2"
+              ],
+              [
+                "((small_end_radius + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2)) + (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * (-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) / 2",
+                "-(((small_end_radius + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sqrt(1 - ((-((module * (wheel_teeth + 2) / 2 + gear_clearance) - small_end_radius) / (module * (pinion_teeth + wheel_teeth) / 2))) ** 2)) / 2)"
+              ],
+              [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              [
+                "1.5 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * cos(45)",
+                "-((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset) * sin(45)"
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2) + ((module * (wheel_teeth + 2) / 2 + gear_clearance) + wall + lug_offset)",
+                "0"
+              ]
+            ]
+          },
+          "diameter": "bolt_hole"
+        },
+        {
+          "kind": "hole",
+          "id": "breather",
+          "name": "Breather hole",
+          "plane": {
+            "ref": "part.bottom"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "-(small_end_radius - 12)",
+                0
+              ]
+            ]
+          },
+          "diameter": "breather_hole"
         }
       ]
     },
@@ -1169,25 +1777,25 @@
   "assembly": {
     "connectors": [
       {
-        "id": "cover_seat_at",
+        "id": "seam_at",
         "part": "casing",
         "origin": [
           0,
           0,
-          "((layer_a + face_width + layer_gap) + face_width + layer_gap)"
+          "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)"
         ],
         "z": "+z",
         "x": "+x"
       },
       {
-        "id": "cover_seat_on",
+        "id": "seam_on",
         "part": "cover",
         "origin": [
           0,
           0,
-          0
+          "((((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall) / 2)"
         ],
-        "z": "+z",
+        "z": "-z",
         "x": "+x"
       },
       {
@@ -1218,7 +1826,7 @@
         "origin": [
           "0",
           0,
-          "wall + boss_height - bearing_width"
+          "-boss_height"
         ],
         "z": "+z",
         "x": "+x"
@@ -1262,7 +1870,7 @@
         "origin": [
           "module * (pinion_teeth + wheel_teeth) / 2",
           0,
-          "wall + boss_height - bearing_width"
+          "-boss_height"
         ],
         "z": "+z",
         "x": "+x"
@@ -1306,7 +1914,7 @@
         "origin": [
           "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
           0,
-          "wall + boss_height - bearing_width"
+          "-boss_height"
         ],
         "z": "+z",
         "x": "+x"
@@ -1545,9 +2153,9 @@
     ],
     "joints": [
       {
-        "id": "cover_seat",
-        "parent": "cover_seat_at",
-        "child": "cover_seat_on",
+        "id": "seam",
+        "parent": "seam_at",
+        "child": "seam_on",
         "kind": "fastened",
         "angle": 0
       },
