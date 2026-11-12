@@ -1,0 +1,1668 @@
+{
+  "ir_version": 2,
+  "title": "Two-stage spur gearbox with ratchet",
+  "params": [
+    {
+      "name": "module",
+      "value": 1.5,
+      "unit": "mm",
+      "description": "gear module"
+    },
+    {
+      "name": "pinion_teeth",
+      "value": 25,
+      "unit": "",
+      "description": "teeth on each pinion"
+    },
+    {
+      "name": "wheel_teeth",
+      "value": 73,
+      "unit": "",
+      "description": "teeth on each wheel"
+    },
+    {
+      "name": "face_width",
+      "value": 15,
+      "unit": "mm",
+      "description": "gear face width"
+    },
+    {
+      "name": "backlash",
+      "value": 0.1,
+      "unit": "mm",
+      "description": "circular backlash per gear"
+    },
+    {
+      "name": "shaft_diameter",
+      "value": 20,
+      "unit": "mm",
+      "description": "shaft body between the bearings"
+    },
+    {
+      "name": "journal_diameter",
+      "value": 15,
+      "unit": "mm",
+      "description": "bearing journal, bearing bore"
+    },
+    {
+      "name": "bearing_od",
+      "value": 32,
+      "unit": "mm",
+      "description": "bearing outside diameter (6002 size)"
+    },
+    {
+      "name": "bearing_width",
+      "value": 9,
+      "unit": "mm",
+      "description": "bearing width"
+    },
+    {
+      "name": "wall",
+      "value": 6,
+      "unit": "mm",
+      "description": "casing wall, floor and cover thickness"
+    },
+    {
+      "name": "boss_height",
+      "value": 5,
+      "unit": "mm",
+      "description": "bearing boss height outside the casing"
+    },
+    {
+      "name": "boss_diameter",
+      "value": 44,
+      "unit": "mm",
+      "description": "bearing boss diameter"
+    },
+    {
+      "name": "clearance_hole",
+      "value": 22,
+      "unit": "mm",
+      "description": "shaft hole through the floor and cover"
+    },
+    {
+      "name": "gear_clearance",
+      "value": 4.75,
+      "unit": "mm",
+      "description": "gap between the wheel tips and the casing wall"
+    },
+    {
+      "name": "layer_a",
+      "value": 10,
+      "unit": "mm",
+      "description": "first-stage gear plane above the casing floor bottom"
+    },
+    {
+      "name": "layer_gap",
+      "value": 5,
+      "unit": "mm",
+      "description": "axial gap between the gear layers and to the cover"
+    },
+    {
+      "name": "stub_length",
+      "value": 30,
+      "unit": "mm",
+      "description": "input and output shaft ends outside the casing"
+    },
+    {
+      "name": "ratchet_teeth",
+      "value": 20,
+      "unit": "",
+      "description": "ratchet teeth"
+    },
+    {
+      "name": "ratchet_diameter",
+      "value": 40,
+      "unit": "mm",
+      "description": "ratchet tip diameter"
+    },
+    {
+      "name": "ratchet_thickness",
+      "value": 6,
+      "unit": "mm",
+      "description": "ratchet and pawl thickness"
+    },
+    {
+      "name": "tooth_depth",
+      "value": 3,
+      "unit": "mm",
+      "description": "ratchet tooth depth"
+    },
+    {
+      "name": "pin_diameter",
+      "value": 4,
+      "unit": "mm",
+      "description": "pawl pin diameter"
+    },
+    {
+      "name": "pawl_width",
+      "value": 12,
+      "unit": "mm",
+      "description": "pawl width; leaves 1.5 x the pin diameter around the pivot hole"
+    },
+    {
+      "name": "pawl_length",
+      "value": 15.6,
+      "unit": "mm",
+      "description": "pawl pivot to tip centre"
+    },
+    {
+      "name": "pawl_angle",
+      "value": 62.3,
+      "unit": "deg",
+      "description": "pawl direction from pivot to tip"
+    },
+    {
+      "name": "pawl_tip_angle",
+      "value": -60,
+      "unit": "deg",
+      "description": "where the pawl tip meets the ratchet, about the input shaft; keeps the pin clear of the intermediate wheel"
+    }
+  ],
+  "parts": [
+    {
+      "id": "casing",
+      "name": "Gearbox casing",
+      "material": "aluminium 6082",
+      "process": "casting",
+      "sketches": [
+        {
+          "id": "outer",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
+                0
+              ],
+              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * wall",
+              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * wall",
+              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + wall"
+            }
+          ]
+        },
+        {
+          "id": "inner",
+          "plane": {
+            "ref": "XY",
+            "offset": "wall"
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
+                0
+              ],
+              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * 0",
+              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * 0",
+              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + 0"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Casing body",
+          "sketch": "outer",
+          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "cavity",
+          "name": "Cavity",
+          "sketch": "inner",
+          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap) - wall",
+          "mode": "cut",
+          "extent": "blind"
+        },
+        {
+          "kind": "boss_pattern",
+          "id": "floor_bosses",
+          "name": "Bearing bosses",
+          "plane": {
+            "ref": "part.bottom"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "0",
+                0
+              ],
+              [
+                "module * (pinion_teeth + wheel_teeth) / 2",
+                0
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                0
+              ]
+            ]
+          },
+          "diameter": "boss_diameter",
+          "height": "boss_height"
+        },
+        {
+          "kind": "hole",
+          "id": "floor_seats",
+          "name": "Bearing seats",
+          "plane": {
+            "ref": "part.bottom"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "0",
+                0
+              ],
+              [
+                "module * (pinion_teeth + wheel_teeth) / 2",
+                0
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                0
+              ]
+            ]
+          },
+          "type": "counterbore",
+          "diameter": "clearance_hole",
+          "cb_diameter": "bearing_od",
+          "cb_depth": "bearing_width"
+        }
+      ]
+    },
+    {
+      "id": "cover",
+      "name": "Casing cover",
+      "material": "aluminium 6082",
+      "process": "casting",
+      "sketches": [
+        {
+          "id": "plate",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "rect",
+              "center": [
+                "((-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + (2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2)) / 2",
+                0
+              ],
+              "width": "(2 * (module * (pinion_teeth + wheel_teeth) / 2) + module * (wheel_teeth + 2) / 2 + gear_clearance + 2) - (-(module * (pinion_teeth + 2) / 2 + gear_clearance + 2)) + 2 * wall",
+              "height": "2 * (module * (wheel_teeth + 2) / 2 + gear_clearance) + 2 * wall",
+              "corner_radius": "module * (wheel_teeth + 2) / 2 + gear_clearance - 1 + wall"
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "plate",
+          "name": "Cover plate",
+          "sketch": "plate",
+          "distance": "wall",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "boss_pattern",
+          "id": "cover_bosses",
+          "name": "Bearing bosses",
+          "plane": {
+            "ref": "part.top"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "0",
+                0
+              ],
+              [
+                "module * (pinion_teeth + wheel_teeth) / 2",
+                0
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                0
+              ]
+            ]
+          },
+          "diameter": "boss_diameter",
+          "height": "boss_height"
+        },
+        {
+          "kind": "hole",
+          "id": "cover_seats",
+          "name": "Bearing seats",
+          "plane": {
+            "ref": "part.top"
+          },
+          "at": {
+            "kind": "points",
+            "points": [
+              [
+                "0",
+                0
+              ],
+              [
+                "module * (pinion_teeth + wheel_teeth) / 2",
+                0
+              ],
+              [
+                "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+                0
+              ]
+            ]
+          },
+          "type": "counterbore",
+          "diameter": "clearance_hole",
+          "cb_diameter": "bearing_od",
+          "cb_depth": "bearing_width"
+        }
+      ]
+    },
+    {
+      "id": "input_shaft",
+      "name": "Input shaft",
+      "material": "steel EN 24",
+      "sketches": [
+        {
+          "id": "j1",
+          "plane": {
+            "ref": "XY",
+            "offset": "-boss_height - stub_length"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "body",
+          "plane": {
+            "ref": "XY",
+            "offset": "bearing_width - boss_height"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "shaft_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "j2",
+          "plane": {
+            "ref": "XY",
+            "offset": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "journal_1",
+          "name": "Lower journal",
+          "sketch": "j1",
+          "distance": "bearing_width - boss_height - (-boss_height - stub_length)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "body",
+          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width - (bearing_width - boss_height)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "journal_2",
+          "name": "Upper journal",
+          "sketch": "j2",
+          "distance": "(((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall + boss_height) - (((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width)",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_shaft",
+      "name": "Intermediate shaft",
+      "material": "steel EN 24",
+      "sketches": [
+        {
+          "id": "j1",
+          "plane": {
+            "ref": "XY",
+            "offset": "-boss_height"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "body",
+          "plane": {
+            "ref": "XY",
+            "offset": "bearing_width - boss_height"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "shaft_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "j2",
+          "plane": {
+            "ref": "XY",
+            "offset": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "journal_1",
+          "name": "Lower journal",
+          "sketch": "j1",
+          "distance": "bearing_width - boss_height - (-boss_height)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "body",
+          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width - (bearing_width - boss_height)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "journal_2",
+          "name": "Upper journal",
+          "sketch": "j2",
+          "distance": "(((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall + boss_height) - (((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width)",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "output_shaft",
+      "name": "Output shaft",
+      "material": "steel EN 24",
+      "sketches": [
+        {
+          "id": "j1",
+          "plane": {
+            "ref": "XY",
+            "offset": "-boss_height"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "body",
+          "plane": {
+            "ref": "XY",
+            "offset": "bearing_width - boss_height"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "shaft_diameter",
+              "subtract": false
+            }
+          ]
+        },
+        {
+          "id": "j2",
+          "plane": {
+            "ref": "XY",
+            "offset": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width"
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "journal_1",
+          "name": "Lower journal",
+          "sketch": "j1",
+          "distance": "bearing_width - boss_height - (-boss_height)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "body",
+          "name": "Body",
+          "sketch": "body",
+          "distance": "((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width - (bearing_width - boss_height)",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "journal_2",
+          "name": "Upper journal",
+          "sketch": "j2",
+          "distance": "(((layer_a + face_width + layer_gap) + face_width + layer_gap) + wall + boss_height + stub_length) - (((layer_a + face_width + layer_gap) + face_width + layer_gap) + boss_height + wall - bearing_width)",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "input_pinion",
+      "name": "25 teeth spur gear (input)",
+      "material": "steel EN 41",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "25 teeth spur gear (input)",
+          "module": "module",
+          "teeth": "pinion_teeth",
+          "face_width": "face_width",
+          "backlash": "backlash",
+          "bore": "shaft_diameter"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_wheel",
+      "name": "73 teeth spur gear (intermediate)",
+      "material": "steel EN 41",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "73 teeth spur gear (intermediate)",
+          "module": "module",
+          "teeth": "wheel_teeth",
+          "face_width": "face_width",
+          "backlash": "backlash",
+          "bore": "shaft_diameter"
+        }
+      ]
+    },
+    {
+      "id": "intermediate_pinion",
+      "name": "25 teeth spur gear (intermediate)",
+      "material": "steel EN 41",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "25 teeth spur gear (intermediate)",
+          "module": "module",
+          "teeth": "pinion_teeth",
+          "face_width": "face_width",
+          "backlash": "backlash",
+          "bore": "shaft_diameter"
+        }
+      ]
+    },
+    {
+      "id": "output_wheel",
+      "name": "73 teeth spur gear (output)",
+      "material": "steel EN 41",
+      "sketches": [],
+      "features": [
+        {
+          "kind": "spur_gear",
+          "id": "gear",
+          "name": "73 teeth spur gear (output)",
+          "module": "module",
+          "teeth": "wheel_teeth",
+          "face_width": "face_width",
+          "backlash": "backlash",
+          "bore": "shaft_diameter"
+        }
+      ]
+    },
+    {
+      "id": "bearing_input_floor",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "bearing_input_cover",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "bearing_intermediate_floor",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "bearing_intermediate_cover",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "bearing_output_floor",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "bearing_output_cover",
+      "name": "Ball bearing (IS 6455, 6002 size)",
+      "material": "steel",
+      "sketches": [
+        {
+          "id": "ring",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "bearing_od",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "journal_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "ring",
+          "name": "Bearing ring",
+          "sketch": "ring",
+          "distance": "bearing_width",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "ratchet",
+      "name": "Ratchet",
+      "material": "steel EN 41",
+      "sketches": [
+        {
+          "id": "disc",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "ratchet_diameter",
+              "subtract": false
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "shaft_diameter",
+              "subtract": true
+            }
+          ]
+        },
+        {
+          "id": "notch",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "polygon",
+              "points": [
+                [
+                  "ratchet_diameter / 2 - tooth_depth",
+                  0
+                ],
+                [
+                  "ratchet_diameter / 2 + 2",
+                  0
+                ],
+                [
+                  "ratchet_diameter / 2 + 2",
+                  "(ratchet_diameter / 2 + 2) * tan(360 / ratchet_teeth) * 0.95"
+                ],
+                [
+                  "ratchet_diameter / 2 * cos(360 / ratchet_teeth)",
+                  "ratchet_diameter / 2 * sin(360 / ratchet_teeth)"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "disc",
+          "name": "Ratchet disc",
+          "sketch": "disc",
+          "distance": "ratchet_thickness",
+          "mode": "add",
+          "extent": "blind"
+        },
+        {
+          "kind": "extrude",
+          "id": "notch",
+          "name": "Tooth gap",
+          "sketch": "notch",
+          "distance": "ratchet_thickness",
+          "mode": "cut",
+          "extent": "blind"
+        },
+        {
+          "kind": "pattern",
+          "id": "teeth",
+          "name": "Ratchet teeth",
+          "features": [
+            "notch"
+          ],
+          "type": "polar",
+          "count": "ratchet_teeth",
+          "axis": "z"
+        }
+      ]
+    },
+    {
+      "id": "pawl",
+      "name": "Pawl",
+      "material": "steel EN 41",
+      "sketches": [
+        {
+          "id": "arm",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "slot",
+              "center": [
+                "pawl_length / 2 * cos(pawl_angle)",
+                "pawl_length / 2 * sin(pawl_angle)"
+              ],
+              "length": "pawl_length + pawl_width",
+              "width": "pawl_width",
+              "angle": "pawl_angle"
+            },
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "pin_diameter",
+              "subtract": true
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "arm",
+          "name": "Pawl arm",
+          "sketch": "arm",
+          "distance": "ratchet_thickness",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    },
+    {
+      "id": "pin",
+      "name": "Pin",
+      "material": "steel EN 41",
+      "sketches": [
+        {
+          "id": "pin",
+          "plane": {
+            "ref": "XY",
+            "offset": 0
+          },
+          "entities": [
+            {
+              "kind": "circle",
+              "center": [
+                0,
+                0
+              ],
+              "diameter": "pin_diameter",
+              "subtract": false
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "kind": "extrude",
+          "id": "pin",
+          "name": "Pin",
+          "sketch": "pin",
+          "distance": "(layer_a + face_width + layer_gap) + ratchet_thickness + 4 - wall",
+          "mode": "add",
+          "extent": "blind"
+        }
+      ]
+    }
+  ],
+  "assembly": {
+    "connectors": [
+      {
+        "id": "cover_seat_at",
+        "part": "casing",
+        "origin": [
+          0,
+          0,
+          "((layer_a + face_width + layer_gap) + face_width + layer_gap)"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "cover_seat_on",
+        "part": "cover",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_input_floor_seat_at",
+        "part": "casing",
+        "origin": [
+          "0",
+          0,
+          "-boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_input_floor_seat_on",
+        "part": "bearing_input_floor",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_input_cover_seat_at",
+        "part": "cover",
+        "origin": [
+          "0",
+          0,
+          "wall + boss_height - bearing_width"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_input_cover_seat_on",
+        "part": "bearing_input_cover",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_intermediate_floor_seat_at",
+        "part": "casing",
+        "origin": [
+          "module * (pinion_teeth + wheel_teeth) / 2",
+          0,
+          "-boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_intermediate_floor_seat_on",
+        "part": "bearing_intermediate_floor",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_intermediate_cover_seat_at",
+        "part": "cover",
+        "origin": [
+          "module * (pinion_teeth + wheel_teeth) / 2",
+          0,
+          "wall + boss_height - bearing_width"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_intermediate_cover_seat_on",
+        "part": "bearing_intermediate_cover",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_output_floor_seat_at",
+        "part": "casing",
+        "origin": [
+          "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+          0,
+          "-boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_output_floor_seat_on",
+        "part": "bearing_output_floor",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_output_cover_seat_at",
+        "part": "cover",
+        "origin": [
+          "2 * (module * (pinion_teeth + wheel_teeth) / 2)",
+          0,
+          "wall + boss_height - bearing_width"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "bearing_output_cover_seat_on",
+        "part": "bearing_output_cover",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "input_axis_at",
+        "part": "bearing_input_floor",
+        "origin": [
+          0,
+          0,
+          "boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "input_axis_on",
+        "part": "input_shaft",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_axis_at",
+        "part": "bearing_intermediate_floor",
+        "origin": [
+          0,
+          0,
+          "boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_axis_on",
+        "part": "intermediate_shaft",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "output_axis_at",
+        "part": "bearing_output_floor",
+        "origin": [
+          0,
+          0,
+          "boss_height"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "output_axis_on",
+        "part": "output_shaft",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "input_pinion_key_at",
+        "part": "input_shaft",
+        "origin": [
+          0,
+          0,
+          "layer_a"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "input_pinion_key_on",
+        "part": "input_pinion",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_wheel_key_at",
+        "part": "intermediate_shaft",
+        "origin": [
+          0,
+          0,
+          "layer_a"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_wheel_key_on",
+        "part": "intermediate_wheel",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_pinion_key_at",
+        "part": "intermediate_shaft",
+        "origin": [
+          0,
+          0,
+          "(layer_a + face_width + layer_gap)"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "intermediate_pinion_key_on",
+        "part": "intermediate_pinion",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "output_wheel_key_at",
+        "part": "output_shaft",
+        "origin": [
+          0,
+          0,
+          "(layer_a + face_width + layer_gap)"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "output_wheel_key_on",
+        "part": "output_wheel",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "ratchet_key_at",
+        "part": "input_shaft",
+        "origin": [
+          0,
+          0,
+          "(layer_a + face_width + layer_gap)"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "ratchet_key_on",
+        "part": "ratchet",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "pin_press_at",
+        "part": "casing",
+        "origin": [
+          "(ratchet_diameter / 2 + pawl_width / 2 + 0.5) * cos(pawl_tip_angle) - pawl_length * cos(pawl_angle)",
+          "(ratchet_diameter / 2 + pawl_width / 2 + 0.5) * sin(pawl_tip_angle) - pawl_length * sin(pawl_angle)",
+          "wall"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "pin_press_on",
+        "part": "pin",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "pawl_pivot_at",
+        "part": "pin",
+        "origin": [
+          0,
+          0,
+          "(layer_a + face_width + layer_gap) - wall"
+        ],
+        "z": "+z",
+        "x": "+x"
+      },
+      {
+        "id": "pawl_pivot_on",
+        "part": "pawl",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "z": "+z",
+        "x": "+x"
+      }
+    ],
+    "joints": [
+      {
+        "id": "cover_seat",
+        "parent": "cover_seat_at",
+        "child": "cover_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_input_floor_seat",
+        "parent": "bearing_input_floor_seat_at",
+        "child": "bearing_input_floor_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_input_cover_seat",
+        "parent": "bearing_input_cover_seat_at",
+        "child": "bearing_input_cover_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_intermediate_floor_seat",
+        "parent": "bearing_intermediate_floor_seat_at",
+        "child": "bearing_intermediate_floor_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_intermediate_cover_seat",
+        "parent": "bearing_intermediate_cover_seat_at",
+        "child": "bearing_intermediate_cover_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_output_floor_seat",
+        "parent": "bearing_output_floor_seat_at",
+        "child": "bearing_output_floor_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "bearing_output_cover_seat",
+        "parent": "bearing_output_cover_seat_at",
+        "child": "bearing_output_cover_seat_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "input_axis",
+        "parent": "input_axis_at",
+        "child": "input_axis_on",
+        "kind": "revolute",
+        "angle": 0
+      },
+      {
+        "id": "intermediate_axis",
+        "parent": "intermediate_axis_at",
+        "child": "intermediate_axis_on",
+        "kind": "revolute",
+        "angle": 0
+      },
+      {
+        "id": "output_axis",
+        "parent": "output_axis_at",
+        "child": "output_axis_on",
+        "kind": "revolute",
+        "angle": 0
+      },
+      {
+        "id": "input_pinion_key",
+        "parent": "input_pinion_key_at",
+        "child": "input_pinion_key_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "intermediate_wheel_key",
+        "parent": "intermediate_wheel_key_at",
+        "child": "intermediate_wheel_key_on",
+        "kind": "fastened",
+        "angle": "180 / wheel_teeth * (1 - wheel_teeth % 2)"
+      },
+      {
+        "id": "intermediate_pinion_key",
+        "parent": "intermediate_pinion_key_at",
+        "child": "intermediate_pinion_key_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "output_wheel_key",
+        "parent": "output_wheel_key_at",
+        "child": "output_wheel_key_on",
+        "kind": "fastened",
+        "angle": "180 / wheel_teeth * (1 - wheel_teeth % 2)"
+      },
+      {
+        "id": "ratchet_key",
+        "parent": "ratchet_key_at",
+        "child": "ratchet_key_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "pin_press",
+        "parent": "pin_press_at",
+        "child": "pin_press_on",
+        "kind": "fastened",
+        "angle": 0
+      },
+      {
+        "id": "pawl_pivot",
+        "parent": "pawl_pivot_at",
+        "child": "pawl_pivot_on",
+        "kind": "revolute",
+        "angle": 0
+      }
+    ]
+  }
+}
