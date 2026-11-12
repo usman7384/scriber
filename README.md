@@ -22,6 +22,7 @@ The model never draws geometry. It writes a typed design, a compiler turns that 
 - [Quick start](#quick-start)
 - [Bring your own model](#bring-your-own-model)
 - [Checks](#checks)
+- [Public benchmark: CADGenBench](#public-benchmark-cadgenbench)
 - [Contributing](#contributing)
 - [Licence](#licence)
 
@@ -289,7 +290,7 @@ Limits worth knowing before you rely on a result:
 | Mesh to CAD in the app, with the result compared against the mesh | The reconstructor exists but is not connected, so an uploaded mesh is only a size hint |
 | Mesh reconstruction beyond parts stacked along Z: any main axis, turned parts, tilted holes, fillets, gears | Today only plate-like parts lying on Z rebuild, with blends made sharp |
 | Text edits that stay on the picked component | Picking a face already finds the parameter that drives it, but an edit in words aimed at one component can still change another |
-| A score on a public text-to-CAD benchmark | Every number here comes from this repository's own gates |
+| A CADGenBench score | The runner below exists; no run has been submitted yet, so every number here comes from this repository's own gates |
 
 ## Quick start
 
@@ -403,6 +404,24 @@ The prompts and worked examples were tuned on the 4B model, so a different model
 ## Checks
 
 The steps in `.github/workflows/ci.yml`: `ruff`, `mypy`, `lint-imports` and `pytest -m "not llm"` for Python; `npm run lint`, `typecheck`, `test`, `e2e` and `parity` in `apps/web`. The `llm` tests need Ollama with `qwen3.5:0.8b-q8_0` and `qwen3-embedding:0.6b`.
+
+## Public benchmark: CADGenBench
+
+[CADGenBench](https://github.com/huggingface/cadgenbench) (Hugging Face and Mecado) scores one STEP file per task against private ground truth: validity, shape similarity, interface regions and topology. Its 49 generation tasks give an engineering drawing; its 32 editing tasks give a STEP file to change, which Scriber cannot import yet, so those are left empty and score zero.
+
+```bash
+hf download HuggingAI4Engineering/cadgenbench-data --repo-type dataset --local-dir data/cadgenbench
+uv run scriber-cadgenbench data/cadgenbench --model gemini-3.8-flash --vision gemini-3.8-flash
+```
+
+Each drawing goes through the normal path (model, IR, build, checks, repair), and the built part is written as `<task>/output.step`, centred with its longest side along X as the grader recommends. Progress goes to a `.jsonl` file next to the run folder. Check and package the folder with CADGenBench's own tools, then upload the zip on the [leaderboard](https://huggingface.co/spaces/HuggingAI4Engineering/CADGenBench):
+
+```bash
+uvx --from git+https://github.com/huggingface/cadgenbench python data/cadgenbench/sanity_check_submission.py evals/results/<run>/101/output.step
+uvx --from git+https://github.com/huggingface/cadgenbench cadgenbench baseline package evals/results/<run> --name "Scriber (<model>)" --agree
+```
+
+Use a model that reads images for `--vision`: the drawings carry every dimension, and the local 4B models read them poorly.
 
 ## Contributing
 

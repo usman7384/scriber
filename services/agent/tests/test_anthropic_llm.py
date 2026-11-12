@@ -66,3 +66,11 @@ def test_refused_or_cut_off_answers_come_back_empty(monkeypatch: pytest.MonkeyPa
     for stop in ("refusal", "max_tokens"):
         llm, _ = _llm(monkeypatch, stop)
         assert llm.chat([Message(role="user", content="plate")], None) == ""
+
+
+def test_images_go_first_as_base64_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm, client = _llm(monkeypatch)
+    llm.chat([Message(role="user", content="read the drawing", images=(b"\x89PNG\r\n\x1a\n",))], None)
+    image, text = client.calls[0]["messages"][0]["content"]
+    assert image["type"] == "image" and image["source"]["media_type"] == "image/png"
+    assert text == {"type": "text", "text": "read the drawing"}

@@ -1,9 +1,10 @@
-from typing import Any, Literal
+import base64
+from typing import Any, Literal, cast
 
 import anthropic
-from anthropic.types.beta import BetaMessageParam, BetaOutputConfigParam
+from anthropic.types.beta import BetaImageBlockParam, BetaMessageParam, BetaOutputConfigParam, BetaTextBlockParam
 
-from scriber_agent.llm import Message, strict_schema
+from scriber_agent.llm import Message, image_mime, strict_schema
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
@@ -45,4 +46,12 @@ class AnthropicLLM:
 def _turn(m: Message) -> BetaMessageParam:
     if m.role == "assistant":
         return {"role": "assistant", "content": m.content}
-    return {"role": "user", "content": m.content}
+    if not m.images:
+        return {"role": "user", "content": m.content}
+    blocks: list[BetaImageBlockParam | BetaTextBlockParam] = [_image(i) for i in m.images]
+    return {"role": "user", "content": [*blocks, {"type": "text", "text": m.content}]}
+
+
+def _image(image: bytes) -> BetaImageBlockParam:
+    media = cast(Literal["image/jpeg", "image/png", "image/gif", "image/webp"], image_mime(image))
+    return {"type": "image", "source": {"type": "base64", "media_type": media, "data": base64.b64encode(image).decode()}}

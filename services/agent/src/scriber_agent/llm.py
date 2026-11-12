@@ -26,6 +26,14 @@ class LLM(Protocol):
     ) -> str: ...
 
 
+def image_mime(image: bytes) -> str:
+    if image.startswith(b"\xff\xd8"):
+        return "image/jpeg"
+    if image[8:12] == b"WEBP":
+        return "image/webp"
+    return "image/png"
+
+
 def strict_schema(node: Any) -> Any:
     if isinstance(node, list):
         return [strict_schema(n) for n in node]

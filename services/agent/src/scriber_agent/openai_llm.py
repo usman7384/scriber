@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from scriber_agent.llm import Message, strict_schema
+from scriber_agent.llm import Message, image_mime, strict_schema
 
 RETRIES = 4
 TRANSIENT = frozenset((429, 500, 502, 503, 504))
@@ -76,13 +76,5 @@ def _message(m: Message) -> dict[str, Any]:
     if not m.images:
         return {"role": m.role, "content": m.content}
     parts: list[dict[str, Any]] = [{"type": "text", "text": m.content}]
-    parts += [{"type": "image_url", "image_url": {"url": f"data:{_mime(i)};base64,{base64.b64encode(i).decode()}"}} for i in m.images]
+    parts += [{"type": "image_url", "image_url": {"url": f"data:{image_mime(i)};base64,{base64.b64encode(i).decode()}"}} for i in m.images]
     return {"role": m.role, "content": parts}
-
-
-def _mime(image: bytes) -> str:
-    if image.startswith(b"\xff\xd8"):
-        return "image/jpeg"
-    if image[8:12] == b"WEBP":
-        return "image/webp"
-    return "image/png"
