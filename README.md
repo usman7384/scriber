@@ -290,6 +290,7 @@ Limits worth knowing before you rely on a result:
 | A check for every feature the request states | Today a part can pass all its checks and still miss a requested feature |
 | Image inputs in two steps: read the dimensions, then write the design | Dimensions are read from sketches and drawings, but the designs often fail to build |
 | Mesh to CAD in the app, with the result compared against the mesh | The reconstructor exists but is not connected, so an uploaded mesh is only a size hint |
+| Mesh reconstruction beyond parts stacked along Z: any main axis, turned parts, tilted holes, fillets, gears | Today only plate-like parts lying on Z rebuild, with blends made sharp; the phases are in [`docs/MESH_TO_CAD_PLAN.md`](docs/MESH_TO_CAD_PLAN.md) |
 | Text edits that stay on the picked component | Picking a face already finds the parameter that drives it, but an edit in words aimed at one component can still change another |
 | An adapter for OpenAI-compatible APIs | Only Ollama and Anthropic models can be used today, so OpenAI's API and servers like vLLM or LM Studio are out of reach |
 | A score on a public text-to-CAD benchmark | Every number here comes from this repository's own gates |
