@@ -21,6 +21,9 @@ llm:
     claude-fable-5-1: {provider: anthropic, effort: high}
     # OpenAI-compatible APIs, also for comparison runs only; the key is read from the named environment variable
     gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    gemini-3.1-pro-preview: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    gemini-3.7-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    gemini-2.5-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
 embeddings:
   model: qwen3-embedding:0.6b
 agent:

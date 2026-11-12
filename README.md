@@ -371,6 +371,8 @@ uv run scriber --model claude-opus-5-5 generate "L-bracket, legs 40 and 30 mm, 4
 
 `effort` is one of `low`, `medium`, `high`, `xhigh` or `max`. Requests then leave your machine, so this is for comparison runs and is never the default.
 
+To keep keys out of your shell history, copy `.env.example` to `.env` (git ignores it), fill in the keys and pass it to uv: `uv run --env-file .env scriber --model claude-opus-5-5 generate "..."`. The same works for `serve` and `scriber-cadgenbench`.
+
 ### Which model does what
 
 | Setting | Used for |
