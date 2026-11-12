@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import Any
 
+import anthropic
+import httpx2
 import pytest
 
 from scriber_agent import AnthropicLLM, Message
@@ -74,3 +76,26 @@ def test_images_go_first_as_base64_blocks(monkeypatch: pytest.MonkeyPatch) -> No
     image, text = client.calls[0]["messages"][0]["content"]
     assert image["type"] == "image" and image["source"]["media_type"] == "image/png"
     assert text == {"type": "text", "text": "read the drawing"}
+
+
+def test_a_schema_too_large_to_enforce_is_sent_as_instructions(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm, client = _llm(monkeypatch)
+    client.reply.content = [SimpleNamespace(type="text", text='```json\n{"a": 1}\n```')]
+    stream = client.stream
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+
+    @contextmanager
+    def refusing(**kwargs: Any) -> Iterator[SimpleNamespace]:
+        if "format" in kwargs["output_config"]:
+            client.calls.append(kwargs)
+            raise anthropic.BadRequestError("The compiled grammar is too large", response=httpx2.Response(400, request=request), body=None)
+        with stream(**kwargs) as s:
+            yield s
+
+    client.beta.messages.stream = refusing
+    schema = {"title": "Design", "type": "object", "properties": {}}
+    messages = [Message(role="system", content="rules"), Message(role="user", content="plate")]
+    assert llm.chat(messages, schema) == '{"a": 1}'
+    assert llm.chat(messages, schema) == '{"a": 1}'
+    assert [("format" in c["output_config"]) for c in client.calls] == [True, False, False]
+    assert '"title": "Design"' in client.calls[-1]["system"] and client.calls[-1]["system"].startswith("rules")
