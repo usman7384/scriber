@@ -1,4 +1,4 @@
-/* The workspace: the part inside a measuring frame; panels are annotations on its edges, not boxes (D-042). */
+/* The workspace: the part inside a measuring frame; panels are annotations on its edges, not boxes. */
 .ws {
   --edge: 44px;
   --rail-w: 220px;

@@ -18,7 +18,7 @@ const SourcesSheet = lazy(() => import("../sources/SourcesSheet").then((m) => ({
 
 const allModels = async () => (await Promise.all((await api.projects()).map((p) => api.models(p.id)))).flat();
 
-// One screen for /, /library, /p/:id and /p/:id/context (docs/design/UI_DIRECTION.md §2).
+// One screen for /, /library, /p/:id and /p/:id/context.
 export function HomePage() {
   const projectId = useParams().projectId;
   const sources = useMatch("/p/:projectId/context") !== null;

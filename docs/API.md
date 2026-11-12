@@ -66,7 +66,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | POST | /hooks | {url, events: ["version.created", "job.failed"]} | {id, url, events} |
 | DELETE | /hooks/{id} | | 204 |
 | POST | /projects/{id}/designs | {design: Design IR, prompt?} | Job (kind `build`, origin `design`; no LLM; 400 on IR errors) |
-| POST | /projects/{id}/sizing?name=sizing.xml | raw sizing XML (D-031 `XmlSizing`) | Job (kind `build`, origin `sizing`; no LLM; 400 on a bad file) |
+| POST | /projects/{id}/sizing?name=sizing.xml | raw sizing XML (`XmlSizing`) | Job (kind `build`, origin `sizing`; no LLM; 400 on a bad file) |
 | GET | /materials?q=text | | [Material {name, density_g_cm3, youngs_modulus_gpa, yield_mpa, source}] (all, or the best match) |
 | PUT | /models/{id}/material | {material, part?} | Job (rebuild with the material on that part or all parts, origin `material`; 400 when unknown) |
 | GET | /models/{id}/sensitivities?version=n&params=a&params=b | | {model_id, version, metrics, params: [{name, value, unit, step, d: {volume, mass_g, bbox_x, bbox_y, bbox_z}, error?}]} |

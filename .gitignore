@@ -17,3 +17,27 @@ apps/web/tsconfig.tsbuildinfo
 .claude/*
 !.claude/launch.json
 .import_linter_cache/
+
+# internal notes, research, plans and run outputs (kept locally, not published)
+docs/reference/
+docs/research/
+docs/agents/
+docs/design/
+docs/COMPARISON.md
+docs/PARITY_REPORT.md
+docs/PLAN.md
+docs/M6_SHOWCASE_PLAN.md
+docs/FINE_TUNING_PLAN.md
+docs/MESH_TO_CAD_PLAN.md
+docs/HARDWARE.md
+docs/DEMO.md
+docs/IR_V2.md
+docs/DECISIONS.md
+docs/KNOWN_ISSUES.md
+AGENTS.md
+CLAUDE.md
+.claude/
+evals/results/
+training/wsl/
+evals/src/scriber_evals/parity_report.py
+evals/tests/test_parity_report.py

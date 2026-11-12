@@ -156,7 +156,7 @@ MUTATIONS: dict[str, Mutation] = {
 }
 
 
-# failure modes from the replayed challenge runs (docs/agents/ir-v2.md) and the S1 4B's M1 runs are tried first half the time
+# failure modes from the replayed challenge runs and the S1 4B's M1 runs are tried first half the time
 FAILURES_SEEN = (
     "revolve_boss",
     "pattern_before_source",

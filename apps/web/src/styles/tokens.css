@@ -1,4 +1,4 @@
-/* The only file with colour literals. Values from the Sci-fi UI Kit (docs/design/figma-kit-spec.md, D-042). */
+/* The only file with colour literals. */
 :root {
   color-scheme: dark;
   --font: "Exo 2", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;

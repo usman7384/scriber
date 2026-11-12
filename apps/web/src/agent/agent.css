@@ -1,4 +1,4 @@
-/* Agent I/O (docs/design/UI_DIRECTION.md §3). Tokens only. */
+/* Agent I/O. Tokens only. */
 .agent-sr {
   position: absolute;
   width: 1px;

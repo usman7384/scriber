@@ -22,7 +22,7 @@ The model never draws geometry. It writes a typed design, a compiler turns that 
 - [Quick start](#quick-start)
 - [Bring your own model](#bring-your-own-model)
 - [Checks](#checks)
-- [Project records](#project-records)
+- [Contributing](#contributing)
 - [Licence](#licence)
 
 ## One request, start to finish
@@ -256,7 +256,7 @@ flowchart LR
 
 ## Where it stands
 
-It works on a range of single parts and simple pairs. It is not yet reliable on harder parts, and several input paths are early. The numbers below are from this repository's own gates, with the default model on a machine with a 6 GB GPU (`docs/agents/s3-gates-2026-10-30.md`).
+It works on a range of single parts and simple pairs. It is not yet reliable on harder parts, and several input paths are early. The numbers below are from this repository's own gates, with the default model on a machine with a 6 GB GPU.
 
 | Gate | Result |
 |---|---|
@@ -264,7 +264,6 @@ It works on a range of single parts and simple pairs. It is not yet reliable on 
 | Requests grounded in project documents: fully passing | 7 of 10, no rule errors |
 | The same requests from the prompt alone | 5 of 10 |
 | Showcase: 20 recognisable parts and small assemblies | 2 of 20 |
-| Capability checklist (`docs/PARITY_REPORT.md`) | 91 of 138 rows done |
 
 | Input | State |
 |---|---|
@@ -280,17 +279,15 @@ Limits worth knowing before you rely on a result:
 - A generation takes from about 15 seconds to a few minutes on the machine above.
 - The DFM checks are approximations: wall thickness is sampled and the tool or build direction is fixed at +Z.
 
-`docs/KNOWN_ISSUES.md` has the full list.
-
 ## Next steps
 
 | Next | Why |
 |---|---|
-| Another training round on harder parts, assemblies and exact dimensions from specs | The showcase set is at 2 of 20, and most open checklist rows fail in the model, not the plumbing |
+| Another training round on harder parts, assemblies and exact dimensions from specs | The showcase set is at 2 of 20, and its hand-written reference designs all build, so the failures are in the model, not the IR or the builders |
 | A check for every feature the request states | Today a part can pass all its checks and still miss a requested feature |
 | Image inputs in two steps: read the dimensions, then write the design | Dimensions are read from sketches and drawings, but the designs often fail to build |
 | Mesh to CAD in the app, with the result compared against the mesh | The reconstructor exists but is not connected, so an uploaded mesh is only a size hint |
-| Mesh reconstruction beyond parts stacked along Z: any main axis, turned parts, tilted holes, fillets, gears | Today only plate-like parts lying on Z rebuild, with blends made sharp; the phases are in [`docs/MESH_TO_CAD_PLAN.md`](docs/MESH_TO_CAD_PLAN.md) |
+| Mesh reconstruction beyond parts stacked along Z: any main axis, turned parts, tilted holes, fillets, gears | Today only plate-like parts lying on Z rebuild, with blends made sharp |
 | Text edits that stay on the picked component | Picking a face already finds the parameter that drives it, but an edit in words aimed at one component can still change another |
 | A score on a public text-to-CAD benchmark | Every number here comes from this repository's own gates |
 
@@ -322,7 +319,7 @@ hf download usman7384/scriber-ir-4b-s3-GGUF --local-dir scriber-ir-4b-s3
 cd scriber-ir-4b-s3 && ollama create scriber-ir:4b-s3 -f Modelfile
 ```
 
-With it installed, drop `--model qwen3.5:4b` from the commands above. `docs/agents/training.md` has the steps to rebuild it. Requests with images go to `llm.vision` (`qwen3.5:4b`).
+With it installed, drop `--model qwen3.5:4b` from the commands above. `training/` has the data generation and fine-tuning code to rebuild it; `training/finetune` runs on Linux (or WSL) with a CUDA GPU. Requests with images go to `llm.vision` (`qwen3.5:4b`).
 
 ## Bring your own model
 
@@ -354,7 +351,7 @@ llm:
 | `think` | Turns the model's reasoning mode on or off, where it has one |
 | `max_tokens` | Longest reply allowed |
 
-Your own weights work the same way: put the GGUF next to a `Modelfile` and run `ollama create my-model -f Modelfile`, as in the Quick start. `training/wsl/Modelfile.4b-s3` is a working example.
+Your own weights work the same way: put the GGUF next to a `Modelfile` and run `ollama create my-model -f Modelfile`, as in the Quick start. `training/finetune/Modelfile` is a working example.
 
 ### A model behind an API
 
@@ -407,9 +404,9 @@ The prompts and worked examples were tuned on the 4B model, so a different model
 
 The steps in `.github/workflows/ci.yml`: `ruff`, `mypy`, `lint-imports` and `pytest -m "not llm"` for Python; `npm run lint`, `typecheck`, `test`, `e2e` and `parity` in `apps/web`. The `llm` tests need Ollama with `qwen3.5:0.8b-q8_0` and `qwen3-embedding:0.6b`.
 
-## Project records
+## Contributing
 
-Capability parity is tracked row by row in `docs/reference/PARITY_CHECKLIST.md` and summarised in `docs/PARITY_REPORT.md` (`uv run scriber-parity-report`). A row is done only with a passing acceptance test and a recorded demo (`uv run scriber-parity <rows>`, evidence under `evals/results/`). Decisions are in `docs/DECISIONS.md`, open problems in `docs/KNOWN_ISSUES.md`, the rules for contributors in `AGENTS.md`.
+Issues and pull requests are welcome. Keep changes small, typed and tested, and run the checks above before sending one. Acceptance tests for each capability live in `evals/` (`uv run scriber-parity <rows>` runs them and writes evidence under `evals/results/`).
 
 ## Licence
 

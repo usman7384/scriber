@@ -638,7 +638,7 @@ def pf_1(rig: Rig) -> Evidence:
     seconds = [r.seconds for r in bench(rig)]
     median = statistics.median(seconds)
     m: Measured = {"cases": len(seconds), "median_s": median, "max_s": max(seconds)}
-    return evidence("PF-1", m, median <= 300, note="measured on this machine, not the reference laptop of docs/HARDWARE.md")
+    return evidence("PF-1", m, median <= 300, note="measured on this machine")
 
 
 def pf_3(rig: Rig) -> Evidence:

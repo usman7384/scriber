@@ -1,6 +1,6 @@
 # Must-pass challenge prompts, submitted by the user through the web UI on 2026-10-26.
 # Prompts are copied verbatim from data/api.sqlite. Checks are what the geometry can verify today;
-# every case must also build one valid solid. See docs/PLAN.md (challenge gate).
+# every case must also build one valid solid.
 
 - id: c01-manifold-challenge
   rows: [GE-1, GE-4, VM-1, VM-6, PR-1]

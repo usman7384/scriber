@@ -8,7 +8,7 @@ from scriber_geometry.models import Finding, Location, PartMetrics, Vec
 from scriber_ir import Rule, RuleKind, RuleSet
 
 TOL = 1e-6
-# hole-to-edge rules target fastener holes; until rules carry a scope (D-016) bores above M12 clearance are skipped
+# hole-to-edge rules target fastener holes; until rules carry a scope bores above M12 clearance are skipped
 FASTENER_HOLE_MAX = 14.0
 Check = Callable[[Shape[Any], PartMetrics, Rule], list[Finding]]
 

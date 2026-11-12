@@ -11,7 +11,7 @@ uv run python examples/shadow_box.py spanner.stl --project <id> --offset 1.0 --o
 - Reads the tool STL with trimesh and takes the outer loop of the section at half height as the tool outline, so it suits tools that lie flat (constant outline along Z). A tool whose silhouette changes with height needs a polygon union of its projection, which is not built.
 - Offsets the outline outward by `offset`: straight walls move out along their normal, concave corners meet at the miter point and convex corners get an arc of radius `offset`, so every wall point is `offset` from the tool. The path points are expressions in the `offset` parameter, so `PATCH /models/{id}/params {"values": {"offset": 1.5}}` regrows the pocket.
 - The insert is a block `margin` larger than the tool on every side, with the pocket `pocket_depth` (the tool thickness) deep over a `floor`.
-- Measured on the parity spanner (AP-6): every sampled pocket wall point is 1.000 mm from the tool outline (see `docs/agents/parity-m5-platform.md`).
+- Measured on the parity spanner (AP-6): every sampled pocket wall point is 1.000 mm from the tool outline.
 
 ## Phone holder from the phone width (`examples/phone_holder.py`)
 
@@ -27,4 +27,4 @@ A U-shaped cradle extruded along Y whose inner width is the expression `phone_wi
 cat sizing.xml | uv run scriber pipe --project <id> --out wing.step
 ```
 
-Posts the XML to `POST /projects/{id}/sizing` (the D-031 adapter turns it into IR on the server), waits for the job and saves the STEP. Without `--project` it creates a project named `pipe`.
+Posts the XML to `POST /projects/{id}/sizing` (the server turns it into IR), waits for the job and saves the STEP. Without `--project` it creates a project named `pipe`.

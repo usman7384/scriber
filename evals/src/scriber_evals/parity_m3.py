@@ -579,9 +579,7 @@ def cx_6(rig: Rig) -> Evidence:
     level = math.isqrt(score // 100)
     m: Measured = {k: s[k] for k in ("files", "facts", "rules", "generations", "used_in_generation", "score", "level", "next_level_score")}
     checks = (s["files"] == 3, s["generations"] == 2, s["used_in_generation"] == used, s["score"] == score, s["level"] == level)
-    return evidence(
-        "CX-6", m, *checks, s["next_level_score"] == 100 * (level + 1) ** 2, note="formula in docs/agents/context.md; UI half is web's"
-    )
+    return evidence("CX-6", m, *checks, s["next_level_score"] == 100 * (level + 1) ** 2, note="UI half is web's")
 
 
 def pr_10(rig: Rig) -> Evidence:

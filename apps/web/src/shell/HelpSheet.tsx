@@ -7,7 +7,7 @@ import { BUG_ACTION } from "./bug";
 import { isMac, keyCaps, PALETTE_KEY } from "./keys";
 import { useCloseSheet } from "./sheets";
 
-// docs/design/UI_DIRECTION.md §5; the workspace and command bar register most of these.
+// The workspace and command bar register most of these.
 const shortcuts: [string[], keyof Messages["help"]["keys"]][] = [
   [[PALETTE_KEY], "palette"],
   [["/"], "command"],

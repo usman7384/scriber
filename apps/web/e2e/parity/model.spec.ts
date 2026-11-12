@@ -69,7 +69,7 @@ test("AS-1 clicking a component in the viewer selects the id the components API 
   expect(picked).toEqual(listed.map((c) => c.id));
   expect(refine.target).toBe(listed.at(-1)?.id);
   row.note =
-    "GLB is geometry-service output for the D-033 cube-on-plate assembly; the component list is the shape of GET /models/{id}/components (mocked). The viewer maps glTF node names (part names) to API ids.";
+    "GLB is geometry-service output for the cube-on-plate assembly; the component list is the shape of GET /models/{id}/components (mocked). The viewer maps glTF node names (part names) to API ids.";
 });
 
 test("PR-6 select the top face, offset +2 mm: thickness +2, no other parameter changes", async ({

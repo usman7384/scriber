@@ -208,7 +208,7 @@ test("AS-1 live: clicking a component in the viewer selects the id the component
   expect(picked).toEqual(listed.map((c) => c.id));
   expect(nested).toBe(1);
   row.note =
-    "Live: the D-033 cube-on-plate assembly built by apps/api; components from GET /models/{id}/components. Refine with the selection as target is not run here (it needs a model call).";
+    "Live: the cube-on-plate assembly built by apps/api; components from GET /models/{id}/components. Refine with the selection as target is not run here (it needs a model call).";
 });
 
 test("WP-8 live: 256 px thumbnails for models and versions, regenerated server-side on edit", async ({

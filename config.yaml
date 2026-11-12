@@ -1,9 +1,9 @@
 llm:
   host: http://127.0.0.1:11434
-  # fine-tuned here (D-027, D-036): install it from huggingface.co/usman7384/scriber-ir-4b-s3-GGUF (README) or rebuild it (docs/agents/training.md); without it use --model qwen3.5:4b
+  # fine-tuned for the IR: install it from huggingface.co/usman7384/scriber-ir-4b-s3-GGUF (README) or rebuild it (training/); without it use --model qwen3.5:4b
   default: scriber-ir:4b-s3
   ci: qwen3.5:0.8b-q8_0
-  # requests with images (sketch, photo, drawing, critic) go here; the default has no vision projector (D-027)
+  # requests with images (sketch, photo, drawing, critic) go here; the default has no vision projector
   vision: qwen3.5:4b
   models:
     qwen3.5:4b: {num_ctx: 16384, think: false}
@@ -19,7 +19,7 @@ llm:
     claude-sonnet-5-5: {provider: anthropic, effort: high}
     claude-opus-5-5: {provider: anthropic, effort: high}
     claude-fable-5-1: {provider: anthropic, effort: high}
-    # OpenAI-compatible APIs, also for comparison runs only (D-050); the key is read from the named environment variable
+    # OpenAI-compatible APIs, also for comparison runs only; the key is read from the named environment variable
     gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
 embeddings:
   model: qwen3-embedding:0.6b

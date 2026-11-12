@@ -3,7 +3,7 @@ import type { Param } from "../api";
 import type { Messages } from "../i18n";
 import type { IconName } from "../ui/icons";
 
-// Palette order (docs/design/UI_DIRECTION.md §3, Command palette).
+// Palette order.
 export const groups = [
   "suggested",
   "parameters",

@@ -1,4 +1,4 @@
-# Dev set for picking S2 checkpoints (D-028). Hand-written, never trained on; M1 and grounded stay the gates.
+# Dev set for picking S2 checkpoints. Hand-written, never trained on; M1 and grounded stay the gates.
 - id: d01-cover-plate
   rows: [DEV]
   prompt: Cover plate 150 x 100 x 4 mm with six 5.5 mm holes, three along each long edge, 10 mm in from the edges, 65 mm pitch.

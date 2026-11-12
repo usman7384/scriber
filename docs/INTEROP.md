@@ -47,7 +47,7 @@ Both are optional, run as subprocesses only (never imported into our processes),
 
 ## Out of scope
 
-Native files of proprietary CAD systems are closed formats. The open-source OCCT reads none of them; readers exist only in vendor SDKs or commercial translators, which this project does not ship (D-005, D-009). The supported route for each is a STEP AP242 export from the source system.
+Native files of proprietary CAD systems are closed formats. The open-source OCCT reads none of them; readers exist only in vendor SDKs or commercial translators, which this project does not ship. The supported route for each is a STEP AP242 export from the source system.
 
 | System | Files |
 |---|---|

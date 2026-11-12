@@ -10,7 +10,7 @@ M1 = Path(__file__).parents[1] / "parity" / "m1"
 DESIGNS = {d["title"]: Design.model_validate(d) for _, d in EXAMPLES} | {
     p.stem: Design.model_validate_json(p.read_text(encoding="utf-8")) for p in M1.glob("*.json")
 }
-# compiled source and answer JSON recorded before airfoil sections and lofts were added (D-030 aircraft rows)
+# compiled source and answer JSON recorded before airfoil sections and lofts were added
 GOLDEN = {
     "Round cover plate": ("342a21bd816d2c6e", "555c8f7c76680338"),
     "Angle bracket": ("542afd469e38e056", "b6daa6c0a58a7fca"),
