@@ -57,7 +57,7 @@ def test_request_moves_system_text_out_and_sends_no_sampling(monkeypatch: pytest
     messages = [Message(role="system", content="rules"), Message(role="user", content="plate"), Message(role="user", content="fix it")]
     assert llm.chat(messages, {"type": "object", "properties": {}}, seed=3, temperature=0.9) == '{"a": 1}'
     call = client.calls[0]
-    assert call["system"] == "rules"
+    assert call["system"] == [{"type": "text", "text": "rules", "cache_control": {"type": "ephemeral"}}]
     assert [m["role"] for m in call["messages"]] == ["user", "user"]
     assert call["output_config"]["effort"] == "high"
     assert call["output_config"]["format"]["schema"]["additionalProperties"] is False
@@ -98,4 +98,26 @@ def test_a_schema_too_large_to_enforce_is_sent_as_instructions(monkeypatch: pyte
     assert llm.chat(messages, schema) == '{"a": 1}'
     assert llm.chat(messages, schema) == '{"a": 1}'
     assert [("format" in c["output_config"]) for c in client.calls] == [True, False, False]
-    assert '"title": "Design"' in client.calls[-1]["system"] and client.calls[-1]["system"].startswith("rules")
+    system = client.calls[-1]["system"][0]["text"]
+    assert '"title": "Design"' in system and system.startswith("rules")
+    client.reply.content = [SimpleNamespace(type="text", text='The chamfer now takes only the lug holes.\n\n```json\n{"a": 2}\n```\n')]
+    assert llm.chat(messages, schema) == '{"a": 2}'
+    client.reply.content = [SimpleNamespace(type="text", text='Here it is: {"a": {"b": 3}} done')]
+    assert llm.chat(messages, schema) == '{"a": {"b": 3}}'
+
+
+def test_a_dropped_stream_is_sent_again(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm, client = _llm(monkeypatch)
+    stream = client.stream
+    request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+    drops = [anthropic.APIConnectionError(request=request), httpx2.RemoteProtocolError("peer closed connection")]
+
+    @contextmanager
+    def flaky(**kwargs: Any) -> Iterator[SimpleNamespace]:
+        if drops:
+            raise drops.pop()
+        with stream(**kwargs) as s:
+            yield s
+
+    client.beta.messages.stream = flaky
+    assert llm.chat([Message(role="user", content="plate")], None) == '{"a": 1}'

@@ -40,7 +40,7 @@ def test_designs_without_airfoils_skip_the_airfoil_prelude(bracket: Design) -> N
 def test_loft_needs_earlier_airfoil_sections(wing: Design) -> None:
     data = wing.model_dump()
     data["parts"][0]["features"][2]["sections"] = ["root_airfoil", "wingtip"]
-    assert any("'wingtip' is not an earlier airfoil_section" in str(e) for e in validate(Design.model_validate(data)))
+    assert any("'wingtip' is neither an earlier airfoil_section nor a sketch" in str(e) for e in validate(Design.model_validate(data)))
 
 
 def test_invalid_naca_codes_are_reported(wing: Design) -> None:

@@ -144,3 +144,25 @@ def test_constructs_without_a_freecad_mapping_raise(feature: dict[str, Any], mat
     design = Design.model_validate({"title": "P", "params": [], "parts": [part]})
     with pytest.raises(UnsupportedExportError, match=match):
         fcstd_plan(design, [XY, XY])
+
+
+@needs_freecad
+def test_ellipses_and_splines_go_to_freecad_as_blocked_curves(geometry: LocalGeometry, tmp_path: Path) -> None:
+    sketches = [
+        {"id": "e", "entities": [{"kind": "ellipse", "width": 40, "height": 20, "angle": 15}]},
+        {"id": "s", "plane": {"ref": "body.top"}, "entities": [{"kind": "spline", "points": [[-5, 0], [0, 6], [5, 0], [0, -6]]}]},
+    ]
+    features = [
+        {"kind": "extrude", "id": "body", "name": "Body", "sketch": "e", "distance": "t"},
+        {"kind": "extrude", "id": "lump", "name": "Lump", "sketch": "s", "distance": 3},
+    ]
+    part = {"id": "p", "name": "P", "sketches": sketches, "features": features}
+    design = Design.model_validate({"title": "curves", "params": [PARAMS[0]], "parts": [part]})
+    [ours] = geometry.build(design, tmp_path / "ours").parts
+    freecad = Path(str(FREECAD))
+    report = inspect_fcstd(freecad, export_fcstd(design, geometry.frames(design), freecad, tmp_path / "c.FCStd"), {}, tmp_path / "edits")
+    [body] = report.bodies
+    assert report.errors == [] and body.valid and body.solids == 1
+    assert all(f.dof == 0 for f in body.features if f.type == "Sketcher::SketchObject")
+    # FreeCAD interpolates the spline with its own parametrisation, so the closed curve differs very slightly
+    assert abs(body.volume / ours.volume - 1) < 1e-3

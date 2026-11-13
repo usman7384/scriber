@@ -52,7 +52,7 @@ KbStats  {files, facts, rules, entities, relations, generations, used_in_generat
 | GET | /models/{id}/suggestions | | [Suggestion] |
 | POST | /models/{id}/suggestions/{sid}/accept | | Job (rebuild, origin `suggestion`) |
 | POST | /models/{id}/suggestions/{sid}/ignore | | Suggestion |
-| GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir\|fcstd&version=n | | file; `fcstd` is a FreeCAD PartDesign document written by FreeCAD (422 naming the construct it cannot map, 503 when FreeCAD is not configured) |
+| GET | /models/{id}/export?fmt=step\|stl\|glb\|py\|ir\|dxf\|fcstd&version=n | | file; `dxf` is the flat pattern of a sheet-metal part (outline and bend layers, listed in a version's `files` only when there is one); `fcstd` is a FreeCAD PartDesign document written by FreeCAD (422 naming the construct it cannot map, 503 when FreeCAD is not configured) |
 | POST | /models/{id}/slice?version=n | | {model_id, version, ok, exit_code, manifold, layers, gcode_bytes, warnings, errors}: PrusaSlicer printability of the version's STL (503 when PrusaSlicer is not configured) |
 | GET | /models/{id}/components?version=n | | [Component]: part id, name, material, parent part and joint |
 | POST | /models/{id}/face-driver | {point: [x,y,z], normal: [x,y,z], version?} | {part, feature, param, rate}: the parameter that moves the picked planar face; 404 when none does |

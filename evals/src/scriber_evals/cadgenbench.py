@@ -7,9 +7,9 @@ import yaml
 from build123d import Location, Plane, Vector, export_step, import_step
 from pydantic import BaseModel
 
-from scriber_agent import LLM, Step, generate
-from scriber_cli.config import llm_for, load
-from scriber_geometry import Artifact, LocalGeometry
+from scriber_agent import LLM, dump_steps, generate
+from scriber_cli.config import ModelOptions, llm_for, load
+from scriber_geometry import LocalGeometry
 
 AXES = (Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1))
 
@@ -37,8 +37,10 @@ def fixtures(data: Path) -> Iterator[Fixture]:
         yield Fixture(id=d.name, prompt=spec["description"].strip(), images=images, editing=editing)
 
 
-def last_built(steps: list[Step]) -> Artifact | None:
-    return next((s.result.artifact for s in reversed(steps) if s.result and s.result.artifact), None)
+def last_built(task_dir: Path) -> Path | None:
+    # a part that built but failed a check still beats an empty answer, so take the newest attempt with a STEP
+    built = [d / "model.step" for d in task_dir.glob("attempt_*") if (d / "model.step").is_file()]
+    return max(built, key=lambda s: int(s.parent.name.split("_")[1]), default=None)
 
 
 def orient(step_in: Path, step_out: Path) -> None:
@@ -59,26 +61,39 @@ def attempt(f: Fixture, llm: LLM, vision: LLM, geometry: LocalGeometry, run: Pat
     images = tuple(p.read_bytes() for p in f.images)
     steps = list(generate(f.prompt, llm, geometry, work / f.id, repairs, images=images, vision=vision))
     seconds = round(time.monotonic() - start, 1)
+    (work / f.id / "steps.json").write_text(dump_steps(steps), encoding="utf-8")
     attempts = max((s.attempt for s in steps), default=0)
-    artifact = last_built(steps)
-    if artifact is None:
+    step = last_built(work / f.id)
+    if step is None:
         return Outcome(id=f.id, status="not built", attempts=attempts, seconds=seconds, message=steps[-1].message[:300])
-    orient(artifact.files["step"], run / f.id / "output.step")
-    return Outcome(id=f.id, status="built", attempts=attempts, seconds=seconds, message=steps[-1].message[:300])
+    orient(step, run / f.id / "output.step")
+    status = "built" if steps[-1].kind == "done" else f"built ({step.parent.name}), checks failed"
+    return Outcome(id=f.id, status=status, attempts=attempts, seconds=seconds, message=steps[-1].message[:300])
+
+
+def salvage(fid: str, run: Path, work: Path, error: str) -> Outcome:
+    # a dropped connection late in a task still leaves the attempts that built; submit the newest
+    step = last_built(work / fid)
+    if step is None:
+        return Outcome(id=fid, status="error", message=error)
+    orient(step, run / fid / "output.step")
+    return Outcome(id=fid, status=f"built ({step.parent.name}), then error", attempts=int(step.parent.name.split("_")[1]), message=error)
 
 
 def main() -> None:
     p = argparse.ArgumentParser(prog="scriber-cadgenbench", description="Run Scriber on the CADGenBench fixtures")
     p.add_argument("data", type=Path, help="local copy of HuggingAI4Engineering/cadgenbench-data")
     p.add_argument("--model", help="designs the part; defaults to llm.default")
-    p.add_argument("--vision", help="reads the drawings; defaults to llm.vision")
+    p.add_argument("--vision", help="reads the drawings; defaults to --model when it is hosted, else llm.vision")
     p.add_argument("--ids", nargs="*", default=[], help="only these fixtures")
     p.add_argument("--out", type=Path, default=Path("evals/results"))
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
     args = p.parse_args()
     config = load(args.config)
     llm = llm_for(config, args.model)
-    vision = llm_for(config, args.vision or config.llm.vision)
+    hosted = args.model is not None and config.llm.models.get(args.model, ModelOptions()).provider != "ollama"
+    # a hosted model reads its own drawings; only a local text model needs the separate vision model
+    vision = llm_for(config, args.vision or (args.model if hosted else config.llm.vision))
     run = args.out / f"cadgenbench-{llm.name.replace(':', '_').replace('/', '_')}-{time.strftime('%Y%m%d-%H%M%S')}"
     work = run.with_name(run.name + "-work")
     chosen = [f for f in fixtures(args.data) if not args.ids or f.id in args.ids]
@@ -90,7 +105,7 @@ def main() -> None:
                 try:
                     outcome = attempt(f, llm, vision, geometry, run, work, config.agent.max_repairs)
                 except Exception as e:  # a model-server error (quota, overload, offline) fails this task, not the run
-                    outcome = Outcome(id=f.id, status="error", message=f"{type(e).__name__}: {e}"[:300])
+                    outcome = salvage(f.id, run, work, f"{type(e).__name__}: {e}"[:300])
                 log.write(outcome.model_dump_json() + "\n")
                 log.flush()
                 print(f"{outcome.id}: {outcome.status} ({outcome.attempts} attempts, {outcome.seconds} s) {outcome.message}", flush=True)

@@ -12,8 +12,14 @@ FUNCTIONS: dict[str, Callable[..., float]] = {
     "sin": lambda d: math.sin(math.radians(d)),
     "cos": lambda d: math.cos(math.radians(d)),
     "tan": lambda d: math.tan(math.radians(d)),
+    "asin": lambda x: math.degrees(math.asin(x)),
+    "acos": lambda x: math.degrees(math.acos(x)),
+    "atan": lambda x: math.degrees(math.atan(x)),
+    "atan2": lambda y, x: math.degrees(math.atan2(y, x)),
+    "hypot": math.hypot,
     "round": round,
 }
+CONSTANTS = {"pi": math.pi}
 ALLOWED_NODES = (
     ast.Expression,
     ast.BinOp,
@@ -50,7 +56,7 @@ def parse(expr: Expr) -> ast.expr:
 
 
 def names(expr: Expr) -> set[str]:
-    return {n.id for n in ast.walk(parse(expr)) if isinstance(n, ast.Name) and n.id not in FUNCTIONS}
+    return {n.id for n in ast.walk(parse(expr)) if isinstance(n, ast.Name) and n.id not in FUNCTIONS and n.id not in CONSTANTS}
 
 
 def evaluate(expr: Expr, values: Mapping[str, float]) -> float:
@@ -79,9 +85,12 @@ def _eval(node: ast.expr, values: Mapping[str, float], src: Expr) -> float:
     match node:
         case ast.Constant(value=int() | float() as v):
             return float(v)
+        case ast.Name(id=name) if name in CONSTANTS:
+            return CONSTANTS[name]
         case ast.Name(id=name):
             if name not in values:
-                raise ExprError(f"unknown parameter {name!r} in {src!r}")
+                known = ", ".join(sorted(values)[:40])
+                raise ExprError(f"unknown parameter {name!r} in {src!r}; known parameters: {known}")
             return values[name]
         case ast.UnaryOp(op=ast.USub(), operand=x):
             return -_eval(x, values, src)
@@ -90,7 +99,11 @@ def _eval(node: ast.expr, values: Mapping[str, float], src: Expr) -> float:
         case ast.BinOp(left=a, op=op, right=b):
             return _binop(op, _eval(a, values, src), _eval(b, values, src), src)
         case ast.Call(func=ast.Name(id=fn), args=args):
-            return float(FUNCTIONS[fn](*(_eval(a, values, src) for a in args)))
+            given = [_eval(a, values, src) for a in args]
+            try:
+                return float(FUNCTIONS[fn](*given))
+            except (ValueError, TypeError) as e:
+                raise ExprError(f"{fn} cannot take these values in {src!r}: {e}") from e
     raise ExprError(f"cannot evaluate {src!r}")
 
 
@@ -123,4 +136,6 @@ class _Subscripter(ast.NodeTransformer):
     def visit_Name(self, node: ast.Name) -> ast.expr:
         if node.id in FUNCTIONS:
             return node
+        if node.id in CONSTANTS:
+            return ast.Constant(CONSTANTS[node.id])
         return ast.Subscript(ast.Name(self.table, ast.Load()), ast.Constant(node.id), ast.Load())

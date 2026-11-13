@@ -12,7 +12,7 @@ from scriber_agent.anthropic_llm import Effort
 class ModelOptions(BaseModel):
     num_ctx: int = 8192
     think: bool | None = None
-    max_tokens: int = 6144
+    max_tokens: int | None = None
     few_shot: bool = True
     provider: Literal["ollama", "anthropic", "openai"] = "ollama"
     effort: Effort | None = None
@@ -64,15 +64,15 @@ def load(path: Path) -> Config:
 def llm_for(config: Config, model: str | None) -> LLM:
     name = model or config.llm.default
     options = config.llm.models.get(name, ModelOptions())
+    # each adapter has its own output default; config overrides it, since one answer must hold the whole design
+    limit = {} if options.max_tokens is None else {"max_tokens": options.max_tokens}
     if options.provider == "anthropic":
-        return AnthropicLLM(name, effort=options.effort, few_shot=options.few_shot)
+        return AnthropicLLM(name, effort=options.effort, few_shot=options.few_shot, **limit)
     if options.provider == "openai":
         if options.base_url is None:
             raise ValueError(f"{name} uses provider openai, which needs base_url in config.yaml")
-        return OpenAILLM(name, options.base_url, options.api_key_env, max_tokens=options.max_tokens, few_shot=options.few_shot)
-    return OllamaLLM(
-        name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, max_tokens=options.max_tokens, few_shot=options.few_shot
-    )
+        return OpenAILLM(name, options.base_url, options.api_key_env, few_shot=options.few_shot, **limit)
+    return OllamaLLM(name, host=config.llm.host, num_ctx=options.num_ctx, think=options.think, few_shot=options.few_shot, **limit)
 
 
 def tool_path(variable: str) -> Path | None:

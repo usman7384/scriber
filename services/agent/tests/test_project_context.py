@@ -50,6 +50,10 @@ class FakeGeometry:
         )
         return Artifact(design_hash="x", files={}, parts=[part], findings=[], elapsed_ms=1)
 
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path:
+        png.write_bytes(b"render")
+        return png
+
 
 def design() -> dict[str, object]:
     holes = {"kind": "grid", "count_x": 2, "count_y": 2, "spacing_x": 60, "spacing_y": 40}

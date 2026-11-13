@@ -79,13 +79,8 @@ def test_params_used_only_by_connectors_are_kept() -> None:
             {"connectors": [connector("a", "plate"), connector("b", "plate")], "joints": [{"id": "j", "parent": "a", "child": "b"}]},
             "both connectors are on part 'plate'",
         ),
-        (
-            {
-                "connectors": [connector("a", "plate"), connector("b", "cube"), connector("c", "plate")],
-                "joints": [{"id": "j1", "parent": "a", "child": "b"}, {"id": "j2", "parent": "c", "child": "b"}],
-            },
-            "already placed by another joint",
-        ),
+        ({"connectors": [], "joints": [], "instances": [{"id": "plate", "part": "cube"}]}, "must differ from every part id"),
+        ({"connectors": [], "joints": [], "instances": [{"id": "cube_2", "part": "ghost"}]}, "unknown part 'ghost'"),
         (
             {
                 "connectors": [connector("a", "plate"), connector("b", "cube")],

@@ -121,6 +121,36 @@ def _surface(part, tool, on, position, length, what):
     return r, foot, d, start, hi if length is None else start + length
 
 
+def _thread(part, tool, on, position, length, major, pitch, modelled, what):
+    r, foot, d, a, b = _surface(part, tool, on, position, length, what)
+    want = major / 2 if on == "shaft" else (major - pitch) / 2
+    if abs(r - want) > 0.05 * pitch + 0.05:
+        size = "major diameter" if on == "shaft" else "tap drill"
+        need = f"M{{major:g}}x{{pitch:g}} needs its {{size}}, {{2 * want:g}} mm"
+        raise ValueError(f"{{what}}: the {{on}} is {{2 * r:g}} mm across, but {{need}}")
+    start = foot + d * a
+    THREADS.append((NOW[0], on, major, pitch, b - a, (start.X, start.Y, start.Z), (d.X, d.Y, d.Z), r))
+    if not modelled:
+        return None
+    # an ISO 60 degree V cut along a helix: to the minor diameter on a shaft, out to the major one in a bore
+    depth = 0.6134 * pitch if on == "shaft" else major / 2 - r
+    helix = Helix(pitch, b - a, r, center=start, direction=d)
+    s = helix.position_at(0)
+    radial = (s - start).normalized()
+    pl = Plane(origin=s, x_dir=radial, z_dir=radial.cross(d))
+    tip, out = (-depth, 0.2 * pitch) if on == "shaft" else (depth, -0.2 * pitch)
+    half = (depth + 0.2 * pitch) * tan(30)
+    profile = Face(Wire.make_polygon([pl.from_local_coords(p) for p in ((tip, 0), (out, half), (out, -half))], close=True))
+    return sweep(profile, path=helix, is_frenet=True)
+
+
+def _tapped(pl, out, points, major, pitch, length, what):
+    down = -pl.z_dir * (out or 1)
+    for x, y in points:
+        p = pl.from_local_coords((x, y))
+        THREADS.append((NOW[0], "bore", major, pitch, length, (p.X, p.Y, p.Z), (down.X, down.Y, down.Z), (major - pitch) / 2))
+
+
 def _keyway(part, tool, on, position, length, width, depth, angle, what):
     r, foot, d, a, b = _surface(part, tool, on, position, length, what)
     if width is None or depth is None:

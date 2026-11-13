@@ -1,7 +1,7 @@
 import re
 
 from scriber_agent.requirements import Requirement
-from scriber_ir import Design
+from scriber_ir import Design, Provenance
 
 NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "twelve": 12}
 
@@ -31,8 +31,20 @@ def misquoted(design: Design, text: str) -> list[str]:
         f"parameter {p.name!r} quotes {p.provenance.quote!r}, which is not in the request; "
         'quote the request\'s exact words, or use source "default" for a value you chose'
         for p in design.params
-        if p.provenance.source == "prompt" and p.provenance.quote and _squash(p.provenance.quote) not in said
+        if _misquotes(p.provenance, said)
     ]
+
+
+def unquote(design: Design, text: str) -> Design:
+    # a quote that is not in the request says nothing about the geometry, so it costs the parameter its citation, not an attempt
+    said = _squash(text)
+    default = Provenance(source="default")
+    params = [p.model_copy(update={"provenance": default}) if _misquotes(p.provenance, said) else p for p in design.params]
+    return design.model_copy(update={"params": params})
+
+
+def _misquotes(source: Provenance, said: str) -> bool:
+    return source.source == "prompt" and bool(source.quote) and _squash(source.quote or "") not in said
 
 
 def _squash(text: str) -> str:

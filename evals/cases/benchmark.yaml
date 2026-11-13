@@ -35,7 +35,7 @@
     - {kind: extent, description: diameter 100, value: 100}
     - {kind: extent, description: thickness 10, value: 10}
     - {kind: holes, description: six 6.6 holes, count: 6, diameter_min: 6.5, diameter_max: 6.7}
-    - {kind: hole_spacing, description: 80 circle across, value: 80, diameter_min: 6.5, diameter_max: 6.7}
+    - {kind: pitch_circle, description: 80 circle across, value: 80, diameter_min: 6.5, diameter_max: 6.7}
     - {kind: holes, description: bore 40, count: 1, diameter_min: 39.9, diameter_max: 40.1}
 
 - id: b05-shaft-collar
@@ -107,7 +107,7 @@
     - {kind: extent, description: diameter 60, value: 60}
     - {kind: extent, description: thickness 15, value: 15}
     - {kind: holes, description: four 12 holes, count: 4, diameter_min: 11.9, diameter_max: 12.1}
-    - {kind: hole_spacing, description: 34 circle across, value: 34, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: pitch_circle, description: 34 circle across, value: 34, diameter_min: 11.9, diameter_max: 12.1}
     - {kind: holes, description: bore 8, count: 1, diameter_min: 7.9, diameter_max: 8.1}
 
 - id: b12-machine-base
@@ -237,7 +237,7 @@
     - {kind: extent, description: outer diameter 140, value: 140}
     - {kind: extent, description: thickness 16, value: 16}
     - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 100, value: 100, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 100, value: 100, diameter_min: 17.9, diameter_max: 18.1}
     - {kind: holes, description: bore 43.5, count: 1, diameter_min: 43.4, diameter_max: 43.6}
 
 - id: b25-spigot-adapter

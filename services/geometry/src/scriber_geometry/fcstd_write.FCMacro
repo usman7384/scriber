@@ -1,5 +1,6 @@
 # Runs inside FreeCAD (see fcstd.py): build a PartDesign body per part from the plan in ARGS and save it.
 import json
+import math
 
 import FreeCAD as App
 import Part
@@ -18,8 +19,22 @@ def curve(geo):
         return Part.Point(App.Vector(v[0], v[1], 0))
     if geo["kind"] == "line":
         return Part.LineSegment(App.Vector(v[0], v[1], 0), App.Vector(v[2], v[3], 0))
+    if geo["kind"] == "ellipse":
+        return ellipse(*v)
+    if geo["kind"] == "bspline":
+        spline = Part.BSplineCurve()
+        spline.interpolate([App.Vector(v[i], v[i + 1], 0) for i in range(0, len(v), 2)], PeriodicFlag=True)
+        return spline
     circle = Part.Circle(App.Vector(v[0], v[1], 0), App.Vector(0, 0, 1), v[2])
     return circle if geo["kind"] == "circle" else Part.ArcOfCircle(circle, v[3], v[4])
+
+
+def ellipse(cx, cy, a, b, angle):
+    # FreeCAD takes the major axis end, the minor axis end and the centre
+    c = App.Vector(cx, cy, 0)
+    along, across = App.Vector(math.cos(angle), math.sin(angle), 0), App.Vector(-math.sin(angle), math.cos(angle), 0)
+    major, minor = (along * a, across * b) if a >= b else (across * b, along * a)
+    return Part.Ellipse(c + major, c + minor, c)
 
 
 doc = App.newDocument("Scriber")

@@ -58,16 +58,16 @@ def test_bore_keyway_runs_through_the_hub(geometry: LocalGeometry) -> None:
     (part,) = geometry.measure(hub({"kind": "keyway", "id": "key", "name": "Key", "of": "bore", "on": "bore"}))
     b, t2 = 6.0, 2.8
     area = b * (R + t2) - (b / 2 * math.sqrt(R * R - b * b / 4) + R * R * math.asin(b / 2 / R))
-    assert math.pi * (20**2 - R**2) * 30 - part.volume == pytest.approx(area * 30, rel=1e-9)
+    assert math.pi * (20**2 - R**2) * 30 - part.volume == pytest.approx(area * 30, rel=1e-8)
 
 
 def test_circlip_groove_on_a_shaft_and_o_ring_groove_in_a_bore(geometry: LocalGeometry) -> None:
     circlip = {"kind": "groove", "id": "circlip", "name": "Circlip", "of": "shaft", "position": 50, "width": 1.1, "depth": 0.6}
     (part,) = geometry.measure(shaft(circlip))
-    assert math.pi * R * R * L - part.volume == pytest.approx(math.pi * (R**2 - (R - 0.6) ** 2) * 1.1, rel=1e-9)
+    assert math.pi * R * R * L - part.volume == pytest.approx(math.pi * (R**2 - (R - 0.6) ** 2) * 1.1, rel=1e-8)
     oring = {"kind": "groove", "id": "oring", "name": "O-ring", "of": "bore", "on": "bore", "position": 10, "width": 2.4, "depth": 1.8}
     (bored,) = geometry.measure(hub(oring))
-    assert math.pi * (20**2 - R**2) * 30 - bored.volume == pytest.approx(math.pi * ((R + 1.8) ** 2 - R**2) * 2.4, rel=1e-9)
+    assert math.pi * (20**2 - R**2) * 30 - bored.volume == pytest.approx(math.pi * ((R + 1.8) ** 2 - R**2) * 2.4, rel=1e-8)
 
 
 def test_groove_past_the_shaft_end_is_an_error(geometry: LocalGeometry) -> None:

@@ -1,8 +1,10 @@
 import base64
 import json
+import re
 from typing import Any, Literal, cast
 
 import anthropic
+import httpx2
 from anthropic.types.beta import BetaImageBlockParam, BetaMessageParam, BetaOutputConfigParam, BetaTextBlockParam
 
 from scriber_agent.llm import Message, image_mime, strict_schema
@@ -10,6 +12,8 @@ from scriber_agent.llm import Message, image_mime, strict_schema
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 TOO_LARGE = "grammar is too large"
+STREAM_TRIES = 3
+FENCED = re.compile(r"```(?:json)?\s*\n(.*?)```", re.DOTALL)
 
 
 class AnthropicLLM:
@@ -45,10 +49,20 @@ class AnthropicLLM:
         return _unfenced(self._send(messages, system, config))
 
     def _send(self, messages: list[Message], system: str, config: BetaOutputConfigParam) -> str:
+        # the SDK retries a failed request, not a stream that drops after minutes of a long answer
+        for _ in range(STREAM_TRIES - 1):
+            try:
+                return self._stream(messages, system, config)
+            except (anthropic.APIConnectionError, httpx2.TransportError):
+                continue
+        return self._stream(messages, system, config)
+
+    def _stream(self, messages: list[Message], system: str, config: BetaOutputConfigParam) -> str:
         with self._client.beta.messages.stream(
             model=self.name,
             max_tokens=self.max_tokens,
-            system=system,
+            # the rules, examples and schema repeat on every attempt of a run, so they are cached
+            system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             messages=[_turn(m) for m in messages if m.role != "system"],
             output_config=config,
             betas=[FALLBACK_BETA],
@@ -61,11 +75,12 @@ class AnthropicLLM:
 
 
 def _unfenced(text: str) -> str:
-    body = text.strip()
-    if body.startswith("```"):
-        body = body.split("\n", 1)[1] if "\n" in body else ""
-        body = body.rsplit("```", 1)[0]
-    return body.strip()
+    # without an enforced schema the model may explain itself first; the JSON is its last fenced block, or the outer braces
+    blocks = FENCED.findall(text)
+    if blocks:
+        return str(blocks[-1]).strip()
+    start, end = text.find("{"), text.rfind("}")
+    return text[start : end + 1] if 0 <= start < end else text.strip()
 
 
 def _turn(m: Message) -> BetaMessageParam:

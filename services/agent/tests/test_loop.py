@@ -68,7 +68,11 @@ class FakeGeometry:
             valid=True,
             holes=holes,
         )
-        return Artifact(design_hash="x", files={}, parts=[part], findings=[], elapsed_ms=1)
+        return Artifact(design_hash="x", files={"glb": out_dir / "model.glb"}, parts=[part], findings=[], elapsed_ms=1)
+
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path:
+        png.write_bytes(b"render")
+        return png
 
 
 def test_invalid_ir_is_repaired(tmp_path: Path) -> None:
@@ -140,8 +144,8 @@ def test_cut_off_answer_is_not_quoted_back(tmp_path: Path) -> None:
     llm = FakeLLM([REQS, '{"title": "Bracket", "params": [', design()])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
     repair = llm.calls[-1][-1].content
-    assert "was cut off before it was complete JSON" in repair
-    assert '"params": [' not in repair
+    assert "was not complete JSON" in repair and "Invalid JSON" in repair
+    assert '"title": "Bracket", "params": [' not in repair
     assert steps[-1].kind == "done"
 
 
@@ -156,16 +160,17 @@ def test_repeated_answer_is_resampled_without_quoting_it(tmp_path: Path) -> None
     assert steps[-1].kind == "done" and steps[-1].result and steps[-1].result.attempts == 2
 
 
-def test_quote_not_in_the_request_is_repaired(tmp_path: Path) -> None:
+def test_quote_not_in_the_request_drops_the_citation_not_the_part(tmp_path: Path) -> None:
     def quoting(quote: str) -> str:
         d = json.loads(design())
         d["params"][0]["provenance"] = {"source": "prompt", "quote": quote}
         return json.dumps(d)
 
-    llm = FakeLLM([REQS, quoting("80 mm long"), quoting("80 X 60")])
+    llm = FakeLLM([REQS, quoting("80 mm long")])
     steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
-    assert "parameter 'length' quotes '80 mm long', which is not in the request" in steps[2].message
-    assert steps[-1].kind == "done"
+    result = steps[-1].result
+    assert steps[-1].kind == "done" and steps[-1].attempt == 1
+    assert result is not None and result.design is not None and result.design.params[0].provenance.source == "default"
 
 
 def test_images_reach_the_design_request(tmp_path: Path) -> None:
@@ -189,10 +194,10 @@ def test_thinking_level_sets_the_reasoning_budget(tmp_path: Path) -> None:
 
 
 def test_requests_with_images_go_to_the_vision_model(tmp_path: Path) -> None:
-    text, vision = FakeLLM([REQS]), FakeLLM([design()])
+    text, vision = FakeLLM([REQS]), FakeLLM([NO_REQS, design(), MATCH])
     steps = list(generate("bracket like the sketch, 80 x 60, 4x M6", text, FakeGeometry(), tmp_path, images=(b"png",), vision=vision))
-    assert steps[-1].kind == "done" and len(text.calls) == len(vision.calls) == 1
-    assert vision.calls[0][-1].images == (b"png",) and '"source": "vision"' in vision.calls[0][-1].content
+    assert steps[-1].kind == "done" and len(text.calls) == 1 and len(vision.calls) == 3
+    assert vision.calls[1][-1].images == (b"png",) and '"source": "vision"' in vision.calls[1][-1].content
     text, vision = FakeLLM([REQS, design()]), FakeLLM([])
     list(generate("bracket 80 x 60, 4x M6", text, FakeGeometry(), tmp_path / "t", vision=vision))
     assert "vision" not in text.calls[1][-1].content and vision.calls == []
@@ -200,3 +205,69 @@ def test_requests_with_images_go_to_the_vision_model(tmp_path: Path) -> None:
     base = Design.model_validate_json(design())
     list(refine(base, "like the photo", text, FakeGeometry(), tmp_path / "r", images=(b"jpg",), vision=vision))
     assert vision.calls[0][-1].images == (b"jpg",)
+
+
+DRAWN = json.dumps(
+    {
+        "requirements": [
+            {"kind": "holes", "description": "4X 6.6 THRU", "count": 4, "diameter_min": 6.5, "diameter_max": 6.7},
+            {"kind": "extent", "description": "overall 200", "value": 200},
+        ]
+    }
+)
+NO_REQS = json.dumps({"requirements": []})
+MISMATCH = json.dumps({"findings": ["the chamfers are missing"], "matches": False})
+MATCH = json.dumps({"findings": [], "matches": True})
+
+
+def test_drawing_dimensions_become_checks_and_the_critic_can_send_a_part_back(tmp_path: Path) -> None:
+    vision = FakeLLM([DRAWN, design(), MISMATCH, design(length=81), MATCH])
+    steps = list(generate("Reproduce the drawing.", FakeLLM([NO_REQS]), FakeGeometry(), tmp_path, images=(b"drawing",), vision=vision))
+    assert vision.calls[0][-1].images == (b"drawing",)
+    assert [s.kind for s in steps] == ["requirements", "emit", "check", "repair", "done"]
+    assert "compared with the attached image: the chamfers are missing" in steps[2].message
+    assert vision.calls[2][-1].images == (b"drawing", b"render", b"render", b"render")
+    result = steps[-1].result
+    assert result is not None and [c.requirement.kind for c in result.checks] == ["holes"]
+
+
+def test_the_critic_cannot_use_up_every_repair(tmp_path: Path) -> None:
+    worse = json.dumps({"findings": ["the chamfers are missing", "the outline is wrong"], "matches": False})
+    vision = FakeLLM([NO_REQS, design(), MISMATCH, design(length=81), MISMATCH, design(length=82), worse])
+    steps = list(generate("Reproduce the drawing.", FakeLLM([NO_REQS]), FakeGeometry(), tmp_path, images=(b"drawing",), vision=vision))
+    result = steps[-1].result
+    assert steps[-1].kind == "done" and steps[-1].attempt == 3
+    assert result is not None and result.attempts == 2 and "kept attempt 2" in steps[-1].message
+
+
+def test_a_check_that_keeps_failing_is_set_aside(tmp_path: Path) -> None:
+    misread = json.dumps({"requirements": [{"kind": "extent", "description": "base 15", "value": 15}]})
+    llm = FakeLLM([misread, design(), design(length=81), design(length=82)])
+    steps = list(generate("plate 80 x 60 x 5 on a 15 mm base", llm, FakeGeometry(), tmp_path, max_repairs=5))
+    assert steps[-1].kind == "done" and steps[-1].attempt == 3
+    assert any("set aside after 3 failed attempts, probably misread: base 15" in s.message for s in steps)
+
+
+def test_an_empty_answer_is_asked_again_without_spending_a_repair(tmp_path: Path) -> None:
+    llm = FakeLLM([REQS, "", design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path, max_repairs=0))
+    assert steps[-1].kind == "done" and steps[-1].attempt == 1
+    assert "output limit was reached" in llm.calls[2][-1].content
+
+
+def test_a_failed_run_keeps_its_best_attempt(tmp_path: Path) -> None:
+    llm = FakeLLM([REQS, design(), design(hole_param="nope"), design(hole_param="nope2")])
+    reqs_fail = json.dumps({"requirements": [{"kind": "extent", "description": "plate 90", "value": 90}]})
+    llm = FakeLLM([reqs_fail, design(), design(hole_param="nope"), design(hole_param="nope2")])
+    steps = list(generate("bracket 90 x 60", llm, FakeGeometry(), tmp_path, max_repairs=2))
+    assert steps[-1].kind == "failed" and "kept attempt 1" in steps[-1].message
+    result = steps[-1].result
+    assert result is not None and result.artifact is not None
+
+
+def test_a_set_aside_check_does_not_fail_the_verdict(tmp_path: Path) -> None:
+    misread = json.dumps({"requirements": [{"kind": "extent", "description": "base 15", "value": 15}]})
+    llm = FakeLLM([misread, design(), design(length=81), design(length=82)])
+    steps = list(generate("plate 80 x 60 x 5 on a 15 mm base", llm, FakeGeometry(), tmp_path, max_repairs=5))
+    result = steps[-1].result
+    assert steps[-1].kind == "done" and result is not None and result.ok and result.disputed == ["base 15"]

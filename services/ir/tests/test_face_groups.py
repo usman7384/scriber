@@ -13,7 +13,9 @@ def test_face_groups_compile_to_a_selection_per_name(bracket: Design) -> None:
     design = with_groups(bracket, [{"name": "mount_face", "faces": {"normal": "-z"}}])
     src = compile_design(design)
     assert "\nFACES = {}\n" in src
-    assert "FACES['bracket'] = {'mount_face': _select(part, T, 'faces', 'part', '-z', 'any', 'any', 'any')}" in src
+    assert (
+        "FACES['bracket'] = {'mount_face': _select(part, T, 'faces', 'part', None, '-z', 'any', 'any', 'any', 'any', None, False)}" in src
+    )
     assert validate(design) == []
 
 

@@ -1495,7 +1495,9 @@ source = { editable = "services/agent" }
 dependencies = [
     { name = "anthropic" },
     { name = "httpx" },
+    { name = "httpx2" },
     { name = "ollama" },
+    { name = "pillow" },
     { name = "scriber-context" },
     { name = "scriber-geometry" },
     { name = "scriber-ir" },
@@ -1505,7 +1507,9 @@ dependencies = [
 requires-dist = [
     { name = "anthropic", specifier = "==2.3.0" },
     { name = "httpx", specifier = "==0.28.1" },
+    { name = "httpx2", specifier = "==2.16.0" },
     { name = "ollama", specifier = "==0.6.3" },
+    { name = "pillow", specifier = "==13.0.0" },
     { name = "scriber-context", editable = "services/context" },
     { name = "scriber-geometry", editable = "services/geometry" },
     { name = "scriber-ir", editable = "services/ir" },

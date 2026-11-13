@@ -20,6 +20,7 @@ scriber-evals = "scriber_evals.run:main"
 scriber-grounded = "scriber_evals.grounded:main"
 scriber-parity = "scriber_evals.parity:main"
 scriber-cadgenbench = "scriber_evals.cadgenbench:main"
+scriber-check-gate = "scriber_evals.check_gate:main"
 
 [build-system]
 requires = ["uv_build>=0.9.13,<0.10.0"]

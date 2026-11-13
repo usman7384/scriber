@@ -4,7 +4,7 @@ from pathlib import Path
 from build123d import Box, Pos, export_step, import_step
 
 from scriber_agent import FakeLLM
-from scriber_evals.cadgenbench import Fixture, attempt, fixtures, orient
+from scriber_evals.cadgenbench import Fixture, attempt, fixtures, last_built, orient, salvage
 from scriber_geometry import LocalGeometry
 
 REFERENCE = Path(__file__).parents[1] / "parity" / "m6" / "reference" / "sc15-hub-gear.json"
@@ -42,7 +42,8 @@ def test_generation_writes_an_oriented_step_and_editing_is_skipped(tmp_path: Pat
     geometry = LocalGeometry(timeout_s=300)
     image = tmp_path / "input.png"
     image.write_bytes(PNG)
-    llm = FakeLLM([NO_REQS, REFERENCE.read_text(encoding="utf-8")])
+    match = json.dumps({"findings": [], "matches": True})
+    llm = FakeLLM([NO_REQS, NO_REQS, REFERENCE.read_text(encoding="utf-8"), match])
     try:
         run, work = tmp_path / "run", tmp_path / "work"
         built = attempt(Fixture(id="101", prompt="Reproduce it.", images=[image], editing=False), llm, llm, geometry, run, work, 0)
@@ -50,5 +51,26 @@ def test_generation_writes_an_oriented_step_and_editing_is_skipped(tmp_path: Pat
     finally:
         geometry.close()
     assert built.status == "built" and (tmp_path / "run" / "101" / "output.step").stat().st_size > 0
-    assert llm.calls[1][-1].images == (PNG,)
+    assert llm.calls[1][-1].images == llm.calls[2][-1].images == (PNG,)
     assert skipped.status == "skipped"
+
+
+def test_the_newest_built_attempt_is_submitted_even_after_later_failures(tmp_path: Path) -> None:
+    for n, built in ((1, True), (2, False), (10, True), (11, False)):
+        d = tmp_path / f"attempt_{n}"
+        d.mkdir()
+        if built:
+            (d / "model.step").write_text("step", encoding="utf-8")
+    assert last_built(tmp_path) == tmp_path / "attempt_10" / "model.step"
+    assert last_built(tmp_path / "attempt_2") is None
+
+
+def test_an_error_after_a_built_attempt_still_submits_it(tmp_path: Path) -> None:
+    run, work = tmp_path / "run", tmp_path / "work"
+    (run / "143").mkdir(parents=True)
+    (work / "143" / "attempt_3").mkdir(parents=True)
+    export_step(Box(30, 20, 10), work / "143" / "attempt_3" / "model.step")
+    kept = salvage("143", run, work, "RemoteProtocolError: peer closed connection")
+    assert kept.status == "built (attempt_3), then error" and kept.attempts == 3
+    assert (run / "143" / "output.step").is_file()
+    assert salvage("150", run, work, "boom").status == "error"

@@ -8,7 +8,7 @@ from scriber_ir import Design
 Vec = tuple[float, float, float]
 Row = tuple[float, float, float, float]
 Placement = tuple[Row, Row, Row]
-FileKind = Literal["step", "stl", "glb", "py", "ir"]
+FileKind = Literal["step", "stl", "glb", "py", "ir", "dxf"]
 STEP_SUFFIXES = frozenset({".step", ".stp"})
 MESH_SUFFIXES = frozenset({".stl", ".obj"})
 INTERFERENCE_MM3 = 1e-6
@@ -27,6 +27,16 @@ class HoleInfo(Frozen):
     length: float
 
 
+class ThreadInfo(Frozen):
+    designation: str
+    on: Literal["shaft", "bore"]
+    major: float
+    pitch: float
+    length: float | None
+    start: Vec
+    axis: Vec
+
+
 class PartMetrics(Frozen):
     id: str
     name: str
@@ -37,6 +47,7 @@ class PartMetrics(Frozen):
     faces: int
     valid: bool
     holes: list[HoleInfo]
+    threads: list[ThreadInfo] = []
     center_of_mass: Vec | None = None
     mass_g: float | None = None
     placement: Placement | None = None
@@ -137,7 +148,7 @@ class StepMetadata(Frozen):
     bodies: list[StepBody]
 
 
-GeoKind = Literal["point", "line", "arc", "circle"]
+GeoKind = Literal["point", "line", "arc", "circle", "ellipse", "bspline"]
 ConstraintKind = Literal[
     "coincident",
     "horizontal",
@@ -150,6 +161,7 @@ ConstraintKind = Literal[
     "distance_x",
     "distance_y",
     "angle",
+    "block",
 ]
 
 
@@ -158,6 +170,8 @@ class Constraint(Frozen):
     refs: list[str]
     value: float | None = None
     expr: str | None = None
+    # a block holds a whole curve (an ellipse, a spline) at these values
+    values: list[float] | None = None
 
 
 class SketchGeo(Frozen):
@@ -184,7 +198,6 @@ class SketchFrame(Frozen):
     x_dir: Vec
     z_dir: Vec
     out: int
-    normal: int = 1
 
 
 class FaceMesh(Frozen):

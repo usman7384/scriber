@@ -26,6 +26,8 @@ from scriber_geometry.models import (
 from scriber_ir import Design, Process, RuleSet, ShapeDescriptor, compile_design, design_hash
 
 FEATURE_COMMENT = re.compile(r"^    # (\S+) ")
+# features that failed in one build are listed together; the first is the one to fix first
+FIRST_FAILED = re.compile(r"ValueError: feature '([^']+)'")
 NO_RULES = RuleSet()
 
 
@@ -43,10 +45,12 @@ class LocalGeometry:
         (out_dir / "design.json").write_text(design.model_dump_json(indent=2), encoding="utf-8")
         rules_json = rules.for_process(process).model_dump(mode="json")
         materials = {p.id: p.material for p in design.parts}
+        materials |= {i.id: materials[i.part] for i in design.assembly.instances} if design.assembly else {}
         request = {"op": "build", "source": source, "out_dir": str(out_dir), "title": design.title, "rules": rules_json}
         reply = self._call(request | {"materials": materials})
         if not reply["ok"]:
-            raise BuildError("kernel", reply["error"], failing_feature(source, reply["lines"]))
+            first = FIRST_FAILED.match(reply["error"])
+            raise BuildError("kernel", reply["error"], first.group(1) if first else failing_feature(source, reply["lines"]))
         parts = [with_mass(m, materials[m.id]) for m in map(PartMetrics.model_validate, reply["parts"])]
         files = {k: Path(v) for k, v in reply["files"].items()} | {"py": out_dir / "model.py", "ir": out_dir / "design.json"}
         assembly = _assembly(reply.get("assembly"), parts)
@@ -96,8 +100,8 @@ class LocalGeometry:
             raise BuildError("kernel", f"sections of {step.name}: {reply['error']}")
         return [[(x, y, z) for x, y, z in outline] for outline in reply["sections"]]
 
-    def thumbnail(self, glb: Path, png: Path, size: int = 256) -> Path:
-        reply = self._call({"op": "thumbnail", "path": str(glb), "png": str(png), "size": size})
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path:
+        reply = self._call({"op": "thumbnail", "path": str(glb), "png": str(png), "size": size, "view": view})
         if not reply["ok"]:
             raise BuildError("kernel", f"thumbnail of {glb.name}: {reply['error']}")
         return png

@@ -18,6 +18,14 @@ from scriber_geometry import LocalGeometry
 
 ROOT = Path(__file__).parents[2]
 NO_REQS = json.dumps({"requirements": []})
+RIGHT = json.dumps({"findings": [], "matches": True})
+
+
+def seen(design: str) -> list[str]:
+    # a vision model reads the image's requirements, draws the design, then reviews the built part
+    return [NO_REQS, design, RIGHT]
+
+
 Json = dict[str, Any]
 
 
@@ -337,7 +345,7 @@ def test_a_wrong_part_fails_its_row(geometry: LocalGeometry, tmp_path: Path) -> 
 def test_dp12_gates_the_datasheet_tab_spacing(geometry: LocalGeometry, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     wide = servo().replace("13.9", "14.2")
     for answer, passes in ((servo(), True), (wide, False)):
-        vision = FakeLLM([answer])
+        vision = FakeLLM(seen(answer))
         monkeypatch.setattr(parity_m4_vision, "vision_llm", lambda rig, v=vision: v)
         ev = run_row("DP-12", ROWS["DP-12"], rig(tmp_path / str(passes), geometry, [NO_REQS]))
         assert ev.passed is passes, ev
@@ -345,7 +353,7 @@ def test_dp12_gates_the_datasheet_tab_spacing(geometry: LocalGeometry, tmp_path:
 
 def test_ge11_scores_params_read_from_drawings(geometry: LocalGeometry, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     truth: dict[str, dict[str, float]] = json.loads((FIXTURES / "vision" / "truth.json").read_text(encoding="utf-8"))
-    vision = FakeLLM([drawn(n, v) for n, v in truth.items()])
+    vision = FakeLLM([a for n, v in truth.items() for a in seen(drawn(n, v))])
     monkeypatch.setattr(parity_m4_vision, "vision_llm", lambda rig: vision)
     ev = run_row("GE-11", ROWS["GE-11"], rig(tmp_path, geometry, [NO_REQS] * len(truth)))
     assert ev.passed and ev.measured["share"] == 1.0, ev
@@ -353,7 +361,7 @@ def test_ge11_scores_params_read_from_drawings(geometry: LocalGeometry, tmp_path
 
 
 def test_pf3_times_the_drawing_and_photo_fixtures(geometry: LocalGeometry, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    vision = FakeLLM([servo(), hubbed_flange()])
+    vision = FakeLLM([*seen(servo()), *seen(hubbed_flange())])
     monkeypatch.setattr(parity_m4_vision, "vision_llm", lambda rig: vision)
     ev = run_row("PF-3", ROWS["PF-3"], rig(tmp_path, geometry, [NO_REQS, NO_REQS]))
     assert ev.passed and ev.measured["IN-5_passed"] and ev.measured["IN-6_passed"], ev

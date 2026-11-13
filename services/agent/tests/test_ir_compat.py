@@ -5,13 +5,14 @@ import pytest
 from scriber_agent.prompts import EXAMPLES
 from scriber_ir import Design, answer_json, compile_design, design_hash
 
-# compiled source, design hash and answer JSON of the worked examples before assemblies were added to the IR
+# compiled source, design hash and answer JSON of the worked examples before assemblies were added to the IR;
+# source re-recorded when blends became skippable
 GOLDEN = {
-    "Round cover plate": ("342a21bd816d2c6e", "4a9c157051247440", "555c8f7c76680338"),
-    "Angle bracket": ("542afd469e38e056", "5c2d3640448584a1", "b6daa6c0a58a7fca"),
-    "Open-top tray": ("f970e4a5aacef180", "07ea67c86b57b9ee", "d039d771327e4af4"),
-    "Flanged bushing": ("ad78500e3c5b1662", "6bf5da07fc4e59a1", "ada009029f4a7c0a"),
-    "Valve block": ("2713cb53955e194d", "6d252b532273946e", "a16c02e323b9038e"),
+    "Round cover plate": ("e1240c65805d02ae", "4a9c157051247440", "555c8f7c76680338"),
+    "Angle bracket": ("b601297fb38bdf98", "5c2d3640448584a1", "b6daa6c0a58a7fca"),
+    "Open-top tray": ("2d41045fbc61e873", "07ea67c86b57b9ee", "d039d771327e4af4"),
+    "Flanged bushing": ("2e6a903b532ad762", "6bf5da07fc4e59a1", "ada009029f4a7c0a"),
+    "Valve block": ("94b40496f8035662", "6d252b532273946e", "a16c02e323b9038e"),
 }
 
 

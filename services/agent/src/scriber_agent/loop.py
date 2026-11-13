@@ -7,10 +7,21 @@ from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ValidationError
 
-from scriber_agent.grounding import grounded, measurable, misquoted
+from scriber_agent.critic import critique
+from scriber_agent.grounding import grounded, measurable, unquote
+from scriber_agent.images import TILE_NOTE, with_tiles
 from scriber_agent.llm import LLM, THINKING_BUDGET, Message, Thinking
 from scriber_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
-from scriber_agent.prompts import IMAGE_NOTE, design_messages, refine_message, repair_message, requirement_messages, resample_message
+from scriber_agent.prompts import (
+    DRAWING_REQUIREMENTS,
+    IMAGE_NOTE,
+    REQUIREMENT_RULES,
+    design_messages,
+    refine_message,
+    repair_message,
+    requirement_messages,
+    resample_message,
+)
 from scriber_agent.requirements import CheckResult, Requirement, RequirementList, check
 from scriber_agent.standards import reference_data
 from scriber_context import Fact
@@ -40,12 +51,19 @@ PLACE_NOTE = (
     "on the part where it seats; the part is placed so that this connector meets {mate!r}, z axes aligned."
 )
 STUCK_TEMPERATURE = 0.9
+# a built part is compared with the input image at most this often, so a noisy critic cannot use up every repair
+REVIEWS = 2
+# a check that fails this many built attempts in a row is more likely misread than unmet, so it stops driving repairs
+STUCK = 3
+SKIPPED = "blend_skipped"
 StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
 Build = Callable[[Design, Path], Artifact]
 
 
 class Geometry(Protocol):
     def build(self, design: Design, out_dir: Path, rules: RuleSet = ..., process: Process = "any") -> Artifact: ...
+
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path: ...
 
 
 class Result(BaseModel):
@@ -55,10 +73,12 @@ class Result(BaseModel):
     attempts: int
     repairs: int
     used: list[str] = []
+    disputed: list[str] = []
 
     @property
     def ok(self) -> bool:
-        return self.artifact is not None and self.artifact.ok and all(c.passed for c in self.checks)
+        checked = all(c.passed or c.requirement.description in self.disputed for c in self.checks)
+        return self.artifact is not None and self.artifact.ok and checked
 
 
 class Step(BaseModel):
@@ -93,6 +113,10 @@ def generate(
 ) -> Iterator[Step]:
     clock = _Clock()
     stated = extract_requirements(prompt, llm, seed)
+    shown = with_tiles(images)
+    note = IMAGE_NOTE + (TILE_NOTE if len(shown) > len(images) else "")
+    if images and vision:
+        stated = stated + drawing_requirements(shown, vision, seed)
     facts = context.pack.facts if context else []
     dropped = overridden(stated, facts)
     reqs = stated + fact_requirements([f for f in facts if f not in dropped])
@@ -101,13 +125,14 @@ def generate(
     designer = vision if images and vision else llm
     messages = [Message(role=r, content=c) for r, c in design_messages(prompt, reference_data(prompt), project, designer.few_shot)]
     if images:
-        messages[-1] = messages[-1].model_copy(update={"content": messages[-1].content + IMAGE_NOTE, "images": images})
+        messages[-1] = messages[-1].model_copy(update={"content": messages[-1].content + note, "images": shown})
 
     def decode(raw: str) -> Design:
         design = Design.model_validate_json(raw)
         return cite(design, context.pack) if context else design
 
-    run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking)
+    review = _reviewer(geometry, vision, images, prompt, seed) if images and vision else None
+    run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking, review=review)
     yield from _attempts(run, messages, json_schema(), decode, reqs, prompt)
 
 
@@ -174,6 +199,34 @@ def extract_requirements(text: str, llm: LLM, seed: int = 0) -> list[Requirement
     return measurable(grounded(reqs, text), text)
 
 
+def drawing_requirements(images: tuple[bytes, ...], vision: LLM, seed: int = 0) -> list[Requirement]:
+    messages = [Message(role="system", content=REQUIREMENT_RULES), Message(role="user", content=DRAWING_REQUIREMENTS, images=images)]
+    raw = vision.chat(messages, RequirementList.model_json_schema(), seed)
+    try:
+        reqs = RequirementList.model_validate_json(raw).requirements
+    except ValidationError:
+        return []
+    # drawings place holes by offsets along an axis, which a centre-to-centre spacing check misreads
+    return [r for r in reqs if r.kind in ("holes", "threads")]
+
+
+Review = Callable[[Artifact, Path], list[str]]
+
+
+def _reviewer(geometry: Geometry, vision: LLM, reference: tuple[bytes, ...], request: str, seed: int) -> Review:
+    def review(artifact: Artifact, attempt_dir: Path) -> list[str]:
+        # a drawing shows straight views, so the critic gets them too, not only the iso
+        glb = artifact.files["glb"]
+        views = [geometry.thumbnail(glb, attempt_dir / f"review_{v}.png", 768, v).read_bytes() for v in ("iso", "top", "front")]
+        try:
+            verdict = critique(request, views, vision, seed, reference)
+        except ValidationError:
+            return []  # no verdict is not a finding
+        return [] if verdict.matches else [f"compared with the attached image: {f}" for f in verdict.findings]
+
+    return review
+
+
 @dataclass(frozen=True)
 class _Run:
     llm: LLM
@@ -184,6 +237,7 @@ class _Run:
     clock: "_Clock"
     used: list[str]
     thinking: Thinking | None = None
+    review: Review | None = None
 
 
 def _run(llm: LLM, geometry: Geometry, context: Grounding | None, out_dir: Path, max_repairs: int, seed: int, clock: "_Clock") -> _Run:
@@ -205,15 +259,23 @@ def _attempts(
     reqs: list[Requirement],
     request: str = "",
 ) -> Iterator[Step]:
-    last: Result | None = None
+    best: tuple[tuple[bool, int], Result] | None = None
+    told: set[str] = set()
     seen: set[str] = set()
+    reviews = 0
+    reviewed: list[tuple[int, int, Result]] = []
+    misses: dict[str, int] = {}
+    set_aside: set[str] = set()
     prompt = fresh = messages
     budget = THINKING_BUDGET[run.thinking] if run.thinking else None
     thought = f", thinking {run.thinking} with a {budget} token reasoning budget" if run.thinking else ""
     for attempt in range(1, run.max_repairs + 2):
         seed = run.seed + attempt - 1
         raw = run.llm.chat(prompt, schema, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE, budget)
-        resampled = raw in seen
+        if not raw.strip():
+            # the output limit ran out, usually on reasoning: ask once more without spending a repair
+            raw = run.llm.chat([*prompt, Message(role="user", content=repair_message("", []))], schema, seed, REPAIR_TEMPERATURE, budget)
+        resampled = bool(raw.strip()) and raw in seen
         if resampled:
             # a sharply tuned model copies the quoted answer back, so ask again without quoting it
             raw = run.llm.chat(fresh, schema, seed, STUCK_TEMPERATURE, budget)
@@ -226,15 +288,53 @@ def _attempts(
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
         problems, design, artifact, checks = evaluate(raw, decode, reqs, run.build, attempt_dir, request)
-        last = Result(design=design, artifact=artifact, checks=checks, attempts=attempt, repairs=attempt - 1, used=run.used)
+        for c in checks:
+            misses[c.requirement.description] = 0 if c.passed else misses.get(c.requirement.description, 0) + 1
+        stuck = {d for d, n in misses.items() if n >= STUCK} - set_aside
+        if stuck:
+            set_aside |= stuck
+            note = "; ".join(sorted(stuck))
+            yield Step(
+                kind="check",
+                message=f"set aside after {STUCK} failed attempts, probably misread: {note}",
+                attempt=attempt,
+                elapsed_ms=run.clock(),
+            )
+        problems = [p for p in problems if not any(p.startswith(f"requirement not met: {d} (") for d in set_aside)]
+        # a skipped blend is reported once; after that the part is accepted with that edge sharp
+        problems = [p for p in problems if not (p.startswith(SKIPPED) and p in told)]
+        told |= {p for p in problems if p.startswith(SKIPPED)}
+        last = Result(
+            design=design,
+            artifact=artifact,
+            checks=checks,
+            attempts=attempt,
+            repairs=attempt - 1,
+            used=run.used,
+            disputed=sorted(set_aside),
+        )
+        if not problems and artifact and run.review:
+            findings = run.review(artifact, attempt_dir)
+            reviewed.append((len(findings), attempt, last))
+            if findings and reviews < REVIEWS and attempt <= run.max_repairs:
+                reviews += 1
+                problems = findings
         if not problems:
-            yield Step(kind="done", message=_summary(last), attempt=attempt, elapsed_ms=run.clock(), result=last)
+            # once reviews run out the newest part is still reviewed: an earlier one the critic liked better wins
+            kept = min(reviewed, key=lambda r: (r[0], -r[1]))[2] if reviewed else last
+            note = "" if kept is last else f"; kept attempt {kept.attempts}, which the review judged closer"
+            yield Step(kind="done", message=_summary(kept) + note, attempt=attempt, elapsed_ms=run.clock(), result=kept)
             return
+        rank = (artifact is not None, -len(problems))
+        if best is None or rank >= best[0]:
+            best = (rank, last)
         yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
         prompt = [*messages, Message(role="user", content=repair_message(raw, problems))]
         fresh = [*messages, Message(role="user", content=resample_message(problems))]
-    assert last is not None
-    yield Step(kind="failed", message=f"gave up after {last.attempts} attempts", attempt=last.attempts, elapsed_ms=run.clock(), result=last)
+    assert best is not None
+    kept = best[1]
+    message = f"gave up after {run.max_repairs + 1} attempts; kept attempt {kept.attempts}, the best one"
+    yield Step(kind="failed", message=message, attempt=run.max_repairs + 1, elapsed_ms=run.clock(), result=kept)
 
 
 def evaluate(
@@ -243,28 +343,54 @@ def evaluate(
     try:
         design = drop_unused_params(normalize(decode(raw)))
     except ValidationError as e:
-        return [f"{'.'.join(map(str, err['loc']))}: {err['msg']}" for err in e.errors()[:8]], None, None, []
+        return [f"{_where(raw, err['loc'])}: {err['msg']}" for err in e.errors()[:8]], None, None, []
     except (ParamError, ComponentError) as e:
         return [str(e)], None, None, []
+    design = unquote(design, request) if request else design
     errors = validate(design)
     if errors:
         return [str(e) for e in errors[:8]], design, None, []
     try:
         artifact = build(design, out_dir)
     except BuildError as e:
-        where = f" in feature {e.feature!r}" if e.feature else ""
-        hint = " The operation is impossible with the given sketch or dimensions; rethink that feature." if e.kind == "kernel" else ""
-        return [f"CAD kernel error ({e.kind}){where}: {_short(e)}.{hint}"], design, None, []
+        return [_kernel_text(e)], design, None, []
     checks = check(reqs, artifact)
-    problems = misquoted(design, request) if request else []
-    problems += [_finding_text(f) for f in artifact.findings if f.severity == "error"]
+    problems = [_finding_text(f) for f in artifact.findings if f.severity == "error" or f.rule_id == SKIPPED]
     problems += [f"requirement not met: {c.requirement.description} (actual: {c.actual})" for c in checks if not c.passed]
     return list(dict.fromkeys(problems)), design, artifact, checks
 
 
+def _where(raw: str, loc: tuple[int | str, ...]) -> str:
+    # list positions become the ids the model wrote, so "parts.0.features.3" reads "parts.bracket.features.bolt_holes"
+    try:
+        node: Any = json.loads(raw)
+    except ValueError:
+        return ".".join(map(str, loc))
+    out = []
+    for key in loc:
+        if isinstance(node, list) and isinstance(key, int) and key < len(node):
+            node = node[key]
+        else:
+            node = node.get(key) if isinstance(node, dict) else None
+        ident = node.get("id") if isinstance(key, int) and isinstance(node, dict) else None
+        out.append(str(ident or key))
+    return ".".join(out)
+
+
+def _kernel_text(e: BuildError) -> str:
+    text = _short(e)
+    # failures the compiler explains already name each feature and the fix; only raw kernel errors get a general hint
+    if text.startswith("ValueError: feature '"):
+        return "The part did not build: " + text.removeprefix("ValueError: ")
+    where = f" in feature {e.feature!r}" if e.feature else ""
+    hint = " The operation is impossible with the given sketch or dimensions; rethink that feature." if e.kind == "kernel" else ""
+    return f"CAD kernel error ({e.kind}){where}: {text}.{hint}"
+
+
 def _finding_text(f: Finding) -> str:
     fix = f" Fix: {f.suggestion}." if f.suggestion else ""
-    return f"{f.rule_id} {f.part}: {f.message}.{fix}"
+    where = f" {f.part}" if f.part else ""
+    return f"{f.rule_id}{where}: {f.message}.{fix}"
 
 
 def _requirements_step(reqs: list[Requirement], clock: "_Clock", dropped: Sequence[Fact] = ()) -> Step:

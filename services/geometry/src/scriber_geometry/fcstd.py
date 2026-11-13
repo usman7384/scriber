@@ -30,6 +30,7 @@ SKETCHER = {
     "distance_x": "DistanceX",
     "distance_y": "DistanceY",
     "angle": "Angle",
+    "block": "Block",
 }
 OPERATORS: dict[type[ast.operator], str] = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/"}
 # FreeCAD's trigonometry takes unitless arguments in degrees, as the IR does
@@ -123,6 +124,8 @@ def _constraint(c: Constraint, index: dict[str, int]) -> Json:
             args = [-1, 1, *point(r[0])]
         case "point_on_object":
             args = [*point(r[0]), index[r[1]]]
+        case "block":
+            return {"type": "Block", "args": [index[r[0]]]}
         case _:
             args = [index[ref] for ref in r[:2]]
     return {"type": SKETCHER[c.kind], "args": args if value is None else [*args, value]}
@@ -133,9 +136,7 @@ def _extrude(f: Extrude, frame: SketchFrame, values: Values) -> Json:
         raise UnsupportedExportError(f"extrude {f.id!r}: intersect, up-to-next and tapered extrudes have no FreeCAD export yet")
     if f.mode == "add" and f.extent == "through_all":
         raise UnsupportedExportError(f"extrude {f.id!r}: a through-all pad has no FreeCAD equivalent")
-    if frame.normal == 0:
-        raise UnsupportedExportError(f"extrude {f.id!r}: its profile mixes clockwise and counter-clockwise outlines")
-    sign = _sign(f, frame) * frame.normal
+    sign = _sign(f, frame)
     add = f.mode == "add"
     # a Pad grows along the sketch normal, a Pocket against it
     props: Json = {"Reversed": sign < 0 if add else sign > 0, "Type": "Length", "SideType": "One side"}
@@ -214,11 +215,10 @@ def _face(frame: SketchFrame, axis: int, extrudes: Extrudes, values: Values) -> 
     f, owner = extrudes[owner_id]
     if f.extent != "blind" or abs(owner.z_dir[axis]) < 0.999:
         return None
-    # "end" faces the extrude's nominal direction; the prism itself grows along the profile's face normal
-    nominal = round(owner.z_dir[axis]) * _sign(f, owner)
-    grows = nominal * owner.normal
+    # "end" faces the extrude's direction, the way the prism grows
+    grows = round(owner.z_dir[axis]) * _sign(f, owner)
     named = AXIS_FACES.get(ALIASES.get(name, name))
-    normal = {"end": nominal, "start": -nominal}.get(name) or (named[1] if named and named[0] == axis else None)
+    normal = {"end": grows, "start": -grows}.get(name) or (named[1] if named and named[0] == axis else None)
     if normal is None:
         return None
     start = f"{owner_id}_sketch.Placement.Base.{'xyz'[axis]} / 1 mm"

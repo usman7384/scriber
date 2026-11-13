@@ -1,6 +1,6 @@
 export type Vec3 = [number, number, number];
 export type Process = "any" | "milling_3axis" | "fdm" | "sla" | "sls";
-export type ExportFormat = "step" | "stl" | "glb" | "py" | "ir" | "fcstd";
+export type ExportFormat = "step" | "stl" | "glb" | "py" | "ir" | "dxf" | "fcstd";
 
 export interface Project {
   id: string;

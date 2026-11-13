@@ -18,6 +18,10 @@ class StubGeometry:
         self.built.append(d)
         return Artifact(design_hash="x", files={}, parts=[], findings=[], elapsed_ms=0)
 
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path:
+        png.write_bytes(b"render")
+        return png
+
 
 def block(pid: str, size: str) -> dict[str, Any]:
     return {

@@ -23,7 +23,7 @@ class Geometry(Protocol):
 
     def describe(self, path: Path) -> ShapeDescriptor: ...
 
-    def thumbnail(self, glb: Path, png: Path, size: int = 256) -> Path: ...
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path: ...
 
     def measure(self, design: Design) -> list[PartMetrics]: ...
 
@@ -46,9 +46,9 @@ class SerialGeometry:
         with self._lock:
             return self._inner.describe(path)
 
-    def thumbnail(self, glb: Path, png: Path, size: int = 256) -> Path:
+    def thumbnail(self, glb: Path, png: Path, size: int = 256, view: str = "iso") -> Path:
         with self._lock:
-            return self._inner.thumbnail(glb, png, size)
+            return self._inner.thumbnail(glb, png, size, view)
 
     def measure(self, design: Design) -> list[PartMetrics]:
         with self._lock:

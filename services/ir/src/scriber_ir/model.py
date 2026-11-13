@@ -31,6 +31,15 @@ class Param(Frozen):
     max: float | None = None
     description: str = ""
     provenance: Provenance = Provenance(source="default")
+    fit: str | None = Field(
+        default=None, description="ISO 286 tolerance class as written on a drawing, e.g. H7 for a bore or g6 for a shaft"
+    )
+    tol_plus: float | None = Field(default=None, description="upper deviation, e.g. 0.05 for +0.05")
+    tol_minus: float | None = Field(default=None, description="lower deviation, e.g. -0.02; with tol_plus 0.02 it is +-0.02")
+    reference: bool = Field(
+        default=False,
+        description="a dimension stated for information only, such as a drawing's (60) or a true arc radius; it need not drive a feature",
+    )
 
 
 class PlaneRef(Frozen):
@@ -44,14 +53,23 @@ class Datum(Frozen):
     offset: Expr = 0.0
     rotate_about: Literal["none", "x", "y"] = "none"
     angle: Expr = 0.0
+    origin: Point3 | None = Field(default=None, description="with normal: a plane in any orientation; base, offset, rotation ignored")
+    normal: Point3 | None = None
+    x_dir: Point3 | None = Field(default=None, description="sketch x direction on that plane; any vector across the normal")
 
 
 class Selector(Frozen):
     of: str = "part"
-    normal: Literal["any", "+x", "-x", "+y", "-y", "+z", "-z"] = "any"
-    parallel: Literal["any", "x", "y", "z"] = "any"
+    meets: str | None = Field(default=None, description="only edges or faces where 'of' joins this feature, e.g. a boss and its plate")
+    normal: Literal["any", "+x", "-x", "+y", "-y", "+z", "-z"] | Point3 = Field(default="any", description="an axis name or a vector")
+    parallel: Literal["any", "x", "y", "z"] | Point3 = Field(default="any", description="an axis name or a vector")
     convexity: Literal["any", "concave", "convex"] = "any"
     extreme: Literal["any", "max", "min"] = "any"
+    geom: Literal["any", "line", "circle"] = Field(default="any", description="edges only: straight lines, or circles and arcs")
+    arc_radius: Expr | None = Field(default=None, description="edges only: circles and arcs of this radius, e.g. the outer rim")
+    outline: bool = Field(
+        default=False, description="edges only, with a normal: just the outer boundary of those flat faces, not hole or pocket edges"
+    )
 
 
 class Rect(Frozen):
@@ -60,6 +78,7 @@ class Rect(Frozen):
     width: Expr
     height: Expr
     corner_radius: Expr = 0.0
+    angle: Expr = Field(default=0.0, description="deg, counter-clockwise about the centre")
     subtract: bool = False
 
 
@@ -85,10 +104,26 @@ class Slot(Frozen):
     subtract: bool = False
 
 
+class Ellipse(Frozen):
+    kind: Literal["ellipse"]
+    center: Point = (0.0, 0.0)
+    width: Expr
+    height: Expr
+    angle: Expr = 0.0
+    subtract: bool = False
+
+
+class Spline(Frozen):
+    kind: Literal["spline"]
+    points: list[Point] = Field(min_length=3, description="a closed smooth outline through these points, in order")
+    subtract: bool = False
+
+
 class Segment(Frozen):
     to: Point
     arc: Literal["none", "cw", "ccw"] = "none"
     radius: Expr | None = None
+    center: Point | None = Field(default=None, description="arcs only: the arc's centre instead of a radius; any sweep up to a full turn")
     fillet: Expr = 0.0
 
 
@@ -99,7 +134,7 @@ class Path(Frozen):
     subtract: bool = False
 
 
-Entity = Annotated[Rect | Circle | Polygon | Slot | Path, Field(discriminator="kind")]
+Entity = Annotated[Rect | Circle | Polygon | Slot | Path | Ellipse | Spline, Field(discriminator="kind")]
 
 
 class Sketch(Frozen):
@@ -148,14 +183,21 @@ class Extrude(FeatureBase):
     distance: Expr | None = None
     distance2: Expr | None = None
     taper: Expr = 0.0
+    wrap: str | None = Field(
+        default=None,
+        description="id of an earlier feature whose cylinder the sketch wraps onto; the sketch plane touches it; "
+        "lengths keep along the surface and depth is radial",
+    )
 
 
 class Revolve(FeatureBase):
     kind: Literal["revolve"]
     sketch: str
-    axis: Literal["X", "Y"] = "Y"
+    axis: Literal["X", "Y"] = Field(default="Y", description="the sketch's own x or y axis, shifted by axis_offset")
     axis_offset: Expr = 0.0
-    angle: Expr = 360.0
+    angle: Expr = Field(
+        default=360.0, description="deg, right-handed about the axis's positive direction; a partial revolve starts at the sketch"
+    )
     mode: Literal["add", "cut", "intersect"] = "add"
 
 
@@ -168,12 +210,17 @@ class Hole(FeatureBase):
     fit: Literal["close", "normal", "loose"] = "normal"
     diameter: Expr | None = None
     depth: Expr | None = None
+    through: Literal["all", "next"] = Field(
+        default="all",
+        description="with depth null: 'all' cuts the whole part both ways; 'next' stops past the first wall, as THRU on a drawing",
+    )
     drill_point: Literal["flat", "118"] = "flat"
     cb_diameter: Expr | None = None
     cb_depth: Expr | None = None
     cs_diameter: Expr | None = None
     cs_angle: Expr = 90.0
     thread: str | None = None
+    thread_depth: Expr | None = Field(default=None, description="tapped: the threaded length when it is shorter than the drill depth")
 
 
 class Pattern(FeatureBase):
@@ -193,6 +240,13 @@ class Fillet(FeatureBase):
     kind: Literal["fillet"]
     edges: Selector
     radius: Expr
+
+
+class Draft(FeatureBase):
+    kind: Literal["draft"]
+    faces: Selector = Field(description='the side faces to taper, e.g. {"of": "blade", "normal": "+x"}')
+    neutral: PlaneRef = Field(default=PlaneRef(), description="the plane where the faces keep their size, usually the parting line")
+    angle: Expr = Field(description="deg; positive tapers the faces inward away from the neutral plane")
 
 
 class Chamfer(FeatureBase):
@@ -219,8 +273,10 @@ class AirfoilSection(FeatureBase):
 
 class Loft(FeatureBase):
     kind: Literal["loft"]
-    sections: list[str] = Field(min_length=2, description="airfoil_section ids in order")
+    sections: list[str] = Field(min_length=2, description="airfoil_section ids or sketch ids, in order along the loft")
     ruled: bool = False
+    mode: Literal["add", "cut", "intersect"] = "add"
+    wall: Expr | None = Field(default=None, description="hollow skin of this thickness, open at the end sections")
 
 
 class SpurGear(FeatureBase):
@@ -295,6 +351,53 @@ class Groove(FeatureBase):
     depth: Expr
 
 
+class Thread(FeatureBase):
+    kind: Literal["thread"]
+    of: str = Field(description="the extrude, revolve or hole that made the shaft or bore")
+    on: Literal["shaft", "bore"] = "shaft"
+    designation: str = Field(description="metric thread such as M110x4 or M12x1.25; a shaft is its major diameter, a bore its tap drill")
+    position: Expr = Field(default=0.0, description="from the surface's -x/-y/-z end along its axis")
+    length: Expr | None = Field(default=None, description="null runs the full surface length")
+    modelled: bool = Field(default=False, description="true cuts the helical thread form; false records a cosmetic thread, as drawings do")
+
+
+class Tube(FeatureBase):
+    kind: Literal["tube"]
+    points: list[Point3] = Field(min_length=2, description="centre line through these points in part coordinates")
+    outer_diameter: Expr
+    wall: Expr | None = Field(default=None, description="null for a solid rod")
+    bend_radius: Expr = Field(default=0.0, description="rounds the corners of the centre line")
+    mode: Literal["add", "cut"] = "add"
+
+
+class Bend(Frozen):
+    line: tuple[Point, Point] = Field(description="the bend line on the flat pattern, through two points")
+    angle: Expr = Field(default=90.0, description="deg the far side turns; 90 makes a right-angle flange")
+    direction: Literal["up", "down"] = Field(default="up", description="up folds toward +z of the flat, as BEND UP on a drawing")
+    radius: Expr | None = Field(default=None, description="inside radius; null uses the part's bend_radius")
+    relief: Expr | None = Field(
+        default=None, description="width of the relief slots cut at both ends of a bend that stops inside the outline"
+    )
+
+
+class Flange(Frozen):
+    edge: tuple[Point, Point] = Field(description="an outline edge of the flat pattern, end to end")
+    length: Expr = Field(description="the straight leg beyond the bend")
+    angle: Expr = Field(default=90.0, description="deg; 180 with a small radius makes a hem")
+    direction: Literal["up", "down"] = "up"
+    radius: Expr | None = Field(default=None, description="inside radius; null uses the part's bend_radius")
+
+
+class SheetMetal(FeatureBase):
+    kind: Literal["sheet_metal"]
+    sketch: str = Field(description="the flat pattern, holes and cut-outs included; its largest panel stays put")
+    thickness: Expr
+    bend_radius: Expr = Field(description="inside bend radius")
+    k_factor: Expr = Field(default=0.33, description="neutral axis position across the thickness")
+    bends: list[Bend] = []
+    flanges: list[Flange] = Field(default=[], description="legs added on outline edges, folded like bends; the flat pattern grows to suit")
+
+
 HIGH_LEVEL = (SpurGear, Rib, BossPattern, ShellWithLid, Lid, Keyway, Groove)
 Feature = Annotated[
     Extrude
@@ -312,7 +415,11 @@ Feature = Annotated[
     | ShellWithLid
     | Lid
     | Keyway
-    | Groove,
+    | Groove
+    | Tube
+    | SheetMetal
+    | Draft
+    | Thread,
     Field(discriminator="kind"),
 ]
 
@@ -337,22 +444,29 @@ class Connector(Frozen):
     id: str
     part: str
     origin: Point3 = (0.0, 0.0, 0.0)
-    z: Direction = Field(default="+z", description="mating axis, in the part's own coordinates")
-    x: Direction = Field(default="+x", description="perpendicular to z; fixes the rotation about it")
+    z: Direction | Point3 = Field(default="+z", description="mating axis in the part's own coordinates: an axis name or any vector")
+    x: Direction | Point3 = Field(default="+x", description="perpendicular to z; fixes the rotation about it")
 
 
 class Joint(Frozen):
     id: str
     parent: str = Field(description="connector id on the part that stays")
     child: str = Field(description="connector id on the part placed so its connector meets the parent's")
-    kind: Literal["fastened", "revolute", "slider"] = "fastened"
+    kind: Literal["fastened", "revolute", "slider", "spherical"] = "fastened"
     angle: Expr = Field(default=0.0, description="rotation of the child about the parent connector's z, deg")
     offset: Expr = Field(default=0.0, description="shift of the child along the parent connector's z")
 
 
+class Instance(Frozen):
+    id: str = Field(description="a further copy of a part, placed by its own connectors and joints like a part")
+    part: str
+    mirror: Literal["none", "XY", "XZ", "YZ"] = Field(default="none", description="mirror across a base plane, e.g. XZ for the other side")
+
+
 class Assembly(Frozen):
     connectors: list[Connector] = []
-    joints: list[Joint] = []
+    joints: list[Joint] = Field(default=[], description="a joint whose child is already placed closes a loop and is only checked")
+    instances: list[Instance] = []
 
 
 class Design(Frozen):

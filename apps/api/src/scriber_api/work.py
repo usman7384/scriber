@@ -216,7 +216,7 @@ def graph_id(model_id: str, number: int) -> str:
 
 def created_payload(d: Deps, model_id: str, number: int) -> dict[str, object]:
     urls = model_urls(model_id, number)
-    return {"model_id": model_id, "version": number, "files": {k: d.settings.public_url + urls(k) for k in disk.FILE_NAMES}}
+    return {"model_id": model_id, "version": number, "files": {k: d.settings.public_url + urls(k) for k in disk.FILE_NAMES if k != "dxf"}}
 
 
 def thumbnail(d: Deps, out: Path) -> bool:
@@ -247,6 +247,7 @@ def version_data(result: Result | None, meta: Meta, has_thumbnail: bool) -> Vers
             "metrics": metrics(art) if art else None,
             "used": result.used,
             "thumbnail": has_thumbnail,
+            "flat": art is not None and "dxf" in art.files,
             "changes": diff(meta.previous, result.design) if meta.previous else None,
         }
     )

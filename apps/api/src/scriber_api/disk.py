@@ -5,11 +5,18 @@ from pathlib import Path
 from scriber_agent import Result, Step, dump_steps
 from scriber_ir import Design, label
 
-FILE_NAMES = {"step": "model.step", "stl": "model.stl", "glb": "model.glb", "py": "model.py", "ir": "design.json"}
+FILE_NAMES = {"step": "model.step", "stl": "model.stl", "glb": "model.glb", "py": "model.py", "ir": "design.json", "dxf": "flat.dxf"}
 THUMBNAIL = "thumbnail.png"
 STRUCTURE = "structure.json"
 OK_MARKER = "OK"
-MEDIA_TYPES = {"step": "model/step", "stl": "model/stl", "glb": "model/gltf-binary", "py": "text/x-python", "ir": "application/json"}
+MEDIA_TYPES = {
+    "step": "model/step",
+    "stl": "model/stl",
+    "glb": "model/gltf-binary",
+    "py": "text/x-python",
+    "ir": "application/json",
+    "dxf": "image/vnd.dxf",
+}
 
 
 def model_dir(data_dir: Path, model_id: str) -> Path:

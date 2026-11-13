@@ -4,19 +4,15 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import numpy.typing as npt
+from build123d import Edge, GeomType, Line, RadiusArc, ThreePointArc, Wire, fillet, make_face
 
 from scriber_geometry.models import Constraint, ConstraintKind, GeoKind, SketchDof, SketchGeo
 from scriber_ir import Design, evaluate
-from scriber_ir.model import Circle, Entity, Expr, Path, Polygon, Rect, Sketch, Slot
+from scriber_ir.model import Circle, Ellipse, Entity, Expr, Path, Polygon, Rect, Segment, Sketch, Slot, Spline
 
 Array = npt.NDArray[np.float64]
 Vec2 = tuple[float, float]
-SIZES = {"point": 2, "line": 4, "arc": 5, "circle": 3}
 RANK_TOL = 1e-6
-
-
-class UnsupportedSketchError(ValueError):
-    pass
 
 
 @dataclass(frozen=True)
@@ -24,6 +20,7 @@ class Geo:
     name: str
     kind: GeoKind
     at: int
+    size: int
 
 
 @dataclass(frozen=True)
@@ -41,7 +38,7 @@ class Builder:
     wanted: list[Constraint] = field(default_factory=list)
 
     def add(self, kind: GeoKind, *values: float) -> Geo:
-        geo = Geo(f"g{len(self.geos)}", kind, len(self.x0))
+        geo = Geo(f"g{len(self.geos)}", kind, len(self.x0), len(values))
         self.geos[geo.name] = geo
         self.x0.extend(values)
         return geo
@@ -64,7 +61,7 @@ def remaining_dof(geometry: list[SketchGeo], constraints: list[Constraint]) -> i
     geos: dict[str, Geo] = {}
     x0: list[float] = []
     for g in geometry:
-        geos[g.name] = Geo(g.name, g.kind, len(x0))
+        geos[g.name] = Geo(g.name, g.kind, len(x0), len(g.values))
         x0 += g.values
     if not constraints:
         return len(x0)
@@ -74,11 +71,8 @@ def remaining_dof(geometry: list[SketchGeo], constraints: list[Constraint]) -> i
 
 def analyse_sketch(part: str, sketch: Sketch, values: dict[str, float], seed: int) -> SketchDof:
     b = Builder(values)
-    try:
-        for e in sketch.entities:
-            _entity(b, e)
-    except UnsupportedSketchError as e:
-        return SketchDof(part=part, sketch=sketch.id, geometry=[], unknowns=0, constraints=[], redundant=0, dof=None, note=str(e))
+    for e in sketch.entities:
+        _entity(b, e)
     x0 = np.array(b.x0)
     chosen, rows = [], np.zeros((0, len(x0)))
     for c in b.wanted:
@@ -92,7 +86,7 @@ def analyse_sketch(part: str, sketch: Sketch, values: dict[str, float], seed: in
     return SketchDof(
         part=part,
         sketch=sketch.id,
-        geometry=[SketchGeo(name=g.name, kind=g.kind, values=b.x0[g.at : g.at + SIZES[g.kind]]) for g in b.geos.values()],
+        geometry=[SketchGeo(name=g.name, kind=g.kind, values=b.x0[g.at : g.at + g.size]) for g in b.geos.values()],
         unknowns=len(x0),
         constraints=chosen,
         redundant=len(b.wanted) - len(chosen),
@@ -135,7 +129,7 @@ def _residual(c: Constraint, x: Array, geos: dict[str, Geo]) -> Array:
         return _point(ref, x, geos)
 
     def g(ref: str) -> Array:
-        return x[geos[ref].at : geos[ref].at + SIZES[geos[ref].kind]]
+        return x[geos[ref].at : geos[ref].at + geos[ref].size]
 
     r, v = c.refs, c.value or 0.0
     match c.kind:
@@ -154,6 +148,8 @@ def _residual(c: Constraint, x: Array, geos: dict[str, Geo]) -> Array:
             return np.array([g(r[0])[2] * (2 if c.kind == "diameter" else 1) - v])
         case "distance":
             return np.array([np.linalg.norm(p(r[1]) - p(r[0])) - v])
+        case "block":
+            return np.asarray(g(r[0]) - np.array(c.values or []), dtype=np.float64)
         case "distance_x" | "distance_y":
             i = 0 if c.kind == "distance_x" else 1
             return np.array([(p(r[1])[i] - p(r[0])[i] if len(r) == 2 else p(r[0])[i]) - v])
@@ -162,7 +158,7 @@ def _residual(c: Constraint, x: Array, geos: dict[str, Geo]) -> Array:
 def _point(ref: str, x: Array, geos: dict[str, Geo]) -> Array:
     name, _, end = ref.partition(".")
     geo = geos[name]
-    v = x[geo.at : geo.at + SIZES[geo.kind]]
+    v = x[geo.at : geo.at + geo.size]
     if geo.kind == "point" or end == "center":
         return v[:2]
     if geo.kind == "line":
@@ -207,6 +203,17 @@ def _entity(b: Builder, e: Entity) -> None:
             _slot(b, e)
         case Path():
             _path(b, e)
+        case Ellipse():
+            values = [b.num(e.center[0]), b.num(e.center[1]), b.num(e.width) / 2, b.num(e.height) / 2, math.radians(b.num(e.angle))]
+            _block(b, b.add("ellipse", *values), values)
+        case Spline():
+            values = [b.num(v) for p in e.points for v in p]
+            _block(b, b.add("bspline", *values), values)
+
+
+def _block(b: Builder, geo: Geo, values: list[float]) -> None:
+    # curves go to FreeCAD whole and blocked: their numbers come from the IR, not from sketch constraints
+    b.wanted.append(Constraint(kind="block", refs=[geo.name], values=values))
 
 
 def _line(b: Builder, p: Vec2, q: Vec2) -> Seg:
@@ -255,6 +262,8 @@ def _fallback(b: Builder, segs: list[Seg]) -> None:
 
 
 def _rect(b: Builder, e: Rect) -> None:
+    if b.num(e.angle) != 0:
+        return _turned_rect(b, e)
     cx, cy, w, h, r = (b.num(v) for v in (*e.center, e.width, e.height, e.corner_radius))
     x0, x1, y0, y1 = cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2
     k = max(r, 0.0)
@@ -272,6 +281,15 @@ def _rect(b: Builder, e: Rect) -> None:
     b.want("distance_x", left.end, value=x0, expr=f"{_t(e.center[0])} - {_t(e.width)} / 2")
     b.want("distance_y", bottom.start, value=y0, expr=f"{_t(e.center[1])} - {_t(e.height)} / 2")
     _fallback(b, segs)
+
+
+def _turned_rect(b: Builder, e: Rect) -> None:
+    # a turned rectangle is the closed path through its corners, with the corner radius as fillets
+    cx, cy, w, h, a = (b.num(v) for v in (*e.center, e.width, e.height, e.angle))
+    c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
+    pts = [(cx + x * c - y * s, cy + x * s + y * c) for x, y in ((-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2))]
+    segments = [Segment(to=p, fillet=e.corner_radius) for p in [*pts[1:], pts[0]]]
+    _path(b, Path(kind="path", start=pts[0], segments=segments))
 
 
 def _slot(b: Builder, e: Slot) -> None:
@@ -305,26 +323,29 @@ def _path(b: Builder, e: Path) -> None:
     pts = [(b.num(x), b.num(y)) for x, y in given]
     closed = math.dist(pts[0], pts[-1]) < 1e-9
     kinds = [(s.arc, s.radius) for s in e.segments] + ([] if closed else [("none", None)])
+    centres = [None if s.center is None else (b.num(s.center[0]), b.num(s.center[1])) for s in e.segments] + [None]
     pts, given = (pts[:-1], given[:-1]) if closed else (pts, given)
     n = len(pts)
     fillet: list[Expr] = [0.0] * n
     for i, s in enumerate(e.segments):
         fillet[(i + 1) % n] = s.fillet
-    trims = [_corner(pts, j, b.num(fillet[j])) if b.num(fillet[j]) > 0 else None for j in range(n)]
+    rounded = [b.num(f) > 0 for f in fillet]
+    if any(arc != "none" and (rounded[i] or rounded[(i + 1) % n]) for i, (arc, _) in enumerate(kinds)):
+        return _traced(b, pts, e)
+    trims = [_corner(pts, j, b.num(fillet[j])) if rounded[j] else None for j in range(n)]
     segs: list[Seg] = []
     outgoing: list[Seg] = []
     for i, (arc, radius) in enumerate(kinds):
         j = (i + 1) % n
         before, after = trims[i], trims[j]
-        if arc != "none" and (before or after):
-            raise UnsupportedSketchError("a fillet next to an arc segment is not analysed")
         p = before[2] if before else pts[i]
         q = after[1] if after else pts[j]
         if arc == "none":
             outgoing.append(_line(b, p, q))
         else:
             r = b.num(radius) if radius is not None else 0.0
-            outgoing.append(_arc(b, _arc_center(p, q, r, arc == "cw"), p, q, arc == "ccw", _t(radius) if radius is not None else None))
+            centre = centres[i] or _arc_center(p, q, r, arc == "cw")
+            outgoing.append(_arc(b, centre, p, q, arc == "ccw", _t(radius) if radius is not None else None))
         segs.append(outgoing[-1])
         if after:
             segs.append(_arc(b, after[0], after[1], after[2], after[3], _t(fillet[j])))
@@ -338,6 +359,47 @@ def _path(b: Builder, e: Path) -> None:
         else:
             _fix(b, outgoing[j].start, pt)
     _fallback(b, segs)
+
+
+def _traced(b: Builder, pts: list[Vec2], e: Path) -> None:
+    # a fillet beside an arc: the corner arcs come from the kernel's own fillet, and every point is pinned
+    ends = [(b.num(s.to[0]), b.num(s.to[1])) for s in e.segments]
+    starts = [pts[0], *ends[:-1]]
+    edges: list[Edge] = [
+        Line(a, c) if s.arc == "none" else _kernel_arc(b, a, c, s) for a, c, s in zip(starts, ends, e.segments, strict=True)
+    ]
+    if math.dist(ends[-1], pts[0]) > 1e-9:
+        edges.append(Line(ends[-1], pts[0]))
+    face = make_face(Wire(edges))
+    for c, s in zip(ends, e.segments, strict=True):
+        if b.num(s.fillet) > 0:
+            corner = min(face.vertices(), key=lambda v: (v.X - c[0]) ** 2 + (v.Y - c[1]) ** 2)
+            face = fillet(corner, radius=b.num(s.fillet)).faces()[0]
+    segs: list[Seg] = []
+    for edge in face.outer_wire().order_edges():
+        p, q, m = edge.position_at(0), edge.position_at(1), edge.position_at(0.5)
+        if edge.geom_type == GeomType.LINE:
+            segs.append(_line(b, (p.X, p.Y), (q.X, q.Y)))
+            continue
+        c = edge.arc_center
+        ccw = (p.X - c.X) * (m.Y - c.Y) - (p.Y - c.Y) * (m.X - c.X) > 0
+        # the kernel's arc ends sit within its tolerance of the circle; re-centre so both ends are exactly on it
+        centre = min((_arc_center((p.X, p.Y), (q.X, q.Y), edge.radius, cw) for cw in (True, False)), key=lambda k: math.dist(k, (c.X, c.Y)))
+        segs.append(_arc(b, centre, (p.X, p.Y), (q.X, q.Y), ccw, None))
+    # pinned points fix every arc; tangencies on kernel-rounded geometry would only make the solve ill-conditioned
+    for here, there in zip(segs, segs[1:] + segs[:1], strict=True):
+        b.want("coincident", here.end, there.start)
+    _fallback(b, segs)
+
+
+def _kernel_arc(b: Builder, a: Vec2, c: Vec2, s: Segment) -> Edge:
+    if s.center is None:
+        return RadiusArc(a, c, b.num(s.radius or 0) * (1 if s.arc == "cw" else -1))
+    k = (b.num(s.center[0]), b.num(s.center[1]))
+    a0, a1 = math.atan2(a[1] - k[1], a[0] - k[0]), math.atan2(c[1] - k[1], c[0] - k[0])
+    mid = a0 + ((a1 - a0) % (2 * math.pi) if s.arc == "ccw" else -((a0 - a1) % (2 * math.pi))) / 2
+    r = math.dist(a, k)
+    return ThreePointArc(a, (k[0] + r * math.cos(mid), k[1] + r * math.sin(mid)), c)
 
 
 def _corner(pts: list[Vec2], j: int, f: float) -> tuple[Vec2, Vec2, Vec2, bool]:

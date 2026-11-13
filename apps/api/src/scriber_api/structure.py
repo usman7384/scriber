@@ -1,6 +1,6 @@
 from scriber_api.schemas import FeatureNode, PartTree, Structure
 from scriber_geometry import PartStructure
-from scriber_ir import Design, feature_params
+from scriber_ir import Design, evaluate, feature_params
 from scriber_ir.assembly import effective_assembly, joint_tree
 
 AXES = {"+x": (1, 0, 0), "-x": (-1, 0, 0), "+y": (0, 1, 0), "-y": (0, -1, 0), "+z": (0, 0, 1), "-z": (0, 0, -1)}
@@ -41,8 +41,12 @@ def _joint_axes(design: Design, parts: dict[str, PartStructure]) -> dict[str, tu
         return {}
     connectors = {c.id: c for c in a.connectors}
     axes = {}
+    values = design.param_values()
     for child, (joint, _) in joint_tree(design).items():
-        z = AXES[connectors[joint.child].z]
+        if child not in parts:
+            continue  # an instance has no structure of its own
+        given = connectors[joint.child].z
+        z = AXES[given] if isinstance(given, str) else tuple(evaluate(e, values) for e in given)
         m = parts[child].placement
         axes[child] = (
             m[0] * z[0] + m[1] * z[1] + m[2] * z[2],

@@ -47,7 +47,13 @@ def assembly_errors(design: Design) -> Iterator[Problem]:
     a = effective_assembly(design)
     if a is None:
         return
-    parts = {p.id for p in design.parts}
+    real = {p.id for p in design.parts}
+    parts = real | {i.id for i in a.instances}
+    for i in a.instances:
+        if i.part not in real:
+            yield f"assembly.instances.{i.id}", f"unknown part {i.part!r}; parts: {sorted(real)}"
+        if i.id in real:
+            yield f"assembly.instances.{i.id}", "an instance id must differ from every part id"
     owner = {c.id: c.part for c in a.connectors}
     for label, ids in (("connector", [c.id for c in a.connectors]), ("joint", [j.id for j in a.joints])):
         if len(set(ids)) != len(ids):
@@ -55,7 +61,7 @@ def assembly_errors(design: Design) -> Iterator[Problem]:
     for c in a.connectors:
         if c.part not in parts:
             yield f"assembly.connectors.{c.id}", f"unknown part {c.part!r}; parts: {sorted(parts)}"
-        if c.x[1] == c.z[1]:
+        if isinstance(c.x, str) and isinstance(c.z, str) and c.x[1] == c.z[1]:
             yield f"assembly.connectors.{c.id}", f"x {c.x!r} must be perpendicular to z {c.z!r}"
     yield from _joint_errors(a, owner)
     values = design.param_values()
@@ -76,7 +82,7 @@ def _joint_errors(a: Assembly, owner: dict[str, str]) -> Iterator[Problem]:
         elif owner[j.parent] == owner[j.child]:
             yield where, f"both connectors are on part {owner[j.child]!r}"
         elif owner[j.child] in placed:
-            yield where, f"part {owner[j.child]!r} is already placed by another joint; a part is the child of one joint at most"
+            continue  # closes a loop: checked for contact, not used to place
         else:
             placed[owner[j.child]] = owner[j.parent]
     for start in placed:

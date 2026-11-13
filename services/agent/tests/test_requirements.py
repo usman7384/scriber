@@ -1,5 +1,5 @@
 from scriber_agent import Requirement, check
-from scriber_geometry import Artifact, HoleInfo, PartMetrics
+from scriber_geometry import Artifact, HoleInfo, PartMetrics, ThreadInfo
 
 
 def artifact(holes: list[HoleInfo], bbox_min: tuple[float, float, float], size: tuple[float, float, float]) -> Artifact:
@@ -25,6 +25,14 @@ def test_hole_spacing() -> None:
     assert ok.passed and not bad.passed
 
 
+def test_hole_spacing_is_between_neighbours() -> None:
+    corners = [HoleInfo(diameter=6, axis=(0, 0, 1), center=(x, y, 0), length=5) for x in (0, 80) for y in (0, 60)]
+    row = [HoleInfo(diameter=6, axis=(0, 0, 1), center=(x, 130, 0), length=5) for x in (0, 20, 40)]
+    plate = artifact(corners + row, (0, 0, 0), (90, 140, 5))
+    reqs = [Requirement(kind="hole_spacing", description="d", value=v) for v in (80, 60, 20, 40, 100, 30)]
+    assert [c.passed for c in check(reqs, plate)] == [True, True, True, True, False, False]
+
+
 def test_manifold_style_checks() -> None:
     vertical = HoleInfo(diameter=10, axis=(0, 0, 1), center=(0, 0, 30), length=60)
     counterbore = HoleInfo(diameter=16, axis=(0, 0, 1), center=(0, 0, 57), length=6)
@@ -40,3 +48,16 @@ def test_manifold_style_checks() -> None:
         Requirement(kind="hole_axes", description="three faces", count=3),
     ]
     assert [c.passed for c in check(reqs, block)] == [True, False, True, True, True, True]
+
+
+def test_threads_count_by_major_diameter() -> None:
+    m12 = ThreadInfo(designation="M12x1.25", on="bore", major=12, pitch=1.25, length=24, start=(0, 0, 0), axis=(0, 0, -1))
+    shaft = ThreadInfo(designation="M110x4", on="shaft", major=110, pitch=4, length=60, start=(0, 0, 0), axis=(0, 0, 1))
+    plate = artifact([], (0, 0, 0), (120, 120, 30))
+    plate = plate.model_copy(update={"parts": [plate.parts[0].model_copy(update={"threads": [m12] * 6 + [shaft]})]})
+    reqs = [
+        Requirement(kind="threads", description="6x M12", count=6, diameter_min=11.9, diameter_max=12.1),
+        Requirement(kind="threads", description="M110", count=1, diameter_min=109.9, diameter_max=110.1),
+        Requirement(kind="threads", description="4x M12", count=4, diameter_min=11.9, diameter_max=12.1),
+    ]
+    assert [c.passed for c in check(reqs, plate)] == [True, True, False]

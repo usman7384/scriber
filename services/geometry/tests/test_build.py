@@ -96,9 +96,10 @@ def test_floating_feature_is_reported(geometry: LocalGeometry, tmp_path: Path) -
 
 
 def test_kernel_failure_raises_build_error(geometry: LocalGeometry, tmp_path: Path) -> None:
-    huge_fillet = {"kind": "fillet", "id": "f", "name": "F", "edges": "all", "radius": 40}
+    # a fillet that cannot be made is now left sharp with a warning, so the kernel failure is a shell thicker than the part
+    huge_shell = {"kind": "shell", "id": "s", "name": "S", "thickness": 1000}
     with pytest.raises(BuildError) as e:
-        geometry.build(variant(BRACKET, features=[*BRACKET["parts"][0]["features"][:2], huge_fillet]), tmp_path)
+        geometry.build(variant(BRACKET, features=[*BRACKET["parts"][0]["features"][:2], huge_shell]), tmp_path)
     assert e.value.kind == "kernel"
 
 
@@ -147,7 +148,8 @@ def test_measure_matches_build_without_writing_files(geometry: LocalGeometry, tm
 
 
 def test_measure_reports_kernel_failures(geometry: LocalGeometry) -> None:
-    huge_fillet = {"kind": "fillet", "id": "f", "name": "F", "edges": "all", "radius": 40}
+    # a fillet that cannot be made is now left sharp with a warning, so the kernel failure is a shell thicker than the part
+    huge_shell = {"kind": "shell", "id": "s", "name": "S", "thickness": 1000}
     with pytest.raises(BuildError) as e:
-        geometry.measure(variant(BRACKET, features=[*BRACKET["parts"][0]["features"][:2], huge_fillet]))
+        geometry.measure(variant(BRACKET, features=[*BRACKET["parts"][0]["features"][:2], huge_shell]))
     assert e.value.kind == "kernel"

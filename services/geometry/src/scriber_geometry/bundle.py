@@ -9,6 +9,7 @@ from scriber_geometry.sketcher import remaining_dof, sketch_dof
 from scriber_ir import Design, compile_design, design_hash
 from scriber_ir.model import (
     Chamfer,
+    Draft,
     Extrude,
     Feature,
     Fillet,
@@ -20,8 +21,11 @@ from scriber_ir.model import (
     Part,
     Pattern,
     Revolve,
+    SheetMetal,
     Shell,
     ShellWithLid,
+    Thread,
+    Tube,
 )
 
 FORMAT = "scriber-bundle"
@@ -72,7 +76,7 @@ def feature_tree(design: Design) -> list[FeatureEntry]:
 def _depends(part: Part, f: Feature) -> list[str]:
     sketches = {s.id: s for s in part.sketches}
     match f:
-        case Extrude() | Revolve():
+        case Extrude() | Revolve() | SheetMetal():
             return [f.sketch, sketches[f.sketch].plane.ref]
         case Hole():
             return [f.plane.ref]
@@ -80,13 +84,15 @@ def _depends(part: Part, f: Feature) -> list[str]:
             return f.features
         case Fillet() | Chamfer():
             return [f.edges.of]
+        case Draft():
+            return [f.faces.of, f.neutral.ref]
         case Shell():
             return [s.of for s in f.open]
         case Loft():
             return f.sections
-        case Keyway() | Groove() | Lid():
+        case Keyway() | Groove() | Lid() | Thread():
             return [f.of]
-        case ShellWithLid():
+        case ShellWithLid() | Tube():
             return []
         case _:
             return [f.plane.ref]

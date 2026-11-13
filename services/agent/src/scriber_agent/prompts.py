@@ -7,21 +7,28 @@ from scriber_ir import Design, answer_json
 DESIGN_RULES = """You are a mechanical design engineer. You write parametric CAD models as JSON in the Scriber IR (ir_version 2).
 
 Units: millimetres and degrees. Z is up, -Y is the front.
-Parameters: every dimension the user gives, and every important derived one, is a parameter with a snake_case name, a value, a unit ("mm", "deg" or "" for counts), a short description and provenance {"source": "prompt", "quote": "<words from the request>"}, {"source": "standard", "ref": "<standard>"} or {"source": "default"}. Features reference parameters with expressions such as "plate_length / 2 - hole_margin".
+Parameters: every dimension the user gives, and every important derived one, is a parameter with a snake_case name, a value, a unit ("mm", "deg" or "" for counts), a short description and provenance {"source": "prompt", "quote": "<words from the request>"}, {"source": "standard", "ref": "<standard>"} or {"source": "default"}. Features reference parameters with expressions such as "plate_length / 2 - hole_margin". Every parameter must drive a feature, except one marked "reference": true (a dimension given for information, like a drawing's bracketed one). A toleranced dimension keeps its nominal value and adds "fit" (ISO 286, e.g. "H7", "g6") or "tol_plus"/"tol_minus" in mm (+0.05/-0.02 is 0.05 and -0.02).
 Planes ("plane": {"ref": ..., "offset": ...}) for sketches and holes:
 - "XY" (sketch x -> X, y -> Y), "XZ" (x -> X, y -> Z), "YZ" (x -> Y, y -> Z), offset along the plane normal.
-- A face of an earlier feature: "<feature id>.<face>" or "part.<face>", face = top, bottom, front, back, left, right, or start / end of an extrude. Sketch coordinates on a face are the same as on the matching base plane (top/bottom like XY, front/back like XZ, left/right like YZ). Offset moves outward from the face.
-- A datum id from the part's "datums": base plane, offset, rotate_about x or y, angle; use it for sloped faces and angled holes.
+- A face of an earlier feature: "<feature id>.<face>" or "part.<face>", face = top, bottom, front, back, left, right, or start / end of an extrude. Sketch coordinates on a face are the same as on the matching base plane (top/bottom like XY, front/back like XZ, left/right like YZ). Offset moves outward from the face. A drafted or tapered face up to 30 degrees off still counts; on it the sketch origin is the face centre, x level along the face and y up its slope.
+- A datum id from the part's "datums": base plane, offset, rotate_about x or y, angle; or any plane as {"origin": [x, y, z], "normal": [x, y, z], "x_dir": [x, y, z]}. Use datums for sloped faces and angled holes.
 How to model:
 - Plates, blocks, flanges and boxes: outline on XY extruded by the thickness. Bosses, ribs, pockets and recesses: a sketch on the face they sit on, extruded "add" (outward) or "cut" (into the part).
 - Bent or angled profiles (L, U, T sections): the cross-section as a polygon or path on XZ, extent "symmetric" by the width.
+- Sheet metal (a flat pattern with BEND UP/DOWN notes, or a bent part of one thickness): a first "sheet_metal" feature with the flat pattern sketch on XY (cut-outs and holes as subtract entities), thickness, bend_radius, k_factor (0.33 unless stated) and "bends", each {"line": [[x0, y0], [x1, y1]] on the flat pattern, "angle", "direction": "up"/"down"}. Flanges on outline edges: {"edge": [[x0, y0], [x1, y1]], "length" of the straight leg, "angle", "direction"}; a hem is a 180 degree flange with a small radius. A bend that stops inside the outline needs "relief" (slot width) or cuts drawn in the flat. The largest panel stays flat; the bend allowance is added for you.
 - Turned parts: the half section on XZ with every x > 0, revolved about axis Y.
-- Outlines with arcs or rounded corners: a "path" entity (segments with "to", optional "arc" cw/ccw with "radius", optional corner "fillet").
-- Every hole, port, bore and passage is a hole feature on the face it enters. Give "fastener" (e.g. "M6") and the compiler sizes it: type "simple" (clearance, fit close/normal/loose), "counterbore", "countersink", or "tapped" (tap drill, add "thread": "M6x1"). Otherwise give "diameter". depth null means through; blind holes may have drill_point "118". Passages that meet are holes from two faces whose depths reach each other.
+- Pockets, grip flats, lettering and windows on a round surface: sketch on a plane that touches the cylinder (e.g. XZ offset by the radius), then an extrude with "wrap": the id of the feature that made the cylinder; the sketch keeps its lengths along the surface and the depth is radial.
+- Outlines with arcs or rounded corners: a "path" entity (segments with "to", optional "arc" cw/ccw with "radius" or with the arc's "center" for sweeps over 180 degrees, optional corner "fillet").
+- Every hole, port, bore and passage is a hole feature on the face it enters. Give "fastener" (e.g. "M6") and the compiler sizes it: type "simple" (clearance, fit close/normal/loose), "counterbore", "countersink", or "tapped" (tap drill, add "thread": "M6x1", and "thread_depth" when the thread is shorter than the drill; a countersunk thread entry is "cs_diameter" on the tapped hole). An external or internal thread on a turned surface is a "thread" feature {"of": the feature that made it, "on": "shaft"/"bore", "designation": "M110x4", "position", "length"}; the shaft must be the major diameter. Threads are cosmetic, as on a drawing, unless "modelled": true. Otherwise give "diameter". depth null means through the whole part; add "through": "next" to stop past the first wall (a drawing's THRU on one flange of several); blind holes may have drill_point "118". Passages that meet are holes from two faces whose depths reach each other.
 - Repeated features: make one, then a "pattern" (linear with direction and spacing, polar about an axis, or mirror across a base plane).
 - Hollow boxes: extrude the outside, then shell with the open faces.
+- Cast and moulded parts: model the shape square, then "draft" features: {"faces": a selector, "neutral": the parting plane, "angle"}; different faces may take different angles.
+- Freeform bodies (nose cones, fuselages, monocoques, sidepods, ducts): cross-section sketches (ellipse with width, height, angle; spline through points; rect; path) on parallel or datum planes, then a loft through the sketch ids in order. "wall" makes a hollow skin; mode "cut" makes tunnels and ducts. Wings: airfoil_section features, then a loft through them.
+- Tubes, rods and pipes along a 3D path (roll hoops, exhausts, wishbones, frames): a tube with "points" [[x, y, z], ...], "outer_diameter", "wall" (null for solid) and "bend_radius".
+- Assemblies: one part per physical part. A repeated part (wheels, bolts) is defined once and placed again by assembly "instances" {"id", "part", "mirror": "XZ" for the other side}. Connector axes are axis names or vectors [x, y, z]. Joint kinds: fastened, revolute, slider, spherical; a joint to a part that is already placed closes a loop and is only checked.
+Expressions: + - * / ** and min, max, abs, round, sqrt, hypot, sin, cos, tan, asin, acos, atan, atan2, with angles in degrees, and pi.
 Extrude extent: "blind" (distance; negative goes the other way on base planes), "symmetric", "two_sided" (distance and distance2), "through_all" (cuts only), "up_to_next". Mode add, cut or intersect.
-Fillet, chamfer and shell faces use selectors: {"of": "part" or a feature id, "normal": "+z"..., "parallel": "x"/"y"/"z", "convexity": "concave"/"convex", "extreme": "max"/"min"}. Inside corners of a milled pocket: {"of": "<pocket>", "parallel": "z", "convexity": "concave"}. Top edges: {"normal": "+z", "extreme": "max"}. Keep radii smaller than half the thinnest wall.
+Fillet, chamfer and shell faces use selectors: {"of": "part" or a feature id, "meets": a second feature id (only where the two join, e.g. the base of a boss: {"of": "boss", "meets": "plate"}), "normal": "+z"... or a vector [x, y, z], "parallel": "x"/"y"/"z" or a vector, "convexity": "concave"/"convex", "extreme": "max"/"min", "geom": "line"/"circle", "arc_radius": only circles and arcs of that radius, "outline": true for only the outer boundary of the faces "normal" picks}. A fillet that cannot be made is left sharp and reported with the largest radius that fits. Inside corners of a milled pocket: {"of": "<pocket>", "parallel": "z", "convexity": "concave"}. Top edges: {"normal": "+z", "extreme": "max"}. The outer rim of the top: {"normal": "+z", "extreme": "max", "outline": true}. Keep radii smaller than half the thinnest wall.
 Model only what was asked. Give the design a short descriptive title. Answer with JSON only."""
 
 
@@ -224,10 +231,12 @@ EXAMPLES: list[tuple[str, dict[str, Any]]] = [
 ]
 
 REQUIREMENT_RULES = """Extract the checkable geometric requirements from a mechanical design request.
-kind "extent": an overall outside dimension of the finished part (length, width, height, diameter, thickness of a plate) with value in mm.
-kind "holes": a number of holes and their allowed diameter range in mm. For a metric screw clearance hole use the ISO 273 fine-to-coarse range: M3 3.2-3.6, M4 4.3-4.8, M5 5.3-5.8, M6 6.4-7.0, M8 8.4-10.0, M10 10.5-12.0, M12 13.0-14.5. For an explicit hole diameter use +-0.1.
+kind "extent": an overall outside dimension of the finished part (length, width, height, diameter, thickness of a plate) with value in mm. A size of one feature (a 15 mm thick base under a taller part, a 30 mm boss) is not an extent.
+kind "holes": a number of holes and their allowed diameter range in mm. For a metric screw clearance hole use the ISO 273 fine-to-coarse range: M3 3.2-3.6, M4 4.3-4.8, M5 5.3-5.8, M6 6.4-7.0, M8 8.4-10.0, M10 10.5-12.0, M12 13.0-14.5. A tapped or threaded hole is measured at its tap drill: M3 2.4-2.6, M4 3.2-3.4, M5 4.1-4.3, M6 4.9-5.1, M8 6.6-6.9, M10 8.4-8.6, M12 10.1-10.4. For an explicit hole diameter use +-0.1.
 kind "hole_spacing": a stated distance between hole centres in mm (pitch, bolt spacing, square pattern side).
+kind "pitch_circle": the diameter of a bolt circle (PCD) the holes sit on, value in mm, with the holes' diameter range.
 kind "wall": a stated wall thickness of a tube or ring in mm.
+kind "threads": a number of threads and their major diameter range, e.g. "6x M12x1.25" is count 6, diameter 11.9 to 12.1; an external thread such as M110x4 is count 1, 109.9 to 110.1.
 One requirement per number: "80x60 plate" is two extents, 80 and 60. A plate or sheet thickness is an extent, not a wall.
 Only include what the request states. Do not invent requirements. Answer with JSON only."""
 
@@ -267,17 +276,19 @@ def requirement_messages(request: str) -> list[tuple[str, str]]:
     return [("system", REQUIREMENT_RULES), ("user", example), ("assistant", json.dumps(answer)), ("user", request)]
 
 
-MAX_QUOTE = 12000
-
-
 def repair_message(previous: str, problems: list[str]) -> str:
     listed = "\n".join(f"- {p}" for p in problems)
-    if not _is_json(previous) or len(previous) > MAX_QUOTE:
-        reason = "was cut off before it was complete JSON" if not _is_json(previous) else f"was {len(previous)} characters long"
+    if not previous.strip():
         return (
-            f"The first attempt {reason}. Write a shorter, complete design as JSON: use patterns for repeated features, "
-            "one hole feature per group of identical holes, and only the features the request asks for."
+            "The previous answer was empty: the output limit was reached before any JSON. "
+            "Answer with the complete design as JSON and keep any reasoning brief."
         )
+    if not _is_json(previous):
+        return (
+            f"The previous answer was not complete JSON:\n{listed}\nWrite the complete design as JSON: use patterns for "
+            "repeated features and one hole feature per group of identical holes."
+        )
+    # the whole answer is quoted whatever its size: without it and its problems a large assembly cannot be repaired
     return (
         f"A first attempt at this design:\n{previous}\n\nIt has these problems:\n{listed}\n"
         "Write the complete corrected design as JSON. Keep everything that was right."
@@ -310,12 +321,28 @@ def refine_message(design_json: str, instruction: str) -> str:
 
 IMAGE_NOTE = """
 
-The attached image shows the part: a sketch, a photo or a drawing. Take its shape and features from the image, and every dimension written on it as a parameter with provenance {"source": "vision", "quote": "<the label as written>"}. Text in this message wins over the image where they differ."""
+The attached image shows the part: a sketch, a photo or a drawing. Take its shape and features from the image, and every dimension written on it as a parameter with provenance {"source": "vision", "quote": "<the label as written>"}. Text in this message wins over the image where they differ.
+If it is an engineering drawing: find the projection symbol and match each view to the part's axes before modelling (first angle puts the top view below the front view, third angle above it).
+Dashed lines are hidden features, hatched areas are cut faces of a section view, "4X" repeats a feature four times, "TYP" applies to every alike feature, Ø is a diameter and R a radius.
+Dimensions are in the title block's unit; write inch values as expressions such as "1.25 * 25.4". Model every feature the views show, dimensioned or not."""
 
 CRITIC_RULES = """You review rendered views of a CAD part against the request it was made for.
+The renders are, in order, an isometric view, a top view (looking down Z) and a front view (looking at the -Y side), the straight views tilted a few degrees so steps and hole walls show; a drawing's views correspond to them.
 Count the holes, slots, bosses, ribs, legs and other features you can see and compare each with what the request asks for, then check the overall shape and proportions.
 In "findings" write one short sentence for every feature that is missing, extra or clearly wrong. "matches" is true only when findings is empty. Answer with JSON only."""
 
 
-def critic_message(request: str) -> str:
-    return f"Request: {request}\n\nThe attached images are rendered views of the part made for this request. Does the part match it?"
+def critic_message(request: str, references: int = 0) -> str:
+    if not references:
+        return f"Request: {request}\n\nThe attached images are rendered views of the part made for this request. Does the part match it?"
+    return (
+        f"Request: {request}\n\nThe first {references} attached image(s) show the drawing or sketch the part must reproduce; "
+        "the rest are rendered views of the part made from it. Compare the part with the drawing: outline, bosses, bores, "
+        "hole patterns, pockets, steps, fillets and chamfers. Does the part match it?"
+    )
+
+
+DRAWING_REQUIREMENTS = """The request is the attached engineering drawing. List only what it states explicitly:
+- "holes": each set of plain round holes or bores with a written diameter, e.g. "4X Ø12 THRU" is count 4, diameter 11.9 to 12.1, and a toleranced bore such as "Ø20 H7" or "Ø20 +0.021/0" takes those limits (20.0 to 20.021); skip threaded, tapped and countersunk callouts.
+- "threads": each set of threads, tapped holes and threaded shafts, e.g. "6X M12x1.25-6H" is count 6, diameter 11.9 to 12.1 (the major diameter).
+List no extents and no spacings. Answer with JSON only."""

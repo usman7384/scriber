@@ -111,7 +111,8 @@ def test_dropping_a_dimension_leaves_one_degree_of_freedom() -> None:
             assert remaining_dof(dof.geometry, dof.constraints[:i] + dof.constraints[i + 1 :]) == 1
 
 
-def test_fillet_next_to_an_arc_is_reported_not_guessed() -> None:
+def test_fillet_next_to_an_arc_is_traced_from_the_kernel() -> None:
     entity = PATH_ARCS | {"segments": [{"to": [40, 0], "fillet": 3}, *PATH_ARCS["segments"][1:]]}
     dof = analyse(entity)
-    assert dof.dof is None and "fillet next to an arc" in dof.note
+    assert dof.dof == 0 and dof.solve_error < 1e-6
+    assert any(g.kind == "arc" and abs(g.values[2] - 3) < 1e-6 for g in dof.geometry)

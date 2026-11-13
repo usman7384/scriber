@@ -151,7 +151,8 @@ def ge_4(rig: Rig) -> Evidence:
     design = aircraft_design(XmlSizing().read(FIXTURES / "bwb.xml"))
     art = build(rig, design, "bwb")
     names = [f.name for f in design.parts[0].features]
-    built = FEATURE_COMMENT.findall(art.files["py"].read_text(encoding="utf-8"))
+    code = art.files["py"].read_text(encoding="utf-8")
+    built = FEATURE_COMMENT.findall(code[code.index("def part_") :])
     m: Measured = {"features": ", ".join(names), "build_order": ", ".join(built), "solids": art.parts[0].solids}
     checks = [
         names == BWB_TREE,

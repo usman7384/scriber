@@ -45,6 +45,18 @@ def parse(fastener: str) -> tuple[float, float] | None:
     return nominal, float(m[2]) if m[2] else row(nominal)[1]
 
 
+def thread_size(designation: str) -> tuple[float, float]:
+    m = DESIGNATION.match(designation)
+    if m is None:
+        raise ValueError(f"unknown thread {designation!r}; write it as M12 or M110x4")
+    nominal = float(m[1])
+    if m[2]:
+        return nominal, float(m[2])
+    if not 2 <= nominal <= 30:
+        raise ValueError(f"thread {designation!r} has no standard coarse pitch here; give it, e.g. M{nominal:g}x4")
+    return nominal, row(nominal)[1]
+
+
 def row(nominal: float) -> tuple[tuple[float, float, float], float, float]:
     if nominal in TABLE:
         return TABLE[nominal]
@@ -78,7 +90,9 @@ def hole_size(hole: Hole, values: dict[str, float]) -> HoleSize:
     if hole.type == "countersink" and cs is None and spec is not None:
         cs = round(2.24 * spec[0], 2)  # ISO 10642 head diameter
     keep_cb = hole.type == "counterbore"
-    return HoleSize(diameter, cb_diameter if keep_cb else None, cb_depth if keep_cb else None, cs if hole.type == "countersink" else None)
+    return HoleSize(
+        diameter, cb_diameter if keep_cb else None, cb_depth if keep_cb else None, cs if hole.type in ("countersink", "tapped") else None
+    )
 
 
 def screw_holes(screw: str) -> tuple[float, float, float]:

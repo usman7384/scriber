@@ -16,7 +16,7 @@
   checks:
     - {kind: extent, description: outer diameter 165, value: 165}
     - {kind: holes, description: four 18 bolt holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
 
 - id: dp4-glider
   rows: [DP-4]
@@ -250,7 +250,7 @@
   checks:
     - {kind: extent, description: outer diameter 95, value: 95}
     - {kind: holes, description: four 14 holes, count: 4, diameter_min: 13.9, diameter_max: 14.1}
-    - {kind: hole_spacing, description: bolt circle 65, value: 65, diameter_min: 13.9, diameter_max: 14.1}
+    - {kind: pitch_circle, description: bolt circle 65, value: 65, diameter_min: 13.9, diameter_max: 14.1}
 
 - id: dp15-en-dn25
   rows: [DP-15]
@@ -258,7 +258,7 @@
   checks:
     - {kind: extent, description: outer diameter 115, value: 115}
     - {kind: holes, description: four 14 holes, count: 4, diameter_min: 13.9, diameter_max: 14.1}
-    - {kind: hole_spacing, description: bolt circle 85, value: 85, diameter_min: 13.9, diameter_max: 14.1}
+    - {kind: pitch_circle, description: bolt circle 85, value: 85, diameter_min: 13.9, diameter_max: 14.1}
 
 - id: dp15-en-dn40
   rows: [DP-15]
@@ -266,7 +266,7 @@
   checks:
     - {kind: extent, description: outer diameter 150, value: 150}
     - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 110, value: 110, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 110, value: 110, diameter_min: 17.9, diameter_max: 18.1}
 
 - id: dp15-en-dn100-blind
   rows: [DP-15]
@@ -274,7 +274,7 @@
   checks:
     - {kind: extent, description: outer diameter 220, value: 220}
     - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 180, value: 180, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 180, value: 180, diameter_min: 17.9, diameter_max: 18.1}
 
 - id: dp15-en-dn125-ring
   rows: [DP-15]
@@ -282,7 +282,7 @@
   checks:
     - {kind: extent, description: outer diameter 250, value: 250}
     - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 210, value: 210, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 210, value: 210, diameter_min: 17.9, diameter_max: 18.1}
     - {kind: holes, description: bore 141, count: 1, diameter_min: 140.9, diameter_max: 141.1}
 
 - id: dp15-en-dn150
@@ -291,7 +291,7 @@
   checks:
     - {kind: extent, description: outer diameter 285, value: 285}
     - {kind: holes, description: eight 22 holes, count: 8, diameter_min: 21.9, diameter_max: 22.1}
-    - {kind: hole_spacing, description: bolt circle 240, value: 240, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: pitch_circle, description: bolt circle 240, value: 240, diameter_min: 21.9, diameter_max: 22.1}
 
 - id: dp15-en-dn200
   rows: [DP-15]
@@ -299,7 +299,7 @@
   checks:
     - {kind: extent, description: outer diameter 340, value: 340}
     - {kind: holes, description: twelve 22 holes, count: 12, diameter_min: 21.9, diameter_max: 22.1}
-    - {kind: hole_spacing, description: bolt circle 295, value: 295, diameter_min: 21.9, diameter_max: 22.1}
+    - {kind: pitch_circle, description: bolt circle 295, value: 295, diameter_min: 21.9, diameter_max: 22.1}
 
 - id: dp15-weld-neck-dn50
   rows: [DP-15]
@@ -308,7 +308,7 @@
     - {kind: extent, description: outer diameter 165, value: 165}
     - {kind: extent, description: height 48, value: 48}
     - {kind: holes, description: four 18 holes, count: 4, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 125, value: 125, diameter_min: 17.9, diameter_max: 18.1}
 
 - id: dp15-weld-neck-dn80
   rows: [DP-15]
@@ -317,7 +317,7 @@
     - {kind: extent, description: outer diameter 200, value: 200}
     - {kind: extent, description: height 50, value: 50}
     - {kind: holes, description: eight 18 holes, count: 8, diameter_min: 17.9, diameter_max: 18.1}
-    - {kind: hole_spacing, description: bolt circle 160, value: 160, diameter_min: 17.9, diameter_max: 18.1}
+    - {kind: pitch_circle, description: bolt circle 160, value: 160, diameter_min: 17.9, diameter_max: 18.1}
 
 - id: dp15-asme-nps2
   rows: [DP-15]
@@ -325,7 +325,7 @@
   checks:
     - {kind: extent, description: outer diameter 152.4, value: 152.4}
     - {kind: holes, description: four 19.05 holes, count: 4, diameter_min: 18.95, diameter_max: 19.15}
-    - {kind: hole_spacing, description: bolt circle 120.65, value: 120.65, diameter_min: 18.95, diameter_max: 19.15}
+    - {kind: pitch_circle, description: bolt circle 120.65, value: 120.65, diameter_min: 18.95, diameter_max: 19.15}
 
 - id: dp15-asme-nps4
   rows: [DP-15]
@@ -333,7 +333,7 @@
   checks:
     - {kind: extent, description: outer diameter 228.6, value: 228.6}
     - {kind: holes, description: eight 19.05 holes, count: 8, diameter_min: 18.95, diameter_max: 19.15}
-    - {kind: hole_spacing, description: bolt circle 190.5, value: 190.5, diameter_min: 18.95, diameter_max: 19.15}
+    - {kind: pitch_circle, description: bolt circle 190.5, value: 190.5, diameter_min: 18.95, diameter_max: 19.15}
 
 - id: dp15-iso5211-f07
   rows: [DP-15]
@@ -341,7 +341,7 @@
   checks:
     - {kind: extent, description: square 90, value: 90}
     - {kind: holes, description: four 9 holes, count: 4, diameter_min: 8.9, diameter_max: 9.1}
-    - {kind: hole_spacing, description: bolt circle 70, value: 70, diameter_min: 8.9, diameter_max: 9.1}
+    - {kind: pitch_circle, description: bolt circle 70, value: 70, diameter_min: 8.9, diameter_max: 9.1}
 
 - id: dp15-iso5211-f10
   rows: [DP-15]
@@ -349,7 +349,7 @@
   checks:
     - {kind: extent, description: square 125, value: 125}
     - {kind: holes, description: four 11 holes, count: 4, diameter_min: 10.9, diameter_max: 11.1}
-    - {kind: hole_spacing, description: bolt circle 102, value: 102, diameter_min: 10.9, diameter_max: 11.1}
+    - {kind: pitch_circle, description: bolt circle 102, value: 102, diameter_min: 10.9, diameter_max: 11.1}
 
 - id: dp15-iec-ff130
   rows: [DP-15]
@@ -357,7 +357,7 @@
   checks:
     - {kind: extent, description: outer diameter 160, value: 160}
     - {kind: holes, description: four 10 holes, count: 4, diameter_min: 9.9, diameter_max: 10.1}
-    - {kind: hole_spacing, description: pitch circle 130, value: 130, diameter_min: 9.9, diameter_max: 10.1}
+    - {kind: pitch_circle, description: pitch circle 130, value: 130, diameter_min: 9.9, diameter_max: 10.1}
 
 - id: dp15-iec-ff165
   rows: [DP-15]
@@ -365,7 +365,7 @@
   checks:
     - {kind: extent, description: outer diameter 200, value: 200}
     - {kind: holes, description: four 12 holes, count: 4, diameter_min: 11.9, diameter_max: 12.1}
-    - {kind: hole_spacing, description: pitch circle 165, value: 165, diameter_min: 11.9, diameter_max: 12.1}
+    - {kind: pitch_circle, description: pitch circle 165, value: 165, diameter_min: 11.9, diameter_max: 12.1}
 
 - id: dp15-duct-frame
   rows: [DP-15]
@@ -411,7 +411,7 @@
     - {kind: extent, description: thickness 3, value: 3}
     - {kind: holes, description: centre hole 12, count: 1, diameter_min: 11.9, diameter_max: 12.1}
     - {kind: holes, description: four motor holes, count: 4, diameter_min: 3.15, diameter_max: 3.25}
-    - {kind: hole_spacing, description: motor bolt circle 25, value: 25, diameter_min: 3.15, diameter_max: 3.25}
+    - {kind: pitch_circle, description: motor bolt circle 25, value: 25, diameter_min: 3.15, diameter_max: 3.25}
     - {kind: holes, description: four arm holes, count: 4, diameter_min: 4.4, diameter_max: 4.6}
     - {kind: hole_spacing, description: arm square 40, value: 40, diameter_min: 4.4, diameter_max: 4.6}
 

@@ -3,15 +3,17 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
-from build123d import CenterOf, GeomType, Location, Shape, Vector
+from build123d import GeomType, Location, Shape, Vector
 from OCP.BRepAdaptor import BRepAdaptor_Surface
+from OCP.BRepGProp import BRepGProp
 from OCP.BRepTools import BRepTools
+from OCP.GProp import GProp_GProps
 
 from scriber_geometry.models import HoleInfo, PartMetrics, Placement
 
-FULL_TURN = 2 * math.pi - 1e-3
-# a bore cut by a keyway (or a flat) keeps one face over at least three quarters of a turn; fillets and slot ends span half or less
-NOTCHED_TURN = 1.5 * math.pi
+# a bore cut by keys, a keyway or a flat keeps arcs over five sixths of a turn at one depth; a pocket ringed by spokes,
+# fillets and slot ends keep less, and arcs at different depths (two pockets on one axis) are not added up
+BORE_TURN = 5 / 3 * math.pi
 
 
 @dataclass(frozen=True)
@@ -20,28 +22,31 @@ class ConcaveCylinder:
     axis: Vector
     origin: Vector
     span: float
-    widest: float
     heights: list[float]
     point: Vector
 
     @property
     def bore(self) -> bool:
-        return self.span >= FULL_TURN or self.widest >= NOTCHED_TURN
+        return self.span >= BORE_TURN
 
 
 def part_metrics(part_id: str, shape: Shape[Any]) -> PartMetrics:
     box = shape.bounding_box()
+    # OCCT's default integration under-reads B-spline bodies (lofted wings by about 25%); ask for a set accuracy
+    props = GProp_GProps()
+    BRepGProp.VolumeProperties_s(shape.wrapped, props, 1e-6, True)
+    centre = props.CentreOfMass()
     return PartMetrics(
         id=part_id,
         name=shape.label or part_id,
-        volume=shape.volume,
+        volume=props.Mass(),
         bbox_min=_t(box.min),
         bbox_size=_t(box.size),
         solids=len(shape.solids()),
         faces=len(shape.faces()),
         valid=shape.is_valid,
         holes=holes(shape),
-        center_of_mass=_t(shape.center(CenterOf.MASS)),
+        center_of_mass=(centre.X(), centre.Y(), centre.Z()),
         placement=placement(shape.location),
     )
 
@@ -87,9 +92,24 @@ def concave_cylinders(shape: Shape[Any]) -> list[ConcaveCylinder]:
     out = []
     for key, faces in groups.items():
         radius, d, loc = meta[key]
-        spans = [s for s, _, _ in faces]
-        out.append(ConcaveCylinder(radius, d, loc, sum(spans), max(spans), [t for _, ts, _ in faces for t in ts], faces[0][2]))
+        rings = _rings(faces)
+        span = max(sum(s for s, _, _ in ring) for ring in rings)
+        bores = [ring for ring in rings if sum(s for s, _, _ in ring) >= BORE_TURN] or rings
+        out.append(ConcaveCylinder(radius, d, loc, span, [t for ring in bores for _, ts, _ in ring for t in ts], faces[0][2]))
     return out
+
+
+def _rings(faces: list[tuple[float, list[float], Vector]]) -> list[list[tuple[float, list[float], Vector]]]:
+    # faces whose depth ranges overlap form one ring around the axis
+    rings: list[list[tuple[float, list[float], Vector]]] = []
+    top = -math.inf
+    for face in sorted(faces, key=lambda f: min(f[1])):
+        if rings and min(face[1]) < top - 1e-6:
+            rings[-1].append(face)
+        else:
+            rings.append([face])
+        top = max(top, max(face[1])) if len(rings[-1]) > 1 else max(face[1])
+    return rings
 
 
 def _t(v: Vector) -> tuple[float, float, float]:

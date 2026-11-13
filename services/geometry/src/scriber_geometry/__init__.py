@@ -22,6 +22,7 @@ from scriber_geometry.models import (
     SketchDof,
     SketchFrame,
     StepMetadata,
+    ThreadInfo,
 )
 from scriber_geometry.onshape_export import UnsupportedExportError
 from scriber_geometry.reconstruct import reconstruct_mesh
@@ -53,6 +54,7 @@ __all__ = [
     "SketchFrame",
     "SliceReport",
     "StepMetadata",
+    "ThreadInfo",
     "UnsupportedExportError",
     "assembly_mass",
     "density",

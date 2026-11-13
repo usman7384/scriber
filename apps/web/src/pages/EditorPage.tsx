@@ -163,6 +163,7 @@ export function EditorPage() {
     ["GLB", "glb"],
     [t.deliver.script, "py"],
     [t.deliver.ir, "ir"],
+    ...(version.files.dxf ? ([["DXF", "dxf"]] as [string, ExportFormat][]) : []),
   ];
   const n = tally(version);
   const slicer = tools?.prusaslicer && version.files.stl ? print : undefined;

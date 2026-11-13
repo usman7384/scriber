@@ -9,12 +9,15 @@ from typing import Any
 from build123d import Compound, Shape, export_gltf, export_step, export_stl
 
 from scriber_geometry.dfm import dfm_findings
+from scriber_geometry.flats import export_flats
 from scriber_geometry.imports import describe, step_parts
 from scriber_geometry.joints import interferences, mate_checks
 from scriber_geometry.metrics import part_metrics
+from scriber_geometry.models import Finding
 from scriber_geometry.sections import span_sections
 from scriber_geometry.step_meta import read_step, write_step
 from scriber_geometry.structure import part_structure
+from scriber_geometry.threads import thread_faces, thread_infos
 from scriber_geometry.thumbnail import render_thumbnail
 from scriber_ir import RuleSet
 
@@ -45,18 +48,33 @@ def run(source: str, out_dir: Path, title: str, rules: RuleSet, materials: dict[
     model = Compound(label=title, children=list(parts.values()))
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {"step": out_dir / "model.step", "stl": out_dir / "model.stl", "glb": out_dir / "model.glb"}
-    faces = namespace.get("FACES", {})
-    if faces or any(materials.values()):
+    records = namespace.get("THREADS", [])
+    faces = {
+        pid: {**namespace.get("FACES", {}).get(pid, {}), **thread_faces(s, [r for r in records if r[0] == pid])} for pid, s in parts.items()
+    }
+    if any(faces.values()) or any(materials.values()):
         write_step(parts, title, faces, materials, files["step"])
     else:
         export_step(model, files["step"])
     export_stl(model, files["stl"])
     export_gltf(model, str(files["glb"]), binary=True)
-    metrics = {pid: part_metrics(pid, s) for pid, s in parts.items()}
+    if flats := namespace.get("FLATS"):
+        files["dxf"] = export_flats(flats, out_dir / "flat.dxf")
+    threads = thread_infos(records)
+    metrics = {pid: part_metrics(pid, s).model_copy(update={"threads": threads.get(pid, [])}) for pid, s in parts.items()}
     reply: dict[str, Any] = {
         "files": {k: str(v) for k, v in files.items()},
         "parts": [m.model_dump() for m in metrics.values()],
-        "findings": [f.model_dump() for pid, s in parts.items() for f in dfm_findings(s, metrics[pid], rules)],
+        "findings": [f.model_dump() for pid, s in parts.items() for f in dfm_findings(s, metrics[pid], rules)]
+        + [
+            Finding(rule_id="blend_skipped", severity="warning", message=f"{fid} left sharp: {err}").model_dump()
+            for fid, err in namespace.get("SKIPPED", [])
+        ]
+        + [
+            Finding(rule_id="GEO-ONE-SOLID", severity="error", message=f"feature {fid!r} {what}", part=pid).model_dump()
+            for pid, fid, what in namespace.get("LOOSE", [])
+            if metrics[pid].solids != 1
+        ],
     }
     if mates is not None:
         checks, overlaps = mate_checks(parts, mates, namespace.get("SLACK", {})), interferences(parts)
@@ -75,21 +93,15 @@ def solids(source: str) -> tuple[dict[str, Shape[Any]], dict[str, Any]]:
 
 def sketch_frames(source: str) -> list[dict[str, Any]]:
     namespace = _load(source)
-    ref, extrude, seen = namespace["_ref"], namespace["_extrude"], []
+    ref, seen = namespace["_ref"], []
 
     def recording(part: Any, features: Any, datums: Any, name: str, offset: float) -> Any:
         pl, out = ref(part, features, datums, name, offset)
         seen.append({"ref": name, "origin": _vec(pl.origin), "x_dir": _vec(pl.x_dir), "z_dir": _vec(pl.z_dir), "out": out})
         return pl, out
 
-    def facing(part: Any, sk: Any, pl: Any, *rest: Any) -> Any:
-        # build123d extrudes along the face normal, which a clockwise outline turns against the plane normal
-        signs = {f.normal_at().dot(pl.z_dir) > 0 for f in sk.faces()}
-        seen[-1]["normal"] = 1 if signs == {True} else -1 if signs == {False} else 0
-        return extrude(part, sk, pl, *rest)
-
-    # model functions look these up in their globals at call time, so the swap sees every sketch in feature order
-    namespace["_ref"], namespace["_extrude"] = recording, facing
+    # model functions look this up in their globals at call time, so the swap sees every sketch in feature order
+    namespace["_ref"] = recording
     namespace["build"]()
     return seen
 
@@ -121,7 +133,7 @@ OPS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "frames": lambda r: {"frames": sketch_frames(r["source"])},
     "structure": lambda r: {"parts": structure(r["source"])},
     "sections": lambda r: {"sections": span_sections(Path(r["path"]), r["ys"])},
-    "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"]))},
+    "thumbnail": lambda r: {"png": str(render_thumbnail(Path(r["path"]), Path(r["png"]), r["size"], r.get("view", "iso")))},
 }
 
 

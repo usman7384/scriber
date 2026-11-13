@@ -11,8 +11,8 @@ JobStatus = Literal["queued", "running", "done", "failed"]
 Origin = Literal[
     "generate", "refine", "edit", "params", "restore", "context", "variant", "suggestion", "design", "sizing", "fork", "material"
 ]
-FileKind = Literal["step", "stl", "glb", "py", "ir"]
-ExportKind = Literal["step", "stl", "glb", "py", "ir", "fcstd"]
+FileKind = Literal["step", "stl", "glb", "py", "ir", "dxf"]
+ExportKind = Literal["step", "stl", "glb", "py", "ir", "dxf", "fcstd"]
 HookEvent = Literal["version.created", "job.failed", "version.stale"]
 
 
@@ -78,6 +78,10 @@ class Param(Frozen):
     max: float | None = None
     description: str
     provenance: Provenance
+    fit: str | None = None
+    tol_plus: float | None = None
+    tol_minus: float | None = None
+    reference: bool = False
 
 
 class Check(Frozen):
@@ -114,6 +118,7 @@ class VersionData(Frozen):
     inputs: list[Input] = []
     used: list[str] = []
     thumbnail: bool = False
+    flat: bool = False
     changes: DesignDiff | None = None
 
 

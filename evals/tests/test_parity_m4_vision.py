@@ -71,9 +71,10 @@ FLANGE = design(
 RIGHT = json.dumps({"findings": [], "matches": True})
 WRONG = json.dumps({"findings": ["one of the holes the request asks for is missing"], "matches": False})
 ANSWERS: dict[str, tuple[list[str], list[str]]] = {
-    "IN-4": ([NO_REQS], [L_BRACKET]),
-    "IN-5": ([NO_REQS], [SERVO]),
-    "IN-6": ([NO_REQS], [FLANGE]),
+    # vision answers: requirements read from the image, the design, then the critic's verdict on the built part
+    "IN-4": ([NO_REQS], [NO_REQS, L_BRACKET, RIGHT]),
+    "IN-5": ([NO_REQS], [NO_REQS, SERVO, RIGHT]),
+    "IN-6": ([NO_REQS], [NO_REQS, FLANGE, RIGHT]),
     "VM-10": ([], [RIGHT, WRONG] * 5),
 }
 

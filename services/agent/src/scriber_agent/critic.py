@@ -13,6 +13,7 @@ class Critique(BaseModel):
     matches: bool
 
 
-def critique(request: str, views: Sequence[bytes], llm: LLM, seed: int = 0) -> Critique:
-    messages = [Message(role="system", content=CRITIC_RULES), Message(role="user", content=critic_message(request), images=tuple(views))]
+def critique(request: str, views: Sequence[bytes], llm: LLM, seed: int = 0, reference: Sequence[bytes] = ()) -> Critique:
+    content = critic_message(request, len(reference))
+    messages = [Message(role="system", content=CRITIC_RULES), Message(role="user", content=content, images=(*reference, *views))]
     return Critique.model_validate_json(llm.chat(messages, Critique.model_json_schema(), seed))
