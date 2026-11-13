@@ -271,3 +271,33 @@ def test_a_set_aside_check_does_not_fail_the_verdict(tmp_path: Path) -> None:
     steps = list(generate("plate 80 x 60 x 5 on a 15 mm base", llm, FakeGeometry(), tmp_path, max_repairs=5))
     result = steps[-1].result
     assert steps[-1].kind == "done" and result is not None and result.ok and result.disputed == ["base 15"]
+
+
+def test_a_dense_drawing_is_built_up_in_stages(tmp_path: Path) -> None:
+    whole = json.loads(design())
+    hole = whole["parts"][0]["features"].pop()
+    plan = {"stages": [{"name": "plate", "views": "top", "features": "the plate"}, {"name": "holes", "views": "top", "features": "4x M6"}]}
+    holes = json.dumps({"part": "p", "features": [hole]})
+    broken = json.dumps({"part": "q", "features": [hole]})
+    text, vision = FakeLLM([REQS]), FakeLLM([NO_REQS, json.dumps(plan), json.dumps(whole), broken, holes, MATCH])
+    geometry = FakeGeometry()
+    steps = list(generate("bracket as drawn", text, geometry, tmp_path, images=(b"png",), vision=vision, staged=True))
+    assert [s.kind for s in steps] == ["requirements", "plan", "build", "build", "emit", "done"]
+    assert steps[1].message == "1. plate; 2. holes" and "stage 2, holes: built" in steps[3].message
+    assert "the parts are ['p']" in vision.calls[4][-1].content
+    assert "built up in stages" in steps[4].message
+    assert [f.id for f in geometry.built[-1].parts[0].features] == ["e", "h"]
+    assert vision.responses == []
+
+
+def test_a_long_design_is_repaired_by_its_changes(tmp_path: Path) -> None:
+    long = json.loads(design())
+    long["params"][1] |= {"value": 3.0, "description": "hole " * 3000}
+    fix = json.dumps({"part": "p", "params": [{"name": "hole_d", "value": 6.6, "unit": "mm"}]})
+    llm = FakeLLM([REQS, json.dumps(long), fix])
+    geometry = FakeGeometry()
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, geometry, tmp_path))
+    assert [s.kind for s in steps] == ["requirements", "emit", "check", "repair", "done"]
+    repair = llm.calls[2]
+    assert repair[-2].role == "assistant" and "too long to write again" in repair[-1].content and "4x M6" in repair[-1].content
+    assert geometry.built[-1].param_values()["hole_d"] == 6.6 and len(geometry.built[-1].parts[0].features) == 2

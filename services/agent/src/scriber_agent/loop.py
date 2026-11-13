@@ -1,7 +1,8 @@
 import json
 import time
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Generator, Iterator, Sequence
 from dataclasses import dataclass, replace
+from functools import partial
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
@@ -23,6 +24,7 @@ from scriber_agent.prompts import (
     resample_message,
 )
 from scriber_agent.requirements import CheckResult, Requirement, RequirementList, check
+from scriber_agent.stages import PLAN_NOTE, Changes, StagePlan, change_repair, merged, stage_message, stage_repair
 from scriber_agent.standards import reference_data
 from scriber_context import Fact
 from scriber_geometry import Artifact, BuildError, Finding
@@ -51,12 +53,16 @@ PLACE_NOTE = (
     "on the part where it seats; the part is placed so that this connector meets {mate!r}, z axes aligned."
 )
 STUCK_TEMPERATURE = 0.9
+# a stage that still does not build after this many answers is left out; the full design's repairs can still add it
+STAGE_TRIES = 2
+# a design longer than this is repaired by its changes: writing it whole again can run past the output limit
+LONG_DESIGN = 12_000
 # a built part is compared with the input image at most this often, so a noisy critic cannot use up every repair
 REVIEWS = 2
 # a check that fails this many built attempts in a row is more likely misread than unmet, so it stops driving repairs
 STUCK = 3
 SKIPPED = "blend_skipped"
-StepKind = Literal["requirements", "emit", "validate", "build", "check", "repair", "done", "failed"]
+StepKind = Literal["requirements", "plan", "emit", "validate", "build", "check", "repair", "done", "failed"]
 Build = Callable[[Design, Path], Artifact]
 
 
@@ -110,6 +116,7 @@ def generate(
     images: tuple[bytes, ...] = (),
     thinking: Thinking | None = None,
     vision: LLM | None = None,
+    staged: bool = False,
 ) -> Iterator[Step]:
     clock = _Clock()
     stated = extract_requirements(prompt, llm, seed)
@@ -133,7 +140,8 @@ def generate(
 
     review = _reviewer(geometry, vision, images, prompt, seed) if images and vision else None
     run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking, review=review)
-    yield from _attempts(run, messages, json_schema(), decode, reqs, prompt)
+    first = (yield from _staged(run, messages, decode)) if staged else None
+    yield from _attempts(run, messages, json_schema(), decode, reqs, prompt, first)
 
 
 def refine(
@@ -258,6 +266,7 @@ def _attempts(
     decode: Callable[[str], Design],
     reqs: list[Requirement],
     request: str = "",
+    first: str | None = None,
 ) -> Iterator[Step]:
     best: tuple[tuple[bool, int], Result] | None = None
     told: set[str] = set()
@@ -267,27 +276,36 @@ def _attempts(
     misses: dict[str, int] = {}
     set_aside: set[str] = set()
     prompt = fresh = messages
+    base: Design | None = None
+    ask = schema
     budget = THINKING_BUDGET[run.thinking] if run.thinking else None
     thought = f", thinking {run.thinking} with a {budget} token reasoning budget" if run.thinking else ""
     for attempt in range(1, run.max_repairs + 2):
         seed = run.seed + attempt - 1
-        raw = run.llm.chat(prompt, schema, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE, budget)
+        given = first if attempt == 1 else None
+        raw = given or run.llm.chat(prompt, ask, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE, budget)
         if not raw.strip():
             # the output limit ran out, usually on reasoning: ask once more without spending a repair
-            raw = run.llm.chat([*prompt, Message(role="user", content=repair_message("", []))], schema, seed, REPAIR_TEMPERATURE, budget)
+            again = change_repair(["the previous answer was empty"]) if base else repair_message("", [])
+            raw = run.llm.chat([*prompt, Message(role="user", content=again)], ask, seed, REPAIR_TEMPERATURE, budget)
         resampled = bool(raw.strip()) and raw in seen
         if resampled:
             # a sharply tuned model copies the quoted answer back, so ask again without quoting it
-            raw = run.llm.chat(fresh, schema, seed, STUCK_TEMPERATURE, budget)
+            raw = run.llm.chat(fresh, ask, seed, STUCK_TEMPERATURE, budget)
         seen.add(raw)
-        note = thought + (", re-sampled because it repeated an earlier answer" if resampled else "")
+        note = (
+            thought
+            + (", re-sampled because it repeated an earlier answer" if resampled else "")
+            + (", built up in stages" if given else "")
+        )
         yield Step(
             kind="emit" if attempt == 1 else "repair", message=f"answer of {len(raw)} chars{note}", attempt=attempt, elapsed_ms=run.clock()
         )
         attempt_dir = run.out_dir / f"attempt_{attempt}"
         attempt_dir.mkdir(parents=True, exist_ok=True)
         (attempt_dir / "answer.json").write_text(raw, encoding="utf-8")
-        problems, design, artifact, checks = evaluate(raw, decode, reqs, run.build, attempt_dir, request)
+        read = decode if base is None else partial(_changed, base)
+        problems, design, artifact, checks = evaluate(raw, read, reqs, run.build, attempt_dir, request)
         for c in checks:
             misses[c.requirement.description] = 0 if c.passed else misses.get(c.requirement.description, 0) + 1
         stuck = {d for d, n in misses.items() if n >= STUCK} - set_aside
@@ -329,12 +347,74 @@ def _attempts(
         if best is None or rank >= best[0]:
             best = (rank, last)
         yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
-        prompt = [*messages, Message(role="user", content=repair_message(raw, problems))]
-        fresh = [*messages, Message(role="user", content=resample_message(problems))]
+        # a long design is not written again: the repair answers only its changes, merged into this design
+        base = design if design is not None and len(answer_json(design)) > LONG_DESIGN else None
+        ask = schema if base is None else Changes.model_json_schema()
+        if base is None:
+            prompt = [*messages, Message(role="user", content=repair_message(raw, problems))]
+            fresh = [*messages, Message(role="user", content=resample_message(problems))]
+        else:
+            prompt = fresh = [
+                *messages,
+                Message(role="assistant", content=answer_json(base)),
+                Message(role="user", content=change_repair(problems)),
+            ]
     assert best is not None
     kept = best[1]
     message = f"gave up after {run.max_repairs + 1} attempts; kept attempt {kept.attempts}, the best one"
     yield Step(kind="failed", message=message, attempt=run.max_repairs + 1, elapsed_ms=run.clock(), result=kept)
+
+
+def _changed(base: Design, raw: str) -> Design:
+    return merged(base, Changes.model_validate_json(raw))
+
+
+def _staged(run: _Run, messages: list[Message], decode: Callable[[str], Design]) -> Generator[Step, None, str | None]:
+    # a dense drawing in one answer takes many minutes and drops details; stages keep each answer short
+    budget = THINKING_BUDGET[run.thinking] if run.thinking else None
+    raw = run.llm.chat([*messages, Message(role="user", content=PLAN_NOTE)], StagePlan.model_json_schema(), run.seed, 0.0, budget)
+    try:
+        stages = StagePlan.model_validate_json(raw).stages
+    except ValidationError:
+        return None
+    if len(stages) < 2:
+        return None
+    yield Step(kind="plan", message="; ".join(f"{i}. {s.name}" for i, s in enumerate(stages, 1)), attempt=0, elapsed_ms=run.clock())
+    design: Design | None = None
+    for number, stage in enumerate(stages, 1):
+        history = messages if design is None else [*messages, Message(role="assistant", content=answer_json(design))]
+        prompt = [*history, Message(role="user", content=stage_message(stage, number, len(stages)))]
+        schema = json_schema() if design is None else Changes.model_json_schema()
+        for _ in range(STAGE_TRIES):
+            answer = run.llm.chat(prompt, schema, run.seed, 0.0, budget)
+            candidate, problems = _stage_build(answer, design, decode, run.build, run.out_dir / f"stage_{number}")
+            if not problems:
+                design = candidate
+                break
+            prompt = [*prompt, Message(role="assistant", content=answer), Message(role="user", content=stage_repair(problems, number))]
+        done = "built" if not problems else "left out: " + "; ".join(problems[:3])
+        yield Step(kind="build", message=f"stage {number}, {stage.name}: {done}", attempt=0, elapsed_ms=run.clock())
+    return answer_json(design) if design else None
+
+
+def _stage_build(
+    answer: str, design: Design | None, decode: Callable[[str], Design], build: Build, out_dir: Path
+) -> tuple[Design | None, list[str]]:
+    try:
+        candidate = decode(answer) if design is None else merged(design, Changes.model_validate_json(answer))
+    except ValidationError as e:
+        return None, [f"{_where(answer, err['loc'])}: {err['msg']}" for err in e.errors()[:8]]
+    except ValueError as e:
+        return None, [str(e)]
+    # parameters a later stage will use are not unused yet
+    errors = [str(e) for e in validate(candidate) if "defined but not used" not in e.message]
+    if errors:
+        return None, errors[:8]
+    try:
+        build(candidate, out_dir)
+    except BuildError as e:
+        return None, [_kernel_text(e)]
+    return candidate, []
 
 
 def evaluate(
@@ -344,7 +424,7 @@ def evaluate(
         design = drop_unused_params(normalize(decode(raw)))
     except ValidationError as e:
         return [f"{_where(raw, err['loc'])}: {err['msg']}" for err in e.errors()[:8]], None, None, []
-    except (ParamError, ComponentError) as e:
+    except (ParamError, ComponentError, ValueError) as e:
         return [str(e)], None, None, []
     design = unquote(design, request) if request else design
     errors = validate(design)

@@ -5,7 +5,7 @@ from scriber_ir.diff import DesignDiff, diff
 from scriber_ir.drivers import FaceDriver, face_driver
 from scriber_ir.expr import ExprError, evaluate
 from scriber_ir.materials import Material, material
-from scriber_ir.model import Assembly, Connector, Design, Joint, Param, Process, Provenance
+from scriber_ir.model import Assembly, Connector, Datum, Design, Feature, Joint, Param, Process, Provenance, Sketch
 from scriber_ir.normalize import drop_unused_params, normalize
 from scriber_ir.params import ParamError, apply_params, label
 from scriber_ir.rules import Rule, RuleKind, RuleSet, ShapeDescriptor
@@ -17,10 +17,12 @@ __all__ = [
     "Assembly",
     "ComponentError",
     "Connector",
+    "Datum",
     "Design",
     "DesignDiff",
     "ExprError",
     "FaceDriver",
+    "Feature",
     "IrError",
     "Joint",
     "Material",
@@ -32,6 +34,7 @@ __all__ = [
     "RuleKind",
     "RuleSet",
     "ShapeDescriptor",
+    "Sketch",
     "answer_json",
     "apply_params",
     "compile_design",

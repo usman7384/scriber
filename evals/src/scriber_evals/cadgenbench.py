@@ -53,13 +53,15 @@ def orient(step_in: Path, step_out: Path) -> None:
     export_step(shape.moved(Location(frame).inverse()), step_out)
 
 
-def attempt(f: Fixture, llm: LLM, vision: LLM, geometry: LocalGeometry, run: Path, work: Path, repairs: int) -> Outcome:
+def attempt(
+    f: Fixture, llm: LLM, vision: LLM, geometry: LocalGeometry, run: Path, work: Path, repairs: int, staged: bool = False
+) -> Outcome:
     (run / f.id).mkdir(parents=True, exist_ok=True)  # an empty folder is scored as missing
     if f.editing:
         return Outcome(id=f.id, status="skipped", message="editing tasks need STEP import, which Scriber does not have")
     start = time.monotonic()
     images = tuple(p.read_bytes() for p in f.images)
-    steps = list(generate(f.prompt, llm, geometry, work / f.id, repairs, images=images, vision=vision))
+    steps = list(generate(f.prompt, llm, geometry, work / f.id, repairs, images=images, vision=vision, staged=staged))
     seconds = round(time.monotonic() - start, 1)
     (work / f.id / "steps.json").write_text(dump_steps(steps), encoding="utf-8")
     attempts = max((s.attempt for s in steps), default=0)
@@ -86,6 +88,7 @@ def main() -> None:
     p.add_argument("--model", help="designs the part; defaults to llm.default")
     p.add_argument("--vision", help="reads the drawings; defaults to --model when it is hosted, else llm.vision")
     p.add_argument("--ids", nargs="*", default=[], help="only these fixtures")
+    p.add_argument("--staged", action="store_true", help="plan dense drawings into stages: the body first, then features by view")
     p.add_argument("--out", type=Path, default=Path("evals/results"))
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
     args = p.parse_args()
@@ -103,7 +106,7 @@ def main() -> None:
         with (run.parent / f"{run.name}.jsonl").open("w", encoding="utf-8") as log:
             for f in chosen:
                 try:
-                    outcome = attempt(f, llm, vision, geometry, run, work, config.agent.max_repairs)
+                    outcome = attempt(f, llm, vision, geometry, run, work, config.agent.max_repairs, args.staged)
                 except Exception as e:  # a model-server error (quota, overload, offline) fails this task, not the run
                     outcome = salvage(f.id, run, work, f"{type(e).__name__}: {e}"[:300])
                 log.write(outcome.model_dump_json() + "\n")

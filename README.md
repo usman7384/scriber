@@ -416,7 +416,7 @@ hf download HuggingAI4Engineering/cadgenbench-data --repo-type dataset --local-d
 uv run scriber-cadgenbench data/cadgenbench --model gemini-3.8-flash --vision gemini-3.8-flash
 ```
 
-Each drawing goes through the normal path (model, IR, build, checks, repair), and the built part is written as `<task>/output.step`, centred with its longest side along X as the grader recommends. Progress goes to a `.jsonl` file next to the run folder. Check and package the folder with CADGenBench's own tools, then upload the zip on the [leaderboard](https://huggingface.co/spaces/HuggingAI4Engineering/CADGenBench):
+Each drawing goes through the normal path (model, IR, build, checks, repair), and the built part is written as `<task>/output.step`, centred with its longest side along X as the grader recommends. Add `--staged` for dense drawings: the model plans the part into stages (the body first, then features read view by view) and answers each stage separately, and a design too long to write again is repaired by its changes only. If a task stops on a model-server error after a part has built, the newest built attempt is still submitted. Progress goes to a `.jsonl` file next to the run folder. Check and package the folder with CADGenBench's own tools, then upload the zip on the [leaderboard](https://huggingface.co/spaces/HuggingAI4Engineering/CADGenBench):
 
 ```bash
 uvx --from git+https://github.com/huggingface/cadgenbench python data/cadgenbench/sanity_check_submission.py evals/results/<run>/101/output.step
