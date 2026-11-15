@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
+from typing import Any
 
 from scriber_agent import FakeLLM, generate, refine
+from scriber_agent.llm import Usage
 from scriber_geometry import Artifact, BuildError, Finding, HoleInfo, PartMetrics
 from scriber_ir import Design, Process, RuleSet
 
@@ -271,6 +273,10 @@ def test_a_set_aside_check_does_not_fail_the_verdict(tmp_path: Path) -> None:
     steps = list(generate("plate 80 x 60 x 5 on a 15 mm base", llm, FakeGeometry(), tmp_path, max_repairs=5))
     result = steps[-1].result
     assert steps[-1].kind == "done" and result is not None and result.ok and result.disputed == ["base 15"]
+    assert (
+        "2/3 requirement checks passed, 1 set aside as probably misread" in steps[-1].message
+        or "set aside as probably misread" in steps[-1].message
+    )
 
 
 def test_a_dense_drawing_is_built_up_in_stages(tmp_path: Path) -> None:
@@ -279,12 +285,12 @@ def test_a_dense_drawing_is_built_up_in_stages(tmp_path: Path) -> None:
     plan = {"stages": [{"name": "plate", "views": "top", "features": "the plate"}, {"name": "holes", "views": "top", "features": "4x M6"}]}
     holes = json.dumps({"part": "p", "features": [hole]})
     broken = json.dumps({"part": "q", "features": [hole]})
-    text, vision = FakeLLM([REQS]), FakeLLM([NO_REQS, json.dumps(plan), json.dumps(whole), broken, holes, MATCH])
+    text, vision = FakeLLM([REQS]), FakeLLM([NO_REQS, json.dumps(plan), json.dumps(whole), MATCH, broken, holes, MATCH])
     geometry = FakeGeometry()
     steps = list(generate("bracket as drawn", text, geometry, tmp_path, images=(b"png",), vision=vision, staged=True))
     assert [s.kind for s in steps] == ["requirements", "plan", "build", "build", "emit", "done"]
     assert steps[1].message == "1. plate; 2. holes" and "stage 2, holes: built" in steps[3].message
-    assert "the parts are ['p']" in vision.calls[4][-1].content
+    assert "the parts are ['p']" in vision.calls[5][-1].content
     assert "built up in stages" in steps[4].message
     assert [f.id for f in geometry.built[-1].parts[0].features] == ["e", "h"]
     assert vision.responses == []
@@ -301,3 +307,79 @@ def test_a_long_design_is_repaired_by_its_changes(tmp_path: Path) -> None:
     repair = llm.calls[2]
     assert repair[-2].role == "assistant" and "too long to write again" in repair[-1].content and "4x M6" in repair[-1].content
     assert geometry.built[-1].param_values()["hole_d"] == 6.6 and len(geometry.built[-1].parts[0].features) == 2
+
+
+class MeteredLLM(FakeLLM):
+    def __init__(self, responses: list[str]) -> None:
+        super().__init__(responses)
+        self.usage = Usage()
+
+    def chat(self, *args: Any, **kwargs: Any) -> str:
+        self.usage += Usage(input=1000, output=2500, thinking=700, cached=800)
+        return super().chat(*args, **kwargs)
+
+
+def test_each_answer_reports_the_tokens_it_used(tmp_path: Path) -> None:
+    llm = MeteredLLM([REQS, design("bad_name"), design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, FakeGeometry(), tmp_path))
+    answers = [s.message for s in steps if s.kind in ("emit", "repair")]
+    assert len(answers) == 2 and all("1,000 tokens in (800 cached), 2,500 out of which 700 thinking" in m for m in answers)
+
+
+class BrokenSecond(FakeGeometry):
+    # the second part it builds comes out in two pieces, as a feature that floats away would leave it
+    def build(self, d: Design, out_dir: Path, rules: RuleSet = NO_RULES, process: Process = "any") -> Artifact:
+        built = super().build(d, out_dir, rules, process)
+        if len(self.built) == 2:
+            split = Finding(rule_id="GEO-ONE-SOLID", severity="error", message="part has 2 solids", part="p")
+            return built.model_copy(update={"findings": [split]})
+        return built
+
+
+def test_a_part_in_two_pieces_does_not_win_on_a_short_problem_list(tmp_path: Path) -> None:
+    unsound = json.loads(design(length=70))
+    unsound["params"][1]["value"] = 3.0  # wrong length and wrong holes: two unmet checks
+    llm = FakeLLM([REQS, json.dumps(unsound), design()])
+    steps = list(generate("bracket 80 x 60, 4x M6", llm, BrokenSecond(), tmp_path, max_repairs=1))
+    assert steps[-1].kind == "failed" and "kept attempt 1" in steps[-1].message
+
+
+def test_stage_1_is_written_again_when_its_outline_does_not_match_the_drawing(tmp_path: Path) -> None:
+    def body(length: float) -> str:
+        whole = json.loads(design(length=length))
+        whole["parts"][0]["features"].pop()
+        return json.dumps(whole)
+
+    plan = {"stages": [{"name": "plate", "views": "top", "features": "the plate"}, {"name": "holes", "views": "top", "features": "4x M6"}]}
+    hole = json.loads(design())["parts"][0]["features"][-1]
+    short = json.dumps({"findings": ["the body is 50 mm long; the drawing gives 80 mm"], "matches": False})
+    vision = FakeLLM([NO_REQS, json.dumps(plan), body(50), short, body(80), MATCH, json.dumps({"part": "p", "features": [hole]}), MATCH])
+    geometry = FakeGeometry()
+    steps = list(generate("bracket as drawn", FakeLLM([REQS]), geometry, tmp_path, images=(b"png",), vision=vision, staged=True))
+    assert [s.kind for s in steps] == ["requirements", "plan", "check", "build", "build", "emit", "done"]
+    assert steps[2].message == "stage 1 outline: the body is 50 mm long; the drawing gives 80 mm"
+    again = vision.calls[4][-1].content
+    assert "measures 50.0 x 60.0 x 5.0 mm" in again and "does not match the drawing" in again
+    assert geometry.built[-1].param_values()["length"] == 80 and vision.responses == []
+
+
+def test_an_outline_that_keeps_failing_is_accepted_after_two_rewrites(tmp_path: Path) -> None:
+    whole = json.loads(design())
+    whole["parts"][0]["features"].pop()
+    plan = {"stages": [{"name": "plate", "views": "top", "features": "the plate"}, {"name": "holes", "views": "top", "features": "4x M6"}]}
+    hole = json.loads(design())["parts"][0]["features"][-1]
+    bad = json.dumps({"findings": ["wrong"], "matches": False})
+    answers = [NO_REQS, json.dumps(plan)]
+    answers += [
+        json.dumps(whole),
+        bad,
+        json.dumps(whole),
+        bad,
+        json.dumps(whole),
+        bad,
+        json.dumps({"part": "p", "features": [hole]}),
+        MATCH,
+    ]
+    vision = FakeLLM(answers)
+    steps = list(generate("bracket as drawn", FakeLLM([REQS]), FakeGeometry(), tmp_path, images=(b"png",), vision=vision, staged=True))
+    assert [s.kind for s in steps].count("check") == 3 and steps[-1].kind == "done" and vision.responses == []

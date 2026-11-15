@@ -2,12 +2,15 @@ import argparse
 import time
 from collections.abc import Iterator
 from pathlib import Path
+from typing import get_args
 
 import yaml
 from build123d import Location, Plane, Vector, export_step, import_step
 from pydantic import BaseModel
 
-from scriber_agent import LLM, dump_steps, generate
+from scriber_agent import LLM, Step, dump_steps, generate
+from scriber_agent.anthropic_llm import Effort
+from scriber_agent.llm import Usage, usage_of
 from scriber_cli.config import ModelOptions, llm_for, load
 from scriber_geometry import LocalGeometry
 
@@ -27,6 +30,7 @@ class Outcome(BaseModel):
     attempts: int = 0
     seconds: float = 0.0
     message: str = ""
+    tokens: str = ""
 
 
 def fixtures(data: Path) -> Iterator[Fixture]:
@@ -41,6 +45,16 @@ def last_built(task_dir: Path) -> Path | None:
     # a part that built but failed a check still beats an empty answer, so take the newest attempt with a STEP
     built = [d / "model.step" for d in task_dir.glob("attempt_*") if (d / "model.step").is_file()]
     return max(built, key=lambda s: int(s.parent.name.split("_")[1]), default=None)
+
+
+def kept_step(task_dir: Path, steps: list[Step]) -> Path | None:
+    # the part the loop judged best, not just the newest one that built
+    result = steps[-1].result if steps else None
+    if result is not None:
+        chosen = task_dir / f"attempt_{result.attempts}" / "model.step"
+        if chosen.is_file():
+            return chosen
+    return last_built(task_dir)
 
 
 def orient(step_in: Path, step_out: Path) -> None:
@@ -60,17 +74,23 @@ def attempt(
     if f.editing:
         return Outcome(id=f.id, status="skipped", message="editing tasks need STEP import, which Scriber does not have")
     start = time.monotonic()
+    metered = [llm] if vision is llm else [llm, vision]
+    spent = sum((usage_of(m) for m in metered), Usage())
     images = tuple(p.read_bytes() for p in f.images)
     steps = list(generate(f.prompt, llm, geometry, work / f.id, repairs, images=images, vision=vision, staged=staged))
     seconds = round(time.monotonic() - start, 1)
+    tokens = str(sum((usage_of(m) for m in metered), Usage()) - spent)
     (work / f.id / "steps.json").write_text(dump_steps(steps), encoding="utf-8")
     attempts = max((s.attempt for s in steps), default=0)
-    step = last_built(work / f.id)
+    step = kept_step(work / f.id, steps)
     if step is None:
-        return Outcome(id=f.id, status="not built", attempts=attempts, seconds=seconds, message=steps[-1].message[:300])
+        return Outcome(id=f.id, status="not built", attempts=attempts, seconds=seconds, message=steps[-1].message[:300], tokens=tokens)
     orient(step, run / f.id / "output.step")
-    status = "built" if steps[-1].kind == "done" else f"built ({step.parent.name}), checks failed"
-    return Outcome(id=f.id, status=status, attempts=attempts, seconds=seconds, message=steps[-1].message[:300])
+    result = steps[-1].result
+    aside = len(result.disputed) if result else 0
+    done = "built" if not aside else f"built, {aside} of {len(result.checks) if result else 0} checks set aside"
+    status = done if steps[-1].kind == "done" else f"built ({step.parent.name}), checks failed"
+    return Outcome(id=f.id, status=status, attempts=attempts, seconds=seconds, message=steps[-1].message[:300], tokens=tokens)
 
 
 def salvage(fid: str, run: Path, work: Path, error: str) -> Outcome:
@@ -88,15 +108,17 @@ def main() -> None:
     p.add_argument("--model", help="designs the part; defaults to llm.default")
     p.add_argument("--vision", help="reads the drawings; defaults to --model when it is hosted, else llm.vision")
     p.add_argument("--ids", nargs="*", default=[], help="only these fixtures")
+    p.add_argument("--effort", choices=get_args(Effort), help="how hard an Anthropic model works; default is the config's, low")
+    p.add_argument("--thinking", action="store_true", help="turn extended thinking on for Anthropic models; off by default")
     p.add_argument("--staged", action="store_true", help="plan dense drawings into stages: the body first, then features by view")
     p.add_argument("--out", type=Path, default=Path("evals/results"))
     p.add_argument("--config", type=Path, default=Path("config.yaml"))
     args = p.parse_args()
     config = load(args.config)
-    llm = llm_for(config, args.model)
+    llm = llm_for(config, args.model, args.effort, args.thinking)
     hosted = args.model is not None and config.llm.models.get(args.model, ModelOptions()).provider != "ollama"
     # a hosted model reads its own drawings; only a local text model needs the separate vision model
-    vision = llm_for(config, args.vision or (args.model if hosted else config.llm.vision))
+    vision = llm_for(config, args.vision or (args.model if hosted else config.llm.vision), args.effort, args.thinking)
     run = args.out / f"cadgenbench-{llm.name.replace(':', '_').replace('/', '_')}-{time.strftime('%Y%m%d-%H%M%S')}"
     work = run.with_name(run.name + "-work")
     chosen = [f for f in fixtures(args.data) if not args.ids or f.id in args.ids]
@@ -112,6 +134,8 @@ def main() -> None:
                 log.write(outcome.model_dump_json() + "\n")
                 log.flush()
                 print(f"{outcome.id}: {outcome.status} ({outcome.attempts} attempts, {outcome.seconds} s) {outcome.message}", flush=True)
+                if outcome.tokens:
+                    print(f"    tokens: {outcome.tokens}", flush=True)
     finally:
         geometry.close()
     print(f"submission folder: {run}")

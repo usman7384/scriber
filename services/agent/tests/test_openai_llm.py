@@ -85,3 +85,14 @@ def test_missing_key_fails_before_any_request(monkeypatch: pytest.MonkeyPatch) -
 
 def test_local_servers_need_no_key() -> None:
     assert "authorization" not in OpenAILLM("local", "http://127.0.0.1:1234/v1")._client.headers
+
+
+def test_no_output_limit_is_sent_unless_set_and_tokens_are_counted(monkeypatch: pytest.MonkeyPatch) -> None:
+    usage = {"prompt_tokens": 500, "completion_tokens": 900, "completion_tokens_details": {"reasoning_tokens": 400}}
+    reply = httpx.Response(200, json={"choices": [{"finish_reason": "stop", "message": {"content": "{}"}}], "usage": usage})
+    llm, seen = _llm(monkeypatch, reply, _answer("{}"))
+    llm.chat([Message(role="user", content="plate")], None)
+    assert "max_tokens" not in _body(seen[0]) and llm.usage.output == 900 and llm.usage.thinking == 400
+    llm.max_tokens = 2000
+    llm.chat([Message(role="user", content="plate")], None)
+    assert _body(seen[1])["max_tokens"] == 2000

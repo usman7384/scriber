@@ -16,15 +16,15 @@ llm:
     scriber-ir:0.8b-cx13: {num_ctx: 8192, think: false, few_shot: false}
     qwen2.5-coder:7b-instruct-q4_K_M: {num_ctx: 8192}
     # hosted reference models for comparison runs only (need ANTHROPIC_API_KEY or `ant auth login`; never the default)
-    claude-sonnet-5-5: {provider: anthropic, effort: high, max_tokens: 64000}
-    claude-opus-5-5: {provider: anthropic, effort: high, max_tokens: 64000}
-    claude-fable-5-1: {provider: anthropic, effort: high, max_tokens: 64000}
-    claude-fable-5-2: {provider: anthropic, effort: high, max_tokens: 64000}
+    claude-sonnet-5-5: {provider: anthropic}
+    claude-opus-5-5: {provider: anthropic}
+    claude-fable-5-1: {provider: anthropic}
+    claude-fable-5-2: {provider: anthropic}
     # OpenAI-compatible APIs, also for comparison runs only; the key is read from the named environment variable
-    gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
-    gemini-3.1-pro-preview: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
-    gemini-3.7-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
-    gemini-2.5-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY}
+    gemini-3.1-pro-preview: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY}
+    gemini-3.7-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY}
+    gemini-2.5-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY}
 embeddings:
   model: qwen3-embedding:0.6b
 agent:

@@ -361,7 +361,7 @@ Claude models are supported through Anthropic's API. Add an entry with `provider
 ```yaml
 llm:
   models:
-    claude-opus-5-5: {provider: anthropic, effort: high}
+    claude-opus-5-5: {provider: anthropic}
 ```
 
 ```bash
@@ -369,7 +369,7 @@ export ANTHROPIC_API_KEY=...   # read from the environment, never from config.ya
 uv run scriber --model claude-opus-5-5 generate "L-bracket, legs 40 and 30 mm, 4 mm thick, 25 mm wide, two M4 holes per leg"
 ```
 
-`effort` is one of `low`, `medium`, `high`, `xhigh` or `max`. Requests then leave your machine, so this is for comparison runs and is never the default.
+`effort` is one of `low`, `medium`, `high`, `xhigh` or `max` and defaults to `low`: the harness (checks, critic, repairs) does the verifying, so the model is not asked to reason hard on top of it. Extended thinking is a separate switch and stays off unless asked for (`--thinking` on `scriber-cadgenbench`, or the `thinking` level on a request). No output limit is sent unless you set `max_tokens`, so a long design can use the model's own maximum. Each answer's step reports the tokens it used, including thinking tokens. Requests then leave your machine, so this is for comparison runs and is never the default.
 
 To keep keys out of your shell history, copy `.env.example` to `.env` (git ignores it), fill in the keys and pass it to uv: `uv run --env-file .env scriber --model claude-opus-5-5 generate "..."`. The same works for `serve` and `scriber-cadgenbench`.
 
@@ -390,7 +390,7 @@ OpenAI's API and the many servers that copy it work with `provider: openai`: Goo
 ```yaml
 llm:
   models:
-    gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY, max_tokens: 32000}
+    gemini-3.8-flash: {provider: openai, base_url: "https://generativelanguage.googleapis.com/v1beta/openai", api_key_env: GEMINI_API_KEY}
     my-local-model: {provider: openai, base_url: "http://127.0.0.1:1234/v1"}
 ```
 
@@ -416,7 +416,9 @@ hf download HuggingAI4Engineering/cadgenbench-data --repo-type dataset --local-d
 uv run scriber-cadgenbench data/cadgenbench --model gemini-3.8-flash --vision gemini-3.8-flash
 ```
 
-Each drawing goes through the normal path (model, IR, build, checks, repair), and the built part is written as `<task>/output.step`, centred with its longest side along X as the grader recommends. Add `--staged` for dense drawings: the model plans the part into stages (the body first, then features read view by view) and answers each stage separately, and a design too long to write again is repaired by its changes only. If a task stops on a model-server error after a part has built, the newest built attempt is still submitted. Progress goes to a `.jsonl` file next to the run folder. Check and package the folder with CADGenBench's own tools, then upload the zip on the [leaderboard](https://huggingface.co/spaces/HuggingAI4Engineering/CADGenBench):
+For Claude models `--effort low|medium|high|xhigh|max` sets how hard the model works (low by default) and `--thinking` turns extended thinking on (off by default). The run prints the tokens each task used, with the thinking share, and keeps them in the `.jsonl`.
+
+Each drawing goes through the normal path (model, IR, build, checks, repair), and the built part is written as `<task>/output.step`, centred with its longest side along X as the grader recommends. Add `--staged` for dense drawings: the model plans the part into stages (the body first, then features read view by view) and answers each stage separately, and a design too long to write again is repaired by its changes only. Before anything is built on it, the stage 1 body is shown to the vision model beside the drawing, with its measured size, and written again (at most twice) if its outline does not match. The submitted part is the attempt the loop kept as best: one that builds, then a sound one (valid, a single solid), then the fewest unmet checks. If a task stops on a model-server error after a part has built, the newest built attempt is still submitted. A run whose checks were set aside as probably misread says so in its status (`built, 10 of 22 checks set aside`). Progress goes to a `.jsonl` file next to the run folder. Check and package the folder with CADGenBench's own tools, then upload the zip on the [leaderboard](https://huggingface.co/spaces/HuggingAI4Engineering/CADGenBench):
 
 ```bash
 uvx --from git+https://github.com/huggingface/cadgenbench python data/cadgenbench/sanity_check_submission.py evals/results/<run>/101/output.step
@@ -424,6 +426,14 @@ uvx --from git+https://github.com/huggingface/cadgenbench cadgenbench baseline p
 ```
 
 Use a model that reads images for `--vision`: the drawings carry every dimension, and the local 4B models read them poorly.
+
+### Drawing to CAD: the hardest task so far
+
+<p align="center">
+  <img src="docs/images/drawing-to-cad.png" alt="An A2 engineering drawing of a machined bracket with eleven views and details, next to the parametric part Scriber built from it" width="900">
+</p>
+
+Task 143 is the densest drawing in the set: one machined bracket described by a plan view, a section, five detail views and five hole-pattern views. Claude Fable 5.2 built the part on the right with `--staged --effort high`: a plan of 6 stages, 145 named parameters and 26 features (outline, web and pin holes, wing pockets, centre pockets, the right-arm pocket, cross holes and hole rows), valid and one solid, in 44 minutes. The same drawing took 7 minutes at the default low effort, with 55 parameters and fewer pockets, and the other models tried (Sonnet 5.5, Opus 5.5) got the outline wrong in some runs. This is one task's output, checked by eye and by Scriber's own checks; it has not been scored by CADGenBench. The drawing is from the [CADGenBench dataset](https://huggingface.co/datasets/HuggingAI4Engineering/cadgenbench-data) (Hugging Face and Mecado, ODC-By).
 
 ## Contributing
 

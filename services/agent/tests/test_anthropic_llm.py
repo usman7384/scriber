@@ -8,7 +8,7 @@ import httpx2
 import pytest
 
 from scriber_agent import AnthropicLLM, Message
-from scriber_agent.llm import UNSUPPORTED, strict_schema
+from scriber_agent.llm import UNSUPPORTED, Usage, strict_schema
 from scriber_agent.loop import RefineAnswer
 from scriber_agent.requirements import RequirementList
 from scriber_ir import json_schema
@@ -36,6 +36,7 @@ class FakeClient:
         self.calls: list[dict[str, Any]] = []
         self.reply = reply
         self.beta = SimpleNamespace(messages=SimpleNamespace(stream=self.stream))
+        self.models = SimpleNamespace(retrieve=lambda name: SimpleNamespace(max_tokens=128000))
 
     @contextmanager
     def stream(self, **kwargs: Any) -> Iterator[SimpleNamespace]:
@@ -121,3 +122,42 @@ def test_a_dropped_stream_is_sent_again(monkeypatch: pytest.MonkeyPatch) -> None
 
     client.beta.messages.stream = flaky
     assert llm.chat([Message(role="user", content="plate")], None) == '{"a": 1}'
+
+
+def test_effort_defaults_to_low_and_thinking_is_a_separate_switch_that_is_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    llm = AnthropicLLM("claude-sonnet-5-5")
+    client = FakeClient(SimpleNamespace(stop_reason="end_turn", content=[SimpleNamespace(type="text", text="{}")]))
+    monkeypatch.setattr(llm, "_client", client)
+    plate = [Message(role="user", content="plate")]
+    llm.chat(plate, None)
+    llm.chat(plate, None, think=0)
+    llm.chat(plate, None, think=8192)
+    assert [c["output_config"]["effort"] for c in client.calls] == ["low", "low", "low"]
+    assert ["thinking" in c for c in client.calls] == [False, False, True]
+    assert client.calls[2]["thinking"] == {"type": "adaptive"}
+    AnthropicLLM("claude-sonnet-5-5", effort="max", thinking=True)  # the runner can set both for a whole run
+    llm.thinking = True
+    llm.chat(plate, None)
+    assert "thinking" in client.calls[-1]
+
+
+def test_the_output_limit_is_the_models_own_unless_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    llm, client = _llm(monkeypatch)
+    llm.chat([Message(role="user", content="plate")], None)
+    assert client.calls[0]["max_tokens"] == 128000
+    llm.max_tokens = 4000
+    llm.chat([Message(role="user", content="plate")], None)
+    assert client.calls[1]["max_tokens"] == 4000
+
+
+def test_tokens_and_thinking_tokens_are_counted(monkeypatch: pytest.MonkeyPatch) -> None:
+    usage = SimpleNamespace(
+        input_tokens=1200, output_tokens=5000, cache_read_input_tokens=900, output_tokens_details=SimpleNamespace(thinking_tokens=3200)
+    )
+    llm, client = _llm(monkeypatch)
+    client.reply.usage = usage
+    llm.chat([Message(role="user", content="plate")], None)
+    llm.chat([Message(role="user", content="plate")], None)
+    assert llm.usage == Usage(input=2400, output=10000, thinking=6400, cached=1800)
+    assert str(llm.usage) == "2,400 tokens in (1,800 cached), 10,000 out of which 6,400 thinking"

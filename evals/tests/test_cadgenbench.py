@@ -3,8 +3,8 @@ from pathlib import Path
 
 from build123d import Box, Pos, export_step, import_step
 
-from scriber_agent import FakeLLM
-from scriber_evals.cadgenbench import Fixture, attempt, fixtures, last_built, orient, salvage
+from scriber_agent import FakeLLM, Result, Step
+from scriber_evals.cadgenbench import Fixture, attempt, fixtures, kept_step, last_built, orient, salvage
 from scriber_geometry import LocalGeometry
 
 REFERENCE = Path(__file__).parents[1] / "parity" / "m6" / "reference" / "sc15-hub-gear.json"
@@ -74,3 +74,17 @@ def test_an_error_after_a_built_attempt_still_submits_it(tmp_path: Path) -> None
     assert kept.status == "built (attempt_3), then error" and kept.attempts == 3
     assert (run / "143" / "output.step").is_file()
     assert salvage("150", run, work, "boom").status == "error"
+
+
+def test_the_submitted_attempt_is_the_one_the_loop_kept(tmp_path: Path) -> None:
+    for n in (1, 3):
+        (tmp_path / f"attempt_{n}").mkdir()
+        export_step(Box(10, 10, 10), tmp_path / f"attempt_{n}" / "model.step")
+
+    def ended(kept: int) -> list[Step]:
+        result = Result(design=None, artifact=None, checks=[], attempts=kept, repairs=0)
+        return [Step(kind="failed", message="gave up", attempt=3, elapsed_ms=0, result=result)]
+
+    assert kept_step(tmp_path, ended(1)) == tmp_path / "attempt_1" / "model.step"
+    assert kept_step(tmp_path, ended(2)) == tmp_path / "attempt_3" / "model.step"  # kept one has no STEP: newest built
+    assert kept_step(tmp_path, []) == tmp_path / "attempt_3" / "model.step"

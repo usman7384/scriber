@@ -15,7 +15,7 @@ class ModelOptions(BaseModel):
     max_tokens: int | None = None
     few_shot: bool = True
     provider: Literal["ollama", "anthropic", "openai"] = "ollama"
-    effort: Effort | None = None
+    effort: Effort = "low"
     base_url: str | None = None
     api_key_env: str | None = None
 
@@ -61,13 +61,14 @@ def load(path: Path) -> Config:
     return Config.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
-def llm_for(config: Config, model: str | None) -> LLM:
+def llm_for(config: Config, model: str | None, effort: Effort | None = None, thinking: bool = False) -> LLM:
+    # effort and thinking apply to Anthropic models; effort falls back to the model's entry in the config, low unless set
     name = model or config.llm.default
     options = config.llm.models.get(name, ModelOptions())
     # each adapter has its own output default; config overrides it, since one answer must hold the whole design
     limit = {} if options.max_tokens is None else {"max_tokens": options.max_tokens}
     if options.provider == "anthropic":
-        return AnthropicLLM(name, effort=options.effort, few_shot=options.few_shot, **limit)
+        return AnthropicLLM(name, effort=effort or options.effort, few_shot=options.few_shot, thinking=thinking, **limit)
     if options.provider == "openai":
         if options.base_url is None:
             raise ValueError(f"{name} uses provider openai, which needs base_url in config.yaml")

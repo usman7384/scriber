@@ -50,6 +50,15 @@ def change_repair(problems: list[str]) -> str:
     )
 
 
+def outline_repair(findings: list[str], size: tuple[float, float, float]) -> str:
+    listed = "\n".join(f"- {f}" for f in findings)
+    x, y, z = size
+    return (
+        f"Stage 1 built and measures {x:.1f} x {y:.1f} x {z:.1f} mm, but its outline does not match the drawing:\n{listed}\n"
+        "Read the overall dimensions and the outline from the drawing again, and answer the complete corrected design for stage 1 only."
+    )
+
+
 def stage_repair(problems: list[str], number: int) -> str:
     listed = "\n".join(f"- {p}" for p in problems)
     return f"Stage {number} did not build:\n{listed}\nAnswer the corrected answer for stage {number} in the same form."

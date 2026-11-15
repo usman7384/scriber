@@ -1,4 +1,5 @@
-from typing import Any, Literal, Protocol
+from dataclasses import dataclass
+from typing import Any, Literal, Protocol, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict
 
@@ -14,6 +15,36 @@ Thinking = Literal["low", "high"]
 THINKING_BUDGET: dict[Thinking, int] = {"low": 0, "high": 8192}
 # JSON Schema keywords hosted structured-output APIs reject
 UNSUPPORTED = frozenset(("discriminator", "minItems", "maxItems", "minLength", "maxLength", "pattern", "minimum", "maximum", "default"))
+
+
+@dataclass(frozen=True)
+class Usage:
+    input: int = 0
+    output: int = 0
+    thinking: int = 0
+    cached: int = 0
+
+    def __add__(self, other: "Usage") -> "Usage":
+        return Usage(self.input + other.input, self.output + other.output, self.thinking + other.thinking, self.cached + other.cached)
+
+    def __sub__(self, other: "Usage") -> "Usage":
+        return Usage(self.input - other.input, self.output - other.output, self.thinking - other.thinking, self.cached - other.cached)
+
+    def __bool__(self) -> bool:
+        return bool(self.input or self.output)
+
+    def __str__(self) -> str:
+        return f"{self.input:,} tokens in ({self.cached:,} cached), {self.output:,} out of which {self.thinking:,} thinking"
+
+
+@runtime_checkable
+class Metered(Protocol):
+    usage: Usage
+
+
+def usage_of(llm: object) -> Usage:
+    # adapters that count tokens expose a running total; the rest report nothing
+    return llm.usage if isinstance(llm, Metered) else Usage()
 
 
 class LLM(Protocol):

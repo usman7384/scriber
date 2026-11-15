@@ -8,10 +8,10 @@ from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ValidationError
 
-from scriber_agent.critic import critique
+from scriber_agent.critic import critique, outline_critique
 from scriber_agent.grounding import grounded, measurable, unquote
 from scriber_agent.images import TILE_NOTE, with_tiles
-from scriber_agent.llm import LLM, THINKING_BUDGET, Message, Thinking
+from scriber_agent.llm import LLM, THINKING_BUDGET, Message, Thinking, Usage, usage_of
 from scriber_agent.project_context import Grounding, cite, context_block, fact_requirements, overridden
 from scriber_agent.prompts import (
     DRAWING_REQUIREMENTS,
@@ -23,8 +23,8 @@ from scriber_agent.prompts import (
     requirement_messages,
     resample_message,
 )
-from scriber_agent.requirements import CheckResult, Requirement, RequirementList, check
-from scriber_agent.stages import PLAN_NOTE, Changes, StagePlan, change_repair, merged, stage_message, stage_repair
+from scriber_agent.requirements import CheckResult, Requirement, RequirementList, check, overall_size
+from scriber_agent.stages import PLAN_NOTE, Changes, StagePlan, change_repair, merged, outline_repair, stage_message, stage_repair
 from scriber_agent.standards import reference_data
 from scriber_context import Fact
 from scriber_geometry import Artifact, BuildError, Finding
@@ -55,6 +55,8 @@ PLACE_NOTE = (
 STUCK_TEMPERATURE = 0.9
 # a stage that still does not build after this many answers is left out; the full design's repairs can still add it
 STAGE_TRIES = 2
+# the outline of stage 1 is compared with the drawing, and written again at most this often, before the rest is built on it
+OUTLINE_REDOS = 2
 # a design longer than this is repaired by its changes: writing it whole again can run past the output limit
 LONG_DESIGN = 12_000
 # a built part is compared with the input image at most this often, so a noisy critic cannot use up every repair
@@ -139,7 +141,8 @@ def generate(
         return cite(design, context.pack) if context else design
 
     review = _reviewer(geometry, vision, images, prompt, seed) if images and vision else None
-    run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking, review=review)
+    outline = _outline_reviewer(geometry, vision, shown, prompt, seed) if images and vision else None
+    run = replace(_run(designer, geometry, context, out_dir, max_repairs, seed, clock), thinking=thinking, review=review, outline=outline)
     first = (yield from _staged(run, messages, decode)) if staged else None
     yield from _attempts(run, messages, json_schema(), decode, reqs, prompt, first)
 
@@ -235,6 +238,20 @@ def _reviewer(geometry: Geometry, vision: LLM, reference: tuple[bytes, ...], req
     return review
 
 
+def _outline_reviewer(geometry: Geometry, vision: LLM, reference: tuple[bytes, ...], request: str, seed: int) -> Review:
+    def review(artifact: Artifact, stage_dir: Path) -> list[str]:
+        glb = artifact.files["glb"]
+        stage_dir.mkdir(parents=True, exist_ok=True)
+        views = [geometry.thumbnail(glb, stage_dir / f"outline_{v}.png", 768, v).read_bytes() for v in ("iso", "top")]
+        try:
+            verdict = outline_critique(request, views, vision, overall_size(artifact), seed, reference)
+        except ValidationError:
+            return []
+        return [] if verdict.matches else list(verdict.findings)
+
+    return review
+
+
 @dataclass(frozen=True)
 class _Run:
     llm: LLM
@@ -246,6 +263,7 @@ class _Run:
     used: list[str]
     thinking: Thinking | None = None
     review: Review | None = None
+    outline: Review | None = None
 
 
 def _run(llm: LLM, geometry: Geometry, context: Grounding | None, out_dir: Path, max_repairs: int, seed: int, clock: "_Clock") -> _Run:
@@ -268,7 +286,7 @@ def _attempts(
     request: str = "",
     first: str | None = None,
 ) -> Iterator[Step]:
-    best: tuple[tuple[bool, int], Result] | None = None
+    best: tuple[tuple[bool, bool, int, int], Result] | None = None
     told: set[str] = set()
     seen: set[str] = set()
     reviews = 0
@@ -283,6 +301,7 @@ def _attempts(
     for attempt in range(1, run.max_repairs + 2):
         seed = run.seed + attempt - 1
         given = first if attempt == 1 else None
+        spent = usage_of(run.llm)
         raw = given or run.llm.chat(prompt, ask, seed, 0.0 if attempt == 1 else REPAIR_TEMPERATURE, budget)
         if not raw.strip():
             # the output limit ran out, usually on reasoning: ask once more without spending a repair
@@ -293,8 +312,10 @@ def _attempts(
             # a sharply tuned model copies the quoted answer back, so ask again without quoting it
             raw = run.llm.chat(fresh, ask, seed, STUCK_TEMPERATURE, budget)
         seen.add(raw)
+        used = usage_of(run.llm) - spent
         note = (
-            thought
+            (f", {used}" if used else "")
+            + thought
             + (", re-sampled because it repeated an earlier answer" if resampled else "")
             + (", built up in stages" if given else "")
         )
@@ -343,7 +364,7 @@ def _attempts(
             note = "" if kept is last else f"; kept attempt {kept.attempts}, which the review judged closer"
             yield Step(kind="done", message=_summary(kept) + note, attempt=attempt, elapsed_ms=run.clock(), result=kept)
             return
-        rank = (artifact is not None, -len(problems))
+        rank = _rank(artifact, checks, problems, set_aside)
         if best is None or rank >= best[0]:
             best = (rank, last)
         yield Step(kind="check", message="; ".join(problems), attempt=attempt, elapsed_ms=run.clock())
@@ -365,6 +386,11 @@ def _attempts(
     yield Step(kind="failed", message=message, attempt=run.max_repairs + 1, elapsed_ms=run.clock(), result=kept)
 
 
+def _tokens(llm: LLM, since: Usage) -> str:
+    used = usage_of(llm) - since
+    return f", {used}" if used else ""
+
+
 def _changed(base: Design, raw: str) -> Design:
     return merged(base, Changes.model_validate_json(raw))
 
@@ -372,6 +398,7 @@ def _changed(base: Design, raw: str) -> Design:
 def _staged(run: _Run, messages: list[Message], decode: Callable[[str], Design]) -> Generator[Step, None, str | None]:
     # a dense drawing in one answer takes many minutes and drops details; stages keep each answer short
     budget = THINKING_BUDGET[run.thinking] if run.thinking else None
+    mark = usage_of(run.llm)
     raw = run.llm.chat([*messages, Message(role="user", content=PLAN_NOTE)], StagePlan.model_json_schema(), run.seed, 0.0, budget)
     try:
         stages = StagePlan.model_validate_json(raw).stages
@@ -379,42 +406,61 @@ def _staged(run: _Run, messages: list[Message], decode: Callable[[str], Design])
         return None
     if len(stages) < 2:
         return None
-    yield Step(kind="plan", message="; ".join(f"{i}. {s.name}" for i, s in enumerate(stages, 1)), attempt=0, elapsed_ms=run.clock())
+    plan = "; ".join(f"{i}. {s.name}" for i, s in enumerate(stages, 1))
+    yield Step(kind="plan", message=plan + _tokens(run.llm, mark), attempt=0, elapsed_ms=run.clock())
     design: Design | None = None
     for number, stage in enumerate(stages, 1):
+        mark = usage_of(run.llm)
         history = messages if design is None else [*messages, Message(role="assistant", content=answer_json(design))]
         prompt = [*history, Message(role="user", content=stage_message(stage, number, len(stages)))]
         schema = json_schema() if design is None else Changes.model_json_schema()
+        stage_dir = run.out_dir / f"stage_{number}"
+        built: Artifact | None = None
         for _ in range(STAGE_TRIES):
             answer = run.llm.chat(prompt, schema, run.seed, 0.0, budget)
-            candidate, problems = _stage_build(answer, design, decode, run.build, run.out_dir / f"stage_{number}")
+            candidate, built, problems = _stage_build(answer, design, decode, run.build, stage_dir)
             if not problems:
                 design = candidate
                 break
             prompt = [*prompt, Message(role="assistant", content=answer), Message(role="user", content=stage_repair(problems, number))]
+        if number == 1 and design is not None and built is not None and run.outline:
+            for redo in range(OUTLINE_REDOS + 1):
+                findings = run.outline(built, stage_dir)
+                if not findings:
+                    break
+                size = overall_size(built)
+                yield Step(kind="check", message="stage 1 outline: " + "; ".join(findings), attempt=0, elapsed_ms=run.clock())
+                if redo == OUTLINE_REDOS:
+                    break  # the outline stays as it is; later stages and the full review can still correct it
+                prompt = [*prompt, Message(role="assistant", content=answer), Message(role="user", content=outline_repair(findings, size))]
+                answer = run.llm.chat(prompt, schema, run.seed, 0.0, budget)
+                again, rebuilt, redo_problems = _stage_build(answer, None, decode, run.build, stage_dir)
+                if redo_problems or again is None or rebuilt is None:
+                    break  # the rewrite does not build: the first body stays
+                design, built = again, rebuilt
         done = "built" if not problems else "left out: " + "; ".join(problems[:3])
-        yield Step(kind="build", message=f"stage {number}, {stage.name}: {done}", attempt=0, elapsed_ms=run.clock())
+        yield Step(kind="build", message=f"stage {number}, {stage.name}: {done}{_tokens(run.llm, mark)}", attempt=0, elapsed_ms=run.clock())
     return answer_json(design) if design else None
 
 
 def _stage_build(
     answer: str, design: Design | None, decode: Callable[[str], Design], build: Build, out_dir: Path
-) -> tuple[Design | None, list[str]]:
+) -> tuple[Design | None, Artifact | None, list[str]]:
     try:
         candidate = decode(answer) if design is None else merged(design, Changes.model_validate_json(answer))
     except ValidationError as e:
-        return None, [f"{_where(answer, err['loc'])}: {err['msg']}" for err in e.errors()[:8]]
+        return None, None, [f"{_where(answer, err['loc'])}: {err['msg']}" for err in e.errors()[:8]]
     except ValueError as e:
-        return None, [str(e)]
+        return None, None, [str(e)]
     # parameters a later stage will use are not unused yet
     errors = [str(e) for e in validate(candidate) if "defined but not used" not in e.message]
     if errors:
-        return None, errors[:8]
+        return None, None, errors[:8]
     try:
-        build(candidate, out_dir)
+        artifact = build(candidate, out_dir)
     except BuildError as e:
-        return None, [_kernel_text(e)]
-    return candidate, []
+        return None, None, [_kernel_text(e)]
+    return candidate, artifact, []
 
 
 def evaluate(
@@ -480,9 +526,17 @@ def _requirements_step(reqs: list[Requirement], clock: "_Clock", dropped: Sequen
     return Step(kind="requirements", message=message, attempt=0, elapsed_ms=clock())
 
 
+def _rank(artifact: Artifact | None, checks: list[CheckResult], problems: list[str], set_aside: set[str]) -> tuple[bool, bool, int, int]:
+    # a part that builds beats one that does not, a sound one (valid, one solid) beats a broken one, then fewer unmet
+    # checks, then fewer problems: a part in two pieces must not win on a short list
+    unmet = sum(1 for c in checks if not c.passed and c.requirement.description not in set_aside)
+    return (artifact is not None, artifact is not None and artifact.ok, -unmet, -len(problems))
+
+
 def _summary(r: Result) -> str:
     passed = sum(c.passed for c in r.checks)
-    return f"{r.design.title if r.design else '?'}: {passed}/{len(r.checks)} requirement checks passed, {r.repairs} repairs"
+    aside = f", {len(r.disputed)} set aside as probably misread" if r.disputed else ""
+    return f"{r.design.title if r.design else '?'}: {passed}/{len(r.checks)} requirement checks passed{aside}, {r.repairs} repairs"
 
 
 def _short(e: Exception, limit: int = 600) -> str:

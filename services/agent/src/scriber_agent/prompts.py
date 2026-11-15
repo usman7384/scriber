@@ -342,6 +342,20 @@ def critic_message(request: str, references: int = 0) -> str:
     )
 
 
+OUTLINE_RULES = """You check only the outline of the first stage of a CAD part that is being built from an engineering drawing.
+The renders are an isometric view and a top view (looking down Z) of a plain body. Holes, pockets, bosses, ribs and blends come in later stages, so never mention them.
+Compare the body with the drawing's main outline: its overall length, width and thickness, its proportions, the shape of its ends, arms and notches, and where it bends or steps. Read the overall dimensions the drawing gives and compare them with the measured size you are told.
+In "findings" write one short sentence for each way the outline is wrong; "matches" is true only when findings is empty. Answer with JSON only."""
+
+
+def outline_message(request: str, references: int, size: tuple[float, float, float]) -> str:
+    x, y, z = size
+    return (
+        f"Request: {request}\n\nThe first {references} attached image(s) show the drawing; the rest are an isometric and a top view of the "
+        f"stage 1 body, which measures {x:.1f} x {y:.1f} x {z:.1f} mm (X, Y, Z). Does the body's outline match the drawing's?"
+    )
+
+
 DRAWING_REQUIREMENTS = """The request is the attached engineering drawing. List only what it states explicitly:
 - "holes": each set of plain round holes or bores with a written diameter, e.g. "4X Ø12 THRU" is count 4, diameter 11.9 to 12.1, and a toleranced bore such as "Ø20 H7" or "Ø20 +0.021/0" takes those limits (20.0 to 20.021); skip threaded, tapped and countersunk callouts.
 - "threads": each set of threads, tapped holes and threaded shafts, e.g. "6X M12x1.25-6H" is count 6, diameter 11.9 to 12.1 (the major diameter).
